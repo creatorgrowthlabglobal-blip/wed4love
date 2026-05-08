@@ -1,0 +1,148 @@
+import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { CheckCircle2, Copy, Download, Share2, Heart, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import Header from "@/components/Header";
+import FloatingHearts from "@/components/FloatingHearts";
+
+const LetterReady = () => {
+  const { id } = useParams();
+  const letterLink = `${window.location.origin}/view/${id}`;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(letterLink);
+    setCopied(true);
+    toast.success("Link copied to clipboard! 💌");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: "A Letter Written With Love 💌",
+        text: "Someone special wrote you a heartfelt letter",
+        url: letterLink,
+      });
+    } else {
+      handleCopy();
+    }
+  };
+
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(letterLink)}&bgcolor=FFF3E8&color=3A3A3A`;
+
+  return (
+    <div className="min-h-screen gradient-blush relative">
+      <Header />
+      <FloatingHearts count={10} />
+      <main className="relative z-10 pt-28 pb-20 px-4 sm:px-6 flex items-center justify-center min-h-screen">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7 }}
+          className="max-w-md mx-auto text-center w-full"
+        >
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 180, delay: 0.2 }}
+            className="w-24 h-24 rounded-full bg-primary/15 border-2 border-primary/20 flex items-center justify-center mx-auto mb-6 animate-gentle-glow"
+          >
+            <CheckCircle2 className="w-12 h-12 text-primary" />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-elegant-gold" />
+              <span className="font-body text-sm text-primary tracking-wide">Congratulations!</span>
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Your Letter Has Been Created
+            </h1>
+            <p className="font-body text-lg text-muted-foreground mb-8">
+              Share this magical experience with your special someone
+            </p>
+          </motion.div>
+
+          {/* QR Code */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="letter-paper rounded-3xl p-6 sm:p-8 shadow-glow mb-8 relative overflow-hidden"
+          >
+            <div className="absolute top-3 right-3 opacity-20">
+              <Heart className="w-4 h-4 text-primary fill-primary/30" />
+            </div>
+            <p className="font-heading text-xs text-muted-foreground uppercase tracking-widest mb-4">Scan to open letter</p>
+            <div className="inline-block p-3 bg-background/60 rounded-2xl border border-border/30">
+              <img src={qrCodeUrl} alt="Letter QR Code" className="w-44 h-44 rounded-lg" />
+            </div>
+            <p className="font-body text-xs text-muted-foreground break-all mt-4 max-w-[280px] mx-auto">{letterLink}</p>
+          </motion.div>
+
+          {/* Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-8"
+          >
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleCopy}
+              className="btn-glow inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary text-primary-foreground font-heading text-base font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow"
+            >
+              <Copy className="w-4 h-4" />
+              {copied ? "Copied! 💌" : "Copy Link"}
+            </motion.button>
+
+            <motion.a
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              href={qrCodeUrl}
+              download={`letter-${id}-qr.png`}
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-secondary text-secondary-foreground font-heading text-base font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card"
+            >
+              <Download className="w-4 h-4" />
+              Download QR
+            </motion.a>
+
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleShare}
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-accent text-accent-foreground font-heading text-base font-semibold rounded-xl transition-all duration-300 hover:shadow-gold-glow"
+            >
+              <Share2 className="w-4 h-4" />
+              Share With Love
+            </motion.button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="flex items-center justify-center gap-1.5 text-muted-foreground font-body text-sm"
+          >
+            <span>Crafted with</span>
+            <Heart className="w-3 h-3 text-primary fill-primary" />
+            <span>by</span>
+            <span className="font-display text-base text-foreground font-semibold">Wish4Love</span>
+          </motion.div>
+        </motion.div>
+      </main>
+    </div>
+  );
+};
+
+export default LetterReady;
