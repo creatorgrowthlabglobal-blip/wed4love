@@ -945,7 +945,31 @@ interface GiftBox3DProps {
   onEnvelopeReady?: () => void;
 }
 
+import { isWebGLAvailable } from "@/lib/webglSupport";
+
+const GiftBoxFallback = ({ opened, onOpen, receiverName }: { opened: boolean; onOpen: () => void; receiverName: string }) => (
+  <div style={{ width: "100%", height: "100%" }} className="flex items-center justify-center p-6">
+    <button
+      onClick={onOpen}
+      disabled={opened}
+      className="flex flex-col items-center gap-4 group"
+      aria-label="Open gift"
+    >
+      <div className="text-8xl transition-transform duration-500 group-hover:scale-110" style={{ filter: "drop-shadow(0 8px 24px rgba(192,154,170,0.4))" }}>
+        {opened ? "💌" : "🎁"}
+      </div>
+      <p className="font-display text-lg" style={{ color: "hsl(340 30% 30%)" }}>
+        {opened ? `For ${receiverName}` : "Tap to open"}
+      </p>
+    </button>
+  </div>
+);
+
 const GiftBox3D = ({ opened, onOpen, receiverName = "", onEnvelopeReady }: GiftBox3DProps) => {
+  if (!isWebGLAvailable()) {
+    if (onEnvelopeReady) setTimeout(onEnvelopeReady, 0);
+    return <GiftBoxFallback opened={opened} onOpen={onOpen} receiverName={receiverName} />;
+  }
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <Canvas
