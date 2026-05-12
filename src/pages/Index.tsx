@@ -1,12 +1,14 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { PenLine, Phone, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PenLine, Phone, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import GiftBox3D from "@/components/viewer/GiftBox3D";
+import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 
 const Index = () => {
+  const [showPreview, setShowPreview] = useState(false);
   return (
     <div className="min-h-screen bg-background">
       <Header />
