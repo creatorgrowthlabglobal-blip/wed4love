@@ -99,36 +99,32 @@ const Index = () => {
             delivery • Unforgettable experience
           </motion.p>
 
-          {/* Live 3D Gift Box Demo */}
+          {/* Preview the experience button */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.7 }}
             className="mt-14 mx-auto w-full max-w-md"
           >
-            <div
-              className="rounded-3xl overflow-hidden mx-auto relative"
+            <button
+              onClick={() => setShowPreview(true)}
+              className="group w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl bg-white/70 backdrop-blur border border-primary/20 hover:border-primary/40 hover:bg-white transition-all duration-400 hover:scale-[1.02] active:scale-[0.98]"
               style={{
-                height: "380px",
+                boxShadow: "0 8px 30px hsl(340 60% 80% / 0.2)",
               }}
             >
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-6 h-6 rounded-full border-2 border-primary/20 border-t-primary/60 animate-spin" />
-                  </div>
-                }
-              >
-                <GiftBox3D opened={false} onOpen={() => {}} receiverName="Someone Special" />
-              </Suspense>
-            </div>
+              <Mail className="w-5 h-5 text-primary group-hover:rotate-[-8deg] transition-transform duration-400" />
+              <span className="font-display text-base sm:text-lg font-semibold text-foreground">
+                Preview the experience
+              </span>
+            </button>
 
             <motion.p
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 2.5, repeat: Infinity }}
               className="font-body text-xs text-muted-foreground mt-4 text-center"
             >
-              This is what they'll see ✨
+              Tap to see what they'll receive ✨
             </motion.p>
           </motion.div>
 
