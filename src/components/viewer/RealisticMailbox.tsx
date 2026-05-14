@@ -246,33 +246,16 @@ const HingeSill = () => (
   </g>
 );
 
-/* HingeContainer = an HTML motion.div overlay that holds the door SVG.
-   Using a div (not an SVG <g>) gives true CSS preserve-3d so the fixed
-   rotateY/skewX tilt composes rigidly with the animated rotateX swing —
-   the door stays a solid sheet of metal instead of warping. */
-const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimation> }) => (
-  <motion.div
-    initial="idle"
-    animate={controls}
-    variants={{
-      idle: { rotateX: 0 },
-      opening: {
-        rotateX: 78,
-        transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
-      },
-      delivered: { rotateX: 78 },
-    }}
+/* Static front face overlay — no swing, no hinge. The door stays put;
+   only the birds and envelope animate on click. */
+const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
+  <div
     style={{
       position: "absolute",
       inset: 0,
       pointerEvents: "none",
-      // Fixed isometric tilt — never animated. rotateX above composes on top.
       transform: "rotateY(-15deg) skewX(-6deg)",
-      // (195, 270) in viewBox 400×495 → 49% / 54.55% of the square wrapper
       transformOrigin: "49% 54.55%",
-      transformStyle: "preserve-3d",
-      backfaceVisibility: "visible",
-      willChange: "transform",
     }}
   >
     <svg
