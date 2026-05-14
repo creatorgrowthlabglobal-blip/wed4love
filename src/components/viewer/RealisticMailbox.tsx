@@ -527,10 +527,9 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             <BirdRight />
           </motion.g>
 
-          <FrontFace state={state} />
-
           {!open && <Caption senderName={senderName} />}
         </svg>
+        <FrontFace state={state} />
       </motion.div>
     </div>
   );
