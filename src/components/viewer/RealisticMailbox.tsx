@@ -85,6 +85,53 @@ const Defs = () => (
     <clipPath id="roofClip">
       <path d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z" />
     </clipPath>
+    {/* Heavy paper texture for envelope */}
+    <linearGradient id="envPaper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#FBF6EC" />
+      <stop offset="50%" stopColor="#F4ECDB" />
+      <stop offset="100%" stopColor="#E8DEC6" />
+    </linearGradient>
+    <linearGradient id="envFlap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#F0E6D0" />
+      <stop offset="100%" stopColor="#D8CBAE" />
+    </linearGradient>
+    <filter id="envPaperTex" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3" />
+      <feColorMatrix values="0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.32  0 0 0 0.25 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="envDropShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dy="4" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.42" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    {/* Wax-melt 3D bevel for the heart seal */}
+    <radialGradient id="waxHeart" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0%" stopColor="#FF8A9C" />
+      <stop offset="55%" stopColor="#D8324C" />
+      <stop offset="100%" stopColor="#7A1322" />
+    </radialGradient>
+    <filter id="waxBevel" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur" />
+      <feSpecularLighting in="blur" surfaceScale="3" specularConstant="1" specularExponent="22" lightingColor="#fff" result="spec">
+        <fePointLight x="-30" y="-40" z="80" />
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="specClip" />
+      <feComposite in="SourceGraphic" in2="specClip" operator="arithmetic" k1="0" k2="1" k3="0.7" k4="0" />
+    </filter>
+    {/* Shimmer light sweep gradient */}
+    <linearGradient id="envShimmer" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stopColor="#fff" stopOpacity="0" />
+      <stop offset="45%" stopColor="#fff" stopOpacity="0" />
+      <stop offset="50%" stopColor="#fff" stopOpacity="0.85" />
+      <stop offset="55%" stopColor="#fff" stopOpacity="0" />
+      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+    </linearGradient>
+    {/* Interior depth-of-field blur */}
+    <filter id="cavityBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2.5" />
+    </filter>
   </defs>
 );
 
@@ -158,9 +205,14 @@ const Roof = () => (
   </motion.g>
 );
 
-/* Empty interior cavity — visible when FrontFace falls open */
-const Interior = () => (
-  <g clipPath="url(#frontClip)">
+/* Empty interior cavity — visible when FrontFace falls open.
+   Blurs subtly while the envelope emerges for a depth-of-field feel. */
+const Interior = ({ open }: { open: boolean }) => (
+  <motion.g
+    clipPath="url(#frontClip)"
+    animate={{ filter: open ? "url(#cavityBlur)" : "none" }}
+    transition={{ duration: 0.6, delay: open ? 0.7 : 0 }}
+  >
     {/* deep cavity background */}
     <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
     {/* top inner shadow rim (under arch) */}
@@ -179,7 +231,7 @@ const Interior = () => (
     <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7" />
     {/* tiny ambient glow from above to suggest open-air emptiness */}
     <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04" />
-  </g>
+  </motion.g>
 );
 
 /* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
@@ -294,22 +346,65 @@ const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.g
-        // Starts hidden inside the dark cavity, then slides forward toward viewer
-        // only AFTER the door has fully swung open.
-        initial={{ x: 0, y: -10, opacity: 0, scale: 0.7 }}
-        animate={{ x: 0, y: 60, opacity: 1, scale: 1.05 }}
+        // Door reaches ~45° around t≈0.5s (delay 0.3s + spring). Envelope stays
+        // hidden until then, then springs forward on the Z-axis with a bounce.
+        initial={{ y: -8, opacity: 0, scale: 0.8 }}
+        animate={{ y: 58, opacity: 1, scale: 1.05 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
+        transition={{
+          type: "spring",
+          stiffness: 120,
+          damping: 20,
+          delay: 0.55,
+          opacity: { duration: 0.35, delay: 0.55 },
+        }}
         style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
       >
-        <g transform="translate(150, 185)">
-          <rect x="0" y="0" width="110" height="70" rx="3" fill="#ffffff" stroke={STROKE} strokeWidth="2.5" />
-          <polyline points="0,0 55,38 110,0" fill="none" stroke={STROKE} strokeWidth="2.5" strokeLinejoin="round" />
-          <path
-            d="M 55 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
-            fill="#FF6F85"
-            stroke={STROKE}
-            strokeWidth="1.5"
+        {/* Soft drop shadow beneath the envelope (hovers above mailbox floor) */}
+        <motion.ellipse
+          cx="205"
+          cy="262"
+          rx="62"
+          ry="6"
+          fill="#000"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.32 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          style={{ filter: "blur(4px)" }}
+        />
+        <g transform="translate(150, 185)" filter="url(#envDropShadow)">
+          {/* Heavy paper body */}
+          <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
+          {/* Subtle paper grain */}
+          <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
+          {/* Inner edge bevel */}
+          <rect x="2" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
+          {/* Flap fold lines */}
+          <polyline points="0,0 55,38 110,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
+          <polyline points="0,0 55,38 110,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
+          {/* Heart wax seal — beveled, glossy */}
+          <g filter="url(#waxBevel)">
+            <path
+              d="M 55 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
+              fill="url(#waxHeart)"
+              stroke="#5A0E1C"
+              strokeWidth="0.9"
+            />
+            {/* Highlight glint */}
+            <ellipse cx="51" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
+          </g>
+          {/* Shimmer light-sweep — runs once after the envelope settles */}
+          <motion.rect
+            x="-110"
+            y="0"
+            width="110"
+            height="70"
+            rx="3"
+            fill="url(#envShimmer)"
+            initial={{ x: -110, opacity: 0 }}
+            animate={{ x: 110, opacity: [0, 1, 1, 0] }}
+            transition={{ delay: 1.25, duration: 1.0, ease: "easeInOut", times: [0, 0.15, 0.85, 1] }}
+            style={{ mixBlendMode: "overlay" as any }}
           />
         </g>
       </motion.g>
@@ -523,7 +618,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 />
               </g>
               <Roof />
-              <Interior />
+              <Interior open={open} />
             </g>
 
             {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
