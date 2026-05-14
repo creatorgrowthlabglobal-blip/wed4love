@@ -327,25 +327,7 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
 const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
-      <motion.g
-        // Stage 1: appears as a flat horizontal sliver squeezed through the slot.
-        // Stage 2: slides down/forward and expands to full size in front of mailbox.
-        initial={{ y: -25, opacity: 0, scaleY: 0.04, scaleX: 0.95 }}
-        animate={{
-          y: [-25, -10, 80],
-          opacity: [0, 1, 1],
-          scaleY: [0.04, 0.04, 1.15],
-          scaleX: [0.95, 0.95, 1.15],
-        }}
-        exit={{ opacity: 0 }}
-        transition={{
-          duration: 1.4,
-          delay: 0.3,
-          times: [0, 0.25, 1],
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        style={{ transformOrigin: "205px 195px" }}
-      >
+      <>
         {/* Soft drop shadow beneath the envelope */}
         <motion.ellipse
           cx="205"
@@ -355,26 +337,51 @@ const Envelope = ({ show }: { show: boolean }) => (
           fill="#000"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.32 }}
-          transition={{ delay: 0.55, duration: 0.5 }}
+          transition={{ delay: 0.75, duration: 0.45 }}
           style={{ filter: "blur(4px)" }}
         />
-        <g transform="translate(150, 185)" filter="url(#envDropShadow)">
-          <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
-          <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
-          <rect x="2" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
-          <polyline points="0,0 55,38 110,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
-          <polyline points="0,0 55,38 110,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
-          <g filter="url(#waxBevel)">
-            <path
-              d="M 55 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
-              fill="url(#waxHeart)"
-              stroke="#5A0E1C"
-              strokeWidth="0.9"
-            />
-            <ellipse cx="51" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
-          </g>
-        </g>
-      </motion.g>
+        <motion.g
+          transform="translate(205 194)"
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ opacity: [0, 1, 1], y: [0, 8, 78] }}
+          exit={{ opacity: 0 }}
+          transition={{
+            duration: 1.45,
+            delay: 0.25,
+            times: [0, 0.2, 1],
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          style={{ transformBox: "fill-box" }}
+        >
+          <motion.g
+            initial={{ scaleY: 0.03, scaleX: 0.78 }}
+            animate={{ scaleY: [0.03, 0.03, 1], scaleX: [0.78, 0.9, 1] }}
+            transition={{
+              duration: 1.45,
+              delay: 0.25,
+              times: [0, 0.2, 1],
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            style={{ transformOrigin: "50% 0%", transformBox: "fill-box" }}
+            filter="url(#envDropShadow)"
+          >
+            <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
+            <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
+            <rect x="-53" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
+            <polyline points="-55,0 0,38 55,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
+            <polyline points="-55,0 0,38 55,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
+            <g filter="url(#waxBevel)">
+              <path
+                d="M 0 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
+                fill="url(#waxHeart)"
+                stroke="#5A0E1C"
+                strokeWidth="0.9"
+              />
+              <ellipse cx="-4" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
+            </g>
+          </motion.g>
+        </motion.g>
+      </>
     )}
   </AnimatePresence>
 );
