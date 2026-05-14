@@ -455,6 +455,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <Interior />
               <Envelope show={open} />
               <FrontFace />
+              <BaseBand />
               
             </g>
 
