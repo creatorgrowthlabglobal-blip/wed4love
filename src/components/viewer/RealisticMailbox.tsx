@@ -185,20 +185,21 @@ const Interior = () => (
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { scaleY: 1, scaleX: 1, skewX: 0, rotate: 0, x: 0, y: 0 },
+      idle: { rotate: 0, x: 0, y: 0 },
       opening: {
-        scaleY: 0.16,
-        scaleX: 0.98,
-        skewX: 54,
-        rotate: 0,
+        rotate: -82,
         x: 0,
         y: 0,
-        transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
+        transition: {
+          duration: 1.9,
+          delay: 1.4,
+          ease: [0.22, 1, 0.36, 1],
+        },
       },
-      delivered: { scaleY: 0.16, scaleX: 0.98, skewX: 54, rotate: 0, x: 0, y: 0 },
+      delivered: { rotate: -82, x: 0, y: 0 },
     }}
     style={{
-      transformOrigin: "195px 270px",
+      transformOrigin: "195px 276px",
       transformBox: "view-box" as any,
     }}
   >
