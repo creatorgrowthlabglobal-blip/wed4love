@@ -187,15 +187,16 @@ const FrontFace = () => (
     variants={{
       idle: { rotateX: 0 },
       opening: {
-        rotateX: 78,
+        rotateX: 110,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 78 },
+      delivered: { rotateX: 110 },
     }}
     style={{
       transformOrigin: "50% 100%",
       transformBox: "fill-box" as any,
       transformStyle: "preserve-3d" as any,
+      transformPerspective: 1200,
     }}
   >
     {/* lavender front panel */}
