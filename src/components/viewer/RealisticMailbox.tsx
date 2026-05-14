@@ -400,7 +400,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <Roof />
               <Envelope show={open} />
               <FrontFace />
-              <MailSlot />
+              
             </g>
 
             <BirdLeft />
