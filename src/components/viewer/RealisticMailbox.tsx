@@ -184,22 +184,9 @@ function Envelope({ open }: { open: boolean }) {
         <boxGeometry args={[0.85, 0.55, 0.012]} />
         <meshStandardMaterial color="#f5ecdc" roughness={0.9} metalness={0} />
       </mesh>
-      {/* Triangular flap on front face */}
-      <mesh position={[0.008, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            args={[new Float32Array([
-              -0.425, 0.275, 0,
-               0.425, 0.275, 0,
-               0,     -0.05, 0,
-            ]), 3]}
-          />
-          <bufferAttribute
-            attach="attributes-normal"
-            args={[new Float32Array([0,0,1, 0,0,1, 0,0,1]), 3]}
-          />
-        </bufferGeometry>
+      {/* Triangular flap (rotated square) on front face */}
+      <mesh position={[0.008, 0.08, 0]} rotation={[0, Math.PI / 2, Math.PI / 4]}>
+        <planeGeometry args={[0.32, 0.32]} />
         <meshStandardMaterial color="#ecdfca" roughness={0.92} side={THREE.DoubleSide} />
       </mesh>
       {/* Wax seal */}
