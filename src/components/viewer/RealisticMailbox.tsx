@@ -185,14 +185,14 @@ const Interior = () => (
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { rotateX: 0, rotateY: -15, rotateZ: 0 },
+      idle: { rotateX: 0, rotateY: 0, rotateZ: 15 },
       opening: {
         rotateX: 90,
-        rotateY: -15,
-        rotateZ: 0,
+        rotateY: 0,
+        rotateZ: 15,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 90, rotateY: -15, rotateZ: 0 },
+      delivered: { rotateX: 90, rotateY: 0, rotateZ: 15 },
     }}
     style={{
       transformOrigin: "195px 270px",
