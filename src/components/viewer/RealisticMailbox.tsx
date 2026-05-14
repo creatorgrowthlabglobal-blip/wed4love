@@ -233,8 +233,8 @@ const birdHopVariants: Variants = {
 const BirdLeft = () => (
   <motion.g
     variants={birdHopVariants}
-    style={{ transformOrigin: "168px 60px" }}
-    transform="translate(168, 60)"
+    style={{ transformOrigin: "168px 78px" }}
+    transform="translate(168, 78)"
   >
     <ellipse cx="0" cy="0" rx="14" ry="10" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
     <circle cx="-10" cy="-6" r="7.5" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
@@ -252,8 +252,8 @@ const BirdRight = () => (
       ...birdHopVariants,
       opening: { y: -120, x: 30, opacity: 0, transition: { duration: 0.9, ease: "easeOut" } },
     }}
-    style={{ transformOrigin: "238px 58px" }}
-    transform="translate(238, 58)"
+    style={{ transformOrigin: "238px 76px" }}
+    transform="translate(238, 76)"
   >
     <ellipse cx="0" cy="0" rx="14" ry="10" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
     <circle cx="10" cy="-6" r="7.5" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
