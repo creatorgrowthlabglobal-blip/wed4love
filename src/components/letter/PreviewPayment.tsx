@@ -199,7 +199,7 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
                   }}
                 />
                 <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
-                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} />
+                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
                 </div>
               </div>
             )}
