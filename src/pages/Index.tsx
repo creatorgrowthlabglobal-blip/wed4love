@@ -5,9 +5,17 @@ import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkI
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
+import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
+  const [previewStage, setPreviewStage] = useState<"mailbox" | "envelope">("mailbox");
+
+  const openPreview = () => {
+    setPreviewStage("mailbox");
+    setShowPreview(true);
+  };
+  const closePreview = () => setShowPreview(false);
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -106,7 +114,7 @@ const Index = () => {
             className="mt-14 mx-auto w-full max-w-md"
           >
             <button
-              onClick={() => setShowPreview(true)}
+              onClick={openPreview}
               className="group w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl bg-white/70 backdrop-blur border border-primary/20 hover:border-primary/40 hover:bg-white transition-all duration-400 hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 boxShadow: "0 8px 30px hsl(340 60% 80% / 0.2)",
@@ -326,14 +334,50 @@ const Index = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowPreview(false)}
+              onClick={closePreview}
               className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
               style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}
               aria-label="Close preview"
             >
               <X className="w-5 h-5 text-white" />
             </motion.button>
-            <EnvelopeReveal receiverName="Someone Special" onContinue={() => setShowPreview(false)} />
+            {previewStage === "mailbox" && (
+              <div
+                key="p-mailbox"
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at center, #7a3744 0%, #5d2632 60%, #4a1d28 100%)",
+                }}
+              >
+                <div
+                  className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-40"
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.15 0 0 0 0 0.2 0 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+                    backgroundSize: "300px",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.45) 100%)",
+                  }}
+                />
+                <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
+                  <Suspense fallback={null}>
+                    <RealisticMailbox
+                      className="w-full h-full"
+                      onContinue={() => setPreviewStage("envelope")}
+                    />
+                  </Suspense>
+                </div>
+              </div>
+            )}
+            {previewStage === "envelope" && (
+              <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
+            )}
           </>
         )}
       </AnimatePresence>
