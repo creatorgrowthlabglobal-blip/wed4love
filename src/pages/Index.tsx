@@ -114,7 +114,7 @@ const Index = () => {
             className="mt-14 mx-auto w-full max-w-md"
           >
             <button
-              onClick={() => setShowPreview(true)}
+              onClick={openPreview}
               className="group w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl bg-white/70 backdrop-blur border border-primary/20 hover:border-primary/40 hover:bg-white transition-all duration-400 hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 boxShadow: "0 8px 30px hsl(340 60% 80% / 0.2)",
