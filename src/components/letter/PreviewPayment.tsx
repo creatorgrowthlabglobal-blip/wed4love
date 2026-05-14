@@ -27,7 +27,7 @@ interface PreviewPaymentProps {
   onBack: () => void;
 }
 
-type Stage = "envelope" | "quiz" | "balloons" | "video" | "folder";
+type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 
 const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
