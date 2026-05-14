@@ -94,115 +94,109 @@ const GroundShadow = () => (
       opening: { opacity: 0.85, scale: 1.05 },
       delivered: { opacity: 1, scale: 1 },
     }}
-    style={{ transformOrigin: "200px 418px" }}
+    style={{ transformOrigin: "210px 418px" }}
   >
-    <ellipse cx="200" cy="418" rx="150" ry="14" fill="#000" opacity="0.18" />
-    <ellipse cx="200" cy="416" rx="110" ry="6" fill="#000" opacity="0.25" />
+    <ellipse cx="210" cy="418" rx="170" ry="14" fill="#000" opacity="0.18" />
+    <ellipse cx="210" cy="416" rx="120" ry="6" fill="#000" opacity="0.25" />
   </motion.g>
 );
 
 const Post = () => (
-  <motion.g
-    variants={{
-      idle: { y: 0 },
-      opening: { y: 0 },
-      delivered: { y: 0 },
-    }}
-  >
+  <g>
     <polygon
-      points="188,270 212,270 212,410 188,410"
+      points="198,260 222,260 222,410 198,410"
       fill="#EFEAFB"
       stroke={STROKE}
       strokeWidth="2.5"
       strokeLinejoin="round"
     />
     <polygon
-      points="212,270 224,262 224,402 212,410"
+      points="222,260 234,252 234,402 222,410"
       fill="#BBA8F0"
       stroke={STROKE}
       strokeWidth="2.5"
       strokeLinejoin="round"
     />
-  </motion.g>
+  </g>
 );
 
-const Roof = () => (
-  <motion.g
-    variants={{
-      idle: { rotate: 0 },
-      opening: { rotate: [0, -1.2, 1.2, 0] },
-      delivered: { rotate: 0 },
-    }}
-    transition={{ duration: 0.5 }}
-    style={{ transformOrigin: "217px 170px" }}
-  >
+/* Side/back body — the curved tube extending behind the front face */
+const Body = () => (
+  <g>
+    {/* full silhouette so outline wraps front + side */}
     <path
-      d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z"
-      fill="url(#lavMetalDark)"
+      d="M 70 260 L 70 170 Q 70 80 135 80 L 285 80 Q 350 80 350 170 L 350 260 Z"
+      fill="url(#lavMetal)"
       stroke={STROKE}
-      strokeWidth="2.6"
+      strokeWidth="3"
       strokeLinejoin="round"
     />
-    <g clipPath="url(#roofClip)" opacity="0.55">
-      <rect x="100" y="60" width="240" height="220" fill="#fff" filter="url(#brushed)" />
+    {/* brushed grain on side */}
+    <g clipPath="url(#bodyClip)" opacity="0.55">
+      <rect x="130" y="70" width="230" height="200" fill="#fff" filter="url(#brushed)" />
     </g>
+    {/* top sheen along the curved roof */}
     <path
-      d="M 158 150 Q 160 70 240 70 Q 322 70 324 150"
+      d="M 73 168 Q 75 84 135 83 L 285 83 Q 347 84 347 168"
       fill="none"
-      stroke="#EAE0FA"
-      strokeWidth="2.5"
+      stroke="#F2EBFF"
+      strokeWidth="2"
       strokeLinecap="round"
-      opacity="0.85"
+      opacity="0.9"
     />
-  </motion.g>
+    {/* subtle vertical seam where front meets side */}
+    <path
+      d="M 200 80 Q 200 80 200 170 L 200 260"
+      fill="none"
+      stroke="#7E6FB3"
+      strokeWidth="1"
+      opacity="0.45"
+    />
+    {/* darker shading on side body for depth */}
+    <g clipPath="url(#bodyClip)" opacity="0.25">
+      <rect x="270" y="80" width="90" height="200" fill="url(#lavMetalDark)" />
+    </g>
+  </g>
 );
 
 /* Empty interior cavity — visible when FrontFace falls open */
 const Interior = () => (
   <g clipPath="url(#frontClip)">
-    {/* deep cavity background */}
-    <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
-    {/* back wall subtle plane */}
-    <rect x="118" y="120" width="164" height="148" fill="url(#cavityFloor)" opacity="0.55" />
-    {/* top inner shadow rim (under arch) */}
+    <rect x="60" y="70" width="160" height="200" fill="url(#cavity)" />
+    <rect x="80" y="120" width="120" height="140" fill="url(#cavityFloor)" opacity="0.55" />
     <path
-      d="M 110 170 Q 110 90 195 90 Q 280 90 280 170"
+      d="M 70 170 Q 70 90 135 90 Q 200 90 200 170"
       fill="none"
       stroke="#000"
       strokeWidth="10"
       opacity="0.55"
       strokeLinecap="round"
     />
-    {/* faint side wall highlights for depth */}
-    <path d="M 122 170 L 122 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
-    <path d="M 268 170 L 268 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
-    {/* floor line */}
-    <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7" />
-    {/* tiny ambient glow from above to suggest open-air emptiness */}
-    <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04" />
+    <line x1="74" y1="258" x2="198" y2="258" stroke="#000" strokeWidth="1.5" opacity="0.7" />
+    <ellipse cx="135" cy="155" rx="50" ry="20" fill="#fff" opacity="0.04" />
   </g>
 );
 
-/* FrontFace + MailSlot live as ONE component (the mail slot is part of the front face) */
+/* Front-facing door — hinges at its flat bottom and falls forward toward viewer */
 const FrontFace = () => (
   <motion.g
     variants={{
       idle: { rotateX: 0 },
       opening: {
-        rotateX: 78,
+        rotateX: 82,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 78 },
+      delivered: { rotateX: 82 },
     }}
     style={{
-      transformOrigin: "200px 270px",
+      transformOrigin: "135px 260px",
       transformBox: "fill-box" as any,
       transformStyle: "preserve-3d" as any,
     }}
   >
-    {/* lavender front panel */}
+    {/* lavender front panel (arch) */}
     <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+      d="M 70 260 L 70 170 Q 70 80 135 80 Q 200 80 200 170 L 200 260 Z"
       fill="url(#lavMetal)"
       stroke={STROKE}
       strokeWidth="3"
@@ -210,49 +204,37 @@ const FrontFace = () => (
     />
     {/* brushed grain */}
     <g clipPath="url(#frontClip)" opacity="0.6">
-      <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
+      <rect x="60" y="80" width="160" height="190" fill="#fff" filter="url(#brushed)" />
     </g>
     {/* sheen */}
     <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+      d="M 70 260 L 70 170 Q 70 80 135 80 Q 200 80 200 170 L 200 260 Z"
       fill="url(#lavRoofShine)"
       opacity="0.5"
       clipPath="url(#frontClip)"
     />
     {/* edge rim */}
     <path
-      d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
+      d="M 73 258 L 73 170 Q 73 83 135 83 Q 197 83 197 170 L 197 258"
       fill="none"
       stroke="#F2EBFF"
       strokeWidth="1.2"
       opacity="0.85"
     />
-    {/* (base band moved out — stays fixed as the bottom support/hinge) */}
-
-    {/* ── Mail slot (integrated into front face) ── */}
-    <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
+    {/* mail slot */}
+    <rect x="92" y="186" width="86" height="15" rx="3" fill={STROKE} />
     <motion.rect
-      x="141"
+      x="95"
       y="189"
-      width="98"
-      height="11"
+      width="80"
+      height="9"
       rx="2"
       fill="url(#slotGlow)"
       animate={{ opacity: [0.7, 1, 0.7] }}
       transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
     />
-    <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
+    <line x1="95" y1="187.5" x2="175" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
   </motion.g>
-);
-
-/* Static base band — the lip the door hinges on. Stays put when door falls forward. */
-const BaseBand = () => (
-  <g>
-    <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
-    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.8" />
-    {/* small inner shadow under the lip for depth */}
-    <rect x="107" y="277" width="176" height="2" fill="#000" opacity="0.35" />
-  </g>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
