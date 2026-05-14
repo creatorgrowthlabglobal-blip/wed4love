@@ -198,9 +198,10 @@ const HingeSill = () => (
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { rotateX: 0, x: 0, y: 0 },
+      idle: { rotateX: 0, rotateZ: 0, x: 0, y: 0 },
       opening: {
-        rotateX: 103,
+        rotateX: 88,
+        rotateZ: 15,
         x: 0,
         y: 0,
         transition: {
@@ -209,7 +210,7 @@ const FrontFace = () => (
           ease: [0.34, 1.45, 0.64, 1], // back.out — slight overshoot
         },
       },
-      delivered: { rotateX: 103, x: 0, y: 0 },
+      delivered: { rotateX: 88, rotateZ: 15, x: 0, y: 0 },
     }}
     style={{
       transformOrigin: "195px 266px",
