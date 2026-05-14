@@ -185,22 +185,17 @@ const Interior = () => (
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { rotateX: 0, rotateY: -14, rotateZ: -4 },
+      idle: { rotateX: 0 },
       opening: {
-        rotateX: 90,
-        rotateY: -14,
-        rotateZ: -4,
+        rotateX: 95,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 90, rotateY: -14, rotateZ: -4 },
+      delivered: { rotateX: 95 },
     }}
     style={{
-      transformOrigin: "195px 270px",
-      transformBox: "view-box" as any,
+      transformOrigin: "200px 270px",
+      transformBox: "fill-box" as any,
       transformStyle: "preserve-3d" as any,
-      transformPerspective: 1600,
-      backfaceVisibility: "hidden" as any,
-      WebkitBackfaceVisibility: "hidden" as any,
     }}
   >
     {/* lavender front panel */}
@@ -444,7 +439,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           width: "min(520px, 90%)",
           aspectRatio: "1 / 1",
           position: "relative",
-          perspective: "2400px",
+          perspective: "900px",
         }}
       >
         <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
