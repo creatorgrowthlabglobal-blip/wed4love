@@ -85,6 +85,53 @@ const Defs = () => (
     <clipPath id="roofClip">
       <path d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z" />
     </clipPath>
+    {/* Heavy paper texture for envelope */}
+    <linearGradient id="envPaper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#FBF6EC" />
+      <stop offset="50%" stopColor="#F4ECDB" />
+      <stop offset="100%" stopColor="#E8DEC6" />
+    </linearGradient>
+    <linearGradient id="envFlap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#F0E6D0" />
+      <stop offset="100%" stopColor="#D8CBAE" />
+    </linearGradient>
+    <filter id="envPaperTex" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3" />
+      <feColorMatrix values="0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.32  0 0 0 0.25 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="envDropShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dy="4" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.42" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    {/* Wax-melt 3D bevel for the heart seal */}
+    <radialGradient id="waxHeart" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0%" stopColor="#FF8A9C" />
+      <stop offset="55%" stopColor="#D8324C" />
+      <stop offset="100%" stopColor="#7A1322" />
+    </radialGradient>
+    <filter id="waxBevel" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur" />
+      <feSpecularLighting in="blur" surfaceScale="3" specularConstant="1" specularExponent="22" lightingColor="#fff" result="spec">
+        <fePointLight x="-30" y="-40" z="80" />
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="specClip" />
+      <feComposite in="SourceGraphic" in2="specClip" operator="arithmetic" k1="0" k2="1" k3="0.7" k4="0" />
+    </filter>
+    {/* Shimmer light sweep gradient */}
+    <linearGradient id="envShimmer" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stopColor="#fff" stopOpacity="0" />
+      <stop offset="45%" stopColor="#fff" stopOpacity="0" />
+      <stop offset="50%" stopColor="#fff" stopOpacity="0.85" />
+      <stop offset="55%" stopColor="#fff" stopOpacity="0" />
+      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+    </linearGradient>
+    {/* Interior depth-of-field blur */}
+    <filter id="cavityBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2.5" />
+    </filter>
   </defs>
 );
 
