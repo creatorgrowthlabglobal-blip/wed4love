@@ -323,7 +323,7 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
       />
       <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
     </svg>
-  </motion.div>
+  </div>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
