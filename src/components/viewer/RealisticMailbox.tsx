@@ -260,10 +260,13 @@ const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.g
-        initial={{ x: 0, y: 0, opacity: 0, scale: 0.85 }}
-        animate={{ x: -30, y: -60, opacity: 1, scale: 1 }}
+        // Starts hidden inside the dark cavity, then slides forward toward viewer
+        // only AFTER the door has fully swung open.
+        initial={{ x: 0, y: -10, opacity: 0, scale: 0.7 }}
+        animate={{ x: 0, y: 60, opacity: 1, scale: 1.05 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.1, delay: 2.0, ease: [0.16, 1, 0.3, 1] }}
+        style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
       >
         <g transform="translate(150, 185)">
           <rect x="0" y="0" width="110" height="70" rx="3" fill="#ffffff" stroke={STROKE} strokeWidth="2.5" />
