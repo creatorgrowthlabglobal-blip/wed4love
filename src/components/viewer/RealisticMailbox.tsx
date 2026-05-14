@@ -1,7 +1,8 @@
-import { useRef, useState, useMemo } from "react";
+import { Component, type ReactNode, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, ContactShadows, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import { isWebGLAvailable } from "@/lib/webglSupport";
 
 /* ───────────────────── Mailbox Body ─────────────────────
    Classic American curved-top mailbox.
@@ -222,57 +223,152 @@ interface Props {
   className?: string;
 }
 
+interface MailboxErrorBoundaryProps {
+  children: ReactNode;
+  fallback: ReactNode;
+}
+
+interface MailboxErrorBoundaryState {
+  hasError: boolean;
+}
+
+class MailboxErrorBoundary extends Component<MailboxErrorBoundaryProps, MailboxErrorBoundaryState> {
+  state: MailboxErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): MailboxErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.warn("RealisticMailbox fell back to static rendering:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
+function MailboxFallback({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+  return (
+    <div className="flex h-full w-full items-center justify-center p-6">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="group relative flex h-full max-h-[30rem] w-full max-w-[26rem] items-center justify-center focus:outline-none"
+        aria-label={open ? "Close mailbox" : "Open mailbox"}
+      >
+        <div className="absolute bottom-[10%] h-[48%] w-7 rounded-sm bg-secondary shadow-card" />
+        <div className="absolute bottom-[24%] h-4 w-24 rounded-sm bg-secondary/90 shadow-card" />
+
+        <div
+          className="absolute left-1/2 top-[22%] h-[34%] w-[78%] -translate-x-1/2 overflow-hidden rounded-t-[999px] rounded-b-[1.1rem] border shadow-card"
+          style={{
+            background: "linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.78) 100%)",
+            borderColor: "hsl(var(--border))",
+          }}
+        >
+          <div className="absolute inset-x-[8%] bottom-[10%] h-[54%] rounded-t-[999px] border border-border/40 bg-background/10" />
+          <div className="absolute inset-x-[10%] top-[12%] h-px bg-background/40" />
+          <div className="absolute right-[9%] top-[22%] flex h-3 w-3 items-center justify-center rounded-full bg-background/90">
+            <div className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
+          </div>
+        </div>
+
+        <div
+          className="absolute right-[2%] top-[26%] h-[5px] w-[22%] origin-left rounded-full transition-transform duration-700"
+          style={{
+            backgroundColor: "hsl(var(--destructive))",
+            transform: open ? "rotate(16deg)" : "rotate(90deg)",
+          }}
+        />
+
+        <div
+          className="absolute left-1/2 top-[32%] h-[18%] w-[48%] -translate-x-1/2 rounded-md border border-border bg-card shadow-card transition-all duration-700"
+          style={{
+            transform: open
+              ? "translate(-6%, -44%) rotate(-8deg)"
+              : "translate(-50%, 0%) rotate(0deg)",
+            opacity: open ? 1 : 0.08,
+          }}
+        >
+          <div className="absolute left-1/2 top-[26%] h-0 w-0 -translate-x-1/2 border-x-[42px] border-t-[28px] border-x-transparent border-t-secondary/80" />
+          <div className="absolute left-1/2 top-[56%] h-5 w-5 -translate-x-1/2 rounded-full bg-primary/70 shadow-sm" />
+        </div>
+
+        <div className="absolute bottom-0 left-1/2 h-6 w-[86%] -translate-x-1/2 rounded-full bg-foreground/15 blur-xl" />
+
+        <div className="absolute bottom-[2%] left-1/2 -translate-x-1/2 text-center">
+          <p className="font-display text-lg text-foreground">{open ? "A letter is waiting" : "Tap the mailbox"}</p>
+          <p className="mt-1 text-xs uppercase tracking-[0.22em] text-muted-foreground">Static preview fallback</p>
+        </div>
+      </button>
+    </div>
+  );
+}
+
 const RealisticMailbox = ({ className }: Props) => {
   const [open, setOpen] = useState(false);
 
+  const fallback = <MailboxFallback open={open} setOpen={setOpen} />;
+
+  if (!isWebGLAvailable()) {
+    return <div className={className ?? "w-full h-full"}>{fallback}</div>;
+  }
+
   return (
     <div className={className ?? "w-full h-full"}>
-      <Canvas
-        shadows
-        dpr={[1, 2]}
-        camera={{ position: [3.2, 1.6, 3.4], fov: 38 }}
-        gl={{ antialias: true, alpha: true }}
-      >
-        {/* Soft warm key light */}
-        <ambientLight intensity={0.45} />
-        <directionalLight
-          position={[4, 6, 3]}
-          intensity={1.4}
-          color="#fff1e0"
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-near={0.5}
-          shadow-camera-far={20}
-          shadow-camera-left={-5}
-          shadow-camera-right={5}
-          shadow-camera-top={5}
-          shadow-camera-bottom={-5}
-        />
-        <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#ffd9c8" />
-        <pointLight position={[2, 1, 2]} intensity={0.5} color="#fff" distance={8} />
+      <MailboxErrorBoundary fallback={fallback}>
+        <Canvas
+          shadows
+          dpr={[1, 2]}
+          camera={{ position: [3.2, 1.6, 3.4], fov: 38 }}
+          gl={{ antialias: true, alpha: true, powerPreference: "default" }}
+        >
+          {/* Soft warm key light */}
+          <ambientLight intensity={0.45} />
+          <directionalLight
+            position={[4, 6, 3]}
+            intensity={1.4}
+            color="#fff1e0"
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-near={0.5}
+            shadow-camera-far={20}
+            shadow-camera-left={-5}
+            shadow-camera-right={5}
+            shadow-camera-top={5}
+            shadow-camera-bottom={-5}
+          />
+          <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#ffd9c8" />
+          <pointLight position={[2, 1, 2]} intensity={0.5} color="#fff" distance={8} />
 
-        <Scene open={open} setOpen={setOpen} />
+          <Scene open={open} setOpen={setOpen} />
 
-        <ContactShadows
-          position={[0, -1.78, 0]}
-          opacity={0.55}
-          scale={6}
-          blur={2.4}
-          far={3}
-        />
+          <ContactShadows
+            position={[0, -1.78, 0]}
+            opacity={0.55}
+            scale={6}
+            blur={2.4}
+            far={3}
+          />
 
-        <Environment preset="apartment" environmentIntensity={0.6} />
+          <Environment preset="apartment" environmentIntensity={0.6} />
 
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI / 2}
-          autoRotate={!open}
-          autoRotateSpeed={0.6}
-        />
-      </Canvas>
+          <OrbitControls
+            enablePan={false}
+            enableZoom={false}
+            minPolarAngle={Math.PI / 3}
+            maxPolarAngle={Math.PI / 2}
+            autoRotate={!open}
+            autoRotateSpeed={0.6}
+          />
+        </Canvas>
+      </MailboxErrorBoundary>
     </div>
   );
 };
