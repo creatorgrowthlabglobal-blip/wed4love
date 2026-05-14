@@ -485,13 +485,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               {/* Right-side wall strip — sells the ~15° left rotation (we see object's right side) */}
               <g>
                 <path
-                  d="M 325 152 Q 325 67 240 67 L 248 60 Q 338 60 338 150 L 338 248 L 325 252 Z"
-                  fill="url(#lavMetalDark)"
-                  stroke={STROKE}
-                  strokeWidth="2.5"
-                  strokeLinejoin="round"
-                />
-                <path
                   d="M 280 270 L 280 170 Q 280 85 195 85 L 200 78 Q 293 78 293 168 L 293 268 Z"
                   fill="url(#lavMetalDark)"
                   stroke={STROKE}
