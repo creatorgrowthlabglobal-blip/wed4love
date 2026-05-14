@@ -213,7 +213,7 @@ const FrontFace = () => (
       delivered: { rotateX: -90, rotateZ: 0, x: 0, y: 0 },
     }}
     style={{
-      transformOrigin: "195px 266px",
+      transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
       transformPerspective: 1000,
       willChange: "transform",
@@ -221,7 +221,7 @@ const FrontFace = () => (
   >
     {/* lavender front panel */}
     <path
-      d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z"
+      d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
       fill="url(#lavMetal)"
       stroke={STROKE}
       strokeWidth="3"
@@ -233,7 +233,7 @@ const FrontFace = () => (
     </g>
     {/* sheen */}
     <path
-      d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z"
+      d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
       fill="url(#lavRoofShine)"
       opacity="0.5"
       clipPath="url(#doorClip)"
