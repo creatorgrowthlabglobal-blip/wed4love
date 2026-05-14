@@ -54,17 +54,17 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           {/* Soft ground shadow */}
           <ellipse cx="200" cy="370" rx="120" ry="10" fill="#000" opacity="0.12" />
 
-          {/* Post — flush against the bottom of mailbox body (y=260) */}
+          {/* Post — flush against the bottom of mailbox body (y=270) */}
           <g>
             <polygon
-              points="188,260 212,260 212,365 188,365"
+              points="188,270 212,270 212,365 188,365"
               fill={POST}
               stroke={STROKE}
               strokeWidth="2.5"
               strokeLinejoin="round"
             />
             <polygon
-              points="212,260 224,252 224,357 212,365"
+              points="212,270 224,262 224,357 212,365"
               fill={BODY_DARK}
               stroke={STROKE}
               strokeWidth="2.5"
@@ -72,14 +72,16 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             />
           </g>
 
-          {/* Mailbox isometric body — side panel (right) */}
+          {/* Back / top dome ribbon — closes the roof. Offset (+45,-18) from front. */}
           <path
-            d="M 280 130
-               Q 280 90 250 90
-               L 320 60
-               Q 350 60 350 100
-               L 350 230
-               L 280 260
+            d="M 155 152
+               Q 155 67 240 67
+               Q 325 67 325 152
+               L 325 252
+               L 280 270
+               L 280 170
+               Q 280 85 195 85
+               Q 110 85 110 170
                Z"
             fill={BODY_DARK}
             stroke={STROKE}
@@ -87,9 +89,9 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             strokeLinejoin="round"
           />
 
-          {/* Top highlight stripe on side */}
+          {/* Subtle highlight curve on roof */}
           <path
-            d="M 290 100 Q 305 75 325 75"
+            d="M 135 130 Q 165 90 215 88"
             fill="none"
             stroke={BODY_LIGHT}
             strokeWidth="3"
@@ -102,10 +104,10 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             {open && (
               <motion.g
                 initial={{ x: 0, y: 0, opacity: 0, scale: 0.85 }}
-                animate={{ x: -30, y: -50, opacity: 1, scale: 1 }}
+                animate={{ x: -30, y: -60, opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               >
-                <g transform="translate(150, 175)">
+                <g transform="translate(150, 185)">
                   <rect x="0" y="0" width="110" height="70" rx="3"
                     fill="#ffffff" stroke={STROKE} strokeWidth="2.5" />
                   <polyline points="0,0 55,38 110,0"
@@ -123,14 +125,13 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             )}
           </AnimatePresence>
 
-          {/* Mailbox front — single seamless closed face */}
+          {/* Mailbox front — fully arched closed face (semicircular roof) */}
           <path
-            d="M 100 130
-               Q 100 90 140 90
-               L 250 90
-               Q 280 90 280 130
-               L 280 260
-               L 100 260
+            d="M 110 270
+               L 110 170
+               Q 110 85 195 85
+               Q 280 85 280 170
+               L 280 270
                Z"
             fill={BODY}
             stroke={STROKE}
@@ -138,9 +139,13 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             strokeLinejoin="round"
           />
 
+          {/* Base band along the bottom */}
+          <rect x="105" y="265" width="180" height="10" fill={BODY_DARK}
+            stroke={STROKE} strokeWidth="2.5" />
+
           {/* Mail slot — crisp horizontal black rectangle (tilted like reference) */}
-          <g transform="rotate(-8 190 180)">
-            <rect x="140" y="172" width="100" height="14" rx="2" fill={STROKE} />
+          <g transform="rotate(-8 190 195)">
+            <rect x="140" y="188" width="100" height="13" rx="2" fill={STROKE} />
           </g>
 
           {/* Subtle hint when closed */}
