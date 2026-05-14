@@ -144,37 +144,8 @@ const Roof = () => (
   </motion.g>
 );
 
+/* FrontFace + MailSlot live as ONE component (the mail slot is part of the front face) */
 const FrontFace = () => (
-  <g>
-    <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
-      fill="url(#lavMetal)"
-      stroke={STROKE}
-      strokeWidth="3"
-      strokeLinejoin="round"
-    />
-    <g clipPath="url(#frontClip)" opacity="0.6">
-      <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
-    </g>
-    <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
-      fill="url(#lavRoofShine)"
-      opacity="0.5"
-      clipPath="url(#frontClip)"
-    />
-    <path
-      d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
-      fill="none"
-      stroke="#F2EBFF"
-      strokeWidth="1.2"
-      opacity="0.85"
-    />
-    <rect x="105" y="265" width="180" height="11" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
-    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.7" />
-  </g>
-);
-
-const MailSlot = () => (
   <motion.g
     variants={{
       idle: { opacity: 1 },
@@ -182,6 +153,38 @@ const MailSlot = () => (
       delivered: { opacity: 1 },
     }}
   >
+    {/* lavender front panel */}
+    <path
+      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+      fill="url(#lavMetal)"
+      stroke={STROKE}
+      strokeWidth="3"
+      strokeLinejoin="round"
+    />
+    {/* brushed grain */}
+    <g clipPath="url(#frontClip)" opacity="0.6">
+      <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
+    </g>
+    {/* sheen */}
+    <path
+      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+      fill="url(#lavRoofShine)"
+      opacity="0.5"
+      clipPath="url(#frontClip)"
+    />
+    {/* edge rim */}
+    <path
+      d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
+      fill="none"
+      stroke="#F2EBFF"
+      strokeWidth="1.2"
+      opacity="0.85"
+    />
+    {/* base band */}
+    <rect x="105" y="265" width="180" height="11" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
+    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.7" />
+
+    {/* ── Mail slot (integrated into front face) ── */}
     <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
     <motion.rect
       x="141"
