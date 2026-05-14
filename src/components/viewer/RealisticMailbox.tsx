@@ -271,6 +271,7 @@ const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimati
       // (195, 270) in viewBox 400×495 → 49% / 54.55% of the square wrapper
       transformOrigin: "49% 54.55%",
       transformStyle: "preserve-3d",
+      backfaceVisibility: "visible",
       willChange: "transform",
     }}
   >
