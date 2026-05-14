@@ -121,48 +121,22 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           <ellipse cx="200" cy="418" rx="150" ry="14" fill="#000" opacity="0.18" />
           <ellipse cx="200" cy="416" rx="110" ry="6" fill="#000" opacity="0.25" />
 
-          {/* ───── PISTON STAND ───── */}
-          <g filter="url(#bodyShadow)">
-            {/* Base plate */}
-            <ellipse cx="200" cy="408" rx="58" ry="10" fill="url(#steelDark)" stroke={STROKE} strokeWidth="2" />
-            <ellipse cx="200" cy="405" rx="58" ry="10" fill="url(#steel)" stroke={STROKE} strokeWidth="2" />
-            {/* Bolts on base plate */}
-            {[-38, -14, 14, 38].map((dx, i) => (
-              <g key={i}>
-                <circle cx={200 + dx} cy={405} r="3.2" fill="#3a3540" stroke={STROKE} strokeWidth="1" />
-                <circle cx={200 + dx} cy={404} r="1.2" fill="#cfc8db" />
-              </g>
-            ))}
-
-            {/* Lower flange */}
-            <rect x="172" y="388" width="56" height="10" rx="2" fill="url(#steelDark)" stroke={STROKE} strokeWidth="1.8" />
-            <rect x="172" y="385" width="56" height="6" rx="2" fill="url(#steel)" stroke={STROKE} strokeWidth="1.8" />
-
-            {/* Outer cylinder (piston housing) */}
-            <rect x="178" y="320" width="44" height="68" rx="3" fill="url(#steel)" stroke={STROKE} strokeWidth="2" />
-            {/* Structural ribbing */}
-            {[330, 345, 360, 375].map((y) => (
-              <line key={y} x1="180" y1={y} x2="220" y2={y} stroke="#5a5366" strokeWidth="1" opacity="0.55" />
-            ))}
-            {/* Side bolts */}
-            {[332, 376].map((y) => (
-              <g key={y}>
-                <circle cx="183" cy={y} r="2.2" fill="#3a3540" stroke={STROKE} strokeWidth="0.8" />
-                <circle cx="217" cy={y} r="2.2" fill="#3a3540" stroke={STROKE} strokeWidth="0.8" />
-              </g>
-            ))}
-
-            {/* Inner piston rod (polished) */}
-            <rect x="188" y="290" width="24" height="34" fill="url(#steel)" stroke={STROKE} strokeWidth="1.8" />
-            <rect x="190" y="290" width="3" height="34" fill="#EFEAF7" opacity="0.7" />
-
-            {/* Upper joint flange / collar */}
-            <rect x="170" y="278" width="60" height="14" rx="3" fill="url(#steelDark)" stroke={STROKE} strokeWidth="2" />
-            <rect x="170" y="276" width="60" height="6" rx="2" fill="url(#steel)" stroke={STROKE} strokeWidth="2" />
-            {/* Collar bolts */}
-            {[-22, -8, 8, 22].map((dx, i) => (
-              <circle key={i} cx={200 + dx} cy={285} r="2" fill="#2c2730" stroke={STROKE} strokeWidth="0.8" />
-            ))}
+          {/* ───── SIMPLE POST STAND (original) ───── */}
+          <g>
+            <polygon
+              points="188,270 212,270 212,410 188,410"
+              fill="#EFEAFB"
+              stroke={STROKE}
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
+            <polygon
+              points="212,270 224,262 224,402 212,410"
+              fill="#BBA8F0"
+              stroke={STROKE}
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
           </g>
 
           {/* ───── MAILBOX BODY ───── */}
