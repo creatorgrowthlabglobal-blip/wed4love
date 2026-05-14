@@ -187,15 +187,18 @@ const FrontFace = () => (
     variants={{
       idle: { rotateX: 0 },
       opening: {
-        rotateX: 95,
+        rotateX: 90,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 95 },
+      delivered: { rotateX: 90 },
     }}
     style={{
-      transformOrigin: "200px 270px",
-      transformBox: "fill-box" as any,
+      transformOrigin: "195px 270px",
+      transformBox: "view-box" as any,
       transformStyle: "preserve-3d" as any,
+      transformPerspective: 1600,
+      backfaceVisibility: "hidden" as any,
+      WebkitBackfaceVisibility: "hidden" as any,
     }}
   >
     {/* lavender front panel */}
@@ -439,7 +442,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           width: "min(520px, 90%)",
           aspectRatio: "1 / 1",
           position: "relative",
-          perspective: "900px",
+          perspective: "2400px",
         }}
       >
         <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
