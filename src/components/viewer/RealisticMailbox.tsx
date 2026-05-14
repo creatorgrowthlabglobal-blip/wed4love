@@ -575,7 +575,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 />
               </g>
               <Roof />
-              <Interior />
+              <Interior open={open} />
             </g>
 
             {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
