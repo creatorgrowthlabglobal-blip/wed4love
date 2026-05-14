@@ -221,6 +221,7 @@ function Scene({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void
 
 interface Props {
   className?: string;
+  onContinue?: () => void;
 }
 
 interface MailboxErrorBoundaryProps {
