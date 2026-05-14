@@ -79,6 +79,9 @@ const Defs = () => (
     <clipPath id="frontClip">
       <path d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z" />
     </clipPath>
+    <clipPath id="doorClip">
+      <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" />
+    </clipPath>
     <clipPath id="roofClip">
       <path d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z" />
     </clipPath>
@@ -184,6 +187,14 @@ const Interior = () => (
 /* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
    Hinged at the BOTTOM edge — swings forward/downward via rotateX (3D) so it
    reads like a real mailbox flap, not a 2D z-axis flip. */
+const HingeSill = () => (
+  <g>
+    <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
+    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.8" />
+    <rect x="107" y="277" width="176" height="2" fill="#000" opacity="0.35" />
+  </g>
+);
+
 const FrontFace = () => (
   <motion.g
     variants={{
@@ -201,34 +212,34 @@ const FrontFace = () => (
       delivered: { rotateX: 88, x: 0, y: 0 },
     }}
     style={{
-      transformOrigin: "50% 100%",
-      transformBox: "fill-box" as any,
+      transformOrigin: "195px 266px",
+      transformBox: "view-box" as any,
       transformPerspective: 1000,
       willChange: "transform",
     }}
   >
     {/* lavender front panel */}
     <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+      d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z"
       fill="url(#lavMetal)"
       stroke={STROKE}
       strokeWidth="3"
       strokeLinejoin="round"
     />
     {/* brushed grain */}
-    <g clipPath="url(#frontClip)" opacity="0.6">
+    <g clipPath="url(#doorClip)" opacity="0.6">
       <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
     </g>
     {/* sheen */}
     <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+      d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z"
       fill="url(#lavRoofShine)"
       opacity="0.5"
-      clipPath="url(#frontClip)"
+      clipPath="url(#doorClip)"
     />
     {/* edge rim */}
     <path
-      d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
+      d="M 113 264 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 264"
       fill="none"
       stroke="#F2EBFF"
       strokeWidth="1.2"
@@ -248,11 +259,6 @@ const FrontFace = () => (
       transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
     />
     <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
-
-    {/* lower lip / hinge band travels with the door so the bottom edge never splits */}
-    <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
-    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.8" />
-    <rect x="107" y="277" width="176" height="2" fill="#000" opacity="0.35" />
   </motion.g>
 );
 
@@ -497,6 +503,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 rasterize their contents and break CSS 3D transforms on children,
                 which is why the door was disappearing. */}
             <Envelope show={open} />
+            <HingeSill />
             <FrontFace />
 
 
