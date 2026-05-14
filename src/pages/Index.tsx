@@ -1,48 +1,342 @@
-import { Suspense } from "react";
-import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import { Suspense, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X } from "lucide-react";
+import Header from "@/components/Header";
+import FloatingHearts from "@/components/FloatingHearts";
+import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 
 const Index = () => {
+  const [showPreview, setShowPreview] = useState(false);
   return (
-    <div
-      className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(ellipse at center, #7a3744 0%, #5d2632 60%, #4a1d28 100%)",
-      }}
-    >
-      {/* Paper grain texture overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-40"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.15 0 0 0 0 0.2 0 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundSize: "300px",
-        }}
-      />
+    <div className="min-h-screen bg-background">
+      <Header />
+      <FloatingHearts count={6} />
 
-      {/* Vignette */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.45) 100%)",
-        }}
-      />
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(350_100%_96%)] to-background" />
 
-      {/* 3D Mailbox */}
-      <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
-        <Suspense fallback={null}>
-          <RealisticMailbox className="w-full h-full" />
-        </Suspense>
-      </div>
+        {/* Floating sparkle decorations */}
+        {[
+          { left: "8%", top: "30%", size: 12, delay: 0 },
+          { left: "85%", top: "25%", size: 10, delay: 1.2 },
+          { left: "5%", top: "65%", size: 14, delay: 2 },
+          { left: "90%", top: "55%", size: 8, delay: 0.6 },
+        ].map((s, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-primary/20"
+            style={{ left: s.left, top: s.top }}
+            animate={{ opacity: [0.15, 0.5, 0.15], scale: [0.8, 1.2, 0.8], rotate: [0, 180, 360] }}
+            transition={{ duration: 5, repeat: Infinity, delay: s.delay }}
+          >
+            <Sparkles style={{ width: s.size, height: s.size }} />
+          </motion.div>
+        ))}
 
-      {/* Hint */}
-      <p
-        className="relative mt-2 text-xs uppercase tracking-[0.25em] text-white/60 font-light"
-        style={{ fontFamily: "'Helvetica Neue', sans-serif" }}
-      >
-        Click the mailbox to open
-      </p>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl">
+          {/* Icon badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-8"
+          >
+            <PenLine className="w-7 h-7 text-primary" />
+          </motion.div>
+
+          {/* Main Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.15] mb-5"
+          >
+            Pour Your Heart Out{" "}
+            <span className="text-primary italic">The Right Way</span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="font-body text-base sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed"
+          >
+            Create a personalized letter with your special song, photos, and a
+            heartfelt message. Send it with love — they'll never forget it 💕
+          </motion.p>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.45 }}
+          >
+            <Link
+              to="/create-letter"
+              className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
+              style={{
+                boxShadow: "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
+              }}
+            >
+              <Heart className="w-5 h-5 fill-current" />
+              Create Your Letter
+            </Link>
+          </motion.div>
+
+          {/* Sub-info */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.65, duration: 0.5 }}
+            className="font-body text-sm text-muted-foreground mt-5"
+          >
+            Only <strong className="text-foreground">$6.99</strong> • Instant
+            delivery • Unforgettable experience
+          </motion.p>
+
+          {/* Preview the experience button */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.7 }}
+            className="mt-14 mx-auto w-full max-w-md"
+          >
+            <button
+              onClick={() => setShowPreview(true)}
+              className="group w-full flex items-center justify-center gap-3 px-8 py-5 rounded-2xl bg-white/70 backdrop-blur border border-primary/20 hover:border-primary/40 hover:bg-white transition-all duration-400 hover:scale-[1.02] active:scale-[0.98]"
+              style={{
+                boxShadow: "0 8px 30px hsl(340 60% 80% / 0.2)",
+              }}
+            >
+              <Mail className="w-5 h-5 text-primary group-hover:rotate-[-8deg] transition-transform duration-400" />
+              <span className="font-display text-base sm:text-lg font-semibold text-foreground">
+                Preview the experience
+              </span>
+            </button>
+
+            <motion.p
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+              className="font-body text-xs text-muted-foreground mt-4 text-center"
+            >
+              Tap to see what they'll receive ✨
+            </motion.p>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.7 }}
+            className="mt-8 font-body text-sm text-muted-foreground"
+          >
+            <span className="font-semibold text-foreground">3,247+</span> letters
+            sent •{" "}
+            <span className="font-semibold text-foreground">99.7%</span> made them
+            smile 😉
+          </motion.div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6 bg-background">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-2">
+              How It Works
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
+              Three Steps to
+              <br />
+              <span className="text-primary italic">Create Your Letter</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
+            {[
+              {
+                step: "01",
+                icon: PenLine,
+                title: "Write Your Letter",
+                desc: "Pour your heart into a beautiful letter with photos, music, and heartfelt words.",
+              },
+              {
+                step: "02",
+                icon: Music,
+                title: "Add Your Song",
+                desc: "Pick the perfect romantic track that plays when they open your letter.",
+              },
+              {
+                step: "03",
+                icon: Bell,
+                title: "Share the Magic",
+                desc: "Get a unique link to share. The moment they open it, the experience begins.",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.6 }}
+                className="text-center"
+              >
+                <p className="font-body text-xs text-primary font-bold tracking-wider mb-3">
+                  Step {item.step}
+                </p>
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                  <item.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-2">
+                  {item.title}
+                </h3>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Fun fact callout */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mt-14 text-center"
+          >
+            <div className="inline-flex items-start gap-2 px-5 py-3 rounded-xl bg-primary/5 border border-primary/10">
+              <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <p className="font-body text-sm text-muted-foreground text-left">
+                <strong className="text-foreground">Fun fact:</strong> Our letters include a secret PIN lock, interactive quizzes, and a cinematic Memory Vault experience!
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-background to-[hsl(350_100%_97%)]">
+        <div className="container mx-auto max-w-lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-2">
+              Simple Pricing
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
+              The{" "}
+              <span className="text-primary italic">"Grand Gesture"</span>
+              <br />
+              Package
+            </h2>
+            <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
+              Everything you need to make your message unforgettable. One purchase, unlimited emotion.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15, duration: 0.6 }}
+            className="rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden bg-white border border-primary/10"
+            style={{
+              boxShadow: "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
+            }}
+          >
+            {/* Best value badge */}
+            <div className="absolute top-4 right-4">
+              <span className="font-body text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
+                Best Value
+              </span>
+            </div>
+
+            <p className="font-body text-sm text-muted-foreground mb-1">One-time payment</p>
+            <p className="font-display text-5xl sm:text-6xl font-bold text-foreground mb-6">
+              $6.99
+            </p>
+
+            <ul className="space-y-3 text-left max-w-xs mx-auto mb-8">
+              {[
+                { icon: LinkIcon, text: "Shareable unique link" },
+                { icon: Music, text: "Custom background music" },
+                { icon: Bell, text: "Interactive experience" },
+                { icon: PartyPopper, text: "Cinematic Memory Vault" },
+                { icon: MessageSquare, text: "Secret message & PIN lock" },
+                { icon: Heart, text: "Write a heartfelt letter" },
+              ].map((f, i) => (
+                <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
+                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                  {f.text}
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              to="/create-letter"
+              className="inline-flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97]"
+              style={{
+                boxShadow: "0 8px 24px hsl(340 100% 76% / 0.3)",
+              }}
+            >
+              Create Your Letter
+            </Link>
+
+            <p className="font-body text-xs text-muted-foreground mt-4">
+              One-time Payment • Instant Access
+            </p>
+          </motion.div>
+
+          {/* Pro tip */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="font-body text-xs text-muted-foreground text-center mt-6"
+          >
+            💡 <strong>Pro tip:</strong> A bouquet costs $50+. This costs less than a coffee
+            and creates a memory that lasts forever.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Envelope preview overlay */}
+      <AnimatePresence>
+        {showPreview && (
+          <>
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPreview(false)}
+              className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}
+              aria-label="Close preview"
+            >
+              <X className="w-5 h-5 text-white" />
+            </motion.button>
+            <EnvelopeReveal receiverName="Someone Special" onContinue={() => setShowPreview(false)} />
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
