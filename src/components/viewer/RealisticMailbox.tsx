@@ -346,22 +346,65 @@ const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.g
-        // Starts hidden inside the dark cavity, then slides forward toward viewer
-        // only AFTER the door has fully swung open.
-        initial={{ x: 0, y: -10, opacity: 0, scale: 0.7 }}
-        animate={{ x: 0, y: 60, opacity: 1, scale: 1.05 }}
+        // Door reaches ~45° around t≈0.5s (delay 0.3s + spring). Envelope stays
+        // hidden until then, then springs forward on the Z-axis with a bounce.
+        initial={{ y: -8, opacity: 0, scale: 0.8 }}
+        animate={{ y: 58, opacity: 1, scale: 1.05 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
+        transition={{
+          type: "spring",
+          stiffness: 120,
+          damping: 20,
+          delay: 0.55,
+          opacity: { duration: 0.35, delay: 0.55 },
+        }}
         style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
       >
-        <g transform="translate(150, 185)">
-          <rect x="0" y="0" width="110" height="70" rx="3" fill="#ffffff" stroke={STROKE} strokeWidth="2.5" />
-          <polyline points="0,0 55,38 110,0" fill="none" stroke={STROKE} strokeWidth="2.5" strokeLinejoin="round" />
-          <path
-            d="M 55 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
-            fill="#FF6F85"
-            stroke={STROKE}
-            strokeWidth="1.5"
+        {/* Soft drop shadow beneath the envelope (hovers above mailbox floor) */}
+        <motion.ellipse
+          cx="205"
+          cy="262"
+          rx="62"
+          ry="6"
+          fill="#000"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.32 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          style={{ filter: "blur(4px)" }}
+        />
+        <g transform="translate(150, 185)" filter="url(#envDropShadow)">
+          {/* Heavy paper body */}
+          <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
+          {/* Subtle paper grain */}
+          <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
+          {/* Inner edge bevel */}
+          <rect x="2" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
+          {/* Flap fold lines */}
+          <polyline points="0,0 55,38 110,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
+          <polyline points="0,0 55,38 110,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
+          {/* Heart wax seal — beveled, glossy */}
+          <g filter="url(#waxBevel)">
+            <path
+              d="M 55 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
+              fill="url(#waxHeart)"
+              stroke="#5A0E1C"
+              strokeWidth="0.9"
+            />
+            {/* Highlight glint */}
+            <ellipse cx="51" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
+          </g>
+          {/* Shimmer light-sweep — runs once after the envelope settles */}
+          <motion.rect
+            x="-110"
+            y="0"
+            width="110"
+            height="70"
+            rx="3"
+            fill="url(#envShimmer)"
+            initial={{ x: -110, opacity: 0 }}
+            animate={{ x: 110, opacity: [0, 1, 1, 0] }}
+            transition={{ delay: 1.25, duration: 1.0, ease: "easeInOut", times: [0, 0.15, 0.85, 1] }}
+            style={{ mixBlendMode: "overlay" as any }}
           />
         </g>
       </motion.g>
