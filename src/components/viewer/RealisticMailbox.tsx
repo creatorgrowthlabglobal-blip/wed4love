@@ -148,9 +148,17 @@ const Roof = () => (
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { opacity: 1 },
-      opening: { opacity: 1 },
-      delivered: { opacity: 1 },
+      idle: { rotateX: 0 },
+      opening: {
+        rotateX: 95,
+        transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
+      },
+      delivered: { rotateX: 95 },
+    }}
+    style={{
+      transformOrigin: "200px 270px",
+      transformBox: "fill-box" as any,
+      transformStyle: "preserve-3d" as any,
     }}
   >
     {/* lavender front panel */}
@@ -386,6 +394,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           width: "min(520px, 90%)",
           aspectRatio: "1 / 1",
           position: "relative",
+          perspective: "900px",
         }}
       >
         <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
