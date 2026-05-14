@@ -231,38 +231,47 @@ const birdHopVariants: Variants = {
 };
 
 const BirdLeft = () => (
-  <motion.g
-    variants={birdHopVariants}
-    style={{ transformOrigin: "168px 78px" }}
-    transform="translate(168, 78)"
-  >
-    <ellipse cx="0" cy="0" rx="14" ry="10" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
-    <circle cx="-10" cy="-6" r="7.5" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
-    <polygon points="-17,-6 -22,-4 -17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
-    <circle cx="-12" cy="-7" r="1.3" fill={STROKE} />
-    <path d="M 6 -2 Q 12 -6 14 -10" fill="none" stroke={STROKE} strokeWidth="1.4" />
-    <path d="M -2 4 L -4 9 M 2 4 L 1 9" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M -2 -2 Q 4 -1 8 4" fill="none" stroke="#C9B58A" strokeWidth="1.2" />
-  </motion.g>
+  <g transform="translate(170, 70)">
+    <motion.g variants={birdHopVariants} style={{ transformOrigin: "0 0" }}>
+      {/* tail */}
+      <path d="M 12 -2 Q 20 -8 22 -14" fill="none" stroke={STROKE} strokeWidth="1.4" />
+      {/* body */}
+      <ellipse cx="0" cy="0" rx="14" ry="10" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
+      {/* head — facing LEFT (outward) */}
+      <circle cx="-10" cy="-6" r="7.5" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
+      <polygon points="-17,-6 -22,-4 -17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
+      <circle cx="-12" cy="-7" r="1.3" fill={STROKE} />
+      {/* wing */}
+      <path d="M -2 -2 Q 4 -1 8 4" fill="none" stroke="#C9B58A" strokeWidth="1.2" />
+      {/* feet */}
+      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
+    </motion.g>
+  </g>
 );
 
 const BirdRight = () => (
-  <motion.g
-    variants={{
-      ...birdHopVariants,
-      opening: { y: -120, x: 30, opacity: 0, transition: { duration: 0.9, ease: "easeOut" } },
-    }}
-    style={{ transformOrigin: "238px 76px" }}
-    transform="translate(238, 76)"
-  >
-    <ellipse cx="0" cy="0" rx="14" ry="10" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
-    <circle cx="10" cy="-6" r="7.5" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
-    <polygon points="17,-6 22,-4 17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
-    <circle cx="12" cy="-7" r="1.3" fill={STROKE} />
-    <path d="M -6 -2 Q -12 -6 -14 -10" fill="none" stroke={STROKE} strokeWidth="1.4" />
-    <path d="M 2 4 L 4 9 M -2 4 L -1 9" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M 2 -2 Q -4 -1 -8 4" fill="none" stroke="#D6D2C8" strokeWidth="1.2" />
-  </motion.g>
+  <g transform="translate(240, 70)">
+    <motion.g
+      variants={{
+        ...birdHopVariants,
+        opening: { y: -120, x: 30, opacity: 0, transition: { duration: 0.9, ease: "easeOut" } },
+      }}
+      style={{ transformOrigin: "0 0" }}
+    >
+      {/* tail */}
+      <path d="M -12 -2 Q -20 -8 -22 -14" fill="none" stroke={STROKE} strokeWidth="1.4" />
+      {/* body */}
+      <ellipse cx="0" cy="0" rx="14" ry="10" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
+      {/* head — facing RIGHT (outward) */}
+      <circle cx="10" cy="-6" r="7.5" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
+      <polygon points="17,-6 22,-4 17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
+      <circle cx="12" cy="-7" r="1.3" fill={STROKE} />
+      {/* wing */}
+      <path d="M 2 -2 Q -4 -1 -8 4" fill="none" stroke="#D6D2C8" strokeWidth="1.2" />
+      {/* feet */}
+      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
+    </motion.g>
+  </g>
 );
 
 const Caption = ({ senderName }: { senderName?: string }) => (
