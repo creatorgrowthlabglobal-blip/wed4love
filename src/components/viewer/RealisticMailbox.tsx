@@ -77,12 +77,6 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
               <stop offset="50%" stopColor="#807A8C" />
               <stop offset="100%" stopColor="#3F3A4A" />
             </linearGradient>
-            {/* Background beige vignette */}
-            <radialGradient id="bgVig" cx="0.5" cy="0.45" r="0.75">
-              <stop offset="0%" stopColor="#FBF4E4" />
-              <stop offset="60%" stopColor="#EFE2C5" />
-              <stop offset="100%" stopColor="#C9B98E" />
-            </radialGradient>
             {/* Slot interior glow */}
             <radialGradient id="slotGlow" cx="0.5" cy="0.5" r="0.5">
               <stop offset="0%" stopColor="#FFE9B0" stopOpacity="0.95" />
@@ -122,9 +116,6 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
               <path d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z" />
             </clipPath>
           </defs>
-
-          {/* Background vignette */}
-          <rect x="0" y="0" width="400" height="440" fill="url(#bgVig)" />
 
           {/* Soft ground reflection */}
           <ellipse cx="200" cy="418" rx="150" ry="14" fill="#000" opacity="0.18" />
