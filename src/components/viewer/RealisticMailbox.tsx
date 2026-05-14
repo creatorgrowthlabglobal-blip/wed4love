@@ -246,33 +246,16 @@ const HingeSill = () => (
   </g>
 );
 
-/* HingeContainer = an HTML motion.div overlay that holds the door SVG.
-   Using a div (not an SVG <g>) gives true CSS preserve-3d so the fixed
-   rotateY/skewX tilt composes rigidly with the animated rotateX swing —
-   the door stays a solid sheet of metal instead of warping. */
-const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimation> }) => (
-  <motion.div
-    initial="idle"
-    animate={controls}
-    variants={{
-      idle: { rotateX: 0 },
-      opening: {
-        rotateX: 78,
-        transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
-      },
-      delivered: { rotateX: 78 },
-    }}
+/* Static front face overlay — no swing, no hinge. The door stays put;
+   only the birds and envelope animate on click. */
+const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
+  <div
     style={{
       position: "absolute",
       inset: 0,
       pointerEvents: "none",
-      // Fixed isometric tilt — never animated. rotateX above composes on top.
       transform: "rotateY(-15deg) skewX(-6deg)",
-      // (195, 270) in viewBox 400×495 → 49% / 54.55% of the square wrapper
       transformOrigin: "49% 54.55%",
-      transformStyle: "preserve-3d",
-      backfaceVisibility: "visible",
-      willChange: "transform",
     }}
   >
     <svg
@@ -340,28 +323,28 @@ const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimati
       />
       <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
     </svg>
-  </motion.div>
+  </div>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.g
-        // Door reaches ~45° around t≈0.5s (delay 0.3s + spring). Envelope stays
-        // hidden until then, then springs forward on the Z-axis with a bounce.
-        initial={{ y: -8, opacity: 0, scale: 0.8 }}
-        animate={{ y: 58, opacity: 1, scale: 1.05 }}
+        // Emerges from the mail slot, scales up and slides forward/down
+        // toward the viewer like it's being pushed out of the mailbox.
+        initial={{ y: -10, opacity: 0, scale: 0.18 }}
+        animate={{ y: 90, opacity: 1, scale: 1.15 }}
         exit={{ opacity: 0 }}
         transition={{
           type: "spring",
-          stiffness: 120,
-          damping: 20,
-          delay: 0.55,
-          opacity: { duration: 0.35, delay: 0.55 },
+          stiffness: 110,
+          damping: 18,
+          delay: 0.35,
+          opacity: { duration: 0.4, delay: 0.35 },
         }}
-        style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
+        style={{ transformOrigin: "205px 195px", transformBox: "fill-box" as any }}
       >
-        {/* Soft drop shadow beneath the envelope (hovers above mailbox floor) */}
+        {/* Soft drop shadow beneath the envelope */}
         <motion.ellipse
           cx="205"
           cy="262"
@@ -370,20 +353,15 @@ const Envelope = ({ show }: { show: boolean }) => (
           fill="#000"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.32 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          transition={{ delay: 0.55, duration: 0.5 }}
           style={{ filter: "blur(4px)" }}
         />
         <g transform="translate(150, 185)" filter="url(#envDropShadow)">
-          {/* Heavy paper body */}
           <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
-          {/* Subtle paper grain */}
           <rect x="0" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
-          {/* Inner edge bevel */}
           <rect x="2" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
-          {/* Flap fold lines */}
           <polyline points="0,0 55,38 110,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
           <polyline points="0,0 55,38 110,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
-          {/* Heart wax seal — beveled, glossy */}
           <g filter="url(#waxBevel)">
             <path
               d="M 55 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
@@ -391,22 +369,8 @@ const Envelope = ({ show }: { show: boolean }) => (
               stroke="#5A0E1C"
               strokeWidth="0.9"
             />
-            {/* Highlight glint */}
             <ellipse cx="51" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
           </g>
-          {/* Shimmer light-sweep — runs once after the envelope settles */}
-          <motion.rect
-            x="-110"
-            y="0"
-            width="110"
-            height="70"
-            rx="3"
-            fill="url(#envShimmer)"
-            initial={{ x: -110, opacity: 0 }}
-            animate={{ x: 110, opacity: [0, 1, 1, 0] }}
-            transition={{ delay: 1.25, duration: 1.0, ease: "easeInOut", times: [0, 0.15, 0.85, 1] }}
-            style={{ mixBlendMode: "overlay" as any }}
-          />
         </g>
       </motion.g>
     )}
