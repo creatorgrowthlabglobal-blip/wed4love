@@ -257,10 +257,10 @@ const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimati
     variants={{
       idle: { rotateX: 0 },
       opening: {
-        rotateX: 90,
+        rotateX: 78,
         transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
       },
-      delivered: { rotateX: 90 },
+      delivered: { rotateX: 78 },
     }}
     style={{
       position: "absolute",
@@ -271,6 +271,7 @@ const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimati
       // (195, 270) in viewBox 400×495 → 49% / 54.55% of the square wrapper
       transformOrigin: "49% 54.55%",
       transformStyle: "preserve-3d",
+      backfaceVisibility: "visible",
       willChange: "transform",
     }}
   >
