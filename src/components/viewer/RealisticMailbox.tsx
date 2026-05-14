@@ -182,70 +182,95 @@ const Interior = () => (
 );
 
 /* FrontFace + MailSlot live as ONE component (the mail slot is part of the front face) */
-const FrontFace = () => (
-  <motion.g
+const FrontFace = ({ state }: { state: MailboxState }) => (
+  <motion.div
+    className="pointer-events-none absolute inset-0"
+    initial={false}
+    animate={state}
     variants={{
-      idle: { rotateX: 0, rotateY: -15, rotateZ: 0 },
+      idle: { rotateX: 0, rotateY: 0, rotateZ: 0, x: 0, y: 0 },
       opening: {
         rotateX: 90,
-        rotateY: -15,
-        rotateZ: 0,
+        rotateY: -18,
+        rotateZ: -10,
+        x: -22,
+        y: 8,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 90, rotateY: -15, rotateZ: 0 },
+      delivered: { rotateX: 90, rotateY: -18, rotateZ: -10, x: -22, y: 8 },
     }}
     style={{
-      transformOrigin: "195px 270px",
-      transformBox: "view-box" as any,
-      transformStyle: "preserve-3d" as any,
-      transformPerspective: 1600,
-      backfaceVisibility: "hidden" as any,
-      WebkitBackfaceVisibility: "hidden" as any,
+      transformOrigin: "48.75% 54.55%",
+      transformStyle: "preserve-3d",
+      backfaceVisibility: "hidden",
+      WebkitBackfaceVisibility: "hidden",
     }}
   >
-    {/* lavender front panel */}
-    <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
-      fill="url(#lavMetal)"
-      stroke={STROKE}
-      strokeWidth="3"
-      strokeLinejoin="round"
-    />
-    {/* brushed grain */}
-    <g clipPath="url(#frontClip)" opacity="0.6">
-      <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
-    </g>
-    {/* sheen */}
-    <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
-      fill="url(#lavRoofShine)"
-      opacity="0.5"
-      clipPath="url(#frontClip)"
-    />
-    {/* edge rim */}
-    <path
-      d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
-      fill="none"
-      stroke="#F2EBFF"
-      strokeWidth="1.2"
-      opacity="0.85"
-    />
-    {/* (base band moved out — stays fixed as the bottom support/hinge) */}
+    <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id="doorLavMetal" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#A99BD8" />
+          <stop offset="22%" stopColor="#D4C8F2" />
+          <stop offset="50%" stopColor="#BDAEE7" />
+          <stop offset="78%" stopColor="#D8CCF4" />
+          <stop offset="100%" stopColor="#9C8DCC" />
+        </linearGradient>
+        <linearGradient id="doorLavRoofShine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#EFE7FF" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#EFE7FF" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="doorSlotGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor="#FFE9B0" stopOpacity="0.95" />
+          <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
+        </radialGradient>
+        <clipPath id="doorFrontClip">
+          <path d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z" />
+        </clipPath>
+        <filter id="doorBrushed" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="turbulence" baseFrequency="0.9 0.04" numOctaves="2" seed="7" />
+          <feColorMatrix values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.18 0" />
+          <feComposite in2="SourceGraphic" operator="in" />
+        </filter>
+      </defs>
 
-    {/* ── Mail slot (integrated into front face) ── */}
-    <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
-    <motion.rect
-      x="141"
-      y="189"
-      width="98"
-      height="11"
-      rx="2"
-      fill="url(#slotGlow)"
-      animate={{ opacity: [0.7, 1, 0.7] }}
-      transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
-  </motion.g>
+      <path
+        d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+        fill="url(#doorLavMetal)"
+        stroke={STROKE}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <g clipPath="url(#doorFrontClip)" opacity="0.6">
+        <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#doorBrushed)" />
+      </g>
+      <path
+        d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+        fill="url(#doorLavRoofShine)"
+        opacity="0.5"
+        clipPath="url(#doorFrontClip)"
+      />
+      <path
+        d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
+        fill="none"
+        stroke="#F2EBFF"
+        strokeWidth="1.2"
+        opacity="0.85"
+      />
+      <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
+      <motion.rect
+        x="141"
+        y="189"
+        width="98"
+        height="11"
+        rx="2"
+        fill="url(#doorSlotGlow)"
+        animate={{ opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
+    </svg>
+  </motion.div>
 );
 
 /* Static base band — the lip the door hinges on. Stays put when door falls forward. */
@@ -495,13 +520,14 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <Roof />
               <Interior />
               <Envelope show={open} />
-              <FrontFace />
               <BaseBand />
             </g>
 
             <BirdLeft />
             <BirdRight />
           </motion.g>
+
+          <FrontFace state={state} />
 
           {!open && <Caption senderName={senderName} />}
         </svg>
