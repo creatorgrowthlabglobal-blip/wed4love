@@ -221,55 +221,87 @@ const Envelope = ({ show }: { show: boolean }) => (
   </AnimatePresence>
 );
 
-const birdHopVariants: Variants = {
+/* Bird body: idle gentle hop, on click flies outward in facing direction */
+const birdBodyVariants = (dir: 1 | -1): Variants => ({
   idle: {
     y: [0, -2, 0],
+    x: 0,
+    opacity: 1,
     transition: { duration: 2.8, repeat: Infinity, ease: "easeInOut" },
   },
-  opening: { y: -120, x: -30, opacity: 0, transition: { duration: 0.9, ease: "easeOut" } },
-  delivered: { y: -200, opacity: 0 },
+  opening: {
+    x: dir * 160,
+    y: -140,
+    opacity: 0,
+    rotate: dir * 8,
+    transition: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+  },
+  delivered: { opacity: 0 },
+});
+
+/* Wing flap: slow up/down idle, fast flap when flying */
+const wingFlapVariants: Variants = {
+  idle: {
+    rotate: [-6, 10, -6],
+    transition: { duration: 1.8, repeat: Infinity, ease: "easeInOut" },
+  },
+  opening: {
+    rotate: [-30, 25, -30],
+    transition: { duration: 0.22, repeat: Infinity, ease: "easeInOut" },
+  },
+  delivered: { rotate: 0 },
 };
 
 const BirdLeft = () => (
   <g transform="translate(170, 70)">
-    <motion.g variants={birdHopVariants} style={{ transformOrigin: "0 0" }}>
+    <motion.g variants={birdBodyVariants(-1)} style={{ transformOrigin: "0 0" }}>
       {/* tail */}
       <path d="M 12 -2 Q 20 -8 22 -14" fill="none" stroke={STROKE} strokeWidth="1.4" />
       {/* body */}
       <ellipse cx="0" cy="0" rx="14" ry="10" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
+      {/* feet */}
+      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
       {/* head — facing LEFT (outward) */}
       <circle cx="-10" cy="-6" r="7.5" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
       <polygon points="-17,-6 -22,-4 -17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
       <circle cx="-12" cy="-7" r="1.3" fill={STROKE} />
-      {/* wing */}
-      <path d="M -2 -2 Q 4 -1 8 4" fill="none" stroke="#C9B58A" strokeWidth="1.2" />
-      {/* feet */}
-      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
+      {/* wing — pivots from shoulder */}
+      <motion.path
+        d="M 1 -3 Q 6 -10 12 -6 Q 8 0 1 1 Z"
+        fill="#E8D6A8"
+        stroke={STROKE}
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+        variants={wingFlapVariants}
+        style={{ transformOrigin: "1px -3px", transformBox: "fill-box" as any }}
+      />
     </motion.g>
   </g>
 );
 
 const BirdRight = () => (
   <g transform="translate(240, 70)">
-    <motion.g
-      variants={{
-        ...birdHopVariants,
-        opening: { y: -120, x: 30, opacity: 0, transition: { duration: 0.9, ease: "easeOut" } },
-      }}
-      style={{ transformOrigin: "0 0" }}
-    >
+    <motion.g variants={birdBodyVariants(1)} style={{ transformOrigin: "0 0" }}>
       {/* tail */}
       <path d="M -12 -2 Q -20 -8 -22 -14" fill="none" stroke={STROKE} strokeWidth="1.4" />
       {/* body */}
       <ellipse cx="0" cy="0" rx="14" ry="10" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
+      {/* feet */}
+      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
       {/* head — facing RIGHT (outward) */}
       <circle cx="10" cy="-6" r="7.5" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
       <polygon points="17,-6 22,-4 17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
       <circle cx="12" cy="-7" r="1.3" fill={STROKE} />
-      {/* wing */}
-      <path d="M 2 -2 Q -4 -1 -8 4" fill="none" stroke="#D6D2C8" strokeWidth="1.2" />
-      {/* feet */}
-      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
+      {/* wing — pivots from shoulder */}
+      <motion.path
+        d="M -1 -3 Q -6 -10 -12 -6 Q -8 0 -1 1 Z"
+        fill="#ECEAE3"
+        stroke={STROKE}
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+        variants={wingFlapVariants}
+        style={{ transformOrigin: "-1px -3px", transformBox: "fill-box" as any }}
+      />
     </motion.g>
   </g>
 );
