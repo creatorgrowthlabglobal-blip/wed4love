@@ -531,14 +531,14 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 which is why the door was disappearing. */}
             <Envelope show={open} />
             <HingeSill />
-            <FrontFace />
-
 
             <BirdLeft />
             <BirdRight />
           </motion.g>
           {!open && <Caption senderName={senderName} />}
         </svg>
+        {/* Door overlay — HTML motion.div for true CSS preserve-3d hinge */}
+        <FrontFaceOverlay controls={controls} />
       </motion.div>
     </div>
   );
