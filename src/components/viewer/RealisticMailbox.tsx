@@ -265,7 +265,7 @@ const Envelope = ({ show }: { show: boolean }) => (
         initial={{ x: 0, y: -10, opacity: 0, scale: 0.7 }}
         animate={{ x: 0, y: 60, opacity: 1, scale: 1.05 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1.1, delay: 2.0, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
         style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
       >
         <g transform="translate(150, 185)">
