@@ -332,9 +332,9 @@ const Envelope = ({ show }: { show: boolean }) => (
           style={{ filter: "blur(4px)" }}
         />
         <motion.g
-          transform="translate(190 186)"
+          transform="translate(190 195)"
           initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: [0, 1, 1], y: [0, 8, 86] }}
+          animate={{ opacity: [0, 1, 1], y: [0, 6, 72] }}
           exit={{ opacity: 0 }}
           transition={{
             duration: 1.45,
@@ -342,18 +342,17 @@ const Envelope = ({ show }: { show: boolean }) => (
             times: [0, 0.2, 1],
             ease: [0.16, 1, 0.3, 1],
           }}
-          style={{ transformBox: "fill-box" }}
         >
           <motion.g
-            initial={{ scaleY: 0.03, scaleX: 0.78 }}
-            animate={{ scaleY: [0.03, 0.03, 1], scaleX: [0.78, 0.9, 1] }}
+            initial={{ scaleY: 0.03, scaleX: 0.85 }}
+            animate={{ scaleY: [0.03, 0.04, 1], scaleX: [0.85, 0.9, 1] }}
             transition={{
               duration: 1.45,
               delay: 0.25,
               times: [0, 0.2, 1],
               ease: [0.16, 1, 0.3, 1],
             }}
-            style={{ transformOrigin: "50% 0%", transformBox: "fill-box" }}
+            style={{ transformOrigin: "0px 0px" }}
             filter="url(#envDropShadow)"
           >
             <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
