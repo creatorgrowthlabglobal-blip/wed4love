@@ -200,12 +200,14 @@ function Envelope({ open }: { open: boolean }) {
 }
 
 /* ── Whole scene ── */
-function Scene({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
+function Scene({ open, setOpen, allowClose = true }: { open: boolean; setOpen: (v: boolean) => void; allowClose?: boolean }) {
   return (
     <group
       onClick={(e) => {
         e.stopPropagation();
-        setOpen(!open);
+        if (!open || allowClose) {
+          setOpen(!open);
+        }
       }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
@@ -221,6 +223,7 @@ function Scene({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void
 
 interface Props {
   className?: string;
+  onContinue?: () => void;
 }
 
 interface MailboxErrorBoundaryProps {
@@ -252,14 +255,18 @@ class MailboxErrorBoundary extends Component<MailboxErrorBoundaryProps, MailboxE
   }
 }
 
-function MailboxFallback({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+function MailboxFallback({ open, setOpen, onContinue }: { open: boolean; setOpen: (value: boolean) => void; onContinue?: () => void }) {
   return (
-    <div className="flex h-full w-full items-center justify-center p-6">
+    <div className="flex h-full w-full items-center justify-center p-6 relative">
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (!open) {
+            setOpen(true);
+          }
+        }}
         className="group relative flex h-full max-h-[30rem] w-full max-w-[26rem] items-center justify-center focus:outline-none"
-        aria-label={open ? "Close mailbox" : "Open mailbox"}
+        aria-label={open ? "A letter is waiting" : "Tap the mailbox"}
       >
         <div className="absolute bottom-[10%] h-[48%] w-7 rounded-sm bg-secondary shadow-card" />
         <div className="absolute bottom-[24%] h-4 w-24 rounded-sm bg-secondary/90 shadow-card" />
@@ -306,21 +313,34 @@ function MailboxFallback({ open, setOpen }: { open: boolean; setOpen: (value: bo
           <p className="mt-1 text-xs uppercase tracking-[0.22em] text-muted-foreground">Static preview fallback</p>
         </div>
       </button>
+
+      {/* Continue button overlay */}
+      {open && onContinue && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onContinue();
+          }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-6 py-2.5 rounded-full bg-white text-foreground font-heading text-sm font-semibold shadow-xl border border-primary/30 hover:scale-105 transition-transform"
+        >
+          Open the letter →
+        </button>
+      )}
     </div>
   );
 }
 
-const RealisticMailbox = ({ className }: Props) => {
+const RealisticMailbox = ({ className, onContinue }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const fallback = <MailboxFallback open={open} setOpen={setOpen} />;
+  const fallback = <MailboxFallback open={open} setOpen={setOpen} onContinue={onContinue} />;
 
   if (!isWebGLAvailable()) {
     return <div className={className ?? "w-full h-full"}>{fallback}</div>;
   }
 
   return (
-    <div className={className ?? "w-full h-full"}>
+    <div className={`${className ?? "w-full h-full"} relative`}>
       <MailboxErrorBoundary fallback={fallback}>
         <Canvas
           shadows
@@ -347,7 +367,7 @@ const RealisticMailbox = ({ className }: Props) => {
           <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#ffd9c8" />
           <pointLight position={[2, 1, 2]} intensity={0.5} color="#fff" distance={8} />
 
-          <Scene open={open} setOpen={setOpen} />
+          <Scene open={open} setOpen={setOpen} allowClose={!onContinue} />
 
           <ContactShadows
             position={[0, -1.78, 0]}
@@ -369,6 +389,16 @@ const RealisticMailbox = ({ className }: Props) => {
           />
         </Canvas>
       </MailboxErrorBoundary>
+
+      {/* Continue button overlay */}
+      {open && onContinue && (
+        <button
+          onClick={() => onContinue()}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-6 py-2.5 rounded-full bg-white text-foreground font-heading text-sm font-semibold shadow-xl border border-primary/30 hover:scale-105 transition-transform"
+        >
+          Open the letter →
+        </button>
+      )}
     </div>
   );
 };

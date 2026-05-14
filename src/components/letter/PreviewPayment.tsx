@@ -9,6 +9,7 @@ import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
+import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 
 interface PreviewPaymentProps {
   letterData: {
@@ -26,7 +27,7 @@ interface PreviewPaymentProps {
   onBack: () => void;
 }
 
-type Stage = "envelope" | "quiz" | "balloons" | "video" | "folder";
+type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 
 const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
@@ -48,7 +49,7 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   const hasMedia = letterData.videos.length > 0 || letterData.audios.length > 0;
 
   const getNextStage = (current: Stage): Stage | null => {
-    const flow: Stage[] = ["envelope"];
+    const flow: Stage[] = ["mailbox", "envelope"];
     if (hasQuiz) flow.push("quiz");
     if (isBirthday) flow.push("balloons");
     if (hasMedia) flow.push("video");
@@ -64,7 +65,7 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   };
 
   const openPreview = () => {
-    setPreviewStage("envelope");
+    setPreviewStage("mailbox");
     setShowPreview(true);
   };
 
@@ -175,6 +176,33 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
               <X className="w-5 h-5 text-white" />
             </motion.button>
 
+            {previewStage === "mailbox" && (
+              <div key="p-mailbox" className="fixed inset-0 z-50 flex items-center justify-center"
+                style={{
+                  background: "radial-gradient(ellipse at center, #7a3744 0%, #5d2632 60%, #4a1d28 100%)",
+                }}
+              >
+                {/* Paper grain texture overlay */}
+                <div
+                  className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-40"
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.15 0 0 0 0 0.2 0 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+                    backgroundSize: "300px",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.45) 100%)",
+                  }}
+                />
+                <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
+                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} />
+                </div>
+              </div>
+            )}
             {previewStage === "envelope" && (
               <EnvelopeReveal key="p-envelope" receiverName={letterData.receiverName} onContinue={advancePreview} />
             )}
