@@ -195,31 +195,25 @@ const HingeSill = () => (
 );
 
 const FrontFace = () => (
-  <motion.g
-    initial={{ rotate: -4, skewX: -6 }}
-    variants={{
-      idle: { rotate: -4, skewX: -6 },
-      opening: { rotate: -4, skewX: -6 },
-      delivered: { rotate: -4, skewX: -6 },
-    }}
+  <g
     style={{
+      transform: "rotateY(-15deg) skewX(-6deg)",
       transformOrigin: "195px 270px",
-      transformBox: "view-box" as any,
+      transformBox: "fill-box" as any,
       transformStyle: "preserve-3d" as any,
-      willChange: "transform",
     }}
   >
-    {/* Inner motion.g performs only the hinge rotation so the base stays glued. */}
+    {/* Hinge group — single-axis rotateX swing from glued bottom edge */}
     <motion.g
+      initial={{ rotateX: 0, z: 5 }}
       variants={{
-        idle: { rotateX: 0, rotateY: -4, z: 10 },
+        idle: { rotateX: 0, z: 5 },
         opening: {
           rotateX: 90,
-          rotateY: -4,
-          z: 10,
+          z: 5,
           transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
         },
-        delivered: { rotateX: 90, rotateY: -4, z: 10 },
+        delivered: { rotateX: 90, z: 5 },
       }}
       style={{
         transformOrigin: "195px 270px",
@@ -271,7 +265,7 @@ const FrontFace = () => (
       />
       <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
     </motion.g>
-  </motion.g>
+  </g>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
