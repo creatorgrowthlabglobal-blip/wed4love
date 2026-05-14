@@ -200,17 +200,17 @@ const FrontFace = () => (
     variants={{
       idle: { rotateX: 0, rotateZ: 0, x: 0, y: 0 },
       opening: {
-        rotateX: -88,
+        rotateX: -90,
         rotateZ: 0,
         x: 0,
         y: 0,
         transition: {
           duration: 1.3,
           delay: 0.3,
-          ease: [0.34, 1.45, 0.64, 1], // back.out — slight overshoot
+          ease: [0.4, 0, 0.2, 1], // smooth ease-out, no overshoot so it rests flat at hinge line
         },
       },
-      delivered: { rotateX: -88, rotateZ: 0, x: 0, y: 0 },
+      delivered: { rotateX: -90, rotateZ: 0, x: 0, y: 0 },
     }}
     style={{
       transformOrigin: "195px 266px",
