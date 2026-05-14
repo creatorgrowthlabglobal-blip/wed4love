@@ -265,7 +265,7 @@ const FrontFace = () => (
       />
       <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
     </motion.g>
-  </motion.g>
+  </g>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
