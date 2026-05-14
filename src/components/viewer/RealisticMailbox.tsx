@@ -203,8 +203,8 @@ const FrontFace = () => (
     style={{
       transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
-      rotate: -5,
-      skewX: -8,
+      rotate: -4,
+      skewX: -6,
       transformStyle: "preserve-3d" as any,
       willChange: "transform",
     }}
