@@ -91,12 +91,8 @@ function MailboxDoor({ open }: { open: boolean }) {
         <meshStandardMaterial color={BODY_RED_DARK} metalness={0.6} roughness={0.4} side={THREE.DoubleSide} />
       </mesh>
       {/* Latch / knob */}
-      <mesh position={[0.05, 0.95, 0]}>
-        <cylinderGeometry args={[0.05, 0.05, 0.04, 24]} rotation={[0, 0, Math.PI / 2]} />
-        <meshStandardMaterial color="#c0c0c0" metalness={0.95} roughness={0.18} />
-      </mesh>
       <mesh position={[0.07, 0.95, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.035, 0.035, 0.06, 24]} />
+        <cylinderGeometry args={[0.04, 0.04, 0.07, 24]} />
         <meshStandardMaterial color="#dcdcdc" metalness={0.95} roughness={0.15} />
       </mesh>
     </group>
