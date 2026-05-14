@@ -225,9 +225,7 @@ const FrontFace = () => (
       strokeWidth="1.2"
       opacity="0.85"
     />
-    {/* base band */}
-    <rect x="105" y="265" width="180" height="11" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
-    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.7" />
+    {/* (base band moved out — stays fixed as the bottom support/hinge) */}
 
     {/* ── Mail slot (integrated into front face) ── */}
     <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
@@ -243,6 +241,16 @@ const FrontFace = () => (
     />
     <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
   </motion.g>
+);
+
+/* Static base band — the lip the door hinges on. Stays put when door falls forward. */
+const BaseBand = () => (
+  <g>
+    <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
+    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.8" />
+    {/* small inner shadow under the lip for depth */}
+    <rect x="107" y="277" width="176" height="2" fill="#000" opacity="0.35" />
+  </g>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
