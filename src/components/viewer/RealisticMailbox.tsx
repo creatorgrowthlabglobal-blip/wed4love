@@ -42,6 +42,17 @@ const Defs = () => (
       <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
       <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
     </radialGradient>
+    {/* Inner cavity gradient — empty mailbox interior */}
+    <radialGradient id="cavity" cx="0.5" cy="0.4" r="0.7">
+      <stop offset="0%" stopColor="#3a2f4d" />
+      <stop offset="55%" stopColor="#1a1424" />
+      <stop offset="100%" stopColor="#0a0610" />
+    </radialGradient>
+    {/* Subtle floor plate inside cavity */}
+    <linearGradient id="cavityFloor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#2a2238" />
+      <stop offset="100%" stopColor="#0a0610" />
+    </linearGradient>
     <filter id="brushed" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="turbulence" baseFrequency="0.9 0.04" numOctaves="2" seed="7" />
       <feColorMatrix values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.18 0" />
@@ -142,6 +153,32 @@ const Roof = () => (
       opacity="0.85"
     />
   </motion.g>
+);
+
+/* Empty interior cavity — visible when FrontFace falls open */
+const Interior = () => (
+  <g clipPath="url(#frontClip)">
+    {/* deep cavity background */}
+    <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
+    {/* back wall subtle plane */}
+    <rect x="118" y="120" width="164" height="148" fill="url(#cavityFloor)" opacity="0.55" />
+    {/* top inner shadow rim (under arch) */}
+    <path
+      d="M 110 170 Q 110 90 195 90 Q 280 90 280 170"
+      fill="none"
+      stroke="#000"
+      strokeWidth="10"
+      opacity="0.55"
+      strokeLinecap="round"
+    />
+    {/* faint side wall highlights for depth */}
+    <path d="M 122 170 L 122 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
+    <path d="M 268 170 L 268 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
+    {/* floor line */}
+    <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7" />
+    {/* tiny ambient glow from above to suggest open-air emptiness */}
+    <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04" />
+  </g>
 );
 
 /* FrontFace + MailSlot live as ONE component (the mail slot is part of the front face) */
@@ -407,6 +444,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
 
             <g filter="url(#bodyShadow)">
               <Roof />
+              <Interior />
               <Envelope show={open} />
               <FrontFace />
               
