@@ -132,6 +132,13 @@ const Defs = () => (
     <filter id="cavityBlur" x="-10%" y="-10%" width="120%" height="120%">
       <feGaussianBlur stdDeviation="2.5" />
     </filter>
+    {/* Envelope clip — anchors the envelope visually to the slot opening.
+        Anything above the slot's top edge (y=186) is clipped, guaranteeing
+        the envelope can ONLY emerge from the slot regardless of how the
+        browser resolves Framer Motion transforms. */}
+    <clipPath id="envelopeSlotClip">
+      <rect x="0" y="186" width="400" height="309" />
+    </clipPath>
   </defs>
 );
 
