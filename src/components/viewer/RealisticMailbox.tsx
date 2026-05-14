@@ -317,18 +317,15 @@ function MailboxFallback({ open, setOpen, onContinue }: { open: boolean; setOpen
 
       {/* Continue button overlay */}
       {open && onContinue && (
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.5 }}
+        <button
           onClick={(e) => {
             e.stopPropagation();
             onContinue();
           }}
-          className="absolute bottom-[12%] left-1/2 -translate-x-1/2 z-10 px-6 py-2.5 rounded-full bg-white/90 backdrop-blur text-foreground font-heading text-sm font-semibold shadow-lg border border-primary/20 hover:scale-105 transition-transform"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-6 py-2.5 rounded-full bg-white text-foreground font-heading text-sm font-semibold shadow-xl border border-primary/30 hover:scale-105 transition-transform"
         >
           Open the letter →
-        </motion.button>
+        </button>
       )}
     </div>
   );
