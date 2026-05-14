@@ -332,8 +332,8 @@ const Envelope = ({ show }: { show: boolean }) => (
           style={{ filter: "blur(4px)" }}
         />
         <motion.g
-          initial={{ opacity: 0, x: 190, y: 195 }}
-          animate={{ opacity: [0, 1, 1], x: 190, y: [195, 201, 267] }}
+          initial={{ opacity: 0, x: 190, y: 186 }}
+          animate={{ opacity: [0, 1, 1], x: 190, y: [186, 191, 267] }}
           exit={{ opacity: 0 }}
           transition={{
             duration: 1.45,
@@ -343,8 +343,8 @@ const Envelope = ({ show }: { show: boolean }) => (
           }}
         >
           <motion.g
-            initial={{ scaleY: 0.03, scaleX: 0.85 }}
-            animate={{ scaleY: [0.03, 0.04, 1], scaleX: [0.85, 0.9, 1] }}
+            initial={{ scaleY: 0.25, scaleX: 0.9 }}
+            animate={{ scaleY: [0.25, 0.35, 1], scaleX: [0.9, 0.94, 1] }}
             transition={{
               duration: 1.45,
               delay: 0.25,
