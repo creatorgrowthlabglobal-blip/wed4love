@@ -76,11 +76,13 @@ const Defs = () => (
         <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
+    {/* Front arch (door / opening) */}
     <clipPath id="frontClip">
-      <path d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z" />
+      <path d="M 70 260 L 70 170 Q 70 80 135 80 Q 200 80 200 170 L 200 260 Z" />
     </clipPath>
-    <clipPath id="roofClip">
-      <path d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z" />
+    {/* Side body silhouette (extends to the right behind the front) */}
+    <clipPath id="bodyClip">
+      <path d="M 135 80 L 285 80 Q 350 80 350 170 L 350 260 L 200 260 L 200 170 Q 200 80 135 80 Z" />
     </clipPath>
   </defs>
 );
