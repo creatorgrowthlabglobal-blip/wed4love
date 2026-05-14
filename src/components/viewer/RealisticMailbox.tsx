@@ -197,14 +197,19 @@ const HingeSill = () => (
 );
 
 const FrontFace = () => (
-  // Pre-tilt the whole door assembly to the same apparent left-facing plane as
-  // the mailbox body, then hinge the flap around the bottom edge inside that plane.
   <motion.g
+    variants={{
+      idle: { rotate: 0, skewX: 0 },
+      opening: {
+        rotate: -4,
+        skewX: -6,
+        transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
+      },
+      delivered: { rotate: -4, skewX: -6 },
+    }}
     style={{
       transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
-      rotate: -4,
-      skewX: -6,
       transformStyle: "preserve-3d" as any,
       willChange: "transform",
     }}
