@@ -143,10 +143,8 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           <rect x="105" y="265" width="180" height="10" fill={BODY_DARK}
             stroke={STROKE} strokeWidth="2.5" />
 
-          {/* Mail slot — crisp horizontal black rectangle (tilted like reference) */}
-          <g transform="rotate(-8 190 195)">
-            <rect x="140" y="188" width="100" height="13" rx="2" fill={STROKE} />
-          </g>
+          {/* Mail slot — crisp horizontal black rectangle */}
+          <rect x="140" y="188" width="100" height="13" rx="2" fill={STROKE} />
 
           {/* Subtle hint when closed */}
           {!open && (
