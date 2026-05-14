@@ -254,8 +254,6 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
       position: "absolute",
       inset: 0,
       pointerEvents: "none",
-      transform: "rotateY(-15deg) skewX(-6deg)",
-      transformOrigin: "49% 54.55%",
     }}
   >
     <svg
