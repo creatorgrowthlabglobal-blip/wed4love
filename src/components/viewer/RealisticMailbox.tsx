@@ -54,19 +54,17 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           {/* Soft ground shadow */}
           <ellipse cx="200" cy="370" rx="120" ry="10" fill="#000" opacity="0.12" />
 
-          {/* Post */}
+          {/* Post — flush against the bottom of mailbox body (y=260) */}
           <g>
-            {/* Post front */}
             <polygon
-              points="188,280 212,280 212,365 188,365"
+              points="188,260 212,260 212,365 188,365"
               fill={POST}
               stroke={STROKE}
               strokeWidth="2.5"
               strokeLinejoin="round"
             />
-            {/* Post side (isometric) */}
             <polygon
-              points="212,280 224,272 224,357 212,365"
+              points="212,260 224,252 224,357 212,365"
               fill={BODY_DARK}
               stroke={STROKE}
               strokeWidth="2.5"
@@ -99,58 +97,33 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             opacity="0.7"
           />
 
-          {/* Base / floor strip */}
-          <polygon
-            points="100,255 280,255 280,260 100,260"
-            fill={BODY_DARK}
-            stroke={STROKE}
-            strokeWidth="2.5"
-            strokeLinejoin="round"
-          />
-
-          {/* Envelope (revealed coming out of slot) */}
+          {/* Envelope (slides out from slot when opened) */}
           <AnimatePresence>
             {open && (
               <motion.g
-                initial={{ x: 0, y: 0, opacity: 0 }}
-                animate={{ x: -40, y: -30, opacity: 1 }}
-                transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.85 }}
+                animate={{ x: -30, y: -50, opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               >
-                <g transform="translate(150, 170)">
-                  {/* envelope body */}
-                  <rect
-                    x="0" y="0" width="110" height="70"
-                    rx="3"
-                    fill="#ffffff"
-                    stroke={STROKE}
-                    strokeWidth="2.5"
-                  />
-                  {/* envelope flap lines */}
-                  <polyline
-                    points="0,0 55,38 110,0"
-                    fill="none"
-                    stroke={STROKE}
-                    strokeWidth="2.5"
-                    strokeLinejoin="round"
-                  />
-                  {/* heart seal */}
+                <g transform="translate(150, 175)">
+                  <rect x="0" y="0" width="110" height="70" rx="3"
+                    fill="#ffffff" stroke={STROKE} strokeWidth="2.5" />
+                  <polyline points="0,0 55,38 110,0"
+                    fill="none" stroke={STROKE} strokeWidth="2.5" strokeLinejoin="round" />
                   <path
-                    d="M 55 50
-                       m -8 -3
+                    d="M 55 50 m -8 -3
                        a 5 5 0 1 1 8 -3
                        a 5 5 0 1 1 8 3
                        q 0 6 -8 12
                        q -8 -6 -8 -12 z"
-                    fill="#FF6F85"
-                    stroke={STROKE}
-                    strokeWidth="1.5"
+                    fill="#FF6F85" stroke={STROKE} strokeWidth="1.5"
                   />
                 </g>
               </motion.g>
             )}
           </AnimatePresence>
 
-          {/* Mailbox front (rounded arch) */}
+          {/* Mailbox front — single seamless closed face */}
           <path
             d="M 100 130
                Q 100 90 140 90
@@ -165,45 +138,10 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             strokeLinejoin="round"
           />
 
-          {/* Front cover (door) — hinged at bottom, swings down when open */}
-          <motion.g
-            style={{ originX: "190px", originY: "260px" }}
-            animate={{ rotate: open ? 95 : 0 }}
-            transition={{ duration: 0.9, ease: [0.34, 1.4, 0.64, 1] }}
-          >
-            <path
-              d="M 100 130
-                 Q 100 90 140 90
-                 L 250 90
-                 Q 280 90 280 130
-                 L 280 260
-                 L 100 260
-                 Z"
-              fill={BODY}
-              stroke={STROKE}
-              strokeWidth="3"
-              strokeLinejoin="round"
-            />
-            {/* Mail slot */}
-            <motion.rect
-              x="135" y="175" width="90" height="14"
-              rx="3"
-              fill={STROKE}
-              animate={{ opacity: open ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-            />
-            {/* Slot inner accent (a tilted darker bar like the ref) */}
-            <motion.path
-              d="M 145 188 L 215 174"
-              stroke={STROKE}
-              strokeWidth="6"
-              strokeLinecap="round"
-              animate={{ opacity: open ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-            />
-            {/* Handle hint at bottom */}
-            <circle cx="190" cy="245" r="3" fill={STROKE} opacity={open ? 0 : 0.6} />
-          </motion.g>
+          {/* Mail slot — crisp horizontal black rectangle (tilted like reference) */}
+          <g transform="rotate(-8 190 180)">
+            <rect x="140" y="172" width="100" height="14" rx="2" fill={STROKE} />
+          </g>
 
           {/* Subtle hint when closed */}
           {!open && (
