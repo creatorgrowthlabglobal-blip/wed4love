@@ -503,6 +503,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 rasterize their contents and break CSS 3D transforms on children,
                 which is why the door was disappearing. */}
             <Envelope show={open} />
+            <HingeSill />
             <FrontFace />
 
 
