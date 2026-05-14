@@ -196,70 +196,82 @@ const HingeSill = () => (
 );
 
 const FrontFace = () => (
+  // Outer wrapper tilts the HINGE AXIS by -15° to align with the corner-bevel direction.
+  // The door doesn't spin around its face — only the axis it pivots on is tilted.
   <motion.g
     variants={{
-      idle: { rotateX: 0, rotateZ: 0, x: 0, y: 0 },
+      idle: { rotateZ: 0 },
       opening: {
-        rotateX: -90,
         rotateZ: -15,
-        x: 0,
-        y: 0,
-        transition: {
-          duration: 1.3,
-          delay: 0.3,
-          ease: [0.4, 0, 0.2, 1], // smooth ease-out, no overshoot so it rests flat at hinge line
-        },
+        transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
       },
-      delivered: { rotateX: -90, rotateZ: -15, x: 0, y: 0 },
+      delivered: { rotateZ: -15 },
     }}
     style={{
       transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
-      transformPerspective: 1000,
       willChange: "transform",
     }}
   >
-    {/* lavender front panel */}
-    <path
-      d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
-      fill="url(#lavMetal)"
-      stroke={STROKE}
-      strokeWidth="3"
-      strokeLinejoin="round"
-    />
-    {/* brushed grain */}
-    <g clipPath="url(#doorClip)" opacity="0.6">
-      <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
-    </g>
-    {/* sheen */}
-    <path
-      d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
-      fill="url(#lavRoofShine)"
-      opacity="0.5"
-      clipPath="url(#doorClip)"
-    />
-    {/* edge rim */}
-    <path
-      d="M 113 264 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 264"
-      fill="none"
-      stroke="#F2EBFF"
-      strokeWidth="1.2"
-      opacity="0.85"
-    />
+    {/* Inner motion.g performs the actual hinge fall around the (now tilted) X axis */}
+    <motion.g
+      variants={{
+        idle: { rotateX: 0 },
+        opening: {
+          rotateX: -90,
+          transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
+        },
+        delivered: { rotateX: -90 },
+      }}
+      style={{
+        transformOrigin: "195px 265px",
+        transformBox: "view-box" as any,
+        transformPerspective: 1000,
+        willChange: "transform",
+      }}
+    >
+      {/* lavender front panel */}
+      <path
+        d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
+        fill="url(#lavMetal)"
+        stroke={STROKE}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* brushed grain */}
+      <g clipPath="url(#doorClip)" opacity="0.6">
+        <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
+      </g>
+      {/* sheen */}
+      <path
+        d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
+        fill="url(#lavRoofShine)"
+        opacity="0.5"
+        clipPath="url(#doorClip)"
+      />
+      {/* edge rim */}
+      <path
+        d="M 113 264 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 264"
+        fill="none"
+        stroke="#F2EBFF"
+        strokeWidth="1.2"
+        opacity="0.85"
+      />
 
-    {/* ── Mail slot (integrated into front face) ── */}
-    <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
-    <motion.rect
-      x="141"
-      y="189"
-      width="98"
-      height="11"
-      rx="2"
-      fill="url(#slotGlow)"
-      animate={{ opacity: [0.7, 1, 0.7] }}
-      transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
+      {/* ── Mail slot (integrated into front face) ── */}
+      <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
+      <motion.rect
+        x="141"
+        y="189"
+        width="98"
+        height="11"
+        rx="2"
+        fill="url(#slotGlow)"
+        animate={{ opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
+    </motion.g>
   </motion.g>
 );
 
