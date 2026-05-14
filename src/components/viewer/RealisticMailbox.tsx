@@ -205,13 +205,6 @@ const FrontFace = () => (
       willChange: "transform",
     }}
   >
-    style={{
-      transformOrigin: "195px 265px",
-      transformBox: "view-box" as any,
-      transformStyle: "preserve-3d" as any,
-      willChange: "transform",
-    }}
-  >
     {/* Inner motion.g performs the actual hinge fall around the (now tilted) X axis */}
     <motion.g
       variants={{
