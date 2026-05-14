@@ -181,26 +181,30 @@ const Interior = () => (
   </g>
 );
 
-/* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly. */
+/* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
+   Hinged at the BOTTOM edge — swings forward/downward via rotateX (3D) so it
+   reads like a real mailbox flap, not a 2D z-axis flip. */
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { rotate: 0, x: 0, y: 0 },
+      idle: { rotateX: 0, x: 0, y: 0 },
       opening: {
-        rotate: -82,
+        rotateX: 92,
         x: 0,
         y: 0,
         transition: {
-          duration: 1.9,
-          delay: 1.4,
-          ease: [0.22, 1, 0.36, 1],
+          duration: 1.4,
+          delay: 0.4,
+          // back.out — slight overshoot for a premium "thud"
+          ease: [0.34, 1.56, 0.64, 1],
         },
       },
-      delivered: { rotate: -82, x: 0, y: 0 },
+      delivered: { rotateX: 92, x: 0, y: 0 },
     }}
     style={{
-      transformOrigin: "195px 276px",
-      transformBox: "view-box" as any,
+      transformOrigin: "50% 100%",
+      transformBox: "fill-box" as any,
+      transformPerspective: 1400,
     }}
   >
     {/* lavender front panel */}
