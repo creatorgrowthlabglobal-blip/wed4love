@@ -1,7 +1,7 @@
-let cached: boolean | null = null;
+let cachedTrue = false;
 
 export const isWebGLAvailable = (): boolean => {
-  if (cached !== null) return cached;
+  if (cachedTrue) return true;
   if (typeof window === "undefined") return false;
   try {
     const canvas = document.createElement("canvas");
@@ -9,9 +9,12 @@ export const isWebGLAvailable = (): boolean => {
       canvas.getContext("webgl2") ||
       canvas.getContext("webgl") ||
       canvas.getContext("experimental-webgl");
-    cached = !!gl;
+    if (gl) {
+      cachedTrue = true;
+      return true;
+    }
+    return false;
   } catch {
-    cached = false;
+    return false;
   }
-  return cached;
 };
