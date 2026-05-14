@@ -359,8 +359,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const handleClick = () => {
     if (state !== "idle") return;
     setState("opening");
-    setTimeout(() => setState("delivered"), 1100);
-    setTimeout(() => onContinue?.(), 2200);
+    setTimeout(() => setState("delivered"), 4500);
+    setTimeout(() => onContinue?.(), 5200);
   };
 
   const open = state !== "idle";
