@@ -187,10 +187,10 @@ const FrontFace = () => (
     variants={{
       idle: { rotateX: 0 },
       opening: {
-        rotateX: 110,
+        rotateX: -110,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 110 },
+      delivered: { rotateX: -110 },
     }}
     style={{
       transformOrigin: "50% 100%",
