@@ -196,17 +196,15 @@ const HingeSill = () => (
 );
 
 const FrontFace = () => (
-  // Outer wrapper tilts the HINGE AXIS by -15° to align with the corner-bevel direction.
-  // The door doesn't spin around its face — only the axis it pivots on is tilted.
+  // Outer wrapper kept for layering — no Z tilt so the door stays a clean rectangle.
   <motion.g
-    variants={{
-      idle: { rotateZ: 0 },
-      opening: {
-        rotateZ: -15,
-        transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
-      },
-      delivered: { rotateZ: -15 },
+    style={{
+      transformOrigin: "195px 265px",
+      transformBox: "view-box" as any,
+      transformStyle: "preserve-3d" as any,
+      willChange: "transform",
     }}
+  >
     style={{
       transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
