@@ -328,17 +328,21 @@ const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.g
-        // Emerges from the mail slot, scales up and slides forward/down
-        // toward the viewer like it's being pushed out of the mailbox.
-        initial={{ y: -10, opacity: 0, scale: 0.18 }}
-        animate={{ y: 90, opacity: 1, scale: 1.15 }}
+        // Stage 1: appears as a flat horizontal sliver squeezed through the slot.
+        // Stage 2: slides down/forward and expands to full size in front of mailbox.
+        initial={{ y: -25, opacity: 0, scaleY: 0.04, scaleX: 0.95 }}
+        animate={{
+          y: [-25, -10, 80],
+          opacity: [0, 1, 1],
+          scaleY: [0.04, 0.04, 1.15],
+          scaleX: [0.95, 0.95, 1.15],
+        }}
         exit={{ opacity: 0 }}
         transition={{
-          type: "spring",
-          stiffness: 110,
-          damping: 18,
-          delay: 0.35,
-          opacity: { duration: 0.4, delay: 0.35 },
+          duration: 1.4,
+          delay: 0.3,
+          times: [0, 0.25, 1],
+          ease: [0.16, 1, 0.3, 1],
         }}
         style={{ transformOrigin: "205px 195px", transformBox: "fill-box" as any }}
       >
