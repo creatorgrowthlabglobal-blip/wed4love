@@ -344,7 +344,7 @@ const Envelope = ({ show }: { show: boolean }) => (
           times: [0, 0.25, 1],
           ease: [0.16, 1, 0.3, 1],
         }}
-        style={{ transformOrigin: "205px 195px", transformBox: "fill-box" as any }}
+        style={{ transformOrigin: "205px 195px" }}
       >
         {/* Soft drop shadow beneath the envelope */}
         <motion.ellipse
