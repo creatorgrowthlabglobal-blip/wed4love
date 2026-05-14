@@ -205,9 +205,14 @@ const Roof = () => (
   </motion.g>
 );
 
-/* Empty interior cavity — visible when FrontFace falls open */
-const Interior = () => (
-  <g clipPath="url(#frontClip)">
+/* Empty interior cavity — visible when FrontFace falls open.
+   Blurs subtly while the envelope emerges for a depth-of-field feel. */
+const Interior = ({ open }: { open: boolean }) => (
+  <motion.g
+    clipPath="url(#frontClip)"
+    animate={{ filter: open ? "url(#cavityBlur)" : "none" }}
+    transition={{ duration: 0.6, delay: open ? 0.7 : 0 }}
+  >
     {/* deep cavity background */}
     <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
     {/* top inner shadow rim (under arch) */}
@@ -226,7 +231,7 @@ const Interior = () => (
     <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7" />
     {/* tiny ambient glow from above to suggest open-air emptiness */}
     <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04" />
-  </g>
+  </motion.g>
 );
 
 /* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
