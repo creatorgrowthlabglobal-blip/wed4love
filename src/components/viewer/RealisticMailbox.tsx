@@ -493,14 +493,12 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <Roof />
               <Interior />
               <Envelope show={open} />
+              <FrontFace />
               <BaseBand />
             </g>
 
             <BirdLeft />
             <BirdRight />
-              <FrontFace />
-              <BaseBand />
-            </g>
           {!open && <Caption senderName={senderName} />}
         </svg>
       </motion.div>
