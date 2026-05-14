@@ -9,6 +9,13 @@ import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
+  const [previewStage, setPreviewStage] = useState<"mailbox" | "envelope">("mailbox");
+
+  const openPreview = () => {
+    setPreviewStage("mailbox");
+    setShowPreview(true);
+  };
+  const closePreview = () => setShowPreview(false);
   return (
     <div className="min-h-screen bg-background">
       <Header />
