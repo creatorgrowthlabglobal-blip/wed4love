@@ -394,6 +394,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           width: "min(520px, 90%)",
           aspectRatio: "1 / 1",
           position: "relative",
+          perspective: "900px",
         }}
       >
         <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
