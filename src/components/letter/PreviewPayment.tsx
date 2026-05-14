@@ -49,7 +49,7 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   const hasMedia = letterData.videos.length > 0 || letterData.audios.length > 0;
 
   const getNextStage = (current: Stage): Stage | null => {
-    const flow: Stage[] = ["envelope"];
+    const flow: Stage[] = ["mailbox", "envelope"];
     if (hasQuiz) flow.push("quiz");
     if (isBirthday) flow.push("balloons");
     if (hasMedia) flow.push("video");
@@ -65,7 +65,7 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   };
 
   const openPreview = () => {
-    setPreviewStage("envelope");
+    setPreviewStage("mailbox");
     setShowPreview(true);
   };
 
