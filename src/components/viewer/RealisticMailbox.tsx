@@ -201,12 +201,14 @@ function Envelope({ open }: { open: boolean }) {
 }
 
 /* ── Whole scene ── */
-function Scene({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
+function Scene({ open, setOpen, allowClose = true }: { open: boolean; setOpen: (v: boolean) => void; allowClose?: boolean }) {
   return (
     <group
       onClick={(e) => {
         e.stopPropagation();
-        setOpen(!open);
+        if (!open || allowClose) {
+          setOpen(!open);
+        }
       }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
