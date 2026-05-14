@@ -194,64 +194,86 @@ const HingeSill = () => (
   </g>
 );
 
-const FrontFace = () => (
-  <g
+/* HingeContainer = an HTML motion.div overlay that holds the door SVG.
+   Using a div (not an SVG <g>) gives true CSS preserve-3d so the fixed
+   rotateY/skewX tilt composes rigidly with the animated rotateX swing —
+   the door stays a solid sheet of metal instead of warping. */
+const FrontFaceOverlay = ({ controls }: { controls: ReturnType<typeof useAnimation> }) => (
+  <motion.div
+    initial="idle"
+    animate={controls}
+    variants={{
+      idle: { rotateX: 0 },
+      opening: {
+        rotateX: 90,
+        transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
+      },
+      delivered: { rotateX: 90 },
+    }}
     style={{
+      position: "absolute",
+      inset: 0,
+      pointerEvents: "none",
+      // Fixed isometric tilt — never animated. rotateX above composes on top.
       transform: "rotateY(-15deg) skewX(-6deg)",
-      transformOrigin: "195px 270px",
-      transformBox: "fill-box" as any,
-      transformStyle: "preserve-3d" as any,
+      // (195, 270) in viewBox 400×495 → 49% / 54.55% of the square wrapper
+      transformOrigin: "49% 54.55%",
+      transformStyle: "preserve-3d",
+      willChange: "transform",
     }}
   >
-    {/* Hinge group — single-axis rotateX swing from glued bottom edge */}
-    <motion.g
-      initial={{ rotateX: 0, z: 5 }}
-      variants={{
-        idle: { rotateX: 0, z: 5 },
-        opening: {
-          rotateX: 90,
-          z: 5,
-          transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
-        },
-        delivered: { rotateX: 90, z: 5 },
-      }}
-      style={{
-        transformOrigin: "195px 270px",
-        transformBox: "fill-box" as any,
-        transformPerspective: 1200,
-        transformStyle: "preserve-3d" as any,
-        willChange: "transform",
-      }}
+    <svg
+      viewBox="0 0 400 495"
+      width="100%"
+      height="100%"
+      style={{ overflow: "visible" }}
     >
+      <defs>
+        <linearGradient id="doorLavMetal" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#A99BD8" />
+          <stop offset="22%" stopColor="#D4C8F2" />
+          <stop offset="50%" stopColor="#BDAEE7" />
+          <stop offset="78%" stopColor="#D8CCF4" />
+          <stop offset="100%" stopColor="#9C8DCC" />
+        </linearGradient>
+        <linearGradient id="doorShine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#EFE7FF" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#EFE7FF" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="doorSlotGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor="#FFE9B0" stopOpacity="0.95" />
+          <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
+        </radialGradient>
+        <clipPath id="doorClipOverlay">
+          <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" />
+        </clipPath>
+      </defs>
+
       {/* lavender front panel */}
       <path
-        d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
-        fill="url(#lavMetal)"
+        d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+        fill="url(#doorLavMetal)"
         stroke={STROKE}
         strokeWidth="3"
         strokeLinejoin="round"
       />
-      {/* brushed grain */}
-      <g clipPath="url(#doorClip)" opacity="0.6">
-        <rect x="100" y="80" width="200" height="200" fill="#fff" filter="url(#brushed)" />
-      </g>
       {/* sheen */}
       <path
-        d="M 110 265 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 265 Z"
-        fill="url(#lavRoofShine)"
+        d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+        fill="url(#doorShine)"
         opacity="0.5"
-        clipPath="url(#doorClip)"
+        clipPath="url(#doorClipOverlay)"
       />
       {/* edge rim */}
       <path
-        d="M 113 264 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 264"
+        d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
         fill="none"
         stroke="#F2EBFF"
         strokeWidth="1.2"
         opacity="0.85"
       />
-
-      {/* ── Mail slot (integrated into front face) ── */}
+      {/* mail slot */}
       <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
       <motion.rect
         x="141"
@@ -259,13 +281,13 @@ const FrontFace = () => (
         width="98"
         height="11"
         rx="2"
-        fill="url(#slotGlow)"
+        fill="url(#doorSlotGlow)"
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
       <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
-    </motion.g>
-  </g>
+    </svg>
+  </motion.div>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
@@ -509,14 +531,14 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 which is why the door was disappearing. */}
             <Envelope show={open} />
             <HingeSill />
-            <FrontFace />
-
 
             <BirdLeft />
             <BirdRight />
           </motion.g>
           {!open && <Caption senderName={senderName} />}
         </svg>
+        {/* Door overlay — HTML motion.div for true CSS preserve-3d hinge */}
+        <FrontFaceOverlay controls={controls} />
       </motion.div>
     </div>
   );
