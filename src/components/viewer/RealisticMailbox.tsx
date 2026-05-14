@@ -189,22 +189,22 @@ const FrontFace = () => (
     variants={{
       idle: { rotateX: 0, x: 0, y: 0 },
       opening: {
-        rotateX: 92,
+        rotateX: 88,
         x: 0,
         y: 0,
         transition: {
-          duration: 1.4,
-          delay: 0.4,
-          // back.out — slight overshoot for a premium "thud"
-          ease: [0.34, 1.56, 0.64, 1],
+          duration: 1.3,
+          delay: 0.3,
+          ease: [0.34, 1.45, 0.64, 1], // back.out — slight overshoot
         },
       },
-      delivered: { rotateX: 92, x: 0, y: 0 },
+      delivered: { rotateX: 88, x: 0, y: 0 },
     }}
     style={{
       transformOrigin: "50% 100%",
       transformBox: "fill-box" as any,
-      transformPerspective: 1400,
+      transformPerspective: 1000,
+      willChange: "transform",
     }}
   >
     {/* lavender front panel */}
@@ -265,7 +265,7 @@ const Envelope = ({ show }: { show: boolean }) => (
         initial={{ x: 0, y: -10, opacity: 0, scale: 0.7 }}
         animate={{ x: 0, y: 60, opacity: 1, scale: 1.05 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1.1, delay: 2.0, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
         style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
       >
         <g transform="translate(150, 185)">
@@ -421,8 +421,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const handleClick = () => {
     if (state !== "idle") return;
     setState("opening");
-    setTimeout(() => setState("delivered"), 3400);
-    setTimeout(() => onContinue?.(), 4200);
+    setTimeout(() => setState("delivered"), 2200);
+    setTimeout(() => onContinue?.(), 3000);
   };
 
   const open = state !== "idle";
@@ -459,7 +459,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             <g filter="url(#bodyShadow)">
               {/* Right-side wall strip — sells the ~15° left rotation (we see object's right side) */}
               <g>
-                {/* Roof right side panel */}
                 <path
                   d="M 325 152 Q 325 67 240 67 L 248 60 Q 338 60 338 150 L 338 248 L 325 252 Z"
                   fill="url(#lavMetalDark)"
@@ -467,7 +466,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   strokeWidth="2.5"
                   strokeLinejoin="round"
                 />
-                {/* Body right side panel */}
                 <path
                   d="M 280 270 L 280 170 Q 280 85 195 85 L 200 78 Q 293 78 293 168 L 293 268 Z"
                   fill="url(#lavMetalDark)"
@@ -476,7 +474,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   strokeLinejoin="round"
                   opacity="0.95"
                 />
-                {/* Inner shadow on right side seam */}
                 <path
                   d="M 281 170 Q 281 88 198 82"
                   fill="none"
@@ -484,7 +481,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   strokeWidth="1.5"
                   opacity="0.4"
                 />
-                {/* Base band right side */}
                 <path
                   d="M 285 265 L 285 279 L 292 276 L 292 263 Z"
                   fill="url(#lavMetalDark)"
@@ -495,9 +491,14 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               </g>
               <Roof />
               <Interior />
-              <Envelope show={open} />
-              <FrontFace />
             </g>
+
+            {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
+                rasterize their contents and break CSS 3D transforms on children,
+                which is why the door was disappearing. */}
+            <Envelope show={open} />
+            <FrontFace />
+
 
             <BirdLeft />
             <BirdRight />
