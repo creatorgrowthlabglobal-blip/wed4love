@@ -253,14 +253,18 @@ class MailboxErrorBoundary extends Component<MailboxErrorBoundaryProps, MailboxE
   }
 }
 
-function MailboxFallback({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+function MailboxFallback({ open, setOpen, onContinue }: { open: boolean; setOpen: (value: boolean) => void; onContinue?: () => void }) {
   return (
-    <div className="flex h-full w-full items-center justify-center p-6">
+    <div className="flex h-full w-full items-center justify-center p-6 relative">
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (!open) {
+            setOpen(true);
+          }
+        }}
         className="group relative flex h-full max-h-[30rem] w-full max-w-[26rem] items-center justify-center focus:outline-none"
-        aria-label={open ? "Close mailbox" : "Open mailbox"}
+        aria-label={open ? "A letter is waiting" : "Tap the mailbox"}
       >
         <div className="absolute bottom-[10%] h-[48%] w-7 rounded-sm bg-secondary shadow-card" />
         <div className="absolute bottom-[24%] h-4 w-24 rounded-sm bg-secondary/90 shadow-card" />
@@ -307,6 +311,22 @@ function MailboxFallback({ open, setOpen }: { open: boolean; setOpen: (value: bo
           <p className="mt-1 text-xs uppercase tracking-[0.22em] text-muted-foreground">Static preview fallback</p>
         </div>
       </button>
+
+      {/* Continue button overlay */}
+      {open && onContinue && (
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.5 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onContinue();
+          }}
+          className="absolute bottom-[12%] left-1/2 -translate-x-1/2 z-10 px-6 py-2.5 rounded-full bg-white/90 backdrop-blur text-foreground font-heading text-sm font-semibold shadow-lg border border-primary/20 hover:scale-105 transition-transform"
+        >
+          Open the letter →
+        </motion.button>
+      )}
     </div>
   );
 }
