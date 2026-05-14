@@ -334,17 +334,17 @@ function MailboxFallback({ open, setOpen, onContinue }: { open: boolean; setOpen
   );
 }
 
-const RealisticMailbox = ({ className }: Props) => {
+const RealisticMailbox = ({ className, onContinue }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const fallback = <MailboxFallback open={open} setOpen={setOpen} />;
+  const fallback = <MailboxFallback open={open} setOpen={setOpen} onContinue={onContinue} />;
 
   if (!isWebGLAvailable()) {
     return <div className={className ?? "w-full h-full"}>{fallback}</div>;
   }
 
   return (
-    <div className={className ?? "w-full h-full"}>
+    <div className={`${className ?? "w-full h-full"} relative`}>
       <MailboxErrorBoundary fallback={fallback}>
         <Canvas
           shadows
@@ -371,7 +371,7 @@ const RealisticMailbox = ({ className }: Props) => {
           <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#ffd9c8" />
           <pointLight position={[2, 1, 2]} intensity={0.5} color="#fff" distance={8} />
 
-          <Scene open={open} setOpen={setOpen} />
+          <Scene open={open} setOpen={setOpen} allowClose={!onContinue} />
 
           <ContactShadows
             position={[0, -1.78, 0]}
@@ -393,6 +393,19 @@ const RealisticMailbox = ({ className }: Props) => {
           />
         </Canvas>
       </MailboxErrorBoundary>
+
+      {/* Continue button overlay */}
+      {open && onContinue && (
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.5 }}
+          onClick={() => onContinue()}
+          className="absolute bottom-[12%] left-1/2 -translate-x-1/2 z-10 px-6 py-2.5 rounded-full bg-white/90 backdrop-blur text-foreground font-heading text-sm font-semibold shadow-lg border border-primary/20 hover:scale-105 transition-transform"
+        >
+          Open the letter →
+        </motion.button>
+      )}
     </div>
   );
 };
