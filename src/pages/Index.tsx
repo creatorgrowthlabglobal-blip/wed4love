@@ -5,6 +5,7 @@ import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkI
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
+import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
