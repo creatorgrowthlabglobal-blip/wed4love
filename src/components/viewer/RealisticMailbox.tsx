@@ -185,22 +185,21 @@ const Interior = () => (
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { rotateX: 0, rotateY: 0, rotateZ: 15 },
+      idle: { scaleY: 1, scaleX: 1, skewX: 0, rotate: 0, x: 0, y: 0 },
       opening: {
-        rotateX: 90,
-        rotateY: 0,
-        rotateZ: 15,
+        scaleY: 0.16,
+        scaleX: 0.98,
+        skewX: -54,
+        rotate: -2,
+        x: -34,
+        y: 6,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { rotateX: 90, rotateY: 0, rotateZ: 15 },
+      delivered: { scaleY: 0.16, scaleX: 0.98, skewX: -54, rotate: -2, x: -34, y: 6 },
     }}
     style={{
       transformOrigin: "195px 270px",
       transformBox: "view-box" as any,
-      transformStyle: "preserve-3d" as any,
-      transformPerspective: 1600,
-      backfaceVisibility: "hidden" as any,
-      WebkitBackfaceVisibility: "hidden" as any,
     }}
   >
     {/* lavender front panel */}
@@ -230,7 +229,6 @@ const FrontFace = () => (
       strokeWidth="1.2"
       opacity="0.85"
     />
-    {/* (base band moved out — stays fixed as the bottom support/hinge) */}
 
     {/* ── Mail slot (integrated into front face) ── */}
     <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
@@ -502,7 +500,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             <BirdLeft />
             <BirdRight />
           </motion.g>
-
           {!open && <Caption senderName={senderName} />}
         </svg>
       </motion.div>
