@@ -466,10 +466,16 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           width: "min(520px, 90%)",
           aspectRatio: "1 / 1",
           position: "relative",
-          perspective: "2400px",
+          perspective: "1200px",
+          transformStyle: "preserve-3d",
         }}
       >
-        <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
+        <svg
+          viewBox="0 0 400 495"
+          width="100%"
+          height="100%"
+          style={{ overflow: "visible", transformStyle: "preserve-3d" }}
+        >
           <Defs />
 
           {/* Orchestrated parts share variants via parent animate controls */}
