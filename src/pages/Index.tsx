@@ -347,7 +347,7 @@ const Index = () => {
                 className="fixed inset-0 z-50 flex items-center justify-center"
                 style={{
                   background:
-                    "radial-gradient(ellipse at center, #7a3744 0%, #5d2632 60%, #4a1d28 100%)",
+                    "radial-gradient(ellipse at center, #FBF4E4 0%, #F4E9D0 60%, #E8DAB8 100%)",
                 }}
               >
                 <div
