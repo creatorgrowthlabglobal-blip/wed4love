@@ -7,11 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Props {
   className?: string;
   onContinue?: () => void;
+  senderName?: string;
 }
 
 const STROKE = "#1a1a1a";
 
-const RealisticMailbox = ({ className, onContinue }: Props) => {
+const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
@@ -42,7 +43,7 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           position: "relative",
         }}
       >
-        <svg viewBox="0 0 400 470" width="100%" height="100%" style={{ overflow: "visible" }}>
+        <svg viewBox="0 0 400 495" width="100%" height="100%" style={{ overflow: "visible" }}>
           <defs>
             {/* Brushed lavender metal — front face (vertical grain + soft sheen) */}
             <linearGradient id="lavMetal" x1="0" y1="0" x2="1" y2="0">
@@ -250,24 +251,41 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
             <path d="M 2 -2 Q -4 -1 -8 4" fill="none" stroke="#D6D2C8" strokeWidth="1.2" />
           </g>
 
-          {/* Tap text with glow */}
+          {/* Headline + tap hint */}
           {!open && (
-            <motion.text
-              x="200"
-              y="458"
-              textAnchor="middle"
-              fontFamily="'Inter', system-ui, sans-serif"
-              fontSize="13"
-              fontWeight="500"
-              letterSpacing="2"
-              fill="#6b5b8e"
-              filter="url(#textGlow)"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.4, 1, 1, 0.5] }}
-              transition={{ duration: 2.6, repeat: Infinity }}
-            >
-              TAP THE MAILBOX
-            </motion.text>
+            <>
+              <motion.text
+                x="200"
+                y="450"
+                textAnchor="middle"
+                fontFamily="'Playfair Display', Georgia, serif"
+                fontSize="18"
+                fontWeight="600"
+                fill="#4b3a6b"
+                filter="url(#textGlow)"
+                initial={{ opacity: 0, y: 460 }}
+                animate={{ opacity: 1, y: 450 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                You've got a mail from {senderName?.trim() || "someone special"}
+              </motion.text>
+              <motion.text
+                x="200"
+                y="478"
+                textAnchor="middle"
+                fontFamily="'Inter', system-ui, sans-serif"
+                fontSize="12"
+                fontWeight="500"
+                letterSpacing="2"
+                fill="#8a7aae"
+                filter="url(#textGlow)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.4, 1, 1, 0.5] }}
+                transition={{ duration: 2.6, repeat: Infinity }}
+              >
+                CLICK THE MAILBOX TO CONTINUE
+              </motion.text>
+            </>
           )}
         </svg>
       </motion.div>
