@@ -163,8 +163,6 @@ const Interior = () => (
   <g clipPath="url(#frontClip)">
     {/* deep cavity background */}
     <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
-    {/* back wall subtle plane */}
-    <rect x="118" y="120" width="164" height="148" fill="url(#cavityFloor)" opacity="0.55" />
     {/* top inner shadow rim (under arch) */}
     <path
       d="M 110 170 Q 110 90 195 90 Q 280 90 280 170"
