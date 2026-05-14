@@ -235,9 +235,9 @@ const birdBodyVariants = (dir: 1 | -1): Variants => ({
     opacity: [1, 1, 1, 0],
     rotate: dir * 10,
     transition: {
-      duration: 2.4,
-      ease: [0.22, 1, 0.36, 1],
-      opacity: { duration: 2.4, times: [0, 0.6, 0.85, 1] },
+      duration: 4.5,
+      ease: "easeOut",
+      opacity: { duration: 4.5, times: [0, 0.7, 0.9, 1] },
     },
   },
   delivered: { opacity: 0 },
