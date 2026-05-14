@@ -189,13 +189,13 @@ const FrontFace = () => (
       opening: {
         scaleY: 0.16,
         scaleX: 0.98,
-        skewX: -54,
-        rotate: -2,
-        x: -34,
+        skewX: 54,
+        rotate: 2,
+        x: 34,
         y: 6,
         transition: { duration: 2.2, delay: 1.4, ease: [0.55, 0, 0.6, 1] },
       },
-      delivered: { scaleY: 0.16, scaleX: 0.98, skewX: -54, rotate: -2, x: -34, y: 6 },
+      delivered: { scaleY: 0.16, scaleX: 0.98, skewX: 54, rotate: 2, x: 34, y: 6 },
     }}
     style={{
       transformOrigin: "195px 270px",
