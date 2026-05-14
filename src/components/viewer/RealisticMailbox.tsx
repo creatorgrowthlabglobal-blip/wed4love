@@ -181,26 +181,30 @@ const Interior = () => (
   </g>
 );
 
-/* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly. */
+/* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
+   Hinged at the BOTTOM edge — swings forward/downward via rotateX (3D) so it
+   reads like a real mailbox flap, not a 2D z-axis flip. */
 const FrontFace = () => (
   <motion.g
     variants={{
-      idle: { rotate: 0, x: 0, y: 0 },
+      idle: { rotateX: 0, x: 0, y: 0 },
       opening: {
-        rotate: -82,
+        rotateX: 92,
         x: 0,
         y: 0,
         transition: {
-          duration: 1.9,
-          delay: 1.4,
-          ease: [0.22, 1, 0.36, 1],
+          duration: 1.4,
+          delay: 0.4,
+          // back.out — slight overshoot for a premium "thud"
+          ease: [0.34, 1.56, 0.64, 1],
         },
       },
-      delivered: { rotate: -82, x: 0, y: 0 },
+      delivered: { rotateX: 92, x: 0, y: 0 },
     }}
     style={{
-      transformOrigin: "195px 276px",
-      transformBox: "view-box" as any,
+      transformOrigin: "50% 100%",
+      transformBox: "fill-box" as any,
+      transformPerspective: 1400,
     }}
   >
     {/* lavender front panel */}
@@ -256,10 +260,13 @@ const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.g
-        initial={{ x: 0, y: 0, opacity: 0, scale: 0.85 }}
-        animate={{ x: -30, y: -60, opacity: 1, scale: 1 }}
+        // Starts hidden inside the dark cavity, then slides forward toward viewer
+        // only AFTER the door has fully swung open.
+        initial={{ x: 0, y: -10, opacity: 0, scale: 0.7 }}
+        animate={{ x: 0, y: 60, opacity: 1, scale: 1.05 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.1, delay: 2.0, ease: [0.16, 1, 0.3, 1] }}
+        style={{ transformOrigin: "195px 220px", transformBox: "fill-box" as any }}
       >
         <g transform="translate(150, 185)">
           <rect x="0" y="0" width="110" height="70" rx="3" fill="#ffffff" stroke={STROKE} strokeWidth="2.5" />
@@ -414,8 +421,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const handleClick = () => {
     if (state !== "idle") return;
     setState("opening");
-    setTimeout(() => setState("delivered"), 4500);
-    setTimeout(() => onContinue?.(), 5200);
+    setTimeout(() => setState("delivered"), 3400);
+    setTimeout(() => onContinue?.(), 4200);
   };
 
   const open = state !== "idle";
