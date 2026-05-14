@@ -132,6 +132,13 @@ const Defs = () => (
     <filter id="cavityBlur" x="-10%" y="-10%" width="120%" height="120%">
       <feGaussianBlur stdDeviation="2.5" />
     </filter>
+    {/* Envelope clip — anchors the envelope visually to the slot opening.
+        Anything above the slot's top edge (y=186) is clipped, guaranteeing
+        the envelope can ONLY emerge from the slot regardless of how the
+        browser resolves Framer Motion transforms. */}
+    <clipPath id="envelopeSlotClip">
+      <rect x="0" y="186" width="400" height="309" />
+    </clipPath>
   </defs>
 );
 
@@ -318,8 +325,8 @@ const FrontFaceOverlay = () => (
 const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
-      <>
-        {/* Soft drop shadow beneath the envelope */}
+      <g clipPath="url(#envelopeSlotClip)">
+        {/* Soft drop shadow beneath the envelope (also clipped to slot region) */}
         <motion.ellipse
           cx="190"
           cy="262"
@@ -332,8 +339,8 @@ const Envelope = ({ show }: { show: boolean }) => (
           style={{ filter: "blur(4px)" }}
         />
         <motion.g
-          initial={{ opacity: 0, x: 190, y: 186 }}
-          animate={{ opacity: [0, 1, 1], x: 190, y: [186, 191, 267] }}
+          initial={{ opacity: 0, x: 190, y: 180 }}
+          animate={{ opacity: [0, 1, 1], x: 190, y: [180, 188, 267] }}
           exit={{ opacity: 0 }}
           transition={{
             duration: 1.45,
@@ -370,7 +377,7 @@ const Envelope = ({ show }: { show: boolean }) => (
             </g>
           </motion.g>
         </motion.g>
-      </>
+      </g>
     )}
   </AnimatePresence>
 );
