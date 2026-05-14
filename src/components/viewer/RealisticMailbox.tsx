@@ -208,12 +208,13 @@ const FrontFace = () => (
     {/* Inner motion.g performs the actual hinge fall around the (now tilted) X axis */}
     <motion.g
       variants={{
-        idle: { rotateX: 0 },
+        idle: { rotateX: 0, rotateY: -15 },
         opening: {
           rotateX: 90,
+          rotateY: -15,
           transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
         },
-        delivered: { rotateX: 90 },
+        delivered: { rotateX: 90, rotateY: -15 },
       }}
       style={{
         transformOrigin: "195px 265px",
