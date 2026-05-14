@@ -210,6 +210,7 @@ const FrontFace = () => (
     style={{
       transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
+      transformStyle: "preserve-3d" as any,
       willChange: "transform",
     }}
   >
@@ -218,15 +219,16 @@ const FrontFace = () => (
       variants={{
         idle: { rotateX: 0 },
         opening: {
-          rotateX: -90,
+          rotateX: 90,
           transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
         },
-        delivered: { rotateX: -90 },
+        delivered: { rotateX: 90 },
       }}
       style={{
         transformOrigin: "195px 265px",
         transformBox: "view-box" as any,
-        transformPerspective: 1000,
+        transformPerspective: 1200,
+        transformStyle: "preserve-3d" as any,
         willChange: "transform",
       }}
     >
