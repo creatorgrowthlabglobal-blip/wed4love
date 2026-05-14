@@ -181,7 +181,7 @@ const Interior = () => (
   </g>
 );
 
-/* FrontFace + MailSlot live as ONE component (the mail slot is part of the front face) */
+/* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly. */
 const FrontFace = () => (
   <motion.g
     variants={{
@@ -244,17 +244,12 @@ const FrontFace = () => (
       transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
     />
     <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
-  </motion.g>
-);
 
-/* Static base band — the lip the door hinges on. Stays put when door falls forward. */
-const BaseBand = () => (
-  <g>
+    {/* lower lip / hinge band travels with the door so the bottom edge never splits */}
     <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
     <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.8" />
-    {/* small inner shadow under the lip for depth */}
     <rect x="107" y="277" width="176" height="2" fill="#000" opacity="0.35" />
-  </g>
+  </motion.g>
 );
 
 const Envelope = ({ show }: { show: boolean }) => (
@@ -495,7 +490,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <Interior />
               <Envelope show={open} />
               <FrontFace />
-              <BaseBand />
             </g>
 
             <BirdLeft />
