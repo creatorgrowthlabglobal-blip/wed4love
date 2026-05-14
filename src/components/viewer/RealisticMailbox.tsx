@@ -1,5 +1,4 @@
 import { Component, type ReactNode, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, ContactShadows, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
