@@ -189,22 +189,22 @@ const FrontFace = () => (
     variants={{
       idle: { rotateX: 0, x: 0, y: 0 },
       opening: {
-        rotateX: 92,
+        rotateX: 88,
         x: 0,
         y: 0,
         transition: {
-          duration: 1.4,
-          delay: 0.4,
-          // back.out — slight overshoot for a premium "thud"
-          ease: [0.34, 1.56, 0.64, 1],
+          duration: 1.3,
+          delay: 0.3,
+          ease: [0.34, 1.45, 0.64, 1], // back.out — slight overshoot
         },
       },
-      delivered: { rotateX: 92, x: 0, y: 0 },
+      delivered: { rotateX: 88, x: 0, y: 0 },
     }}
     style={{
       transformOrigin: "50% 100%",
       transformBox: "fill-box" as any,
-      transformPerspective: 1400,
+      transformPerspective: 1000,
+      willChange: "transform",
     }}
   >
     {/* lavender front panel */}
