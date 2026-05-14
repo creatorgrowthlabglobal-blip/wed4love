@@ -42,7 +42,7 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           position: "relative",
         }}
       >
-        <svg viewBox="0 0 400 440" width="100%" height="100%" style={{ overflow: "visible" }}>
+        <svg viewBox="0 0 400 470" width="100%" height="100%" style={{ overflow: "visible" }}>
           <defs>
             {/* Brushed lavender metal — front face (vertical grain + soft sheen) */}
             <linearGradient id="lavMetal" x1="0" y1="0" x2="1" y2="0">
@@ -254,7 +254,7 @@ const RealisticMailbox = ({ className, onContinue }: Props) => {
           {!open && (
             <motion.text
               x="200"
-              y="432"
+              y="458"
               textAnchor="middle"
               fontFamily="'Inter', system-ui, sans-serif"
               fontSize="13"
