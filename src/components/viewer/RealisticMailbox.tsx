@@ -7,11 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Props {
   className?: string;
   onContinue?: () => void;
+  senderName?: string;
 }
 
 const STROKE = "#1a1a1a";
 
-const RealisticMailbox = ({ className, onContinue }: Props) => {
+const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
