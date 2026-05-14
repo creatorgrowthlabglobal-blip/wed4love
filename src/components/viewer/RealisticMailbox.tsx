@@ -201,7 +201,7 @@ const FrontFace = () => (
       idle: { rotateX: 0, rotateZ: 0, x: 0, y: 0 },
       opening: {
         rotateX: 88,
-        rotateZ: -15,
+        rotateZ: 0,
         x: 0,
         y: 0,
         transition: {
@@ -210,7 +210,7 @@ const FrontFace = () => (
           ease: [0.34, 1.45, 0.64, 1], // back.out — slight overshoot
         },
       },
-      delivered: { rotateX: 88, rotateZ: -15, x: 0, y: 0 },
+      delivered: { rotateX: 88, rotateZ: 0, x: 0, y: 0 },
     }}
     style={{
       transformOrigin: "195px 266px",
