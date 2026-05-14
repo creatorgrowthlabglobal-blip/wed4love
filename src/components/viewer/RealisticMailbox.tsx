@@ -459,7 +459,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             <g filter="url(#bodyShadow)">
               {/* Right-side wall strip — sells the ~15° left rotation (we see object's right side) */}
               <g>
-                {/* Roof right side panel */}
                 <path
                   d="M 325 152 Q 325 67 240 67 L 248 60 Q 338 60 338 150 L 338 248 L 325 252 Z"
                   fill="url(#lavMetalDark)"
@@ -467,7 +466,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   strokeWidth="2.5"
                   strokeLinejoin="round"
                 />
-                {/* Body right side panel */}
                 <path
                   d="M 280 270 L 280 170 Q 280 85 195 85 L 200 78 Q 293 78 293 168 L 293 268 Z"
                   fill="url(#lavMetalDark)"
@@ -476,7 +474,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   strokeLinejoin="round"
                   opacity="0.95"
                 />
-                {/* Inner shadow on right side seam */}
                 <path
                   d="M 281 170 Q 281 88 198 82"
                   fill="none"
@@ -484,7 +481,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   strokeWidth="1.5"
                   opacity="0.4"
                 />
-                {/* Base band right side */}
                 <path
                   d="M 285 265 L 285 279 L 292 276 L 292 263 Z"
                   fill="url(#lavMetalDark)"
@@ -495,9 +491,14 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               </g>
               <Roof />
               <Interior />
-              <Envelope show={open} />
-              <FrontFace />
             </g>
+
+            {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
+                rasterize their contents and break CSS 3D transforms on children,
+                which is why the door was disappearing. */}
+            <Envelope show={open} />
+            <FrontFace />
+
 
             <BirdLeft />
             <BirdRight />
