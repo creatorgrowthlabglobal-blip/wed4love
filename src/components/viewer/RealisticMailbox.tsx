@@ -155,6 +155,32 @@ const Roof = () => (
   </motion.g>
 );
 
+/* Empty interior cavity — visible when FrontFace falls open */
+const Interior = () => (
+  <g clipPath="url(#frontClip)">
+    {/* deep cavity background */}
+    <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
+    {/* back wall subtle plane */}
+    <rect x="118" y="120" width="164" height="148" fill="url(#cavityFloor)" opacity="0.55" />
+    {/* top inner shadow rim (under arch) */}
+    <path
+      d="M 110 170 Q 110 90 195 90 Q 280 90 280 170"
+      fill="none"
+      stroke="#000"
+      strokeWidth="10"
+      opacity="0.55"
+      strokeLinecap="round"
+    />
+    {/* faint side wall highlights for depth */}
+    <path d="M 122 170 L 122 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
+    <path d="M 268 170 L 268 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
+    {/* floor line */}
+    <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7" />
+    {/* tiny ambient glow from above to suggest open-air emptiness */}
+    <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04" />
+  </g>
+);
+
 /* FrontFace + MailSlot live as ONE component (the mail slot is part of the front face) */
 const FrontFace = () => (
   <motion.g
