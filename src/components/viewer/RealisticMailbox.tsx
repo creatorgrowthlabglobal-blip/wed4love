@@ -435,12 +435,10 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             <Post />
 
             <g filter="url(#bodyShadow)">
-              <Roof />
+              <Body />
               <Interior />
               <Envelope show={open} />
               <FrontFace />
-              <BaseBand />
-              
             </g>
 
             <BirdLeft />
