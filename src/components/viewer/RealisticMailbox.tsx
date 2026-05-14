@@ -185,8 +185,9 @@ const Interior = () => (
 );
 
 /* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
-   Hinged at the BOTTOM edge — swings forward/downward via rotateX (3D) so it
-   reads like a real mailbox flap, not a 2D z-axis flip. */
+   The mailbox face is already drawn in a left-leaning isometric projection, so
+   the flap must stay on that same skewed plane while swinging from the bottom
+   edge like a real hinge. */
 const HingeSill = () => (
   <g>
     <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
@@ -196,28 +197,31 @@ const HingeSill = () => (
 );
 
 const FrontFace = () => (
-  // Outer wrapper kept for layering — no Z tilt so the door stays a clean rectangle.
+  // Pre-tilt the whole door assembly to the same apparent left-facing plane as
+  // the mailbox body, then hinge the flap around the bottom edge inside that plane.
   <motion.g
     style={{
       transformOrigin: "195px 265px",
       transformBox: "view-box" as any,
+      rotate: -5,
+      skewX: -8,
       transformStyle: "preserve-3d" as any,
       willChange: "transform",
     }}
   >
-    {/* Inner motion.g performs the actual hinge fall around the (now tilted) X axis */}
+    {/* Inner motion.g performs only the hinge rotation so the base stays glued. */}
     <motion.g
       variants={{
         idle: { rotateX: 0 },
         opening: {
-          rotateX: 90,
+          rotateX: 94,
           transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
         },
-        delivered: { rotateX: 90 },
+        delivered: { rotateX: 94 },
       }}
       style={{
         transformOrigin: "195px 265px",
-        transformBox: "view-box" as any,
+        transformBox: "fill-box" as any,
         transformPerspective: 1200,
         transformStyle: "preserve-3d" as any,
         willChange: "transform",
