@@ -196,17 +196,14 @@ const HingeSill = () => (
 
 const FrontFace = () => (
   <motion.g
+    initial={{ rotate: -4, skewX: -6 }}
     variants={{
-      idle: { rotate: 0, skewX: 0 },
-      opening: {
-        rotate: -4,
-        skewX: -6,
-        transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
-      },
+      idle: { rotate: -4, skewX: -6 },
+      opening: { rotate: -4, skewX: -6 },
       delivered: { rotate: -4, skewX: -6 },
     }}
     style={{
-      transformOrigin: "195px 265px",
+      transformOrigin: "195px 270px",
       transformBox: "view-box" as any,
       transformStyle: "preserve-3d" as any,
       willChange: "transform",
@@ -215,15 +212,17 @@ const FrontFace = () => (
     {/* Inner motion.g performs only the hinge rotation so the base stays glued. */}
     <motion.g
       variants={{
-        idle: { rotateX: 0 },
+        idle: { rotateX: 0, rotateY: -4, z: 10 },
         opening: {
-          rotateX: 94,
-          transition: { duration: 1.3, delay: 0.3, ease: [0.4, 0, 0.2, 1] },
+          rotateX: 90,
+          rotateY: -4,
+          z: 10,
+          transition: { type: "spring", stiffness: 100, damping: 15, delay: 0.3 },
         },
-        delivered: { rotateX: 94 },
+        delivered: { rotateX: 90, rotateY: -4, z: 10 },
       }}
       style={{
-        transformOrigin: "195px 265px",
+        transformOrigin: "195px 270px",
         transformBox: "fill-box" as any,
         transformPerspective: 1200,
         transformStyle: "preserve-3d" as any,
