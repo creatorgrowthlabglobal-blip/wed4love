@@ -279,6 +279,11 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
           <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
         </radialGradient>
+        <mask id="doorFaceMask">
+          <rect x="0" y="0" width="400" height="495" fill="#000" />
+          <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" fill="#fff" />
+          <rect x="138" y="186" width="104" height="17" rx="3" fill="#000" />
+        </mask>
         <clipPath id="doorClipOverlay">
           <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" />
         </clipPath>
@@ -291,6 +296,7 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
         stroke={STROKE}
         strokeWidth="3"
         strokeLinejoin="round"
+        mask="url(#doorFaceMask)"
       />
       {/* sheen */}
       <path
@@ -298,6 +304,7 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
         fill="url(#doorShine)"
         opacity="0.5"
         clipPath="url(#doorClipOverlay)"
+        mask="url(#doorFaceMask)"
       />
       {/* edge rim */}
       <path
@@ -308,6 +315,7 @@ const FrontFaceOverlay = (_: { controls: ReturnType<typeof useAnimation> }) => (
         opacity="0.85"
       />
       {/* mail slot */}
+      <rect x="136" y="184" width="108" height="21" rx="4" fill="#2D243A" opacity="0.7" />
       <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
       <motion.rect
         x="141"
@@ -330,7 +338,7 @@ const Envelope = ({ show }: { show: boolean }) => (
       <>
         {/* Soft drop shadow beneath the envelope */}
         <motion.ellipse
-          cx="205"
+          cx="190"
           cy="262"
           rx="62"
           ry="6"
@@ -341,7 +349,7 @@ const Envelope = ({ show }: { show: boolean }) => (
           style={{ filter: "blur(4px)" }}
         />
         <motion.g
-          transform="translate(205 194)"
+          transform="translate(190 194)"
           initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: [0, 1, 1], y: [0, 8, 78] }}
           exit={{ opacity: 0 }}
