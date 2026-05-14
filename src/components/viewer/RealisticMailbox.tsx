@@ -221,7 +221,7 @@ const Envelope = ({ show }: { show: boolean }) => (
   </AnimatePresence>
 );
 
-/* Bird body: idle gentle hop, on click flies outward in facing direction */
+/* Bird body: idle gentle hop, on click flies far off-screen in facing direction */
 const birdBodyVariants = (dir: 1 | -1): Variants => ({
   idle: {
     y: [0, -2, 0],
@@ -230,11 +230,15 @@ const birdBodyVariants = (dir: 1 | -1): Variants => ({
     transition: { duration: 2.8, repeat: Infinity, ease: "easeInOut" },
   },
   opening: {
-    x: dir * 160,
-    y: -140,
-    opacity: 0,
-    rotate: dir * 8,
-    transition: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+    x: dir * 520,
+    y: -220,
+    opacity: [1, 1, 1, 0],
+    rotate: dir * 10,
+    transition: {
+      duration: 2.4,
+      ease: [0.22, 1, 0.36, 1],
+      opacity: { duration: 2.4, times: [0, 0.6, 0.85, 1] },
+    },
   },
   delivered: { opacity: 0 },
 });
