@@ -193,7 +193,7 @@ const FrontFace = () => (
       delivered: { rotateX: 78 },
     }}
     style={{
-      transformOrigin: "200px 270px",
+      transformOrigin: "50% 100%",
       transformBox: "fill-box" as any,
       transformStyle: "preserve-3d" as any,
     }}
