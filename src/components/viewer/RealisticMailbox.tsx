@@ -42,6 +42,17 @@ const Defs = () => (
       <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
       <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
     </radialGradient>
+    {/* Inner cavity gradient — empty mailbox interior */}
+    <radialGradient id="cavity" cx="0.5" cy="0.4" r="0.7">
+      <stop offset="0%" stopColor="#3a2f4d" />
+      <stop offset="55%" stopColor="#1a1424" />
+      <stop offset="100%" stopColor="#0a0610" />
+    </radialGradient>
+    {/* Subtle floor plate inside cavity */}
+    <linearGradient id="cavityFloor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#2a2238" />
+      <stop offset="100%" stopColor="#0a0610" />
+    </linearGradient>
     <filter id="brushed" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="turbulence" baseFrequency="0.9 0.04" numOctaves="2" seed="7" />
       <feColorMatrix values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.18 0" />
