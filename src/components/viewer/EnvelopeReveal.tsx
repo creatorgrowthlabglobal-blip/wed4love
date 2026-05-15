@@ -123,7 +123,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
   const initial = (receiverName || "♥").trim().slice(0, 1).toUpperCase();
 
   return (
-    <div
+    <motion.div
+      initial={{ backdropFilter: "blur(0px)", opacity: 0 }}
+      animate={{ backdropFilter: "blur(0px)", opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       style={{
         position: "fixed",
         inset: 0,
@@ -187,9 +190,11 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
 
             {/* Envelope */}
             <motion.div
+              layoutId="delivery-envelope"
               onClick={handleClick}
               whileHover={phase === "idle" ? { scale: 1.015, y: -4 } : {}}
               whileTap={phase === "idle" ? { scale: 0.98 } : {}}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
               style={{
                 position: "relative",
                 width: "min(360px, 90vw)",
@@ -430,6 +435,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
           click to open
         </span>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
