@@ -369,7 +369,7 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
               animate={{ opacity: [0, 1, 1], x: 190, y: [191, 194, 198] }}
               exit={{ opacity: 0 }}
               transition={{
-                duration: 0.42,
+                duration: 0.84,
                 delay: 0.2,
                 times: [0, 0.52, 1],
                 ease: [0.16, 1, 0.3, 1],
@@ -379,7 +379,7 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
                 initial={{ scaleY: 0.08, scaleX: 0.92 }}
                 animate={{ scaleY: [0.08, 0.16, 0.24], scaleX: [0.92, 0.94, 0.96] }}
                 transition={{
-                  duration: 0.42,
+                  duration: 0.84,
                   delay: 0.2,
                   times: [0, 0.52, 1],
                   ease: [0.16, 1, 0.3, 1],
@@ -399,8 +399,8 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
             animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 202, 215] }}
             exit={{ opacity: 0 }}
             transition={{
-              duration: 1.05,
-              delay: 0.56,
+              duration: 2.1,
+              delay: 1.04,
               times: [0, 0.06, 0.22, 1],
               ease: [0.16, 1, 0.3, 1],
             }}
@@ -409,8 +409,8 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
               initial={{ scaleY: 0.24, scaleX: 0.96 }}
               animate={{ scaleY: [0.24, 0.24, 0.7, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
               transition={{
-                duration: 1.05,
-                delay: 0.56,
+                duration: 2.1,
+                delay: 1.04,
                 times: [0, 0.06, 0.22, 1],
                 ease: [0.16, 1, 0.3, 1],
               }}
