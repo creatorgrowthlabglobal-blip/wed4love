@@ -64,7 +64,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         height: "50%",
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
-        zIndex: isOpen ? 4 : 20,
+        zIndex: 10,
       }}
       animate={{
         rotateX: isOpen ? 172 : 0,
@@ -93,39 +93,6 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
     </motion.div>
   );
 };
-
-const EnvelopeFrontFace = () => (
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      zIndex: 15,
-      pointerEvents: "none",
-    }}
-  >
-    <svg
-      viewBox="0 0 360 240"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "100%", height: "100%", display: "block" }}
-      preserveAspectRatio="none"
-    >
-      <polygon
-        points="0,0 0,240 180,120"
-        fill={ENVELOPE_BODY}
-        stroke={ENVELOPE_DARK}
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-      <polygon
-        points="360,0 360,240 180,120"
-        fill={ENVELOPE_LIGHT}
-        stroke={ENVELOPE_DARK}
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </div>
-);
 
 type Phase = "idle" | "opening" | "open";
 
@@ -299,7 +266,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     height: "75%",
                     background: PAPER_BG,
                     borderRadius: "3px",
-                    zIndex: 12,
+                    zIndex: 0,
                     boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
                     display: "flex",
                     alignItems: "center",
@@ -314,8 +281,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   </div>
                 </motion.div>
               )}
-
-              <EnvelopeFrontFace />
 
               {/* 3D flap */}
               <div style={{ position: "absolute", inset: 0, zIndex: 10, perspective: "600px", transformStyle: "preserve-3d" }}>
