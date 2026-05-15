@@ -657,40 +657,28 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           {delivered && (
             <motion.div
               key="shared-envelope"
-              layout
               layoutId="delivery-envelope"
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              style={
-                zoomed
-                  ? {
-                      // FINAL state — viewport-centered, exact size of Page 2's envelope
-                      // (min(360px, 90vw) × aspect 360/240). When the route swaps,
-                      // Page 2's envelope is already at this exact box → seamless.
-                      position: "fixed",
-                      top: "50%",
-                      left: "50%",
-                      x: "-50%",
-                      y: "-50%",
-                      width: "min(360px, 90vw)",
-                      aspectRatio: "360 / 240",
-                      pointerEvents: "none",
-                      zIndex: 60,
-                      transformOrigin: "center center",
-                      perspective: "800px",
-                    }
-                  : {
-                      // INITIAL state — sits exactly over the landed SVG envelope.
-                      position: "absolute",
-                      left: "33.75%",
-                      top: "40.33%",
-                      width: "27.5%",
-                      height: "18.33%",
-                      pointerEvents: "none",
-                      zIndex: 30,
-                      transformOrigin: "center center",
-                      perspective: "800px",
-                    }
-              }
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: zoomed ? 1 : 0.4, opacity: 1 }}
+              transition={{
+                scale: { type: "spring", stiffness: 100, damping: 20 },
+                opacity: { duration: 0.35, ease: "easeOut" },
+              }}
+              style={{
+                // Always viewport-centered → uniform center scale, no drift.
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                x: "-50%",
+                y: "-50%",
+                width: "min(360px, 90vw)",
+                aspectRatio: "360 / 240",
+                pointerEvents: "none",
+                zIndex: 60,
+                transformOrigin: "center center",
+                perspective: "800px",
+                willChange: "transform",
+              }}
             >
               {/* Sibling drop shadow (matches Page 2 envelope) */}
               <div
