@@ -132,11 +132,11 @@ const Defs = () => (
     <filter id="cavityBlur" x="-10%" y="-10%" width="120%" height="120%">
       <feGaussianBlur stdDeviation="2.5" />
     </filter>
-    {/* Envelope clip — anchors the envelope visually to the slot opening.
-        Anything above the slot's top edge (y=186) is clipped, guaranteeing
-        the envelope can ONLY emerge from the slot regardless of how the
-        browser resolves Framer Motion transforms. */}
-    <clipPath id="envelopeSlotClip">
+    {/* Envelope clips — one for the visible slot mouth, one for the front area below it. */}
+    <clipPath id="envelopeSlotMouthClip">
+      <rect x="138" y="186" width="104" height="17" rx="3" />
+    </clipPath>
+    <clipPath id="envelopeShadowClip">
       <rect x="0" y="186" width="400" height="309" />
     </clipPath>
   </defs>
@@ -322,62 +322,100 @@ const FrontFaceOverlay = () => (
   </g>
 );
 
+const EnvelopeArtwork = () => (
+  <g>
+    <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
+    <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
+    <rect x="-53" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
+    <polyline points="-55,0 0,38 55,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
+    <polyline points="-55,0 0,38 55,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
+    <g filter="url(#waxBevel)">
+      <path
+        d="M 0 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
+        fill="url(#waxHeart)"
+        stroke="#5A0E1C"
+        strokeWidth="0.9"
+      />
+      <ellipse cx="-4" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
+    </g>
+  </g>
+);
+
 const Envelope = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
-      <g clipPath="url(#envelopeSlotClip)">
-        {/* Soft drop shadow beneath the envelope (also clipped to slot region) */}
-        <motion.ellipse
-          cx="190"
-          cy="262"
-          rx="62"
-          ry="6"
-          fill="#000"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.32 }}
-          transition={{ delay: 0.75, duration: 0.45 }}
-          style={{ filter: "blur(4px)" }}
-        />
+      <>
+        <g clipPath="url(#envelopeShadowClip)">
+          {/* Soft drop shadow beneath the envelope */}
+          <motion.ellipse
+            cx="190"
+            cy="262"
+            rx="62"
+            ry="6"
+            fill="#000"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.32 }}
+            transition={{ delay: 0.72, duration: 0.4 }}
+            style={{ filter: "blur(4px)" }}
+          />
+        </g>
+
+        <g clipPath="url(#envelopeSlotMouthClip)">
+          <motion.g
+            initial={{ opacity: 0, x: 190, y: 191 }}
+            animate={{ opacity: [0, 1, 1], x: 190, y: [191, 194, 198] }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: 0.42,
+              delay: 0.2,
+              times: [0, 0.52, 1],
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            <motion.g
+              initial={{ scaleY: 0.08, scaleX: 0.92 }}
+              animate={{ scaleY: [0.08, 0.16, 0.24], scaleX: [0.92, 0.94, 0.96] }}
+              transition={{
+                duration: 0.42,
+                delay: 0.2,
+                times: [0, 0.52, 1],
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              style={{ transformOrigin: "0px 0px" }}
+              filter="url(#envDropShadow)"
+            >
+              <EnvelopeArtwork />
+            </motion.g>
+          </motion.g>
+        </g>
+
         <motion.g
-          initial={{ opacity: 0, x: 190, y: 180 }}
-          animate={{ opacity: [0, 1, 1], x: 190, y: [180, 188, 267] }}
+          initial={{ opacity: 0, x: 190, y: 198 }}
+          animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 212, 267] }}
           exit={{ opacity: 0 }}
           transition={{
-            duration: 1.45,
-            delay: 0.25,
-            times: [0, 0.2, 1],
+            duration: 1.05,
+            delay: 0.56,
+            times: [0, 0.06, 0.22, 1],
             ease: [0.16, 1, 0.3, 1],
           }}
         >
           <motion.g
-            initial={{ scaleY: 0.25, scaleX: 0.9 }}
-            animate={{ scaleY: [0.25, 0.35, 1], scaleX: [0.9, 0.94, 1] }}
+            initial={{ scaleY: 0.24, scaleX: 0.96 }}
+            animate={{ scaleY: [0.24, 0.24, 0.7, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
             transition={{
-              duration: 1.45,
-              delay: 0.25,
-              times: [0, 0.2, 1],
+              duration: 1.05,
+              delay: 0.56,
+              times: [0, 0.06, 0.22, 1],
               ease: [0.16, 1, 0.3, 1],
             }}
             style={{ transformOrigin: "0px 0px" }}
             filter="url(#envDropShadow)"
           >
-            <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
-            <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
-            <rect x="-53" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
-            <polyline points="-55,0 0,38 55,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
-            <polyline points="-55,0 0,38 55,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
-            <g filter="url(#waxBevel)">
-              <path
-                d="M 0 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
-                fill="url(#waxHeart)"
-                stroke="#5A0E1C"
-                strokeWidth="0.9"
-              />
-              <ellipse cx="-4" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
-            </g>
+            <EnvelopeArtwork />
           </motion.g>
         </motion.g>
-      </g>
+      </>
     )}
   </AnimatePresence>
 );
