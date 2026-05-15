@@ -505,14 +505,15 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
               }}
               filter="url(#envDropShadow)"
             >
-              <EnvelopeArtwork />
+              <EnvelopeArtwork open={open} />
             </motion.g>
           </g>
         )}
       </>
     )}
   </AnimatePresence>
-);
+  );
+};
 
 /* Bird body: idle gentle hop, on click flies far off-screen in facing direction */
 const birdBodyVariants = (dir: 1 | -1): Variants => ({
