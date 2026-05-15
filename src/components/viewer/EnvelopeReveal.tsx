@@ -448,6 +448,34 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             >
               ×
             </motion.button>
+
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.3, duration: 0.5 }}
+              style={{ display: "flex", justifyContent: "center", marginTop: "2.5rem" }}
+            >
+              <button
+                onClick={handleClose}
+                style={{
+                  background: "transparent",
+                  border: `1px solid ${TEXT_DARK}`,
+                  color: TEXT_DARK,
+                  padding: "10px 28px",
+                  fontSize: "11px",
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                  cursor: "pointer",
+                  borderRadius: "2px",
+                  transition: "background 0.25s, color 0.25s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = TEXT_DARK; e.currentTarget.style.color = PAPER_BG; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = TEXT_DARK; }}
+              >
+                Continue
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
