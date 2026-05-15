@@ -72,7 +72,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
       transition={{
         duration: 1.4,
         ease: [0.76, 0, 0.24, 1],
-        delay: 0.1,
+        delay: 0,
       }}
     >
       <svg
@@ -208,7 +208,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               onClick={handleClick}
               whileHover={phase === "idle" ? { scale: 1.015 } : {}}
               whileTap={phase === "idle" ? { scale: 0.98 } : {}}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
               style={{
                 position: "absolute",
                 inset: 0,
