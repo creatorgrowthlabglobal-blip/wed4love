@@ -85,25 +85,11 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         willChange: "transform",
       }}
       initial={false}
-      animate={
-        isOpen
-          ? {
-              // Real envelope motion: tiny resistance as the seal "breaks",
-              // then it tips back, accelerates with gravity, and settles with
-              // a soft bounce against the back of the envelope.
-              rotateX: [0, 4, -30, -110, -178, -172, -174, -173],
-            }
-          : { rotateX: 0 }
-      }
-      transition={
-        isOpen
-          ? {
-              duration: 1.05,
-              times: [0, 0.08, 0.22, 0.5, 0.78, 0.88, 0.95, 1],
-              ease: ["easeIn", "easeOut", "easeIn", "easeIn", "easeOut", "easeInOut", "easeOut"],
-            }
-          : { duration: 0.4, ease: "easeOut" }
-      }
+      animate={{ rotateX: isOpen ? -135 : 0 }}
+      transition={{
+        duration: 0.9,
+        ease: [0.32, 0.72, 0.24, 1],
+      }}
     >
       {/* Front face — outer side of the flap (visible while closed) */}
       <svg
