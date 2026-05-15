@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useAnimation, type Variants } from "framer-motion";
 
 /* Premium brushed-metal lavender mailbox — modular animatable parts.
@@ -545,20 +545,26 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [state, setState] = useState<MailboxState>("idle");
   const [zoomed, setZoomed] = useState(false);
   const controls = useAnimation();
+  const timersRef = useRef<number[]>([]);
 
   useEffect(() => {
     controls.start(state);
   }, [state, controls]);
 
+  useEffect(() => () => {
+    timersRef.current.forEach((timer) => window.clearTimeout(timer));
+  }, []);
+
   const handleClick = () => {
     if (state !== "idle") return;
     setState("opening");
-    setTimeout(() => setState("delivered"), 2200);
-    // Kick off the zoom shortly after the envelope lands.
-    setTimeout(() => setZoomed(true), 2400);
-    // Hand off to Page 2 only AFTER the zoom has settled, so the
-    // already-zoomed envelope is what carries into Page 2 (mailbox just disappears).
-    setTimeout(() => onContinue?.(), 3500);
+    timersRef.current = [
+      window.setTimeout(() => {
+        setState("delivered");
+        setZoomed(true);
+      }, 2200),
+      window.setTimeout(() => onContinue?.(), 3180),
+    ];
   };
 
   const open = state !== "idle";
@@ -694,7 +700,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                     inset: "8px 12px -12px 12px",
                     borderRadius: "6px",
                     background: "rgba(120,110,90,0.18)",
-                    filter: "blur(16px)",
+                    boxShadow: "0 22px 34px rgba(120,110,90,0.22)",
                     zIndex: 0,
                   }}
                 />
