@@ -123,7 +123,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
   const initial = (receiverName || "♥").trim().slice(0, 1).toUpperCase();
 
   return (
-    <div
+    <motion.div
+      initial={{ backdropFilter: "blur(0px)", opacity: 0 }}
+      animate={{ backdropFilter: "blur(0px)", opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       style={{
         position: "fixed",
         inset: 0,
