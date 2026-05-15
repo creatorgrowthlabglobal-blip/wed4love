@@ -9,12 +9,14 @@ interface EnvelopeRevealProps {
 }
 
 const PAPER_BG = "#F9F7F2";
-const ENVELOPE_BODY = "#E8E3D9";
-const ENVELOPE_DARK = "#C9C1B0";
-const FLAP_COLOR = "#DDD8CC";
+const ENVELOPE_BODY = "#EDB6CC";   // base pink (left-shaded)
+const ENVELOPE_LIGHT = "#FBE3EC";  // lighter pink highlight
+const ENVELOPE_DARK = "#1a1a1a";   // ink outline
+const FLAP_COLOR = "#F4CADB";      // top flap pink
 const TEXT_DARK = "#2C2A25";
 const TEXT_MID = "#6B6456";
-const WAX_RED = "#8B2E2E";
+const HEART_OUTER = "#F1A9C2";
+const HEART_INNER = "#E87FA3";
 
 const letterContent = {
   greeting: "My Dearest,",
