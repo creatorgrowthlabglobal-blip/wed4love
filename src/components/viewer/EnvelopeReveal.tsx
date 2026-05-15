@@ -124,9 +124,9 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
 
   return (
     <motion.div
-      initial={{ backdropFilter: "blur(0px)", opacity: 0 }}
-      animate={{ backdropFilter: "blur(0px)", opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      initial={false}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0 }}
       style={{
         position: "fixed",
         inset: 0,
