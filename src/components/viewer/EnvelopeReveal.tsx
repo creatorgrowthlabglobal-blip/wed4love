@@ -202,7 +202,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               animate={{ opacity: [0.5, 0.85, 0.5] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
             >
-              {phase === "idle" ? `For ${receiverName}` : "Opening…"}
+              {phase === "idle" ? `For ${receiverName}` : "Click to read the letter"}
             </motion.p>
 
             {/* Envelope — fixed/centered wrapper (never animated) so the
