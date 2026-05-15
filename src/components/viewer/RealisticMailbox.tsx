@@ -657,27 +657,42 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           {delivered && (
             <motion.div
               key="shared-envelope"
+              layout
               layoutId="delivery-envelope"
-              initial={{ scale: 1.05 }}
-              animate={{ scale: 1.6 }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              style={{
-                position: "absolute",
-                // EXACT 3:2 (matches Page 2 envelope 360x240) — no squish.
-                left: "33.75%",
-                top: "40.33%",
-                width: "27.5%",
-                height: "18.33%",
-                pointerEvents: "none",
-                zIndex: 30,
-                transformOrigin: "center center",
-                perspective: "800px",
-                transformStyle: "preserve-3d",
-              }}
+              style={
+                zoomed
+                  ? {
+                      // FINAL state — viewport-centered, exact size of Page 2's envelope
+                      // (min(360px, 90vw) × aspect 360/240). When the route swaps,
+                      // Page 2's envelope is already at this exact box → seamless.
+                      position: "fixed",
+                      top: "50%",
+                      left: "50%",
+                      x: "-50%",
+                      y: "-50%",
+                      width: "min(360px, 90vw)",
+                      aspectRatio: "360 / 240",
+                      pointerEvents: "none",
+                      zIndex: 60,
+                      transformOrigin: "center center",
+                      perspective: "800px",
+                    }
+                  : {
+                      // INITIAL state — sits exactly over the landed SVG envelope.
+                      position: "absolute",
+                      left: "33.75%",
+                      top: "40.33%",
+                      width: "27.5%",
+                      height: "18.33%",
+                      pointerEvents: "none",
+                      zIndex: 30,
+                      transformOrigin: "center center",
+                      perspective: "800px",
+                    }
+              }
             >
-              {/* Soft drop shadow — sibling, not on the morphing body, so the
-                  layoutId target (Page 2) which has the same sibling shadow
-                  morphs cleanly without animating box-shadow. */}
+              {/* Sibling drop shadow (matches Page 2 envelope) */}
               <div
                 style={{
                   position: "absolute",
@@ -688,7 +703,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   zIndex: 0,
                 }}
               />
-              {/* Body — identical to EnvelopeReveal body div */}
+              {/* Body */}
               <div
                 style={{
                   position: "absolute",
@@ -700,7 +715,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   zIndex: 1,
                 }}
               />
-              {/* Flap — identical geometry to EnvelopeFlap (top 50%, polygon 0,0 360,0 180,180) */}
+              {/* Flap (top 50%) */}
               <div
                 style={{
                   position: "absolute",
