@@ -658,24 +658,38 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               style={{
                 position: "absolute",
+                // 3:2 aspect to exactly match Page 2's envelope (360x240)
+                // so the layoutId morph stays proportional (no squish).
                 left: "33.75%",
-                top: "42.43%",
+                top: "40.33%",
                 width: "27.5%",
-                height: "14.14%",
+                height: "18.33%",
                 pointerEvents: "none",
                 zIndex: 30,
                 transformOrigin: "center center",
+                borderRadius: "6px",
+                background: "#F5C9DA",
+                border: "2.5px solid #1a1a1a",
+                overflow: "visible",
+                boxShadow: "0 12px 28px rgba(0,0,0,0.22)",
               }}
             >
+              {/* Triangular flap covering the top half — identical geometry
+                  to EnvelopeReveal's flap (polygon 0,0 360,0 180,180). */}
               <svg
-                viewBox="-56 -1 112 72"
+                viewBox="0 0 360 180"
                 width="100%"
-                height="100%"
+                height="50%"
                 preserveAspectRatio="none"
-                style={{ overflow: "visible", filter: "drop-shadow(0 8px 18px rgba(0,0,0,0.25))" }}
+                style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
               >
-                <rect x="-55" y="0" width="110" height="70" rx="2" fill="#F5C9DA" stroke="#1a1a1a" strokeWidth="2.2" strokeLinejoin="round" />
-                <path d="M -55 0 L 0 35 L 55 0 Z" fill="#F5C9DA" stroke="#1a1a1a" strokeWidth="2.2" strokeLinejoin="round" />
+                <polygon
+                  points="0,0 360,0 180,180"
+                  fill="#F5C9DA"
+                  stroke="#1a1a1a"
+                  strokeWidth="3"
+                  strokeLinejoin="round"
+                />
               </svg>
             </motion.div>
           )}
