@@ -82,74 +82,25 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
         zIndex: 10,
-        willChange: "transform",
       }}
-      initial={false}
-      animate={{ rotateX: isOpen ? -135 : 0 }}
+      animate={{
+        rotateX: isOpen ? -172 : 0,
+      }}
       transition={{
-        duration: 0.9,
-        ease: [0.32, 0.72, 0.24, 1],
+        duration: 0.8,
+        ease: [0.76, 0, 0.24, 1],
+        delay: 0.05,
       }}
     >
-      {/* Front face — outer side of the flap (visible while closed) */}
       <svg
         viewBox="0 0 360 180"
         xmlns="http://www.w3.org/2000/svg"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          display: "block",
-          overflow: "visible",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
+        style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
         preserveAspectRatio="none"
       >
-        <defs>
-          <linearGradient id="flap-front" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={FLAP_COLOR} />
-            <stop offset="100%" stopColor={ENVELOPE_BODY} />
-          </linearGradient>
-        </defs>
         <polygon
           points="0,0 360,0 180,180"
-          fill="url(#flap-front)"
-          stroke={ENVELOPE_DARK}
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
-        {/* subtle crease shadow along the fold */}
-        <line x1="0" y1="0" x2="360" y2="0" stroke="rgba(0,0,0,0.18)" strokeWidth="1.2" />
-      </svg>
-
-      {/* Back face — inner side of the flap (visible once flipped open) */}
-      <svg
-        viewBox="0 0 360 180"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          display: "block",
-          overflow: "visible",
-          transform: "rotateX(180deg)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <linearGradient id="flap-back" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={ENVELOPE_LIGHT} />
-            <stop offset="100%" stopColor={FLAP_COLOR} />
-          </linearGradient>
-        </defs>
-        <polygon
-          points="0,0 360,0 180,180"
-          fill="url(#flap-back)"
+          fill={ENVELOPE_MID}
           stroke={ENVELOPE_DARK}
           strokeWidth="3"
           strokeLinejoin="round"
@@ -168,7 +119,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
     if (phase !== "idle") return;
     sounds.envelopeOpen();
     setPhase("opening");
-    setTimeout(() => setPhase("open"), 1150);
+    setTimeout(() => setPhase("open"), 900);
   };
 
   const handleClose = () => {
