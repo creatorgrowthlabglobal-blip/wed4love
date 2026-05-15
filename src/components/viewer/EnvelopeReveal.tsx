@@ -190,9 +190,11 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
 
             {/* Envelope */}
             <motion.div
+              layoutId="delivery-envelope"
               onClick={handleClick}
               whileHover={phase === "idle" ? { scale: 1.015, y: -4 } : {}}
               whileTap={phase === "idle" ? { scale: 0.98 } : {}}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
               style={{
                 position: "relative",
                 width: "min(360px, 90vw)",
