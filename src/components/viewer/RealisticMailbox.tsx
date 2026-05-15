@@ -586,11 +586,12 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           transformStyle: "preserve-3d",
         }}
       >
-        {/* Mailbox SVG — softly blurs and fades as we hand off to Page 2 */}
+        {/* Mailbox SVG — fades out (pure opacity, GPU-composited) as the
+            zoomed envelope takes over. No blur filter → no per-frame repaint. */}
         <motion.div
-          animate={delivered ? { filter: "blur(8px)", opacity: 0.55 } : { filter: "blur(0px)", opacity: 1 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          style={{ width: "100%", height: "100%" }}
+          animate={delivered ? { opacity: 0 } : { opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ width: "100%", height: "100%", willChange: "opacity" }}
         >
         <svg
           viewBox="0 0 400 495"
