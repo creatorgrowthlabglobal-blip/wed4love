@@ -60,12 +60,13 @@ export const sounds = {
   },
   birdsFly: () => {
     try {
-      const audio = new Audio("/sounds/birds-fly.mp3");
+      const audio = birdsAudio.cloneNode(true) as HTMLAudioElement;
       audio.volume = 0.6;
       audio.playbackRate = 1.5;
       (audio as any).preservesPitch = false;
       (audio as any).mozPreservesPitch = false;
       (audio as any).webkitPreservesPitch = false;
+      audio.currentTime = 0;
       audio.play().catch(() => {});
     } catch {}
   },
