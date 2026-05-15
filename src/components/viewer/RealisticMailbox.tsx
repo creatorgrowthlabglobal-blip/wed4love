@@ -655,81 +655,88 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             then scales 1.05 -> 1.6 with spring physics through the route swap. */}
         <AnimatePresence>
           {delivered && (
-            <motion.div
-              key="shared-envelope"
-              layoutId="delivery-envelope"
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{ scale: zoomed ? 1 : 0.4, opacity: 1 }}
-              transition={{
-                scale: { type: "spring", stiffness: 100, damping: 20 },
-                opacity: { duration: 0.35, ease: "easeOut" },
-              }}
+            // Outer wrapper: handles centering ONLY (CSS transform). No motion values
+            // here, so nothing can drift. Inner motion.div handles the scale animation.
+            <div
               style={{
-                // Always viewport-centered → uniform center scale, no drift.
                 position: "fixed",
                 top: "50%",
                 left: "50%",
-                x: "-50%",
-                y: "-50%",
+                transform: "translate(-50%, -50%)",
                 width: "min(360px, 90vw)",
                 aspectRatio: "360 / 240",
                 pointerEvents: "none",
                 zIndex: 60,
-                transformOrigin: "center center",
-                perspective: "800px",
-                willChange: "transform",
               }}
             >
-              {/* Sibling drop shadow (matches Page 2 envelope) */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: "8px 12px -12px 12px",
-                  borderRadius: "6px",
-                  background: "rgba(120,110,90,0.18)",
-                  filter: "blur(16px)",
-                  zIndex: 0,
+              <motion.div
+                key="shared-envelope"
+                layoutId="delivery-envelope"
+                initial={{ scale: 0.4, opacity: 0 }}
+                animate={{ scale: zoomed ? 1 : 0.4, opacity: 1 }}
+                transition={{
+                  scale: { type: "spring", stiffness: 100, damping: 20, mass: 1 },
+                  opacity: { duration: 0.35, ease: "easeOut" },
                 }}
-              />
-              {/* Body */}
-              <div
                 style={{
                   position: "absolute",
                   inset: 0,
-                  borderRadius: "6px",
-                  background: "#F5C9DA",
-                  border: "2.5px solid #1a1a1a",
-                  overflow: "hidden",
-                  zIndex: 1,
-                }}
-              />
-              {/* Flap (top 50%) */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "50%",
-                  zIndex: 10,
-                  transformOrigin: "top center",
+                  transformOrigin: "50% 50%",
+                  perspective: "800px",
+                  willChange: "transform",
                 }}
               >
-                <svg
-                  viewBox="0 0 360 180"
-                  style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
-                  preserveAspectRatio="none"
+                {/* Sibling drop shadow (matches Page 2 envelope) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: "8px 12px -12px 12px",
+                    borderRadius: "6px",
+                    background: "rgba(120,110,90,0.18)",
+                    filter: "blur(16px)",
+                    zIndex: 0,
+                  }}
+                />
+                {/* Body */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "6px",
+                    background: "#F5C9DA",
+                    border: "2.5px solid #1a1a1a",
+                    overflow: "hidden",
+                    zIndex: 1,
+                  }}
+                />
+                {/* Flap (top 50%) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "50%",
+                    zIndex: 10,
+                    transformOrigin: "top center",
+                  }}
                 >
-                  <polygon
-                    points="0,0 360,0 180,180"
-                    fill="#F5C9DA"
-                    stroke="#1a1a1a"
-                    strokeWidth="3"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </motion.div>
+                  <svg
+                    viewBox="0 0 360 180"
+                    style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
+                    preserveAspectRatio="none"
+                  >
+                    <polygon
+                      points="0,0 360,0 180,180"
+                      fill="#F5C9DA"
+                      stroke="#1a1a1a"
+                      strokeWidth="3"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </motion.div>
