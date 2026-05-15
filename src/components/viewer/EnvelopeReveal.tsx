@@ -59,41 +59,13 @@ const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
     }}
   >
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%", display: "block" }}>
-      <defs>
-        <radialGradient id="seal-wax" cx="38%" cy="34%" r="68%">
-          <stop offset="0%" stopColor="#E89BB6" />
-          <stop offset="55%" stopColor="#C76486" />
-          <stop offset="100%" stopColor="#8E3558" />
-        </radialGradient>
-        <radialGradient id="seal-shine" cx="35%" cy="30%" r="22%">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      {/* Scalloped outer edge — 16 small bumps for that pressed-wax feel */}
-      {Array.from({ length: 16 }).map((_, i) => {
-        const a = (i / 16) * Math.PI * 2;
-        const cx = 32 + Math.cos(a) * 27;
-        const cy = 32 + Math.sin(a) * 27;
-        return <circle key={i} cx={cx} cy={cy} r="3.2" fill="#9B3F61" />;
-      })}
-      {/* Main wax disc */}
-      <circle cx="32" cy="32" r="26" fill="url(#seal-wax)" />
-      {/* Inner embossed ring */}
-      <circle cx="32" cy="32" r="20" fill="none" stroke="#6E2745" strokeOpacity="0.45" strokeWidth="0.8" />
-      <circle cx="32" cy="32" r="20" fill="none" stroke="#FFE3EE" strokeOpacity="0.35" strokeWidth="0.8" strokeDasharray="0.5 1.5" />
-      {/* Heart monogram */}
+      {/* Solid wax disc */}
+      <circle cx="32" cy="32" r="24" fill="#C76486" />
+      {/* Heart */}
       <path
         d="M32 44 C 22 36, 19 30, 22 25 C 24.5 21, 29.5 22, 32 26 C 34.5 22, 39.5 21, 42 25 C 45 30, 42 36, 32 44 Z"
         fill="#FFE8F0"
-        fillOpacity="0.92"
-        stroke="#5C1F3A"
-        strokeOpacity="0.35"
-        strokeWidth="0.6"
-        strokeLinejoin="round"
       />
-      {/* Specular highlight */}
-      <ellipse cx="24" cy="22" rx="11" ry="7" fill="url(#seal-shine)" />
     </svg>
   </motion.div>
 );
