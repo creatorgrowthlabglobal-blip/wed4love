@@ -627,8 +627,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 which is why the door was disappearing. */}
             <Envelope show={open} phase="behind" />
             <FrontFaceOverlay />
-            <Envelope show={open} phase="front" />
             <HingeSill />
+            <Envelope show={open} phase="front" />
 
             <BirdLeft />
             <BirdRight />
