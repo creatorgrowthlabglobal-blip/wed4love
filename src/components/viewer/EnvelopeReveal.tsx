@@ -36,15 +36,27 @@ const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
       position: "absolute",
       top: "50%",
       left: "50%",
-      transform: "translate(-50%, -50%)",
-      zIndex: 20,
       width: 56,
       height: 56,
-      cursor: "pointer",
+      marginTop: -28,
+      marginLeft: -28,
+      zIndex: 20,
       pointerEvents: "none",
+      transformOrigin: "50% 50%",
+      filter: "drop-shadow(0 2px 4px rgba(80,30,50,0.35))",
     }}
-    animate={{ opacity: isOpen ? 0 : 1, scale: isOpen ? 0.4 : 1 }}
-    transition={{ duration: 0.25, ease: "easeIn" }}
+    initial={false}
+    animate={{
+      opacity: isOpen ? 0 : 1,
+      scale: isOpen ? 0.45 : 1,
+      rotate: isOpen ? -22 : 0,
+      y: isOpen ? 18 : 0,
+    }}
+    transition={{
+      duration: 0.55,
+      ease: [0.76, 0, 0.24, 1],
+      delay: isOpen ? 0.1 : 0,
+    }}
   >
     <svg viewBox="-15 -4.5 30 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
       <path
