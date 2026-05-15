@@ -67,7 +67,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         zIndex: 10,
       }}
       animate={{
-        rotateX: isOpen ? -172 : 0,
+        rotateX: isOpen ? 172 : 0,
       }}
       transition={{
         duration: 1.4,
