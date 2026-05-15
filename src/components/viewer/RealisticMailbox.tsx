@@ -337,26 +337,27 @@ const EnvelopeArtwork = () => {
   const HEART_INNER = "#E87FA3";
   return (
     <g>
-      {/* Body base (left shaded half) */}
+      {/* Outer body rectangle (ink frame) */}
       <rect x="-55" y="0" width="110" height="70" rx="2" fill={BODY_SHADE} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Lighter right half for soft directional light */}
-      <path d="M 55 0 L 55 70 L -2 70 L 55 35 Z" fill={BODY_LIGHT} opacity="0.55" />
-      {/* Bottom triangular fold (two panels meeting at center seam) */}
-      <path d="M -55 70 L 0 30 L 55 70 Z" fill={BODY_MID} stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M 0 30 L 55 70 Z" fill={BODY_LIGHT} opacity="0.6" />
-      {/* Top triangular flap folded down */}
-      <path d="M -55 0 L 0 42 L 55 0 Z" fill={FLAP_PINK} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Heart wax seal at the center */}
+      {/* Bottom-right panel — lighter (light source from right) */}
+      <path d="M 55 70 L 0 35 L 55 0 Z" fill={BODY_LIGHT} />
+      {/* Bottom-left panel — base pink */}
+      <path d="M -55 70 L 0 35 L -55 0 Z" fill={BODY_SHADE} />
+      {/* Bottom V fold (two panels meeting at center) */}
+      <path d="M -55 70 L 0 35 L 55 70" fill="none" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+      {/* Top flap folded down — apex meets bottom V at center */}
+      <path d="M -55 0 L 0 35 L 55 0 Z" fill={FLAP_PINK} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
+      {/* Heart wax seal centered exactly on the seam intersection */}
       <g>
         <path
-          d="M 0 50 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
+          d="M 0 35 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
           fill={HEART_OUTER}
           stroke={INK}
           strokeWidth="1.8"
           strokeLinejoin="round"
         />
         <path
-          d="M 0 53 m -5 -1.6 a 3 3 0 1 1 5 -1.6 a 3 3 0 1 1 5 1.6 q 0 3.5 -5 7.2 q -5 -3.7 -5 -7.2 z"
+          d="M 0 38 m -5 -1.6 a 3 3 0 1 1 5 -1.6 a 3 3 0 1 1 5 1.6 q 0 3.5 -5 7.2 q -5 -3.7 -5 -7.2 z"
           fill={HEART_INNER}
         />
       </g>
