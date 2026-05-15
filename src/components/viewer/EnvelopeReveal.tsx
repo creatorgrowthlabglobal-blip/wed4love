@@ -287,27 +287,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 <EnvelopeFlap isOpen={isOpen} />
               </div>
 
-              {/* Envelope front pocket — covers bottom half so the letter
-                  appears to slide out from inside (in front of the rotated
-                  flap, but its lower half stays tucked behind this pocket) */}
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: "55%",
-                  background: ENVELOPE_MID,
-                  borderLeft: `2.5px solid ${ENVELOPE_DARK}`,
-                  borderRight: `2.5px solid ${ENVELOPE_DARK}`,
-                  borderBottom: `2.5px solid ${ENVELOPE_DARK}`,
-                  borderBottomLeftRadius: "6px",
-                  borderBottomRightRadius: "6px",
-                  zIndex: 25,
-                  pointerEvents: "none",
-                }}
-              />
-
             </motion.div>
             </div>
           </motion.div>
