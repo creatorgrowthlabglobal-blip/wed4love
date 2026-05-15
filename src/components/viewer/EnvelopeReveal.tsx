@@ -30,44 +30,27 @@ const letterContent = {
   signature: "E.",
 };
 
-const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
-  <motion.div
+const SealSVG = () => (
+  <div
     style={{
       position: "absolute",
-      top: "50%",
+      bottom: -32,
       left: "50%",
       width: 64,
       height: 64,
-      marginTop: -32,
       marginLeft: -32,
-      zIndex: 20,
       pointerEvents: "none",
-      transformOrigin: "50% 50%",
       filter: "drop-shadow(0 3px 5px rgba(80,30,50,0.28)) drop-shadow(0 1px 1px rgba(0,0,0,0.15))",
-    }}
-    initial={false}
-    animate={{
-      opacity: isOpen ? 0 : 1,
-      scale: isOpen ? 0.5 : 1,
-      rotate: isOpen ? -18 : 0,
-      y: isOpen ? 16 : 0,
-    }}
-    transition={{
-      duration: 0.55,
-      ease: [0.76, 0, 0.24, 1],
-      delay: isOpen ? 0.1 : 0,
     }}
   >
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%", display: "block" }}>
-      {/* Solid wax disc */}
       <circle cx="32" cy="32" r="24" fill="#C76486" />
-      {/* Heart */}
       <path
         d="M32 44 C 22 36, 19 30, 22 25 C 24.5 21, 29.5 22, 32 26 C 34.5 22, 39.5 21, 42 25 C 45 30, 42 36, 32 44 Z"
         fill="#FFE8F0"
       />
     </svg>
-  </motion.div>
+  </div>
 );
 
 const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
@@ -106,6 +89,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
           strokeLinejoin="round"
         />
       </svg>
+      <SealSVG />
     </motion.div>
   );
 };
