@@ -182,7 +182,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
     if (phase !== "idle") return;
     sounds.envelopeOpen();
     setPhase("opening");
-    setTimeout(() => setPhase("open"), 900);
+    setTimeout(() => setPhase("open"), 1150);
   };
 
   const handleClose = () => {
