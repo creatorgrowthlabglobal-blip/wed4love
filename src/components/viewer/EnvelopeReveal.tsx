@@ -116,10 +116,14 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
   const [phase, setPhase] = useState<Phase>("idle");
 
   const handleClick = () => {
-    if (phase !== "idle") return;
-    sounds.envelopeOpen();
-    setPhase("opening");
-    setTimeout(() => setPhase("open"), 900);
+    if (phase === "idle") {
+      sounds.envelopeOpen();
+      setPhase("opening");
+      return;
+    }
+    if (phase === "opening") {
+      setPhase("open");
+    }
   };
 
   const handleClose = () => {
