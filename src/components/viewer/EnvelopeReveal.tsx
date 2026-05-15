@@ -238,7 +238,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   background: ENVELOPE_MID,
                   border: `2.5px solid ${ENVELOPE_DARK}`,
                   overflow: "hidden",
-                  zIndex: 1,
+                  zIndex: 10,
                 }}
               >
                 <svg
@@ -254,7 +254,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {phase === "opening" && (
                 <motion.div
                   initial={{ y: 0, zIndex: 0 }}
-                  animate={{ y: -90, zIndex: 30 }}
+                  animate={{ y: -90, zIndex: 5 }}
                   transition={{
                     y: { delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] },
                     zIndex: { delay: 1.5, duration: 0 },
@@ -282,12 +282,15 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 </motion.div>
               )}
 
-              {/* 3D flap — stays at z:20 (above body) the whole time. In Phase B the letter rises to z:30 to overlap it. */}
-              <div
-                style={{ position: "absolute", inset: 0, perspective: "600px", transformStyle: "preserve-3d", zIndex: 20 }}
+              {/* 3D flap — z:20 while opening (above body), drops to z:0 once flap finishes so letter can rise above it */}
+              <motion.div
+                initial={{ zIndex: 20 }}
+                animate={{ zIndex: isOpen ? 0 : 20 }}
+                transition={{ zIndex: { delay: isOpen ? 1.5 : 0, duration: 0 } }}
+                style={{ position: "absolute", inset: 0, perspective: "600px", transformStyle: "preserve-3d" }}
               >
                 <EnvelopeFlap isOpen={isOpen} />
-              </div>
+              </motion.div>
 
             </motion.div>
             </div>
