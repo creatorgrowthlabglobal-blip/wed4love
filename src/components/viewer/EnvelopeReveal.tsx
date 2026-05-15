@@ -193,13 +193,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {phase === "idle" ? `For ${receiverName}` : "Opening…"}
             </motion.p>
 
-            {/* Envelope — fixed/centered, EXACT same box as the Page 1
-                zoom overlay's final state, so the handoff is invisible. */}
-            <motion.div
-              onClick={handleClick}
-              whileHover={phase === "idle" ? { scale: 1.015 } : {}}
-              whileTap={phase === "idle" ? { scale: 0.98 } : {}}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            {/* Envelope — fixed/centered wrapper (never animated) so the
+                envelope stays exactly at viewport center across all
+                breakpoints, zoom levels, and hover/tap states. */}
+            <div
               style={{
                 position: "fixed",
                 top: "50%",
@@ -207,10 +204,23 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 transform: "translate(-50%, -50%)",
                 width: "min(360px, 90vw)",
                 aspectRatio: "360 / 240",
+                pointerEvents: "none",
+                zIndex: 60,
+              }}
+            >
+            <motion.div
+              onClick={handleClick}
+              whileHover={phase === "idle" ? { scale: 1.015 } : {}}
+              whileTap={phase === "idle" ? { scale: 0.98 } : {}}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              style={{
+                position: "absolute",
+                inset: 0,
                 cursor: phase === "idle" ? "pointer" : "default",
                 perspective: "800px",
                 transformStyle: "preserve-3d",
                 pointerEvents: "auto",
+                transformOrigin: "50% 50%",
               }}
             >
               {/* Drop shadow */}
@@ -284,6 +294,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {/* Wax seal */}
               
             </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
