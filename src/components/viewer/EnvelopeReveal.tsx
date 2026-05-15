@@ -278,7 +278,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     height: "75%",
                     background: PAPER_BG,
                     borderRadius: "3px",
-                    zIndex: 5,
+                    zIndex: 0,
                     boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
                     display: "flex",
                     alignItems: "center",
