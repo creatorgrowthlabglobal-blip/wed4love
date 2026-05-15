@@ -257,7 +257,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 <motion.div
                   initial={{ y: 0 }}
                   animate={{ y: -90 }}
-                  transition={{ delay: 0.95, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
                   style={{
                     position: "absolute",
                     top: "20%",
