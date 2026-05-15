@@ -123,13 +123,6 @@ const EnvelopeFrontFace = () => (
         strokeWidth="3"
         strokeLinejoin="round"
       />
-      <polygon
-        points="0,240 180,120 360,240"
-        fill={ENVELOPE_MID}
-        stroke={ENVELOPE_DARK}
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
     </svg>
   </div>
 );
