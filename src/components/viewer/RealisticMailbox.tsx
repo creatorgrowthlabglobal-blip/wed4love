@@ -325,22 +325,113 @@ const FrontFaceOverlay = () => (
   </g>
 );
 
-// Closed envelope, back view — soft pink with hand-drawn ink outline and heart seal.
-// Keeps the original coordinate space: 110 wide × 70 tall, top edge at y=0, centered on x=0.
-const EnvelopeArtwork = () => {
+// Closed envelope (back-view), upgrade-able to open & reveal a folded paper.
+// Coordinate space: 110 wide × 70 tall, top edge at y=0, centered on x=0.
+// Layers (bottom→top): A Back panel · B Paper (slides up) · C Front pocket · Flap (hinged)
+const EnvelopeArtwork = ({ open = false }: { open?: boolean }) => {
   const INK = "#1a1a1a";
-  const BODY_LIGHT = "#FBE3EC"; // lighter right half
-  const BODY_MID = "#F5C9DA";   // base pink
-  const BODY_SHADE = "#EDB6CC"; // left-side shadow
-  const FLAP_PINK = "#F4CADB";  // top triangular flap
+  const BODY_MID = "#F5C9DA";       // outside pink
+  const INTERIOR = "#C98AA3";       // darker cavity (inside back panel)
+  const PAPER = "#FBF7EE";          // matte paper
+  const PAPER_FOLD = "#E2D6BE";     // fold mark
   const HEART_OUTER = "#F1A9C2";
   const HEART_INNER = "#E87FA3";
+  // Unique ids per render to avoid collisions when component is reused
+  const uid = "env";
   return (
     <g>
-      {/* Outer body rectangle (ink frame) */}
-      <rect x="-55" y="0" width="110" height="70" rx="2" fill={BODY_MID} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Top flap folded down — apex meets bottom V at center */}
-      <path d="M -55 0 L 0 35 L 55 0 Z" fill={BODY_MID} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
+      <defs>
+        <clipPath id={`${uid}-bodyClip`}>
+          <rect x="-55" y="0" width="110" height="70" rx="2" />
+        </clipPath>
+        <filter id={`${uid}-paperShadow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="0.7" />
+          <feOffset dx="0" dy="1.4" result="off" />
+          <feComponentTransfer><feFuncA type="linear" slope="0.45" /></feComponentTransfer>
+          <feComposite in2="SourceAlpha" operator="out" />
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* Layer A — Back panel (interior cavity, slightly darker) */}
+      <rect
+        x="-55" y="0" width="110" height="70" rx="2"
+        fill={INTERIOR}
+        stroke={INK}
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+      {/* subtle inner shadow on back panel rim */}
+      <rect x="-54" y="1" width="108" height="68" rx="1.6" fill="none" stroke="#000" strokeOpacity="0.10" strokeWidth="1.2" />
+
+      {/* Layer B — Paper (clipped to envelope body, slides up on open) */}
+      <g clipPath={`url(#${uid}-bodyClip)`}>
+        <motion.g
+          initial={false}
+          animate={{ y: open ? -40 : 0 }}
+          transition={{ type: "spring", stiffness: 210, damping: 15, delay: open ? 0.45 : 0 }}
+        >
+          <g filter={`url(#${uid}-paperShadow)`}>
+            <rect
+              x="-48" y="6" width="96" height="58" rx="1.5"
+              fill={PAPER}
+              stroke={INK}
+              strokeOpacity="0.85"
+              strokeWidth="0.9"
+            />
+            {/* horizontal fold mark across the middle */}
+            <line x1="-46" y1="35" x2="46" y2="35" stroke={PAPER_FOLD} strokeWidth="0.9" />
+            {/* faint paper grain lines */}
+            <line x1="-40" y1="18" x2="40" y2="18" stroke={PAPER_FOLD} strokeOpacity="0.45" strokeWidth="0.5" />
+            <line x1="-40" y1="50" x2="40" y2="50" stroke={PAPER_FOLD} strokeOpacity="0.45" strokeWidth="0.5" />
+          </g>
+        </motion.g>
+      </g>
+
+      {/* Layer C — Front pocket: bottom triangular pocket of envelope, sits in front of paper.
+          This is the "front" panel of a real envelope — it covers the lower half so paper
+          appears to emerge from behind the V opening. */}
+      <path
+        d="M -55 70 L 55 70 L 55 8 L 0 50 L -55 8 Z"
+        fill={BODY_MID}
+        stroke={INK}
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+
+      {/* Flap — hinged at top edge (y=0). Closed: flap covers opening with apex at y=35.
+          Open: flips up via scaleY(-1) about its top edge (heart rides along). */}
+      <motion.g
+        initial={false}
+        animate={{ scaleY: open ? -1 : 1 }}
+        transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: open ? 0.05 : 0.35 }}
+        style={{ transformOrigin: "0px 0px", transformBox: "fill-box" } as React.CSSProperties}
+      >
+        <path
+          d="M -55 0 L 0 35 L 55 0 Z"
+          fill={BODY_MID}
+          stroke={INK}
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+        />
+        {/* Heart wax seal — sits near flap apex, travels with the flap */}
+        <g transform="translate(0, 28)">
+          <path
+            d="M 0 0 m -5 -1.8 a 3.2 3.2 0 1 1 5 -1.6 a 3.2 3.2 0 1 1 5 1.6 q 0 4 -5 8 q -5 -4 -5 -8 z"
+            fill={HEART_OUTER}
+            stroke={INK}
+            strokeWidth="1"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M 0 1.6 m -2.6 -0.9 a 1.6 1.6 0 1 1 2.6 -0.8 a 1.6 1.6 0 1 1 2.6 0.8 q 0 1.9 -2.6 3.9 q -2.6 -2 -2.6 -3.9 z"
+            fill={HEART_INNER}
+          />
+        </g>
+      </motion.g>
     </g>
   );
 };
