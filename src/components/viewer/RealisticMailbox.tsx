@@ -678,7 +678,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             >
               <motion.div
                 key="shared-envelope"
-                layoutId="delivery-envelope"
+                
                 initial={{ scale: 0.4, opacity: 0 }}
                 animate={{ scale: zoomed ? 1 : 0.4, opacity: 1 }}
                 transition={{

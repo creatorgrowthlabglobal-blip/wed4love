@@ -196,7 +196,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             {/* Envelope — fixed/centered, EXACT same box as the Page 1
                 zoom overlay's final state, so the handoff is invisible. */}
             <motion.div
-              layoutId="delivery-envelope"
               onClick={handleClick}
               whileHover={phase === "idle" ? { scale: 1.015 } : {}}
               whileTap={phase === "idle" ? { scale: 0.98 } : {}}
