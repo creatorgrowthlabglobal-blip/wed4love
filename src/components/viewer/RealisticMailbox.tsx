@@ -638,8 +638,9 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
                 rasterize their contents and break CSS 3D transforms on children,
                 which is why the door was disappearing. */}
-            <Envelope show={open} />
+            <Envelope show={open} phase="behind" />
             <FrontFaceOverlay />
+            <Envelope show={open} phase="front" />
             <HingeSill />
 
             <BirdLeft />
