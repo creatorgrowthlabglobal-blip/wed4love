@@ -10,6 +10,7 @@ interface EnvelopeRevealProps {
 
 const PAPER_BG = "#F9F7F2";
 const ENVELOPE_BODY = "#EDB6CC";   // base pink (left-shaded)
+const ENVELOPE_MID = "#F5C9DA";    // mid pink (bottom fold)
 const ENVELOPE_LIGHT = "#FBE3EC";  // lighter pink highlight
 const ENVELOPE_DARK = "#1a1a1a";   // ink outline
 const FLAP_COLOR = "#F4CADB";      // top flap pink
@@ -69,7 +70,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         top: 0,
         left: 0,
         width: "100%",
-        height: "50%",
+        height: "60%",
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
         zIndex: 10,
@@ -90,7 +91,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         preserveAspectRatio="none"
       >
         <polygon
-          points="0,0 360,0 180,160"
+          points="0,0 360,0 180,180"
           fill={FLAP_COLOR}
           stroke={ENVELOPE_DARK}
           strokeWidth="3"
@@ -228,17 +229,17 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
                   preserveAspectRatio="none"
                 >
-                  {/* Lighter right-half wash */}
-                  <path d="M 360 0 L 360 240 L 170 240 L 360 110 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
-                  {/* Bottom triangular fold meeting at center */}
+                  {/* Lighter right-half wash for soft directional light */}
+                  <path d="M 360 0 L 360 240 L 173 240 L 360 120 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
+                  {/* Bottom triangular fold (two panels meeting at center seam) */}
                   <path
-                    d="M 0 240 L 180 105 L 360 240 Z"
-                    fill={ENVELOPE_BODY}
+                    d="M 0 240 L 180 103 L 360 240 Z"
+                    fill={ENVELOPE_MID}
                     stroke={ENVELOPE_DARK}
                     strokeWidth="2.5"
                     strokeLinejoin="round"
                   />
-                  <path d="M 180 105 L 360 240 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
+                  <path d="M 180 103 L 360 240 L 0 240 Z" fill={ENVELOPE_LIGHT} opacity="0.35" />
                 </svg>
               </div>
 
