@@ -543,6 +543,7 @@ const Caption = ({ senderName }: { senderName?: string }) => (
 
 const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [state, setState] = useState<MailboxState>("idle");
+  const [zoomed, setZoomed] = useState(false);
   const controls = useAnimation();
 
   useEffect(() => {
@@ -553,7 +554,11 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
     if (state !== "idle") return;
     setState("opening");
     setTimeout(() => setState("delivered"), 2200);
-    setTimeout(() => onContinue?.(), 3000);
+    // Kick off the zoom shortly after the envelope lands.
+    setTimeout(() => setZoomed(true), 2400);
+    // Hand off to Page 2 only AFTER the zoom has settled, so the
+    // already-zoomed envelope is what carries into Page 2 (mailbox just disappears).
+    setTimeout(() => onContinue?.(), 3500);
   };
 
   const open = state !== "idle";
