@@ -164,15 +164,20 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
         {phase !== "open" && (
           <motion.div
             key="envelope-scene"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem" }}
+            style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
           >
-            {/* Hint text */}
+            {/* Hint text — positioned ABOVE the centered envelope so it
+                doesn't push the envelope off viewport center. */}
             <motion.p
               style={{
+                position: "absolute",
+                top: "calc(50% - min(360px, 90vw) * (240 / 360) / 2 - 2.5rem)",
+                left: "50%",
+                transform: "translateX(-50%)",
                 fontSize: "12px",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
@@ -180,7 +185,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 opacity: 0.7,
                 fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 fontStyle: "normal",
-                marginBottom: "0.5rem",
+                whiteSpace: "nowrap",
               }}
               animate={{ opacity: [0.5, 0.85, 0.5] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
@@ -188,20 +193,26 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {phase === "idle" ? `For ${receiverName}` : "Opening…"}
             </motion.p>
 
-            {/* Envelope */}
+            {/* Envelope — fixed/centered, EXACT same box as the Page 1
+                zoom overlay's final state, so the handoff is invisible. */}
             <motion.div
               layoutId="delivery-envelope"
               onClick={handleClick}
-              whileHover={phase === "idle" ? { scale: 1.015, y: -4 } : {}}
+              whileHover={phase === "idle" ? { scale: 1.015 } : {}}
               whileTap={phase === "idle" ? { scale: 0.98 } : {}}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               style={{
-                position: "relative",
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                x: "-50%",
+                y: "-50%",
                 width: "min(360px, 90vw)",
                 aspectRatio: "360 / 240",
                 cursor: phase === "idle" ? "pointer" : "default",
                 perspective: "800px",
                 transformStyle: "preserve-3d",
+                pointerEvents: "auto",
               }}
             >
               {/* Drop shadow */}
