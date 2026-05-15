@@ -139,6 +139,9 @@ const Defs = () => (
     <clipPath id="envelopeShadowClip">
       <rect x="0" y="186" width="400" height="309" />
     </clipPath>
+    <clipPath id="envelopeFrontClip">
+      <rect x="0" y="203" width="400" height="292" />
+    </clipPath>
   </defs>
 );
 
