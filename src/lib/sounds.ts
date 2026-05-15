@@ -1,6 +1,13 @@
 // Simple sound effects using Web Audio API
 const ctx = () => new (window.AudioContext || (window as any).webkitAudioContext)();
 
+// Preload bird sound so playback starts instantly on first click
+const birdsAudio = typeof Audio !== "undefined" ? new Audio("/sounds/birds-fly.mp3") : (null as any);
+if (birdsAudio) {
+  birdsAudio.preload = "auto";
+  try { birdsAudio.load(); } catch {}
+}
+
 const playTone = (freq: number, duration: number, type: OscillatorType = "sine", volume = 0.15) => {
   try {
     const c = ctx();
