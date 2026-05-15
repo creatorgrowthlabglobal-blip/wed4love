@@ -92,7 +92,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
       >
         <polygon
           points="0,0 360,0 180,180"
-          fill={FLAP_COLOR}
+          fill={ENVELOPE_MID}
           stroke={ENVELOPE_DARK}
           strokeWidth="3"
           strokeLinejoin="round"
@@ -217,7 +217,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   position: "absolute",
                   inset: 0,
                   borderRadius: "6px",
-                  background: ENVELOPE_BODY,
+                  background: ENVELOPE_MID,
                   border: `2.5px solid ${ENVELOPE_DARK}`,
                   overflow: "hidden",
                   zIndex: 1,
@@ -231,8 +231,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 >
                   {/* Bottom-right panel — lighter (light from right) */}
                   <path d="M 360 240 L 180 120 L 360 0 Z" fill={ENVELOPE_LIGHT} />
-                  {/* Bottom-left panel — base shaded pink */}
-                  <path d="M 0 240 L 180 120 L 0 0 Z" fill={ENVELOPE_BODY} />
                 </svg>
               </div>
 
