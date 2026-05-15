@@ -10,6 +10,7 @@ interface EnvelopeRevealProps {
 
 const PAPER_BG = "#F9F7F2";
 const ENVELOPE_BODY = "#EDB6CC";   // base pink (left-shaded)
+const ENVELOPE_MID = "#F5C9DA";    // mid pink (bottom fold)
 const ENVELOPE_LIGHT = "#FBE3EC";  // lighter pink highlight
 const ENVELOPE_DARK = "#1a1a1a";   // ink outline
 const FLAP_COLOR = "#F4CADB";      // top flap pink
