@@ -60,55 +60,9 @@ export const sounds = {
   },
   birdsFly: () => {
     try {
-      const c = ctx();
-      const now = c.currentTime;
-
-      // 1) Wing flutter — filtered noise bursts (whoosh-whoosh)
-      const noiseBuffer = c.createBuffer(1, c.sampleRate * 0.6, c.sampleRate);
-      const data = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
-
-      const flutterTimes = [0, 0.18, 0.36, 0.58];
-      flutterTimes.forEach((t) => {
-        const src = c.createBufferSource();
-        src.buffer = noiseBuffer;
-        const filter = c.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.value = 900;
-        filter.Q.value = 1.2;
-        const g = c.createGain();
-        g.gain.setValueAtTime(0.0001, now + t);
-        g.gain.exponentialRampToValueAtTime(0.08, now + t + 0.04);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.18);
-        src.connect(filter);
-        filter.connect(g);
-        g.connect(c.destination);
-        src.start(now + t);
-        src.stop(now + t + 0.2);
-      });
-
-      // 2) Soft chirps — varied high tones with quick pitch bend
-      const chirps = [
-        { t: 0.05, f: 2400 },
-        { t: 0.22, f: 2800 },
-        { t: 0.34, f: 2100 },
-        { t: 0.5, f: 2650 },
-        { t: 0.72, f: 2300 },
-      ];
-      chirps.forEach(({ t, f }) => {
-        const osc = c.createOscillator();
-        const g = c.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(f, now + t);
-        osc.frequency.exponentialRampToValueAtTime(f * 1.35, now + t + 0.09);
-        g.gain.setValueAtTime(0.0001, now + t);
-        g.gain.exponentialRampToValueAtTime(0.05, now + t + 0.015);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.13);
-        osc.connect(g);
-        g.connect(c.destination);
-        osc.start(now + t);
-        osc.stop(now + t + 0.15);
-      });
+      const audio = new Audio("/sounds/birds-fly.mp3");
+      audio.volume = 0.6;
+      audio.play().catch(() => {});
     } catch {}
   },
 };
