@@ -658,8 +658,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               style={{
                 position: "absolute",
-                // 3:2 aspect to exactly match Page 2's envelope (360x240)
-                // so the layoutId morph stays proportional (no squish).
+                // EXACT 3:2 (matches Page 2 envelope 360x240) — no squish.
                 left: "33.75%",
                 top: "40.33%",
                 width: "27.5%",
@@ -667,30 +666,61 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 pointerEvents: "none",
                 zIndex: 30,
                 transformOrigin: "center center",
-                borderRadius: "6px",
-                background: "#F5C9DA",
-                border: "2.5px solid #1a1a1a",
-                overflow: "visible",
-                boxShadow: "0 12px 28px rgba(0,0,0,0.22)",
+                perspective: "800px",
+                transformStyle: "preserve-3d",
               }}
             >
-              {/* Triangular flap covering the top half — identical geometry
-                  to EnvelopeReveal's flap (polygon 0,0 360,0 180,180). */}
-              <svg
-                viewBox="0 0 360 180"
-                width="100%"
-                height="50%"
-                preserveAspectRatio="none"
-                style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
+              {/* Soft drop shadow — sibling, not on the morphing body, so the
+                  layoutId target (Page 2) which has the same sibling shadow
+                  morphs cleanly without animating box-shadow. */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: "8px 12px -12px 12px",
+                  borderRadius: "6px",
+                  background: "rgba(120,110,90,0.18)",
+                  filter: "blur(16px)",
+                  zIndex: 0,
+                }}
+              />
+              {/* Body — identical to EnvelopeReveal body div */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "6px",
+                  background: "#F5C9DA",
+                  border: "2.5px solid #1a1a1a",
+                  overflow: "hidden",
+                  zIndex: 1,
+                }}
+              />
+              {/* Flap — identical geometry to EnvelopeFlap (top 50%, polygon 0,0 360,0 180,180) */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "50%",
+                  zIndex: 10,
+                  transformOrigin: "top center",
+                }}
               >
-                <polygon
-                  points="0,0 360,0 180,180"
-                  fill="#F5C9DA"
-                  stroke="#1a1a1a"
-                  strokeWidth="3"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                <svg
+                  viewBox="0 0 360 180"
+                  style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
+                  preserveAspectRatio="none"
+                >
+                  <polygon
+                    points="0,0 360,0 180,180"
+                    fill="#F5C9DA"
+                    stroke="#1a1a1a"
+                    strokeWidth="3"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
