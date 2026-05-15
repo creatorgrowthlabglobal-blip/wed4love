@@ -345,26 +345,8 @@ const Index = () => {
               <div
                 key="p-mailbox"
                 className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, #FBF4E4 0%, #F4E9D0 60%, #E8DAB8 100%)",
-                }}
+                style={{ background: "#F2EFE8" }}
               >
-                <div
-                  className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-40"
-                  style={{
-                    backgroundImage:
-                      "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.15 0 0 0 0 0.2 0 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-                    backgroundSize: "300px",
-                  }}
-                />
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background:
-                      "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.45) 100%)",
-                  }}
-                />
                 <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
                   <Suspense fallback={null}>
                     <RealisticMailbox
