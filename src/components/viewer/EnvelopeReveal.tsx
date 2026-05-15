@@ -433,6 +433,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
           click to open
         </span>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
