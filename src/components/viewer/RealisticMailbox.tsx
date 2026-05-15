@@ -325,24 +325,44 @@ const FrontFaceOverlay = () => (
   </g>
 );
 
-const EnvelopeArtwork = () => (
-  <g>
-    <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" stroke={STROKE} strokeWidth="2.2" />
-    <rect x="-55" y="0" width="110" height="70" rx="3" fill="url(#envPaper)" filter="url(#envPaperTex)" opacity="0.55" />
-    <rect x="-53" y="2" width="106" height="66" rx="2" fill="none" stroke="#fff" strokeWidth="0.6" opacity="0.55" />
-    <polyline points="-55,0 0,38 55,0" fill="none" stroke="#B8A98A" strokeWidth="1.6" strokeLinejoin="round" opacity="0.85" />
-    <polyline points="-55,0 0,38 55,0" fill="none" stroke={STROKE} strokeWidth="0.8" strokeLinejoin="round" opacity="0.5" />
-    <g filter="url(#waxBevel)">
-      <path
-        d="M 0 50 m -8 -3 a 5 5 0 1 1 8 -3 a 5 5 0 1 1 8 3 q 0 6 -8 12 q -8 -6 -8 -12 z"
-        fill="url(#waxHeart)"
-        stroke="#5A0E1C"
-        strokeWidth="0.9"
-      />
-      <ellipse cx="-4" cy="44" rx="2.4" ry="1.4" fill="#fff" opacity="0.55" />
+// Closed envelope, back view — soft pink with hand-drawn ink outline and heart seal.
+// Keeps the original coordinate space: 110 wide × 70 tall, top edge at y=0, centered on x=0.
+const EnvelopeArtwork = () => {
+  const INK = "#1a1a1a";
+  const BODY_LIGHT = "#FBE3EC"; // lighter right half
+  const BODY_MID = "#F5C9DA";   // base pink
+  const BODY_SHADE = "#EDB6CC"; // left-side shadow
+  const FLAP_PINK = "#F4CADB";  // top triangular flap
+  const HEART_OUTER = "#F1A9C2";
+  const HEART_INNER = "#E87FA3";
+  return (
+    <g>
+      {/* Body base (left shaded half) */}
+      <rect x="-55" y="0" width="110" height="70" rx="2" fill={BODY_SHADE} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
+      {/* Lighter right half for soft directional light */}
+      <path d="M 55 0 L 55 70 L -2 70 L 55 35 Z" fill={BODY_LIGHT} opacity="0.55" />
+      {/* Bottom triangular fold (two panels meeting at center seam) */}
+      <path d="M -55 70 L 0 30 L 55 70 Z" fill={BODY_MID} stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M 0 30 L 55 70 Z" fill={BODY_LIGHT} opacity="0.6" />
+      {/* Top triangular flap folded down */}
+      <path d="M -55 0 L 0 42 L 55 0 Z" fill={FLAP_PINK} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
+      {/* Heart wax seal at the center */}
+      <g>
+        <path
+          d="M 0 50 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
+          fill={HEART_OUTER}
+          stroke={INK}
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M 0 53 m -5 -1.6 a 3 3 0 1 1 5 -1.6 a 3 3 0 1 1 5 1.6 q 0 3.5 -5 7.2 q -5 -3.7 -5 -7.2 z"
+          fill={HEART_INNER}
+        />
+      </g>
     </g>
-  </g>
-);
+  );
+};
 
 const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" | "front" }) => (
   <AnimatePresence>
