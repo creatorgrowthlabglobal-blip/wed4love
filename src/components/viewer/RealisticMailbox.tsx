@@ -365,24 +365,24 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
         {phase === "behind" && (
           <g clipPath="url(#envelopeSlotMouthClip)">
             <motion.g
-              initial={{ opacity: 0, x: 190, y: 191 }}
-              animate={{ opacity: [0, 1, 1], x: 190, y: [191, 194, 198] }}
+              initial={{ opacity: 0, x: 190, y: 188 }}
+              animate={{ opacity: [0, 1, 1, 1], x: 190, y: [188, 192, 196, 198] }}
               exit={{ opacity: 0 }}
               transition={{
-                duration: 0.84,
+                duration: 1.6,
                 delay: 0.2,
-                times: [0, 0.52, 1],
-                ease: [0.16, 1, 0.3, 1],
+                times: [0, 0.25, 0.7, 1],
+                ease: [0.33, 0, 0.67, 1],
               }}
             >
               <motion.g
-                initial={{ scaleY: 0.08, scaleX: 0.92 }}
-                animate={{ scaleY: [0.08, 0.16, 0.24], scaleX: [0.92, 0.94, 0.96] }}
+                initial={{ scaleY: 0.05, scaleX: 0.9 }}
+                animate={{ scaleY: [0.05, 0.1, 0.16, 0.2], scaleX: [0.9, 0.92, 0.94, 0.96] }}
                 transition={{
-                  duration: 0.84,
+                  duration: 1.6,
                   delay: 0.2,
-                  times: [0, 0.52, 1],
-                  ease: [0.16, 1, 0.3, 1],
+                  times: [0, 0.25, 0.7, 1],
+                  ease: [0.33, 0, 0.67, 1],
                 }}
                 style={{ transformOrigin: "0px 0px" }}
                 filter="url(#envDropShadow)"
@@ -396,22 +396,22 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
         {phase === "front" && (
           <motion.g
             initial={{ opacity: 0, x: 190, y: 198 }}
-            animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 200, 203] }}
+            animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 201, 203] }}
             exit={{ opacity: 0 }}
             transition={{
               duration: 2.1,
-              delay: 1.04,
-              times: [0, 0.06, 0.22, 1],
+              delay: 1.8,
+              times: [0, 0.05, 0.5, 1],
               ease: [0.16, 1, 0.3, 1],
             }}
           >
             <motion.g
-              initial={{ scaleY: 0.24, scaleX: 0.96 }}
-              animate={{ scaleY: [0.24, 0.24, 0.7, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
+              initial={{ scaleY: 0.2, scaleX: 0.96 }}
+              animate={{ scaleY: [0.2, 0.2, 0.65, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
               transition={{
                 duration: 2.1,
-                delay: 1.04,
-                times: [0, 0.06, 0.22, 1],
+                delay: 1.8,
+                times: [0, 0.05, 0.5, 1],
                 ease: [0.16, 1, 0.3, 1],
               }}
               style={{ transformOrigin: "0px 0px" }}
