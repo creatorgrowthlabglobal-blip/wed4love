@@ -341,44 +341,77 @@ const EnvelopeArtwork = () => (
   </g>
 );
 
-const Envelope = ({ show }: { show: boolean }) => (
+const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" | "front" }) => (
   <AnimatePresence>
     {show && (
       <>
-        <g clipPath="url(#envelopeShadowClip)">
-          {/* Soft drop shadow beneath the envelope */}
-          <motion.ellipse
-            cx="190"
-            cy="262"
-            rx="62"
-            ry="6"
-            fill="#000"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.32 }}
-            transition={{ delay: 0.72, duration: 0.4 }}
-            style={{ filter: "blur(4px)" }}
-          />
-        </g>
+        {phase === "front" && (
+          <g clipPath="url(#envelopeShadowClip)">
+            {/* Soft drop shadow beneath the envelope */}
+            <motion.ellipse
+              cx="190"
+              cy="262"
+              rx="62"
+              ry="6"
+              fill="#000"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.32 }}
+              transition={{ delay: 0.72, duration: 0.4 }}
+              style={{ filter: "blur(4px)" }}
+            />
+          </g>
+        )}
 
-        <g clipPath="url(#envelopeSlotMouthClip)">
-          <motion.g
-            initial={{ opacity: 0, x: 190, y: 191 }}
-            animate={{ opacity: [0, 1, 1], x: 190, y: [191, 194, 198] }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 0.42,
-              delay: 0.2,
-              times: [0, 0.52, 1],
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
+        {phase === "behind" && (
+          <g clipPath="url(#envelopeSlotMouthClip)">
             <motion.g
-              initial={{ scaleY: 0.08, scaleX: 0.92 }}
-              animate={{ scaleY: [0.08, 0.16, 0.24], scaleX: [0.92, 0.94, 0.96] }}
+              initial={{ opacity: 0, x: 190, y: 191 }}
+              animate={{ opacity: [0, 1, 1], x: 190, y: [191, 194, 198] }}
+              exit={{ opacity: 0 }}
               transition={{
                 duration: 0.42,
                 delay: 0.2,
                 times: [0, 0.52, 1],
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <motion.g
+                initial={{ scaleY: 0.08, scaleX: 0.92 }}
+                animate={{ scaleY: [0.08, 0.16, 0.24], scaleX: [0.92, 0.94, 0.96] }}
+                transition={{
+                  duration: 0.42,
+                  delay: 0.2,
+                  times: [0, 0.52, 1],
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                style={{ transformOrigin: "0px 0px" }}
+                filter="url(#envDropShadow)"
+              >
+                <EnvelopeArtwork />
+              </motion.g>
+            </motion.g>
+          </g>
+        )}
+
+        {phase === "front" && (
+          <motion.g
+            initial={{ opacity: 0, x: 190, y: 198 }}
+            animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 212, 267] }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: 1.05,
+              delay: 0.56,
+              times: [0, 0.06, 0.22, 1],
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            <motion.g
+              initial={{ scaleY: 0.24, scaleX: 0.96 }}
+              animate={{ scaleY: [0.24, 0.24, 0.7, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
+              transition={{
+                duration: 1.05,
+                delay: 0.56,
+                times: [0, 0.06, 0.22, 1],
                 ease: [0.16, 1, 0.3, 1],
               }}
               style={{ transformOrigin: "0px 0px" }}
@@ -387,34 +420,7 @@ const Envelope = ({ show }: { show: boolean }) => (
               <EnvelopeArtwork />
             </motion.g>
           </motion.g>
-        </g>
-
-        <motion.g
-          initial={{ opacity: 0, x: 190, y: 198 }}
-          animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 212, 267] }}
-          exit={{ opacity: 0 }}
-          transition={{
-            duration: 1.05,
-            delay: 0.56,
-            times: [0, 0.06, 0.22, 1],
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <motion.g
-            initial={{ scaleY: 0.24, scaleX: 0.96 }}
-            animate={{ scaleY: [0.24, 0.24, 0.7, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
-            transition={{
-              duration: 1.05,
-              delay: 0.56,
-              times: [0, 0.06, 0.22, 1],
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            style={{ transformOrigin: "0px 0px" }}
-            filter="url(#envDropShadow)"
-          >
-            <EnvelopeArtwork />
-          </motion.g>
-        </motion.g>
+        )}
       </>
     )}
   </AnimatePresence>
@@ -632,8 +638,9 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
                 rasterize their contents and break CSS 3D transforms on children,
                 which is why the door was disappearing. */}
-            <Envelope show={open} />
+            <Envelope show={open} phase="behind" />
             <FrontFaceOverlay />
+            <Envelope show={open} phase="front" />
             <HingeSill />
 
             <BirdLeft />
