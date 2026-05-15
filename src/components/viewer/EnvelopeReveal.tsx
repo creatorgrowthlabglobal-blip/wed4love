@@ -46,7 +46,7 @@ const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
     animate={{ opacity: isOpen ? 0 : 1, scale: isOpen ? 0.4 : 1 }}
     transition={{ duration: 0.25, ease: "easeIn" }}
   >
-    <svg viewBox="-15 -10 30 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+    <svg viewBox="-15 -4.5 30 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
       <path
         d="M 0 8 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
         fill={HEART_OUTER}
