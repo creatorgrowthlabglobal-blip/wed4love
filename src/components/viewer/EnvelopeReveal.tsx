@@ -70,7 +70,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         top: 0,
         left: 0,
         width: "100%",
-        height: "50%",
+        height: "60%",
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
         zIndex: 10,
@@ -91,7 +91,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         preserveAspectRatio="none"
       >
         <polygon
-          points="0,0 360,0 180,160"
+          points="0,0 360,0 180,180"
           fill={FLAP_COLOR}
           stroke={ENVELOPE_DARK}
           strokeWidth="3"
