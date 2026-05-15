@@ -282,6 +282,26 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 </motion.div>
               )}
 
+              {/* Front pocket — covers bottom half of envelope so the letter
+                  appears tucked inside while its top portion peeks out and
+                  overlaps the flipped-open flap above. */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: "50%",
+                  borderRadius: "0 0 6px 6px",
+                  background: ENVELOPE_MID,
+                  borderLeft: `2.5px solid ${ENVELOPE_DARK}`,
+                  borderRight: `2.5px solid ${ENVELOPE_DARK}`,
+                  borderBottom: `2.5px solid ${ENVELOPE_DARK}`,
+                  zIndex: 15,
+                  pointerEvents: "none",
+                }}
+              />
+
               {/* 3D flap */}
               <div style={{ position: "absolute", inset: 0, zIndex: 10, perspective: "600px", transformStyle: "preserve-3d" }}>
                 <EnvelopeFlap isOpen={isOpen} />
