@@ -70,9 +70,9 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         rotateX: isOpen ? -172 : 0,
       }}
       transition={{
-        duration: 0.8,
+        duration: 1.4,
         ease: [0.76, 0, 0.24, 1],
-        delay: 0.05,
+        delay: 0.1,
       }}
     >
       <svg
