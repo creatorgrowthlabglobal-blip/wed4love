@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wand2 } from "lucide-react";
 import { sounds } from "@/lib/sounds";
@@ -98,6 +98,19 @@ type Phase = "idle" | "opening" | "open";
 
 export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
+  const [flapBehind, setFlapBehind] = useState(false);
+
+  // Once the flap finishes rotating open (~1.5s after click), drop it behind
+  // the body so the letter can rise above it. Driven by a real timeout so the
+  // z-index swap is reliable (Framer's zero-duration zIndex transitions snap
+  // immediately and ignore `delay`).
+  useEffect(() => {
+    if (phase === "opening") {
+      const t = setTimeout(() => setFlapBehind(true), 1500);
+      return () => clearTimeout(t);
+    }
+    if (phase === "idle") setFlapBehind(false);
+  }, [phase]);
 
   const handleClick = () => {
     if (phase === "idle") {
