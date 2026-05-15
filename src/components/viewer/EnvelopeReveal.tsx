@@ -228,10 +228,8 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   xmlns="http://www.w3.org/2000/svg"
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
                   preserveAspectRatio="none"
-                >
-                  {/* Bottom-right panel — lighter (light from right) */}
-                  <path d="M 360 240 L 180 120 L 360 0 Z" fill={ENVELOPE_LIGHT} />
-                </svg>
+                />
+
               </div>
 
               {/* Letter peeking while opening */}
@@ -270,7 +268,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               </div>
 
               {/* Wax seal */}
-              <SealSVG isOpen={isOpen} initial={initial} />
+              
             </motion.div>
           </motion.div>
         )}
