@@ -336,7 +336,10 @@ const Index = () => {
               exit={{ opacity: 0 }}
               onClick={closePreview}
               className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}
+              style={{
+                background: "rgba(37, 31, 40, 0.72)",
+                boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)",
+              }}
               aria-label="Close preview"
             >
               <X className="w-5 h-5 text-white" />
