@@ -294,6 +294,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {/* Wax seal */}
               
             </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
