@@ -295,15 +295,18 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 </motion.div>
               )}
 
-              {/* 3D flap — z:20 while opening (above body), drops to z:0 once flap finishes so letter can rise above it */}
-              <motion.div
-                initial={{ zIndex: 20 }}
-                animate={{ zIndex: isOpen ? 0 : 20 }}
-                transition={{ zIndex: { delay: isOpen ? 1.5 : 0, duration: 0 } }}
-                style={{ position: "absolute", inset: 0, perspective: "600px", transformStyle: "preserve-3d" }}
+              {/* 3D flap — stays at z:20 while opening (above body), drops to z:0 after flap finishes so letter can rise above it. State-driven swap so the timing is reliable. */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  perspective: "600px",
+                  transformStyle: "preserve-3d",
+                  zIndex: flapBehind ? 0 : 20,
+                }}
               >
                 <EnvelopeFlap isOpen={isOpen} />
-              </motion.div>
+              </div>
 
             </motion.div>
             </div>
