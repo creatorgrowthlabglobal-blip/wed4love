@@ -36,21 +36,21 @@ const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
       position: "absolute",
       top: "50%",
       left: "50%",
-      width: 56,
-      height: 56,
-      marginTop: -28,
-      marginLeft: -28,
+      width: 64,
+      height: 64,
+      marginTop: -32,
+      marginLeft: -32,
       zIndex: 20,
       pointerEvents: "none",
       transformOrigin: "50% 50%",
-      filter: "drop-shadow(0 2px 4px rgba(80,30,50,0.35))",
+      filter: "drop-shadow(0 3px 5px rgba(80,30,50,0.28)) drop-shadow(0 1px 1px rgba(0,0,0,0.15))",
     }}
     initial={false}
     animate={{
       opacity: isOpen ? 0 : 1,
-      scale: isOpen ? 0.45 : 1,
-      rotate: isOpen ? -22 : 0,
-      y: isOpen ? 18 : 0,
+      scale: isOpen ? 0.5 : 1,
+      rotate: isOpen ? -18 : 0,
+      y: isOpen ? 16 : 0,
     }}
     transition={{
       duration: 0.55,
@@ -58,18 +58,42 @@ const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
       delay: isOpen ? 0.1 : 0,
     }}
   >
-    <svg viewBox="-15 -4.5 30 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%", display: "block" }}>
+      <defs>
+        <radialGradient id="seal-wax" cx="38%" cy="34%" r="68%">
+          <stop offset="0%" stopColor="#E89BB6" />
+          <stop offset="55%" stopColor="#C76486" />
+          <stop offset="100%" stopColor="#8E3558" />
+        </radialGradient>
+        <radialGradient id="seal-shine" cx="35%" cy="30%" r="22%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      {/* Scalloped outer edge — 16 small bumps for that pressed-wax feel */}
+      {Array.from({ length: 16 }).map((_, i) => {
+        const a = (i / 16) * Math.PI * 2;
+        const cx = 32 + Math.cos(a) * 27;
+        const cy = 32 + Math.sin(a) * 27;
+        return <circle key={i} cx={cx} cy={cy} r="3.2" fill="#9B3F61" />;
+      })}
+      {/* Main wax disc */}
+      <circle cx="32" cy="32" r="26" fill="url(#seal-wax)" />
+      {/* Inner embossed ring */}
+      <circle cx="32" cy="32" r="20" fill="none" stroke="#6E2745" strokeOpacity="0.45" strokeWidth="0.8" />
+      <circle cx="32" cy="32" r="20" fill="none" stroke="#FFE3EE" strokeOpacity="0.35" strokeWidth="0.8" strokeDasharray="0.5 1.5" />
+      {/* Heart monogram */}
       <path
-        d="M 0 8 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
-        fill={HEART_OUTER}
-        stroke={ENVELOPE_DARK}
-        strokeWidth="1.6"
+        d="M32 44 C 22 36, 19 30, 22 25 C 24.5 21, 29.5 22, 32 26 C 34.5 22, 39.5 21, 42 25 C 45 30, 42 36, 32 44 Z"
+        fill="#FFE8F0"
+        fillOpacity="0.92"
+        stroke="#5C1F3A"
+        strokeOpacity="0.35"
+        strokeWidth="0.6"
         strokeLinejoin="round"
       />
-      <path
-        d="M 0 11 m -5 -1.6 a 3 3 0 1 1 5 -1.6 a 3 3 0 1 1 5 1.6 q 0 3.5 -5 7.2 q -5 -3.7 -5 -7.2 z"
-        fill={HEART_INNER}
-      />
+      {/* Specular highlight */}
+      <ellipse cx="24" cy="22" rx="11" ry="7" fill="url(#seal-shine)" />
     </svg>
   </motion.div>
 );
@@ -303,7 +327,20 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 <EnvelopeFlap isOpen={isOpen} />
               </div>
 
-              {/* Wax seal — disabled (design needs rework) */}
+              {/* Wax seal — sits where the flap tip meets the body */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: 0,
+                  right: 0,
+                  height: 0,
+                  zIndex: 15,
+                  pointerEvents: "none",
+                }}
+              >
+                <SealSVG isOpen={isOpen} />
+              </div>
             </motion.div>
             </div>
           </motion.div>
