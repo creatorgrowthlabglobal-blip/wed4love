@@ -367,62 +367,46 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
 
         {phase === "behind" && (
           <g clipPath="url(#envelopeSlotMouthClip)">
+            {/* Mechanical slide: envelope starts hidden above the slot,
+                slides DOWN at constant motor speed through the slot mouth.
+                The clip mask reveals only what's currently inside the slot,
+                creating an ATM/printer "pushing the bill out" feel. */}
             <motion.g
-              initial={{ opacity: 0, x: 190, y: 188 }}
-              animate={{ opacity: [0, 1, 1, 1], x: 190, y: [188, 192, 196, 198] }}
+              initial={{ x: 190, y: 100 }}
+              animate={{ x: 190, y: 220 }}
               exit={{ opacity: 0 }}
               transition={{
-                duration: 1.6,
+                duration: 1.4,
                 delay: 0.2,
-                times: [0, 0.25, 0.7, 1],
-                ease: [0.33, 0, 0.67, 1],
+                ease: "linear",
               }}
             >
-              <motion.g
-                initial={{ scaleY: 0.05, scaleX: 0.9 }}
-                animate={{ scaleY: [0.05, 0.1, 0.16, 0.2], scaleX: [0.9, 0.92, 0.94, 0.96] }}
-                transition={{
-                  duration: 1.6,
-                  delay: 0.2,
-                  times: [0, 0.25, 0.7, 1],
-                  ease: [0.33, 0, 0.67, 1],
-                }}
-                style={{ transformOrigin: "0px 0px" }}
-                filter="url(#envDropShadow)"
-              >
-                <EnvelopeArtwork />
-              </motion.g>
+              <EnvelopeArtwork />
             </motion.g>
           </g>
         )}
 
         {phase === "front" && (
-          <motion.g
-            initial={{ opacity: 0, x: 190, y: 198 }}
-            animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 201, 203] }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 2.1,
-              delay: 1.8,
-              times: [0, 0.05, 0.5, 1],
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
+          <g clipPath="url(#envelopeFrontClip)">
+            {/* Same trajectory, but clipped to BELOW the slot so the
+                envelope appears on the front face as it emerges. Spring
+                settle gives a subtle physical bounce as the motor releases. */}
             <motion.g
-              initial={{ scaleY: 0.2, scaleX: 0.96 }}
-              animate={{ scaleY: [0.2, 0.2, 0.65, 1], scaleX: [0.96, 0.96, 0.985, 1] }}
+              initial={{ x: 190, y: 100 }}
+              animate={{ x: 190, y: 210 }}
+              exit={{ opacity: 0 }}
               transition={{
-                duration: 2.1,
-                delay: 1.8,
-                times: [0, 0.05, 0.5, 1],
-                ease: [0.16, 1, 0.3, 1],
+                type: "spring",
+                stiffness: 100,
+                damping: 20,
+                delay: 0.2,
+                restDelta: 0.001,
               }}
-              style={{ transformOrigin: "0px 0px" }}
               filter="url(#envDropShadow)"
             >
               <EnvelopeArtwork />
             </motion.g>
-          </motion.g>
+          </g>
         )}
       </>
     )}
