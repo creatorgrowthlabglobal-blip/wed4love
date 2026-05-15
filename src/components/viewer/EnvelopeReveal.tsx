@@ -327,7 +327,20 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 <EnvelopeFlap isOpen={isOpen} />
               </div>
 
-              {/* Wax seal — disabled (design needs rework) */}
+              {/* Wax seal — sits where the flap tip meets the body */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: 0,
+                  right: 0,
+                  height: 0,
+                  zIndex: 15,
+                  pointerEvents: "none",
+                }}
+              >
+                <SealSVG isOpen={isOpen} />
+              </div>
             </motion.div>
             </div>
           </motion.div>
