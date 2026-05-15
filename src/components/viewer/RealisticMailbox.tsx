@@ -343,8 +343,6 @@ const EnvelopeArtwork = () => {
       <path d="M 55 70 L 0 35 L 55 0 Z" fill={BODY_LIGHT} />
       {/* Bottom-left panel — base pink */}
       <path d="M -55 70 L 0 35 L -55 0 Z" fill={BODY_SHADE} />
-      {/* Bottom V fold (two panels meeting at center) */}
-      <path d="M -55 70 L 0 35 L 55 70" fill="none" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
       {/* Top flap folded down — apex meets bottom V at center */}
       <path d="M -55 0 L 0 35 L 55 0 Z" fill={FLAP_PINK} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
       {/* Heart wax seal centered exactly on the seam intersection */}

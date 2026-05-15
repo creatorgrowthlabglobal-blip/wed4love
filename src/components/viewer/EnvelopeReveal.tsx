@@ -233,14 +233,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   <path d="M 360 240 L 180 120 L 360 0 Z" fill={ENVELOPE_LIGHT} />
                   {/* Bottom-left panel — base shaded pink */}
                   <path d="M 0 240 L 180 120 L 0 0 Z" fill={ENVELOPE_BODY} />
-                  {/* Bottom V fold seam — two panels meeting at center */}
-                  <path
-                    d="M 0 240 L 180 120 L 360 240"
-                    fill="none"
-                    stroke={ENVELOPE_DARK}
-                    strokeWidth="2.5"
-                    strokeLinejoin="round"
-                  />
                 </svg>
               </div>
 
