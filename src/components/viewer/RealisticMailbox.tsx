@@ -643,6 +643,43 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           </motion.g>
           {!open && <Caption senderName={senderName} />}
         </svg>
+        </motion.div>
+
+        {/* Shared layout overlay — handed to EnvelopeReveal via layoutId.
+            Sits over the landed SVG envelope at (190,245) in viewBox 400x495,
+            then scales 1.05 -> 1.6 with spring physics through the route swap. */}
+        <AnimatePresence>
+          {delivered && (
+            <motion.div
+              key="shared-envelope"
+              layoutId="delivery-envelope"
+              initial={{ scale: 1.05 }}
+              animate={{ scale: 1.6 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              style={{
+                position: "absolute",
+                left: "33.75%",
+                top: "42.43%",
+                width: "27.5%",
+                height: "14.14%",
+                pointerEvents: "none",
+                zIndex: 30,
+                transformOrigin: "center center",
+              }}
+            >
+              <svg
+                viewBox="-56 -1 112 72"
+                width="100%"
+                height="100%"
+                preserveAspectRatio="none"
+                style={{ overflow: "visible", filter: "drop-shadow(0 8px 18px rgba(0,0,0,0.25))" }}
+              >
+                <rect x="-55" y="0" width="110" height="70" rx="2" fill="#F5C9DA" stroke="#1a1a1a" strokeWidth="2.2" strokeLinejoin="round" />
+                <path d="M -55 0 L 0 35 L 55 0 Z" fill="#F5C9DA" stroke="#1a1a1a" strokeWidth="2.2" strokeLinejoin="round" />
+              </svg>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
