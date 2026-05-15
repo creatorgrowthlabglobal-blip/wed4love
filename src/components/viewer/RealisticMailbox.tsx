@@ -557,6 +557,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   };
 
   const open = state !== "idle";
+  const delivered = state === "delivered";
 
   return (
     <div
@@ -580,6 +581,12 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           transformStyle: "preserve-3d",
         }}
       >
+        {/* Mailbox SVG — softly blurs and fades as we hand off to Page 2 */}
+        <motion.div
+          animate={delivered ? { filter: "blur(8px)", opacity: 0.55 } : { filter: "blur(0px)", opacity: 1 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{ width: "100%", height: "100%" }}
+        >
         <svg
           viewBox="0 0 400 495"
           width="100%"
