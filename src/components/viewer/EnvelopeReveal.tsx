@@ -217,7 +217,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   inset: 0,
                   borderRadius: "6px",
                   background: ENVELOPE_BODY,
-                  border: `1px solid ${ENVELOPE_DARK}`,
+                  border: `2.5px solid ${ENVELOPE_DARK}`,
                   overflow: "hidden",
                   zIndex: 1,
                 }}
@@ -228,8 +228,17 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
                   preserveAspectRatio="none"
                 >
-                  <line x1="0" y1="240" x2="180" y2="130" stroke={ENVELOPE_DARK} strokeWidth="1" opacity="0.5" />
-                  <line x1="360" y1="240" x2="180" y2="130" stroke={ENVELOPE_DARK} strokeWidth="1" opacity="0.5" />
+                  {/* Lighter right-half wash */}
+                  <path d="M 360 0 L 360 240 L 170 240 L 360 110 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
+                  {/* Bottom triangular fold meeting at center */}
+                  <path
+                    d="M 0 240 L 180 105 L 360 240 Z"
+                    fill={ENVELOPE_BODY}
+                    stroke={ENVELOPE_DARK}
+                    strokeWidth="2.5"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M 180 105 L 360 240 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
                 </svg>
               </div>
 
