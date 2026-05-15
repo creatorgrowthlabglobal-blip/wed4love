@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wand2 } from "lucide-react";
 import { sounds } from "@/lib/sounds";
@@ -98,6 +98,19 @@ type Phase = "idle" | "opening" | "open";
 
 export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
+  const [flapBehind, setFlapBehind] = useState(false);
+
+  // Once the flap finishes rotating open (~1.5s after click), drop it behind
+  // the body so the letter can rise above it. Driven by a real timeout so the
+  // z-index swap is reliable (Framer's zero-duration zIndex transitions snap
+  // immediately and ignore `delay`).
+  useEffect(() => {
+    if (phase === "opening") {
+      const t = setTimeout(() => setFlapBehind(true), 1500);
+      return () => clearTimeout(t);
+    }
+    if (phase === "idle") setFlapBehind(false);
+  }, [phase]);
 
   const handleClick = () => {
     if (phase === "idle") {
@@ -282,15 +295,18 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 </motion.div>
               )}
 
-              {/* 3D flap — z:20 while opening (above body), drops to z:0 once flap finishes so letter can rise above it */}
-              <motion.div
-                initial={{ zIndex: 20 }}
-                animate={{ zIndex: isOpen ? 0 : 20 }}
-                transition={{ zIndex: { delay: isOpen ? 1.5 : 0, duration: 0 } }}
-                style={{ position: "absolute", inset: 0, perspective: "600px", transformStyle: "preserve-3d" }}
+              {/* 3D flap — stays at z:20 while opening (above body), drops to z:0 after flap finishes so letter can rise above it. State-driven swap so the timing is reliable. */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  perspective: "600px",
+                  transformStyle: "preserve-3d",
+                  zIndex: flapBehind ? 0 : 20,
+                }}
               >
                 <EnvelopeFlap isOpen={isOpen} />
-              </motion.div>
+              </div>
 
             </motion.div>
             </div>
