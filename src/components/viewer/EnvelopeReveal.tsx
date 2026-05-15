@@ -70,7 +70,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         top: 0,
         left: 0,
         width: "100%",
-        height: "60%",
+        height: "50%",
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
         zIndex: 10,
