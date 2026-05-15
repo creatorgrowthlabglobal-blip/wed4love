@@ -66,7 +66,21 @@ export const sounds = {
       (audio as any).preservesPitch = false;
       (audio as any).mozPreservesPitch = false;
       (audio as any).webkitPreservesPitch = false;
-      audio.play().catch(() => {});
+      const start = 3;
+      const end = 5;
+      const onTime = () => {
+        if (audio.currentTime >= end) {
+          audio.pause();
+          audio.removeEventListener("timeupdate", onTime);
+        }
+      };
+      const startPlayback = () => {
+        try { audio.currentTime = start; } catch {}
+        audio.addEventListener("timeupdate", onTime);
+        audio.play().catch(() => {});
+      };
+      if (audio.readyState >= 1) startPlayback();
+      else audio.addEventListener("loadedmetadata", startPlayback, { once: true });
     } catch {}
   },
 };
