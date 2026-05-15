@@ -64,7 +64,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         height: "50%",
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
-        zIndex: 10,
+        zIndex: isOpen ? 4 : 20,
       }}
       animate={{
         rotateX: isOpen ? 172 : 0,
@@ -93,6 +93,46 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
     </motion.div>
   );
 };
+
+const EnvelopeFrontFace = () => (
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      zIndex: 15,
+      pointerEvents: "none",
+    }}
+  >
+    <svg
+      viewBox="0 0 360 240"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", height: "100%", display: "block" }}
+      preserveAspectRatio="none"
+    >
+      <polygon
+        points="0,0 0,240 180,120"
+        fill={ENVELOPE_BODY}
+        stroke={ENVELOPE_DARK}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <polygon
+        points="360,0 360,240 180,120"
+        fill={ENVELOPE_LIGHT}
+        stroke={ENVELOPE_DARK}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <polygon
+        points="0,240 180,120 360,240"
+        fill={ENVELOPE_MID}
+        stroke={ENVELOPE_DARK}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+);
 
 type Phase = "idle" | "opening" | "open";
 
@@ -266,7 +306,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     height: "75%",
                     background: PAPER_BG,
                     borderRadius: "3px",
-                    zIndex: 5,
+                    zIndex: 12,
                     boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
                     display: "flex",
                     alignItems: "center",
@@ -282,25 +322,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 </motion.div>
               )}
 
-              {/* Front pocket — covers bottom half of envelope so the letter
-                  appears tucked inside while its top portion peeks out and
-                  overlaps the flipped-open flap above. */}
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: "50%",
-                  borderRadius: "0 0 6px 6px",
-                  background: ENVELOPE_MID,
-                  borderLeft: `2.5px solid ${ENVELOPE_DARK}`,
-                  borderRight: `2.5px solid ${ENVELOPE_DARK}`,
-                  borderBottom: `2.5px solid ${ENVELOPE_DARK}`,
-                  zIndex: 15,
-                  pointerEvents: "none",
-                }}
-              />
+              <EnvelopeFrontFace />
 
               {/* 3D flap */}
               <div style={{ position: "absolute", inset: 0, zIndex: 10, perspective: "600px", transformStyle: "preserve-3d" }}>
