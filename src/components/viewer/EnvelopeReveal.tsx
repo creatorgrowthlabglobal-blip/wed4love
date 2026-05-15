@@ -9,12 +9,14 @@ interface EnvelopeRevealProps {
 }
 
 const PAPER_BG = "#F9F7F2";
-const ENVELOPE_BODY = "#E8E3D9";
-const ENVELOPE_DARK = "#C9C1B0";
-const FLAP_COLOR = "#DDD8CC";
+const ENVELOPE_BODY = "#EDB6CC";   // base pink (left-shaded)
+const ENVELOPE_LIGHT = "#FBE3EC";  // lighter pink highlight
+const ENVELOPE_DARK = "#1a1a1a";   // ink outline
+const FLAP_COLOR = "#F4CADB";      // top flap pink
 const TEXT_DARK = "#2C2A25";
 const TEXT_MID = "#6B6456";
-const WAX_RED = "#8B2E2E";
+const HEART_OUTER = "#F1A9C2";
+const HEART_INNER = "#E87FA3";
 
 const letterContent = {
   greeting: "My Dearest,",
@@ -27,35 +29,34 @@ const letterContent = {
   signature: "E.",
 };
 
-const SealSVG = ({ isOpen, initial }: { isOpen: boolean; initial: string }) => (
+const SealSVG = ({ isOpen }: { isOpen: boolean; initial?: string }) => (
   <motion.div
     style={{
       position: "absolute",
-      bottom: -14,
+      top: "50%",
       left: "50%",
-      transform: "translateX(-50%)",
+      transform: "translate(-50%, -50%)",
       zIndex: 20,
-      width: 32,
-      height: 32,
+      width: 56,
+      height: 56,
       cursor: "pointer",
+      pointerEvents: "none",
     }}
     animate={{ opacity: isOpen ? 0 : 1, scale: isOpen ? 0.4 : 1 }}
     transition={{ duration: 0.25, ease: "easeIn" }}
   >
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="14" fill={WAX_RED} />
-      <circle cx="16" cy="16" r="10" fill="none" stroke="#C0392B" strokeWidth="0.8" opacity="0.6" />
-      <text
-        x="16" y="21"
-        textAnchor="middle"
-        fill="#F5E6E6"
-        fontSize="13"
-        fontFamily="Georgia, serif"
-        fontStyle="italic"
-        fontWeight="600"
-      >
-        {initial}
-      </text>
+    <svg viewBox="-15 -10 30 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+      <path
+        d="M 0 8 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
+        fill={HEART_OUTER}
+        stroke={ENVELOPE_DARK}
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 0 11 m -5 -1.6 a 3 3 0 1 1 5 -1.6 a 3 3 0 1 1 5 1.6 q 0 3.5 -5 7.2 q -5 -3.7 -5 -7.2 z"
+        fill={HEART_INNER}
+      />
     </svg>
   </motion.div>
 );
@@ -85,16 +86,16 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
       <svg
         viewBox="0 0 360 180"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ width: "100%", height: "100%", display: "block" }}
+        style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
         preserveAspectRatio="none"
       >
-        <defs>
-          <linearGradient id="flapGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={FLAP_COLOR} />
-            <stop offset="100%" stopColor={ENVELOPE_DARK} />
-          </linearGradient>
-        </defs>
-        <polygon points="0,0 360,0 180,160" fill="url(#flapGrad)" stroke={ENVELOPE_DARK} strokeWidth="0.5" />
+        <polygon
+          points="0,0 360,0 180,160"
+          fill={FLAP_COLOR}
+          stroke={ENVELOPE_DARK}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
       </svg>
     </motion.div>
   );
@@ -216,7 +217,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   inset: 0,
                   borderRadius: "6px",
                   background: ENVELOPE_BODY,
-                  border: `1px solid ${ENVELOPE_DARK}`,
+                  border: `2.5px solid ${ENVELOPE_DARK}`,
                   overflow: "hidden",
                   zIndex: 1,
                 }}
@@ -227,8 +228,17 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
                   preserveAspectRatio="none"
                 >
-                  <line x1="0" y1="240" x2="180" y2="130" stroke={ENVELOPE_DARK} strokeWidth="1" opacity="0.5" />
-                  <line x1="360" y1="240" x2="180" y2="130" stroke={ENVELOPE_DARK} strokeWidth="1" opacity="0.5" />
+                  {/* Lighter right-half wash */}
+                  <path d="M 360 0 L 360 240 L 170 240 L 360 110 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
+                  {/* Bottom triangular fold meeting at center */}
+                  <path
+                    d="M 0 240 L 180 105 L 360 240 Z"
+                    fill={ENVELOPE_BODY}
+                    stroke={ENVELOPE_DARK}
+                    strokeWidth="2.5"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M 180 105 L 360 240 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
                 </svg>
               </div>
 
