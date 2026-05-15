@@ -70,9 +70,9 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         rotateX: isOpen ? -172 : 0,
       }}
       transition={{
-        duration: 0.8,
+        duration: 1.4,
         ease: [0.76, 0, 0.24, 1],
-        delay: 0.05,
+        delay: 0.1,
       }}
     >
       <svg
@@ -257,7 +257,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 <motion.div
                   initial={{ y: 0 }}
                   animate={{ y: -90 }}
-                  transition={{ delay: 0.95, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
                   style={{
                     position: "absolute",
                     top: "20%",
