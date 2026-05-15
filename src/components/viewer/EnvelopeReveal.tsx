@@ -86,16 +86,16 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
       <svg
         viewBox="0 0 360 180"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ width: "100%", height: "100%", display: "block" }}
+        style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
         preserveAspectRatio="none"
       >
-        <defs>
-          <linearGradient id="flapGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={FLAP_COLOR} />
-            <stop offset="100%" stopColor={ENVELOPE_DARK} />
-          </linearGradient>
-        </defs>
-        <polygon points="0,0 360,0 180,160" fill="url(#flapGrad)" stroke={ENVELOPE_DARK} strokeWidth="0.5" />
+        <polygon
+          points="0,0 360,0 180,160"
+          fill={FLAP_COLOR}
+          stroke={ENVELOPE_DARK}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
       </svg>
     </motion.div>
   );
