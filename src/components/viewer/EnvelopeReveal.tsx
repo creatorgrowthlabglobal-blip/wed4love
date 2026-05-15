@@ -116,10 +116,14 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
   const [phase, setPhase] = useState<Phase>("idle");
 
   const handleClick = () => {
-    if (phase !== "idle") return;
-    sounds.envelopeOpen();
-    setPhase("opening");
-    setTimeout(() => setPhase("open"), 900);
+    if (phase === "idle") {
+      sounds.envelopeOpen();
+      setPhase("opening");
+      return;
+    }
+    if (phase === "opening") {
+      setPhase("open");
+    }
   };
 
   const handleClose = () => {
@@ -198,7 +202,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               animate={{ opacity: [0.5, 0.85, 0.5] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
             >
-              {phase === "idle" ? `For ${receiverName}` : "Opening…"}
+              {phase === "idle" ? `For ${receiverName}` : "Click to read the letter"}
             </motion.p>
 
             {/* Envelope — fixed/centered wrapper (never animated) so the
@@ -224,7 +228,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{
                 position: "absolute",
                 inset: 0,
-                cursor: phase === "idle" ? "pointer" : "default",
+                cursor: "pointer",
                 perspective: "800px",
                 transformStyle: "preserve-3d",
                 pointerEvents: "auto",
