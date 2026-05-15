@@ -229,17 +229,18 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
                   preserveAspectRatio="none"
                 >
-                  {/* Lighter right-half wash for soft directional light */}
-                  <path d="M 360 0 L 360 240 L 173 240 L 360 120 Z" fill={ENVELOPE_LIGHT} opacity="0.55" />
-                  {/* Bottom triangular fold (two panels meeting at center seam) */}
+                  {/* Bottom-right panel — lighter (light from right) */}
+                  <path d="M 360 240 L 180 120 L 360 0 Z" fill={ENVELOPE_LIGHT} />
+                  {/* Bottom-left panel — base shaded pink */}
+                  <path d="M 0 240 L 180 120 L 0 0 Z" fill={ENVELOPE_BODY} />
+                  {/* Bottom V fold seam — two panels meeting at center */}
                   <path
-                    d="M 0 240 L 180 103 L 360 240 Z"
-                    fill={ENVELOPE_MID}
+                    d="M 0 240 L 180 120 L 360 240"
+                    fill="none"
                     stroke={ENVELOPE_DARK}
                     strokeWidth="2.5"
                     strokeLinejoin="round"
                   />
-                  <path d="M 180 103 L 360 240 L 0 240 Z" fill={ENVELOPE_LIGHT} opacity="0.35" />
                 </svg>
               </div>
 
