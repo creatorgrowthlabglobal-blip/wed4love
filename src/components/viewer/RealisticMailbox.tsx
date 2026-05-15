@@ -396,7 +396,7 @@ const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" 
         {phase === "front" && (
           <motion.g
             initial={{ opacity: 0, x: 190, y: 198 }}
-            animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 212, 267] }}
+            animate={{ opacity: [0, 0, 1, 1], x: 190, y: [198, 198, 205, 232] }}
             exit={{ opacity: 0 }}
             transition={{
               duration: 1.05,
