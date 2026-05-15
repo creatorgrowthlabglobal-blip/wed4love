@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useAnimation, type Variants } from "framer-motion";
+import { sounds } from "@/lib/sounds";
 
 /* Premium brushed-metal lavender mailbox — modular animatable parts.
    Each visual element is its own motion.g with isolated variants & transform-origin
@@ -557,6 +558,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
 
   const handleClick = () => {
     if (state !== "idle") return;
+    sounds.birdsFly();
     setState("opening");
     timersRef.current = [
       window.setTimeout(() => {
