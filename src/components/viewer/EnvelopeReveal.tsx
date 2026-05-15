@@ -231,56 +231,64 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 }}
               />
 
-              {/* Envelope body */}
+              {/* Envelope BACK wall + pocket (clips the letter) */}
               <div
                 style={{
                   position: "absolute",
                   inset: 0,
                   borderRadius: "6px",
-                  background: ENVELOPE_MID,
+                  background: ENVELOPE_BODY,
                   border: `2.5px solid ${ENVELOPE_DARK}`,
                   overflow: "hidden",
                   zIndex: 1,
                 }}
               >
-                <svg
-                  viewBox="0 0 360 240"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-                  preserveAspectRatio="none"
-                />
+                {/* Letter — lives INSIDE the body, clipped by overflow:hidden */}
+                {phase === "opening" && (
+                  <motion.div
+                    initial={{ y: "60%" }}
+                    animate={{ y: "-30%" }}
+                    transition={{ delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: "8%",
+                      right: "8%",
+                      height: "92%",
+                      background: PAPER_BG,
+                      borderRadius: "3px",
+                      boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 2,
+                    }}
+                  >
+                    <div style={{ padding: "16px", textAlign: "center" }}>
+                      <div style={{ width: 60, height: 3, background: TEXT_MID, opacity: 0.2, borderRadius: 2, margin: "0 auto 8px" }} />
+                      <div style={{ width: 80, height: 3, background: TEXT_MID, opacity: 0.15, borderRadius: 2, margin: "0 auto 8px" }} />
+                      <div style={{ width: 50, height: 3, background: TEXT_MID, opacity: 0.1, borderRadius: 2, margin: "0 auto" }} />
+                    </div>
+                  </motion.div>
+                )}
 
-              </div>
-
-              {/* Letter peeking while opening */}
-              {phase === "opening" && (
-                <motion.div
-                  initial={{ y: 0 }}
-                  animate={{ y: -90 }}
-                  transition={{ delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+                {/* FRONT panel (pocket face) — sits in front of the letter,
+                    covering the bottom 55% so the letter visibly emerges
+                    from behind its top edge like a real envelope pocket. */}
+                <div
                   style={{
                     position: "absolute",
-                    top: "20%",
-                    left: "10%",
-                    right: "10%",
-                    height: "75%",
-                    background: PAPER_BG,
-                    borderRadius: "3px",
-                    zIndex: 0,
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "hidden",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: "55%",
+                    background: `linear-gradient(180deg, ${ENVELOPE_MID} 0%, ${ENVELOPE_BODY} 100%)`,
+                    borderTop: `2px solid ${ENVELOPE_DARK}`,
+                    zIndex: 3,
+                    boxShadow: "inset 0 6px 10px -6px rgba(0,0,0,0.2)",
                   }}
-                >
-                  <div style={{ padding: "16px", textAlign: "center" }}>
-                    <div style={{ width: 60, height: 3, background: TEXT_MID, opacity: 0.2, borderRadius: 2, margin: "0 auto 8px" }} />
-                    <div style={{ width: 80, height: 3, background: TEXT_MID, opacity: 0.15, borderRadius: 2, margin: "0 auto 8px" }} />
-                    <div style={{ width: 50, height: 3, background: TEXT_MID, opacity: 0.1, borderRadius: 2, margin: "0 auto" }} />
-                  </div>
-                </motion.div>
-              )}
+                />
+              </div>
 
               {/* 3D flap */}
               <div style={{ position: "absolute", inset: 0, zIndex: 10, perspective: "600px", transformStyle: "preserve-3d" }}>
