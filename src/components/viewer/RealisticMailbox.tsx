@@ -339,24 +339,8 @@ const EnvelopeArtwork = () => {
     <g>
       {/* Outer body rectangle (ink frame) */}
       <rect x="-55" y="0" width="110" height="70" rx="2" fill={BODY_MID} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Bottom-right panel — lighter (light source from right) */}
-      <path d="M 55 70 L 0 35 L 55 0 Z" fill={BODY_LIGHT} />
       {/* Top flap folded down — apex meets bottom V at center */}
       <path d="M -55 0 L 0 35 L 55 0 Z" fill={BODY_MID} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Heart wax seal centered exactly on the seam intersection */}
-      <g>
-        <path
-          d="M 0 35 m -9 -3 a 5.5 5.5 0 1 1 9 -3 a 5.5 5.5 0 1 1 9 3 q 0 6.5 -9 13 q -9 -6.5 -9 -13 z"
-          fill={HEART_OUTER}
-          stroke={INK}
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M 0 38 m -5 -1.6 a 3 3 0 1 1 5 -1.6 a 3 3 0 1 1 5 1.6 q 0 3.5 -5 7.2 q -5 -3.7 -5 -7.2 z"
-          fill={HEART_INNER}
-        />
-      </g>
     </g>
   );
 };
