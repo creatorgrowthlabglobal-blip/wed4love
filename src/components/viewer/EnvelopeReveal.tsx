@@ -317,6 +317,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               >
                 <SealSVG isOpen={isOpen} />
               </div>
+            </motion.div>
             </div>
           </motion.div>
         )}
