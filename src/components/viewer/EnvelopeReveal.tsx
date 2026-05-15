@@ -82,25 +82,88 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
         transformOrigin: "top center",
         transformStyle: "preserve-3d",
         zIndex: 10,
+        willChange: "transform",
       }}
-      animate={{
-        rotateX: isOpen ? -172 : 0,
-      }}
-      transition={{
-        duration: 0.8,
-        ease: [0.76, 0, 0.24, 1],
-        delay: 0.05,
-      }}
+      initial={false}
+      animate={
+        isOpen
+          ? {
+              // Real envelope motion: tiny resistance as the seal "breaks",
+              // then it tips back, accelerates with gravity, and settles with
+              // a soft bounce against the back of the envelope.
+              rotateX: [0, 4, -30, -110, -178, -172, -174, -173],
+            }
+          : { rotateX: 0 }
+      }
+      transition={
+        isOpen
+          ? {
+              duration: 1.05,
+              times: [0, 0.08, 0.22, 0.5, 0.78, 0.88, 0.95, 1],
+              ease: ["easeIn", "easeOut", "easeIn", "easeIn", "easeOut", "easeInOut", "easeOut"],
+            }
+          : { duration: 0.4, ease: "easeOut" }
+      }
     >
+      {/* Front face — outer side of the flap (visible while closed) */}
       <svg
         viewBox="0 0 360 180"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          display: "block",
+          overflow: "visible",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
         preserveAspectRatio="none"
       >
+        <defs>
+          <linearGradient id="flap-front" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={FLAP_COLOR} />
+            <stop offset="100%" stopColor={ENVELOPE_BODY} />
+          </linearGradient>
+        </defs>
         <polygon
           points="0,0 360,0 180,180"
-          fill={ENVELOPE_MID}
+          fill="url(#flap-front)"
+          stroke={ENVELOPE_DARK}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        {/* subtle crease shadow along the fold */}
+        <line x1="0" y1="0" x2="360" y2="0" stroke="rgba(0,0,0,0.18)" strokeWidth="1.2" />
+      </svg>
+
+      {/* Back face — inner side of the flap (visible once flipped open) */}
+      <svg
+        viewBox="0 0 360 180"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          display: "block",
+          overflow: "visible",
+          transform: "rotateX(180deg)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <linearGradient id="flap-back" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={ENVELOPE_LIGHT} />
+            <stop offset="100%" stopColor={FLAP_COLOR} />
+          </linearGradient>
+        </defs>
+        <polygon
+          points="0,0 360,0 180,180"
+          fill="url(#flap-back)"
           stroke={ENVELOPE_DARK}
           strokeWidth="3"
           strokeLinejoin="round"
