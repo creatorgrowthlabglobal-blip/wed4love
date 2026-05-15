@@ -228,7 +228,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{
                 position: "absolute",
                 inset: 0,
-                cursor: phase === "idle" ? "pointer" : "default",
+                cursor: phase !== "open" ? "pointer" : "default",
                 perspective: "800px",
                 transformStyle: "preserve-3d",
                 pointerEvents: "auto",
