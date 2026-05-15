@@ -205,8 +205,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 position: "fixed",
                 top: "50%",
                 left: "50%",
-                x: "-50%",
-                y: "-50%",
+                transform: "translate(-50%, -50%)",
                 width: "min(360px, 90vw)",
                 aspectRatio: "360 / 240",
                 cursor: phase === "idle" ? "pointer" : "default",
@@ -222,7 +221,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   inset: "8px 12px -12px 12px",
                   borderRadius: "6px",
                   background: "rgba(120,110,90,0.18)",
-                  filter: "blur(16px)",
+                  boxShadow: "0 22px 34px rgba(120,110,90,0.22)",
                   zIndex: 0,
                 }}
               />
