@@ -436,7 +436,16 @@ const EnvelopeArtwork = ({ open = false }: { open?: boolean }) => {
   );
 };
 
-const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" | "front" }) => (
+const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" | "front" }) => {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!show) { setOpen(false); return; }
+    if (phase !== "front") return;
+    // Wait for spring settle (~1.4s after mount), then trigger flap + paper reveal
+    const t = setTimeout(() => setOpen(true), 1400);
+    return () => clearTimeout(t);
+  }, [show, phase]);
+  return (
   <AnimatePresence>
     {show && (
       <>
