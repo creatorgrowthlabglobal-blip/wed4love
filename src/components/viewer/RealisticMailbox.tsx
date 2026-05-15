@@ -557,6 +557,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
 
   const handleClick = () => {
     if (state !== "idle") return;
+    sounds.birdsFly();
     setState("opening");
     timersRef.current = [
       window.setTimeout(() => {
