@@ -255,9 +255,12 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {/* Letter peeking while opening */}
               {phase === "opening" && (
                 <motion.div
-                  initial={{ y: 0 }}
-                  animate={{ y: -90 }}
-                  transition={{ delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ y: 0, zIndex: 0 }}
+                  animate={{ y: -90, zIndex: 5 }}
+                  transition={{
+                    y: { delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] },
+                    zIndex: { delay: 1.6, duration: 0 },
+                  }}
                   style={{
                     position: "absolute",
                     top: "20%",
@@ -266,7 +269,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     height: "75%",
                     background: PAPER_BG,
                     borderRadius: "3px",
-                    zIndex: 0,
                     boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
                     display: "flex",
                     alignItems: "center",
