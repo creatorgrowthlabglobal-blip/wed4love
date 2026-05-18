@@ -109,7 +109,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           alt="Lavender mailbox open with vintage letters inside"
           width={1024}
           height={1024}
-          loading="lazy"
+          loading="eager"
+          decoding="async"
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{
             opacity: open ? 1 : 0,
