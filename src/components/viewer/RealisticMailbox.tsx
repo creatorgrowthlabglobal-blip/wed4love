@@ -96,16 +96,16 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
         whileTap={open ? undefined : { scale: 0.985 }}
         animate={
           state === "opening"
-            ? { rotateX: [0, -4, 2, 0], y: [0, -8, 4, 0] }
+            ? { x: [0, -6, 7, -5, 4, -2, 0], rotate: [0, -1.2, 1.4, -0.8, 0.4, 0] }
             : open
-            ? { y: 0 }
+            ? { x: 0, rotate: 0 }
             : { y: [0, -6, 0] }
         }
         transition={
           state === "opening"
-            ? { duration: 1.1, ease: [0.34, 1.56, 0.64, 1] }
+            ? { duration: 0.55, ease: "easeInOut" }
             : open
-            ? { duration: 0.5 }
+            ? { duration: 0.4 }
             : { duration: 3.8, repeat: Infinity, ease: "easeInOut" }
         }
         style={{
@@ -118,10 +118,10 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           x: midX,
           y: midY,
           transformStyle: "preserve-3d",
-          perspective: 1200,
+          perspective: 1400,
         }}
       >
-        {/* Closed frame */}
+        {/* Closed frame — shakes, then quickly fades under the open frame */}
         <motion.img
           src={mailboxClosed}
           alt="Lavender mailbox in a cottage garden"
@@ -132,7 +132,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           // @ts-expect-error valid html attr
           fetchpriority="high"
           animate={{ opacity: open ? 0 : 1 }}
-          transition={{ duration: 0.55, ease: "easeInOut" }}
+          transition={{ duration: 0.22, ease: "easeOut", delay: open ? 0.42 : 0 }}
           style={{
             position: "absolute",
             inset: 0,
@@ -142,7 +142,24 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             display: "block",
           }}
         />
-        {/* Open frame with bouncy swing-in */}
+
+        {/* White flash mask that hides the swap moment */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: open ? [0, 0.85, 0] : 0 }}
+          transition={{ duration: 0.55, times: [0, 0.55, 1], delay: open ? 0.35 : 0 }}
+          style={{
+            position: "absolute",
+            inset: "20% 22%",
+            background:
+              "radial-gradient(closest-side, rgba(255,250,235,0.95), rgba(255,240,210,0) 70%)",
+            pointerEvents: "none",
+            zIndex: 4,
+            mixBlendMode: "screen",
+          }}
+        />
+
+        {/* Open frame — pops in from the door area with a bouncy spring */}
         <motion.img
           src={mailboxOpen}
           alt="Lavender mailbox open with a letter inside"
@@ -150,18 +167,20 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           height={1024}
           loading="eager"
           decoding="async"
-          initial={{ opacity: 0, rotateX: -70, y: 30 }}
+          initial={{ opacity: 0, scale: 0.88, y: 18, rotateX: -22 }}
           animate={{
             opacity: open ? 1 : 0,
-            rotateX: open ? 0 : -70,
-            y: open ? 0 : 30,
-            scale: delivered ? 1.05 : 1,
+            scale: delivered ? 1.05 : open ? 1 : 0.88,
+            y: open ? 0 : 18,
+            rotateX: open ? 0 : -22,
           }}
           transition={{
-            opacity: { duration: 0.45, ease: "easeOut" },
-            rotateX: { type: "spring", stiffness: 110, damping: 11, mass: 1.1 },
-            y: { type: "spring", stiffness: 110, damping: 12 },
-            scale: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+            opacity: { duration: 0.35, ease: "easeOut", delay: open ? 0.4 : 0 },
+            scale: open
+              ? { type: "spring", stiffness: 280, damping: 14, mass: 0.9, delay: 0.4 }
+              : { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+            y: { type: "spring", stiffness: 240, damping: 16, delay: open ? 0.4 : 0 },
+            rotateX: { type: "spring", stiffness: 220, damping: 14, delay: open ? 0.4 : 0 },
           }}
           style={{
             position: "absolute",
@@ -170,9 +189,33 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             height: "100%",
             objectFit: "contain",
             display: "block",
-            transformOrigin: "50% 75%",
+            transformOrigin: "50% 78%",
+            zIndex: 3,
           }}
         />
+
+        {/* Sparkle burst at the door */}
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: [0, 1, 0], scale: [0.6, 1.4, 1.8] }}
+            transition={{ duration: 0.9, delay: 0.42, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "58%",
+              width: "26%",
+              height: "26%",
+              transform: "translate(-50%, -50%)",
+              background:
+                "radial-gradient(closest-side, rgba(255,225,160,0.55), rgba(255,220,180,0) 70%)",
+              pointerEvents: "none",
+              zIndex: 5,
+              mixBlendMode: "screen",
+            }}
+          />
+        )}
+
 
         {/* Front parallax foliage shadow accent */}
         <motion.div
