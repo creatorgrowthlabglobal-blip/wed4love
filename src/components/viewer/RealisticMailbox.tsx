@@ -22,6 +22,16 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [zoomed, setZoomed] = useState(false);
   const timersRef = useRef<number[]>([]);
 
+  // Warm the browser cache for both frames as soon as the mailbox mounts,
+  // so the "open" image is decoded and ready before the user taps.
+  useEffect(() => {
+    [mailboxClosed, mailboxOpen].forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+    });
+  }, []);
+
   useEffect(
     () => () => {
       timersRef.current.forEach((t) => window.clearTimeout(t));
