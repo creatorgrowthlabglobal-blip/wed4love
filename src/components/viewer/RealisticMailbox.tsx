@@ -21,6 +21,8 @@ interface Props {
 const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [state, setState] = useState<MailboxState>("idle");
   const [zoomed, setZoomed] = useState(false);
+  const isMobile = useIsMobile();
+  const imgFit = isMobile ? "contain" : "cover";
   const timersRef = useRef<number[]>([]);
 
   // Warm the browser cache for both frames as soon as the mailbox mounts,
