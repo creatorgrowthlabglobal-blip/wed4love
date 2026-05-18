@@ -350,7 +350,7 @@ const Index = () => {
                 className="fixed inset-0 z-50 flex items-center justify-center"
                 style={{ background: "#F2EFE8" }}
               >
-                <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
+                <div className="relative w-screen h-screen">
                   <Suspense fallback={null}>
                     <RealisticMailbox
                       className="w-full h-full"
