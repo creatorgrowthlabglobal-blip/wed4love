@@ -7,6 +7,8 @@ import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
+import mailboxClosed from "@/assets/mailbox-closed.jpg";
+import mailboxOpen from "@/assets/mailbox-open.jpg";
 
 type Stage = "envelope" | "quiz" | "balloons" | "video" | "folder";
 
@@ -26,7 +28,15 @@ const ViewLetter = () => {
         setNotFound(true);
       }
     }
+    // Preload mailbox frames immediately on route mount so the recipient
+    // sees the image instantly, not a top-to-bottom progressive load.
+    [mailboxClosed, mailboxOpen].forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+    });
   }, [id]);
+
 
   // Start music playback
   useEffect(() => {
