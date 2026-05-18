@@ -88,6 +88,10 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           alt="Lavender mailbox in a cottage garden"
           width={1024}
           height={1024}
+          loading="eager"
+          decoding="async"
+          // @ts-expect-error - valid HTML attribute not yet in React types
+          fetchpriority="high"
           animate={{ opacity: open ? 0 : 1 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
           style={{
