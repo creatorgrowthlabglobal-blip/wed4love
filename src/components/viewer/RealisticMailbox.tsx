@@ -22,6 +22,16 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [zoomed, setZoomed] = useState(false);
   const timersRef = useRef<number[]>([]);
 
+  // Warm the browser cache for both frames as soon as the mailbox mounts,
+  // so the "open" image is decoded and ready before the user taps.
+  useEffect(() => {
+    [mailboxClosed, mailboxOpen].forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+    });
+  }, []);
+
   useEffect(
     () => () => {
       timersRef.current.forEach((t) => window.clearTimeout(t));
@@ -78,6 +88,10 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           alt="Lavender mailbox in a cottage garden"
           width={1024}
           height={1024}
+          loading="eager"
+          decoding="async"
+          // @ts-expect-error - valid HTML attribute not yet in React types
+          fetchpriority="high"
           animate={{ opacity: open ? 0 : 1 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
           style={{
@@ -95,7 +109,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           alt="Lavender mailbox open with vintage letters inside"
           width={1024}
           height={1024}
-          loading="lazy"
+          loading="eager"
+          decoding="async"
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{
             opacity: open ? 1 : 0,
