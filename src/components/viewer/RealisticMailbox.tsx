@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sounds } from "@/lib/sounds";
+import { useIsMobile } from "@/hooks/use-mobile";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
@@ -20,6 +21,8 @@ interface Props {
 const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [state, setState] = useState<MailboxState>("idle");
   const [zoomed, setZoomed] = useState(false);
+  const isMobile = useIsMobile();
+  const imgFit = isMobile ? "contain" : "cover";
   const timersRef = useRef<number[]>([]);
 
   // Warm the browser cache for both frames as soon as the mailbox mounts,
@@ -97,7 +100,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: imgFit,
             objectPosition: "center",
             display: "block",
           }}
@@ -124,7 +127,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: imgFit,
             objectPosition: "center",
             display: "block",
           }}
