@@ -100,7 +100,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: imgFit,
             objectPosition: "center",
             display: "block",
           }}
@@ -127,7 +127,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: imgFit,
             objectPosition: "center",
             display: "block",
           }}
