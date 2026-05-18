@@ -72,10 +72,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
         }
         style={{
           cursor: open ? "default" : "pointer",
-          width: "min(100vw, 100vh)",
-          height: "min(100vw, 100vh)",
-          maxWidth: "100%",
-          maxHeight: "100%",
+          width: "100%",
+          height: "100%",
           position: "relative",
           borderRadius: "0px",
           overflow: "hidden",
