@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X } from "lucide-react";
@@ -6,10 +6,23 @@ import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import mailboxClosed from "@/assets/mailbox-closed.jpg";
+import mailboxOpen from "@/assets/mailbox-open.jpg";
 
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [previewStage, setPreviewStage] = useState<"mailbox" | "envelope">("mailbox");
+
+  // Warm both mailbox frames into cache the moment the landing page mounts,
+  // so the preview opens with zero network wait.
+  useEffect(() => {
+    [mailboxClosed, mailboxOpen].forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+    });
+  }, []);
+
 
   const openPreview = () => {
     setPreviewStage("mailbox");
