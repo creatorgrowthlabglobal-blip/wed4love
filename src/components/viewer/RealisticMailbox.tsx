@@ -62,13 +62,14 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
         }
         style={{
           cursor: open ? "default" : "pointer",
-          width: "min(560px, 94%)",
-          aspectRatio: "1 / 1",
+          width: "min(100vw, 100vh)",
+          height: "min(100vw, 100vh)",
+          maxWidth: "100%",
+          maxHeight: "100%",
           position: "relative",
-          borderRadius: "24px",
+          borderRadius: "0px",
           overflow: "hidden",
-          boxShadow:
-            "0 30px 60px -20px rgba(90, 70, 120, 0.35), 0 10px 30px -10px rgba(90, 70, 120, 0.25)",
+          boxShadow: "none",
         }}
       >
         {/* Closed frame */}
