@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { sounds } from "@/lib/sounds";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
+
+/* Photoreal lavender garden mailbox.
+   Two AI-rendered frames (closed / open) cross-fade on tap, then the scene
+   gently scales while a shared-layout envelope rises out and hands off to
+   EnvelopeReveal. */
 
 type MailboxState = "idle" | "opening" | "delivered";
 
@@ -16,21 +21,9 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   const [state, setState] = useState<MailboxState>("idle");
   const [zoomed, setZoomed] = useState(false);
   const timersRef = useRef<number[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parallax mouse tracking
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 60, damping: 18, mass: 0.6 });
-  const sy = useSpring(my, { stiffness: 60, damping: 18, mass: 0.6 });
-  const bgX = useTransform(sx, (v) => v * -8);
-  const bgY = useTransform(sy, (v) => v * -6);
-  const midX = useTransform(sx, (v) => v * -18);
-  const midY = useTransform(sy, (v) => v * -10);
-  const frontX = useTransform(sx, (v) => v * -32);
-  const frontY = useTransform(sy, (v) => v * -16);
-
-  // Preload both frames
+  // Warm the browser cache for both frames as soon as the mailbox mounts,
+  // so the "open" image is decoded and ready before the user taps.
   useEffect(() => {
     [mailboxClosed, mailboxOpen].forEach((src) => {
       const img = new Image();
@@ -39,22 +32,22 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
     });
   }, []);
 
-  useEffect(() => () => { timersRef.current.forEach((t) => window.clearTimeout(t)); }, []);
-
-  const handleMove = (e: React.MouseEvent) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    mx.set(((e.clientX - rect.left) / rect.width - 0.5) * 2);
-    my.set(((e.clientY - rect.top) / rect.height - 0.5) * 2);
-  };
-  const handleLeave = () => { mx.set(0); my.set(0); };
+  useEffect(
+    () => () => {
+      timersRef.current.forEach((t) => window.clearTimeout(t));
+    },
+    []
+  );
 
   const handleClick = () => {
     if (state !== "idle") return;
     sounds.birdsFly();
     setState("opening");
     timersRef.current = [
-      window.setTimeout(() => { setState("delivered"); setZoomed(true); }, 2200),
+      window.setTimeout(() => {
+        setState("delivered");
+        setZoomed(true);
+      }, 2200),
       window.setTimeout(() => onContinue?.(), 3180),
     ];
   };
@@ -64,49 +57,18 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
 
   return (
     <div
-      ref={containerRef}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
       className={className}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(180deg, #faf3e7 0%, #f5ead6 100%)",
-        position: "relative",
-        overflow: "hidden",
-      }}
+      style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
     >
-      {/* Soft background wash with parallax */}
-      <motion.div
-        style={{
-          position: "absolute",
-          inset: "-4%",
-          x: bgX,
-          y: bgY,
-          background:
-            "radial-gradient(60% 50% at 50% 45%, rgba(200,180,220,0.18), transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
       <motion.div
         onClick={handleClick}
-        whileHover={open ? undefined : { scale: 1.02 }}
-        whileTap={open ? undefined : { scale: 0.985 }}
-        animate={
-          state === "opening"
-            ? { rotateX: [0, -4, 2, 0], y: [0, -8, 4, 0] }
-            : open
-            ? { y: 0 }
-            : { y: [0, -6, 0] }
-        }
+        whileHover={{ scale: open ? 1 : 1.025 }}
+        whileTap={{ scale: open ? 1 : 0.97 }}
+        animate={open ? { y: 0 } : { y: [0, -6, 0] }}
         transition={
-          state === "opening"
-            ? { duration: 1.1, ease: [0.34, 1.56, 0.64, 1] }
-            : open
+          open
             ? { duration: 0.5 }
-            : { duration: 3.8, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 3.6, repeat: Infinity, ease: "easeInOut" }
         }
         style={{
           cursor: open ? "default" : "pointer",
@@ -115,10 +77,9 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           maxWidth: "100%",
           maxHeight: "100%",
           position: "relative",
-          x: midX,
-          y: midY,
-          transformStyle: "preserve-3d",
-          perspective: 1200,
+          borderRadius: "0px",
+          overflow: "hidden",
+          boxShadow: "none",
         }}
       >
         {/* Closed frame */}
@@ -129,63 +90,55 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           height={1024}
           loading="eager"
           decoding="async"
-          // @ts-expect-error valid html attr
+          // @ts-expect-error - valid HTML attribute not yet in React types
           fetchpriority="high"
           animate={{ opacity: open ? 0 : 1 }}
-          transition={{ duration: 0.55, ease: "easeInOut" }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
           style={{
             position: "absolute",
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "contain",
+            objectFit: "cover",
             display: "block",
           }}
         />
-        {/* Open frame with bouncy swing-in */}
+        {/* Open frame */}
         <motion.img
           src={mailboxOpen}
-          alt="Lavender mailbox open with a letter inside"
+          alt="Lavender mailbox open with vintage letters inside"
           width={1024}
           height={1024}
           loading="eager"
           decoding="async"
-          initial={{ opacity: 0, rotateX: -70, y: 30 }}
+          initial={{ opacity: 0, scale: 1.02 }}
           animate={{
             opacity: open ? 1 : 0,
-            rotateX: open ? 0 : -70,
-            y: open ? 0 : 30,
-            scale: delivered ? 1.05 : 1,
+            scale: delivered ? 1.06 : open ? 1 : 1.02,
           }}
           transition={{
-            opacity: { duration: 0.45, ease: "easeOut" },
-            rotateX: { type: "spring", stiffness: 110, damping: 11, mass: 1.1 },
-            y: { type: "spring", stiffness: 110, damping: 12 },
-            scale: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+            opacity: { duration: 0.8, ease: "easeInOut" },
+            scale: { duration: 1.6, ease: [0.22, 1, 0.36, 1] },
           }}
           style={{
             position: "absolute",
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "contain",
+            objectFit: "cover",
             display: "block",
-            transformOrigin: "50% 75%",
           }}
         />
 
-        {/* Front parallax foliage shadow accent */}
+        {/* Soft warm wash on hover */}
         <motion.div
+          animate={{ opacity: open ? 0 : 1 }}
+          transition={{ duration: 0.6 }}
           style={{
             position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: "8%",
-            height: "12%",
-            x: frontX,
-            y: frontY,
+            inset: 0,
             background:
-              "radial-gradient(50% 60% at 50% 100%, rgba(90,70,40,0.18), transparent 70%)",
+              "radial-gradient(60% 50% at 50% 60%, rgba(255,220,235,0.08), transparent 70%)",
             pointerEvents: "none",
           }}
         />
@@ -200,7 +153,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               transition={{ delay: 0.3, duration: 0.6 }}
               style={{
                 position: "absolute",
-                bottom: "6%",
+                bottom: 18,
                 left: 0,
                 right: 0,
                 textAlign: "center",
@@ -210,24 +163,27 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <div
                 style={{
                   display: "inline-block",
-                  fontFamily: "'Playfair Display', 'Cormorant Garamond', serif",
+                  padding: "8px 18px",
+                  borderRadius: 999,
+                  background: "rgba(255, 250, 246, 0.78)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+                  boxShadow: "0 8px 24px rgba(90, 70, 120, 0.18)",
+                  fontFamily: "'Playfair Display', serif",
                   fontStyle: "italic",
-                  fontSize: "clamp(15px, 1.6vw, 20px)",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
+                  fontSize: 15,
                   color: "#5A4870",
-                  textShadow: "0 1px 0 rgba(255,255,255,0.6)",
                 }}
               >
                 {senderName
                   ? `A letter from ${senderName} — tap to open`
-                  : "Click the mailbox to continue"}
+                  : "Tap the mailbox to open your letter"}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Subtle vignette during handoff */}
+        {/* Subtle vignette while opening, fades the scene before handoff */}
         <motion.div
           animate={{ opacity: delivered ? 1 : 0 }}
           transition={{ duration: 0.6 }}
@@ -235,13 +191,13 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(circle at 50% 55%, transparent 0%, rgba(40,28,55,0.45) 100%)",
+              "radial-gradient(circle at 50% 55%, transparent 0%, rgba(40,28,55,0.55) 100%)",
             pointerEvents: "none",
           }}
         />
       </motion.div>
 
-      {/* Envelope handoff — zooms forward into a readable card */}
+      {/* Shared-layout envelope handoff (unchanged) */}
       <AnimatePresence>
         {delivered && (
           <div
@@ -250,7 +206,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "min(420px, 92vw)",
+              width: "min(360px, 90vw)",
               aspectRatio: "360 / 240",
               pointerEvents: "none",
               zIndex: 60,
@@ -258,11 +214,10 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
           >
             <motion.div
               key="shared-envelope"
-              initial={{ scale: 0.25, opacity: 0, y: 60 }}
-              animate={{ scale: zoomed ? 1 : 0.25, opacity: 1, y: 0 }}
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: zoomed ? 1 : 0.4, opacity: 1 }}
               transition={{
-                scale: { type: "spring", stiffness: 90, damping: 16, mass: 1.1 },
-                y: { type: "spring", stiffness: 90, damping: 16 },
+                scale: { type: "spring", stiffness: 100, damping: 20, mass: 1 },
                 opacity: { duration: 0.35, ease: "easeOut" },
               }}
               style={{
@@ -276,11 +231,10 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
               <div
                 style={{
                   position: "absolute",
-                  inset: "10px 14px -14px 14px",
-                  borderRadius: "8px",
-                  background: "rgba(120,110,90,0.22)",
-                  filter: "blur(2px)",
-                  boxShadow: "0 30px 50px rgba(80,60,30,0.28)",
+                  inset: "8px 12px -12px 12px",
+                  borderRadius: "6px",
+                  background: "rgba(120,110,90,0.18)",
+                  boxShadow: "0 22px 34px rgba(120,110,90,0.22)",
                   zIndex: 0,
                 }}
               />
@@ -288,9 +242,9 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 style={{
                   position: "absolute",
                   inset: 0,
-                  borderRadius: "8px",
-                  background: "linear-gradient(180deg, #ffffff 0%, #f8f3ea 100%)",
-                  border: "1px solid rgba(120,90,50,0.25)",
+                  borderRadius: "6px",
+                  background: "#F5C9DA",
+                  border: "2.5px solid #1a1a1a",
                   overflow: "hidden",
                   zIndex: 1,
                 }}
@@ -313,29 +267,13 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 >
                   <polygon
                     points="0,0 360,0 180,180"
-                    fill="#fbf6ec"
-                    stroke="rgba(120,90,50,0.35)"
-                    strokeWidth="1.5"
+                    fill="#F5C9DA"
+                    stroke="#1a1a1a"
+                    strokeWidth="3"
                     strokeLinejoin="round"
                   />
                 </svg>
               </div>
-              {/* Gold wax seal */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 42,
-                  height: 42,
-                  borderRadius: "50%",
-                  background:
-                    "radial-gradient(circle at 35% 30%, #f5d98a, #c9a14a 60%, #8a6a2a)",
-                  boxShadow: "0 4px 10px rgba(80,60,20,0.35)",
-                  zIndex: 12,
-                }}
-              />
             </motion.div>
           </div>
         )}
