@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useAnimation, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { sounds } from "@/lib/sounds";
 
-/* Premium brushed-metal lavender mailbox — modular animatable parts.
-   Each visual element is its own motion.g with isolated variants & transform-origin
-   so future animations (shake, bird fly-off, slot glow, etc.) can be orchestrated
-   independently from the parent <RealisticMailbox /> via the `state` prop. */
+/* Lavender garden mailbox — illustrated SVG inspired by the reference photo.
+   Front-facing rounded mailbox on a weathered wooden post, flap hanging open
+   to reveal a stack of decorative envelopes. A gold bird perches on the roof
+   and a small bluebird sits beside it. Stylized flower / foliage band runs
+   along the base. Click → flap swings open, letters fan out, bird flies. */
 
 type MailboxState = "idle" | "opening" | "delivered";
 
@@ -15,529 +16,506 @@ interface Props {
   senderName?: string;
 }
 
-const STROKE = "#1a1a1a";
+const INK = "#2a2230";
 
-/* ───────────────────── Sub-parts ───────────────────── */
+/* ───────────────────── Defs ───────────────────── */
 
 const Defs = () => (
   <defs>
-    <linearGradient id="lavMetal" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stopColor="#A99BD8" />
-      <stop offset="22%" stopColor="#D4C8F2" />
-      <stop offset="50%" stopColor="#BDAEE7" />
-      <stop offset="78%" stopColor="#D8CCF4" />
-      <stop offset="100%" stopColor="#9C8DCC" />
+    {/* Lavender body — front-lit, soft top highlight, deeper bottom */}
+    <linearGradient id="bodyLav" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#D7C7F0" />
+      <stop offset="35%" stopColor="#C2AEE6" />
+      <stop offset="100%" stopColor="#9A85C9" />
     </linearGradient>
-    <linearGradient id="lavMetalDark" x1="0" y1="0" x2="1" y2="0.2">
-      <stop offset="0%" stopColor="#7E6FB3" />
-      <stop offset="35%" stopColor="#A395D1" />
-      <stop offset="65%" stopColor="#8B7CC2" />
-      <stop offset="100%" stopColor="#6E5FA3" />
+    <linearGradient id="bodyLavSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stopColor="#A693D4" />
+      <stop offset="100%" stopColor="#7D68B0" />
     </linearGradient>
-    <linearGradient id="lavRoofShine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stopColor="#EFE7FF" stopOpacity="0.9" />
-      <stop offset="100%" stopColor="#EFE7FF" stopOpacity="0" />
-    </linearGradient>
-    <radialGradient id="slotGlow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0%" stopColor="#FFE9B0" stopOpacity="0.95" />
-      <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
-      <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
+    <radialGradient id="bodyShine" cx="0.35" cy="0.18" r="0.55">
+      <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
+      <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
     </radialGradient>
-    {/* Inner cavity gradient — empty mailbox interior */}
-    <radialGradient id="cavity" cx="0.5" cy="0.4" r="0.7">
-      <stop offset="0%" stopColor="#3a2f4d" />
-      <stop offset="55%" stopColor="#1a1424" />
-      <stop offset="100%" stopColor="#0a0610" />
+    {/* Door (flap) — outside pale lavender, inside soft pink */}
+    <linearGradient id="doorOuter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#C8B6E8" />
+      <stop offset="100%" stopColor="#A48DCE" />
+    </linearGradient>
+    <linearGradient id="doorInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#FBD8E5" />
+      <stop offset="100%" stopColor="#F3B6CD" />
+    </linearGradient>
+    {/* Interior cavity */}
+    <radialGradient id="cavity" cx="0.5" cy="0.4" r="0.85">
+      <stop offset="0%" stopColor="#9E8AC8" />
+      <stop offset="60%" stopColor="#6A578E" />
+      <stop offset="100%" stopColor="#382C50" />
     </radialGradient>
-    {/* Subtle floor plate inside cavity */}
-    <linearGradient id="cavityFloor" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stopColor="#2a2238" />
-      <stop offset="100%" stopColor="#0a0610" />
+    {/* Wood post */}
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stopColor="#8A6A4A" />
+      <stop offset="50%" stopColor="#A88560" />
+      <stop offset="100%" stopColor="#6E5238" />
     </linearGradient>
-    <filter id="brushed" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="turbulence" baseFrequency="0.9 0.04" numOctaves="2" seed="7" />
-      <feColorMatrix values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.18 0" />
-      <feComposite in2="SourceGraphic" operator="in" />
-    </filter>
-    <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2.5" result="b" />
-      <feMerge>
-        <feMergeNode in="b" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
-    <filter id="bodyShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
-      <feOffset dy="4" />
-      <feComponentTransfer>
-        <feFuncA type="linear" slope="0.35" />
-      </feComponentTransfer>
-      <feMerge>
-        <feMergeNode />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
-    <clipPath id="frontClip">
-      <path d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z" />
-    </clipPath>
-    <clipPath id="doorClip">
-      <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" />
-    </clipPath>
-    <clipPath id="roofClip">
-      <path d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z" />
-    </clipPath>
-    {/* Heavy paper texture for envelope */}
-    <linearGradient id="envPaper" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stopColor="#FBF6EC" />
-      <stop offset="50%" stopColor="#F4ECDB" />
-      <stop offset="100%" stopColor="#E8DEC6" />
+    <linearGradient id="woodTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#9C7A56" />
+      <stop offset="100%" stopColor="#7A5C3F" />
     </linearGradient>
-    <linearGradient id="envFlap" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stopColor="#F0E6D0" />
-      <stop offset="100%" stopColor="#D8CBAE" />
+    {/* Gold bird body */}
+    <radialGradient id="goldBird" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0%" stopColor="#F5DC8A" />
+      <stop offset="60%" stopColor="#D9B14C" />
+      <stop offset="100%" stopColor="#8E6A1F" />
+    </radialGradient>
+    {/* Brass plate */}
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#F2D680" />
+      <stop offset="50%" stopColor="#C9A24A" />
+      <stop offset="100%" stopColor="#8C6E22" />
     </linearGradient>
-    <filter id="envPaperTex" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3" />
-      <feColorMatrix values="0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.32  0 0 0 0.25 0" />
-      <feComposite in2="SourceGraphic" operator="in" />
-    </filter>
-    <filter id="envDropShadow" x="-30%" y="-30%" width="160%" height="160%">
+    {/* Flag handle */}
+    <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#EFEFEF" />
+      <stop offset="50%" stopColor="#C0C0C8" />
+      <stop offset="100%" stopColor="#8A8A95" />
+    </linearGradient>
+    {/* Soft ground glow / ambient */}
+    <radialGradient id="ground" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stopColor="#000" stopOpacity="0.25" />
+      <stop offset="100%" stopColor="#000" stopOpacity="0" />
+    </radialGradient>
+    {/* Envelope paper */}
+    <linearGradient id="envCream" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#FBF4E4" />
+      <stop offset="100%" stopColor="#E8D9B6" />
+    </linearGradient>
+    <linearGradient id="envBlush" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#FBE0EB" />
+      <stop offset="100%" stopColor="#EFB8CE" />
+    </linearGradient>
+    <linearGradient id="envFloral" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#F7E6D6" />
+      <stop offset="100%" stopColor="#DEC09C" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-      <feOffset dy="4" />
-      <feComponentTransfer><feFuncA type="linear" slope="0.42" /></feComponentTransfer>
+      <feOffset dy="3" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.35" /></feComponentTransfer>
       <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
     </filter>
-    {/* Wax-melt 3D bevel for the heart seal */}
-    <radialGradient id="waxHeart" cx="0.35" cy="0.3" r="0.85">
-      <stop offset="0%" stopColor="#FF8A9C" />
-      <stop offset="55%" stopColor="#D8324C" />
-      <stop offset="100%" stopColor="#7A1322" />
-    </radialGradient>
-    <filter id="waxBevel" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur" />
-      <feSpecularLighting in="blur" surfaceScale="3" specularConstant="1" specularExponent="22" lightingColor="#fff" result="spec">
-        <fePointLight x="-30" y="-40" z="80" />
-      </feSpecularLighting>
-      <feComposite in="spec" in2="SourceAlpha" operator="in" result="specClip" />
-      <feComposite in="SourceGraphic" in2="specClip" operator="arithmetic" k1="0" k2="1" k3="0.7" k4="0" />
-    </filter>
-    {/* Shimmer light sweep gradient */}
-    <linearGradient id="envShimmer" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stopColor="#fff" stopOpacity="0" />
-      <stop offset="45%" stopColor="#fff" stopOpacity="0" />
-      <stop offset="50%" stopColor="#fff" stopOpacity="0.85" />
-      <stop offset="55%" stopColor="#fff" stopOpacity="0" />
-      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-    </linearGradient>
-    {/* Interior depth-of-field blur */}
-    <filter id="cavityBlur" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur stdDeviation="2.5" />
-    </filter>
-    {/* Envelope clips — one for the visible slot mouth, one for the front area below it. */}
-    <clipPath id="envelopeSlotMouthClip">
-      <rect x="138" y="186" width="104" height="17" rx="3" />
-    </clipPath>
-    <clipPath id="envelopeShadowClip">
-      <rect x="0" y="186" width="400" height="309" />
-    </clipPath>
-    <clipPath id="envelopeFrontClip">
-      <rect x="0" y="203" width="400" height="292" />
-    </clipPath>
   </defs>
 );
 
-const GroundShadow = () => (
-  <motion.g
-    variants={{
-      idle: { opacity: 1, scale: 1 },
-      opening: { opacity: 0.85, scale: 1.05 },
-      delivered: { opacity: 1, scale: 1 },
-    }}
-    style={{ transformOrigin: "200px 418px" }}
-  >
-    <ellipse cx="200" cy="418" rx="150" ry="14" fill="#000" opacity="0.18" />
-    <ellipse cx="200" cy="416" rx="110" ry="6" fill="#000" opacity="0.25" />
-  </motion.g>
-);
+/* ───────────────────── Garden band (simple foliage + flowers) ───────────────────── */
 
-const Post = () => (
-  <motion.g
-    variants={{
-      idle: { y: 0 },
-      opening: { y: 0 },
-      delivered: { y: 0 },
-    }}
-  >
-    <polygon
-      points="188,270 212,270 212,410 188,410"
-      fill="#EFEAFB"
-      stroke={STROKE}
-      strokeWidth="2.5"
-      strokeLinejoin="round"
-    />
-    <polygon
-      points="212,270 224,262 224,402 212,410"
-      fill="#BBA8F0"
-      stroke={STROKE}
-      strokeWidth="2.5"
-      strokeLinejoin="round"
-    />
-  </motion.g>
-);
-
-const Roof = () => (
-  <motion.g
-    variants={{
-      idle: { rotate: 0 },
-      opening: { rotate: [0, -1.2, 1.2, 0] },
-      delivered: { rotate: 0 },
-    }}
-    transition={{ duration: 0.5 }}
-    style={{ transformOrigin: "217px 170px" }}
-  >
-    <path
-      d="M 155 152 Q 155 67 240 67 Q 325 67 325 152 L 325 252 L 280 270 L 280 170 Q 280 85 195 85 Q 110 85 110 170 Z"
-      fill="url(#lavMetalDark)"
-      stroke={STROKE}
-      strokeWidth="2.6"
-      strokeLinejoin="round"
-    />
-    <g clipPath="url(#roofClip)" opacity="0.55">
-      <rect x="100" y="60" width="240" height="220" fill="#fff" filter="url(#brushed)" />
-    </g>
-    <path
-      d="M 158 150 Q 160 70 240 70 Q 322 70 324 150"
-      fill="none"
-      stroke="#EAE0FA"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      opacity="0.85"
-    />
-  </motion.g>
-);
-
-/* Empty interior cavity — visible when FrontFace falls open.
-   Blurs subtly while the envelope emerges for a depth-of-field feel. */
-const Interior = ({ open }: { open: boolean }) => (
-  <motion.g
-    clipPath="url(#frontClip)"
-    animate={{ filter: open ? "url(#cavityBlur)" : "none" }}
-    transition={{ duration: 0.6, delay: open ? 0.7 : 0 }}
-  >
-    {/* deep cavity background */}
-    <rect x="100" y="80" width="200" height="200" fill="url(#cavity)" />
-    {/* top inner shadow rim (under arch) */}
-    <path
-      d="M 110 170 Q 110 90 195 90 Q 280 90 280 170"
-      fill="none"
-      stroke="#000"
-      strokeWidth="10"
-      opacity="0.55"
-      strokeLinecap="round"
-    />
-    {/* faint side wall highlights for depth */}
-    <path d="M 122 170 L 122 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
-    <path d="M 268 170 L 268 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35" />
-    {/* floor line */}
-    <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7" />
-    {/* tiny ambient glow from above to suggest open-air emptiness */}
-    <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04" />
-  </motion.g>
-);
-
-/* FrontFace, mail slot, and lower lip hinge move as one rigid door assembly.
-   The mailbox face is already drawn in a left-leaning isometric projection, so
-   the flap must stay on that same skewed plane while swinging from the bottom
-   edge like a real hinge. */
-const HingeSill = () => (
-  <g>
-    <rect x="105" y="265" width="180" height="14" rx="1" fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2.5" />
-    <rect x="105" y="265" width="180" height="2.5" fill="#EAE0FA" opacity="0.8" />
-    <rect x="107" y="277" width="176" height="2" fill="#000" opacity="0.35" />
+const Flower = ({ x, y, color, scale = 1 }: { x: number; y: number; color: string; scale?: number }) => (
+  <g transform={`translate(${x} ${y}) scale(${scale})`}>
+    {[0, 72, 144, 216, 288].map((a) => (
+      <ellipse
+        key={a}
+        cx="0"
+        cy="-5"
+        rx="3.2"
+        ry="5"
+        fill={color}
+        transform={`rotate(${a})`}
+        opacity="0.95"
+      />
+    ))}
+    <circle r="2" fill="#F5C24A" />
   </g>
 );
 
-/* Static front face overlay — no swing, no hinge. The door stays put;
-   only the birds and envelope animate on click. */
-const FrontFaceOverlay = () => (
-  <g pointerEvents="none">
-    <defs>
-      <linearGradient id="doorLavMetal" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stopColor="#A99BD8" />
-        <stop offset="22%" stopColor="#D4C8F2" />
-        <stop offset="50%" stopColor="#BDAEE7" />
-        <stop offset="78%" stopColor="#D8CCF4" />
-        <stop offset="100%" stopColor="#9C8DCC" />
-      </linearGradient>
-      <linearGradient id="doorShine" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#EFE7FF" stopOpacity="0.9" />
-        <stop offset="100%" stopColor="#EFE7FF" stopOpacity="0" />
-      </linearGradient>
-      <radialGradient id="doorSlotGlow" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0%" stopColor="#FFE9B0" stopOpacity="0.95" />
-        <stop offset="60%" stopColor="#E0995A" stopOpacity="0.5" />
-        <stop offset="100%" stopColor="#1a1a1a" stopOpacity="1" />
-      </radialGradient>
-      <mask id="doorFaceMask">
-        <rect x="0" y="0" width="400" height="495" fill="#000" />
-        <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" fill="#fff" />
-        <rect x="138" y="186" width="104" height="17" rx="3" fill="#000" />
-      </mask>
-      <clipPath id="doorClipOverlay">
-        <path d="M 110 266 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 266 Z" />
-      </clipPath>
-    </defs>
+const Leaf = ({ x, y, rot = 0, color = "#5A8A4A", scale = 1 }: { x: number; y: number; rot?: number; color?: string; scale?: number }) => (
+  <path
+    d="M 0 0 Q 6 -10 14 -6 Q 6 0 0 0 Z"
+    fill={color}
+    transform={`translate(${x} ${y}) rotate(${rot}) scale(${scale})`}
+    opacity="0.9"
+  />
+);
 
+const GardenBand = () => (
+  <g>
+    {/* Soft ground gradient */}
+    <ellipse cx="200" cy="430" rx="200" ry="40" fill="url(#ground)" />
+    {/* Foliage clumps left */}
+    <g>
+      <ellipse cx="55" cy="420" rx="65" ry="22" fill="#4F7A42" />
+      <ellipse cx="75" cy="408" rx="50" ry="18" fill="#629256" />
+      <ellipse cx="40" cy="412" rx="35" ry="14" fill="#73A467" />
+    </g>
+    {/* Foliage clumps right */}
+    <g>
+      <ellipse cx="345" cy="420" rx="65" ry="22" fill="#4F7A42" />
+      <ellipse cx="325" cy="408" rx="50" ry="18" fill="#629256" />
+      <ellipse cx="360" cy="412" rx="35" ry="14" fill="#73A467" />
+    </g>
+    {/* Center mound under post */}
+    <ellipse cx="200" cy="438" rx="90" ry="14" fill="#5C4030" opacity="0.55" />
+    {/* Pebbles */}
+    {[
+      { x: 165, y: 438, r: 4 },
+      { x: 180, y: 442, r: 3 },
+      { x: 215, y: 440, r: 4.5 },
+      { x: 232, y: 437, r: 3 },
+      { x: 198, y: 444, r: 3.5 },
+    ].map((p, i) => (
+      <ellipse key={i} cx={p.x} cy={p.y} rx={p.r} ry={p.r * 0.65} fill="#9B8B78" />
+    ))}
+    {/* Flowers — pinks, purples, white */}
+    <Flower x={25} y={408} color="#E58AB4" />
+    <Flower x={48} y={420} color="#C58AD8" scale={0.9} />
+    <Flower x={82} y={414} color="#FBE5F0" scale={0.85} />
+    <Flower x={108} y={424} color="#D472C0" scale={0.95} />
+    <Flower x={130} y={416} color="#A87CD8" scale={0.8} />
+    <Flower x={265} y={418} color="#E58AB4" scale={0.9} />
+    <Flower x={290} y={414} color="#C58AD8" />
+    <Flower x={315} y={424} color="#FBE5F0" scale={0.85} />
+    <Flower x={350} y={416} color="#D472C0" scale={0.95} />
+    <Flower x={375} y={420} color="#A87CD8" scale={0.85} />
+    {/* A succulent rosette center-front */}
+    <g transform="translate(210 438)">
+      {[0, 60, 120, 180, 240, 300].map((a) => (
+        <ellipse
+          key={a}
+          cx="0"
+          cy="-4"
+          rx="3"
+          ry="6"
+          fill="#A6C8A0"
+          stroke="#6E8E68"
+          strokeWidth="0.5"
+          transform={`rotate(${a})`}
+        />
+      ))}
+      <circle r="2" fill="#C9DFC0" />
+    </g>
+    {/* Leaves scattered */}
+    <Leaf x={20} y={400} rot={-30} />
+    <Leaf x={130} y={406} rot={20} color="#6FA058" />
+    <Leaf x={270} y={406} rot={-15} />
+    <Leaf x={378} y={404} rot={25} color="#6FA058" />
+  </g>
+);
+
+/* ───────────────────── Post ───────────────────── */
+
+const Post = () => (
+  <g>
+    {/* Top horizontal beam */}
+    <rect x="138" y="288" width="124" height="14" fill="url(#woodTop)" stroke={INK} strokeWidth="1.6" rx="1.5" />
+    <line x1="150" y1="291" x2="252" y2="291" stroke="#5A4028" strokeWidth="0.8" opacity="0.6" />
+    {/* Vertical post */}
+    <rect x="184" y="300" width="32" height="130" fill="url(#wood)" stroke={INK} strokeWidth="1.6" rx="1.5" />
+    {/* Wood grain */}
+    <line x1="192" y1="305" x2="192" y2="428" stroke="#5A4028" strokeWidth="0.6" opacity="0.5" />
+    <line x1="200" y1="305" x2="200" y2="428" stroke="#6E5238" strokeWidth="0.5" opacity="0.4" />
+    <line x1="208" y1="305" x2="208" y2="428" stroke="#5A4028" strokeWidth="0.6" opacity="0.5" />
+  </g>
+);
+
+/* ───────────────────── Mailbox body ───────────────────── */
+
+const Body = () => (
+  <g filter="url(#softShadow)">
+    {/* Right side wall (depth) */}
     <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
-      fill="url(#doorLavMetal)"
-      stroke={STROKE}
-      strokeWidth="3"
+      d="M 305 290 L 305 168 Q 305 110 290 95 L 295 92 Q 318 108 318 168 L 318 288 Z"
+      fill="url(#bodyLavSide)"
+      stroke={INK}
+      strokeWidth="1.8"
       strokeLinejoin="round"
-      mask="url(#doorFaceMask)"
     />
+    {/* Main body — rounded arch */}
     <path
-      d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
-      fill="url(#doorShine)"
-      opacity="0.5"
-      clipPath="url(#doorClipOverlay)"
-      mask="url(#doorFaceMask)"
+      d="M 88 290 L 88 170 Q 88 92 200 92 Q 305 92 305 170 L 305 290 Z"
+      fill="url(#bodyLav)"
+      stroke={INK}
+      strokeWidth="2.2"
+      strokeLinejoin="round"
     />
+    {/* Top highlight */}
     <path
-      d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
+      d="M 88 290 L 88 170 Q 88 92 200 92 Q 305 92 305 170 L 305 290 Z"
+      fill="url(#bodyShine)"
+      opacity="0.9"
+    />
+    {/* Water droplets */}
+    {[
+      { x: 130, y: 130, r: 1.6 },
+      { x: 160, y: 115, r: 1.2 },
+      { x: 220, y: 110, r: 1.4 },
+      { x: 255, y: 130, r: 1.1 },
+      { x: 275, y: 160, r: 1.3 },
+    ].map((d, i) => (
+      <circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#FFFFFF" opacity="0.7" />
+    ))}
+    {/* Top arch shine line */}
+    <path
+      d="M 95 175 Q 100 100 200 100"
       fill="none"
       stroke="#F2EBFF"
       strokeWidth="1.2"
-      opacity="0.85"
+      opacity="0.7"
     />
-    <rect x="136" y="184" width="108" height="21" rx="4" fill="#2D243A" opacity="0.7" />
-    <rect x="138" y="186" width="104" height="17" rx="3" fill={STROKE} />
-    <motion.rect
-      x="141"
-      y="189"
-      width="98"
-      height="11"
-      rx="2"
-      fill="url(#doorSlotGlow)"
-      animate={{ opacity: [0.7, 1, 0.7] }}
-      transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <line x1="141" y1="187.5" x2="239" y2="187.5" stroke="#F2EBFF" strokeWidth="1" opacity="0.9" />
   </g>
 );
 
-// Closed envelope, back view — soft pink with hand-drawn ink outline and heart seal.
-// Keeps the original coordinate space: 110 wide × 70 tall, top edge at y=0, centered on x=0.
-const EnvelopeArtwork = () => {
-  const INK = "#1a1a1a";
-  const BODY_LIGHT = "#FBE3EC"; // lighter right half
-  const BODY_MID = "#F5C9DA";   // base pink
-  const BODY_SHADE = "#EDB6CC"; // left-side shadow
-  const FLAP_PINK = "#F4CADB";  // top triangular flap
-  const HEART_OUTER = "#F1A9C2";
-  const HEART_INNER = "#E87FA3";
-  return (
-    <g>
-      {/* Outer body rectangle (ink frame) */}
-      <rect x="-55" y="0" width="110" height="70" rx="2" fill={BODY_MID} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Top flap folded down — apex meets bottom V at center */}
-      <path d="M -55 0 L 0 35 L 55 0 Z" fill={BODY_MID} stroke={INK} strokeWidth="2.2" strokeLinejoin="round" />
-    </g>
-  );
-};
+/* ───────────────────── Flag handle (right side) ───────────────────── */
 
-const Envelope = ({ show, phase = "behind" }: { show: boolean; phase?: "behind" | "front" }) => (
+const Flag = () => (
+  <g>
+    {/* Vertical post */}
+    <rect x="312" y="170" width="5" height="50" fill="url(#silver)" stroke={INK} strokeWidth="1" rx="1" />
+    {/* Horizontal arm */}
+    <rect x="305" y="165" width="38" height="9" fill="url(#silver)" stroke={INK} strokeWidth="1.2" rx="2" />
+    {/* Ball end */}
+    <circle cx="343" cy="169.5" r="4.5" fill="url(#silver)" stroke={INK} strokeWidth="1" />
+    <circle cx="342" cy="168" r="1.4" fill="#FFFFFF" opacity="0.8" />
+  </g>
+);
+
+/* ───────────────────── Brass M plate ───────────────────── */
+
+const Plate = () => (
+  <g>
+    <rect x="225" y="232" width="42" height="26" rx="3" fill="url(#brass)" stroke={INK} strokeWidth="1.4" />
+    <rect x="227" y="234" width="38" height="22" rx="2" fill="none" stroke="#6A4F18" strokeWidth="0.6" opacity="0.7" />
+    <text
+      x="246"
+      y="251"
+      textAnchor="middle"
+      fontFamily="serif"
+      fontWeight="700"
+      fontSize="14"
+      fill="#5A3F12"
+    >
+      M
+    </text>
+    {/* Tiny brass screws */}
+    <circle cx="229" cy="236" r="1" fill="#5A3F12" />
+    <circle cx="263" cy="236" r="1" fill="#5A3F12" />
+    <circle cx="229" cy="254" r="1" fill="#5A3F12" />
+    <circle cx="263" cy="254" r="1" fill="#5A3F12" />
+  </g>
+);
+
+/* ───────────────────── Interior cavity (revealed when open) ───────────────────── */
+
+const Interior = () => (
+  <g>
+    <path
+      d="M 100 285 L 100 175 Q 100 100 200 100 Q 295 100 295 175 L 295 285 Z"
+      fill="url(#cavity)"
+    />
+    {/* Top inner rim shadow */}
+    <path
+      d="M 102 175 Q 105 105 200 105 Q 293 105 293 175"
+      fill="none"
+      stroke="#000"
+      strokeWidth="6"
+      opacity="0.4"
+      strokeLinecap="round"
+    />
+    {/* Inner floor */}
+    <ellipse cx="197" cy="283" rx="92" ry="6" fill="#2A1E3E" opacity="0.8" />
+  </g>
+);
+
+/* ───────────────────── Letters inside ───────────────────── */
+
+const FloralEnvelope = ({ rot = 0 }: { rot?: number }) => (
+  <g transform={`rotate(${rot})`}>
+    <rect x="-32" y="-22" width="64" height="44" rx="2" fill="url(#envFloral)" stroke={INK} strokeWidth="1.2" />
+    {/* Floral pattern */}
+    {[
+      { x: -22, y: -10, c: "#D472A0" },
+      { x: -8, y: 4, c: "#A87CD8" },
+      { x: 8, y: -8, c: "#E58AB4" },
+      { x: 22, y: 6, c: "#7BA86A" },
+      { x: -16, y: 10, c: "#7BA86A" },
+      { x: 16, y: -14, c: "#A87CD8" },
+    ].map((f, i) => (
+      <circle key={i} cx={f.x} cy={f.y} r="2.2" fill={f.c} opacity="0.85" />
+    ))}
+  </g>
+);
+
+const BlushEnvelope = ({ rot = 0 }: { rot?: number }) => (
+  <g transform={`rotate(${rot})`}>
+    <rect x="-30" y="-21" width="60" height="42" rx="2" fill="url(#envBlush)" stroke={INK} strokeWidth="1.2" />
+    {/* Bluebird motif */}
+    <ellipse cx="-4" cy="0" rx="9" ry="6" fill="#7DB8D8" stroke={INK} strokeWidth="0.8" />
+    <circle cx="-12" cy="-3" r="4.5" fill="#7DB8D8" stroke={INK} strokeWidth="0.8" />
+    <circle cx="-13" cy="-4" r="0.8" fill={INK} />
+    <path d="M -16 -3 L -19 -2 L -16 -1 Z" fill="#E5A45A" stroke={INK} strokeWidth="0.5" />
+    {/* Tiny floral branch */}
+    <path d="M 8 6 Q 14 2 22 6" stroke="#7BA86A" strokeWidth="1" fill="none" />
+    <circle cx="14" cy="4" r="1.5" fill="#E58AB4" />
+    <circle cx="20" cy="6" r="1.4" fill="#A87CD8" />
+  </g>
+);
+
+const CreamEnvelope = ({ rot = 0 }: { rot?: number }) => (
+  <g transform={`rotate(${rot})`}>
+    <rect x="-28" y="-20" width="56" height="40" rx="2" fill="url(#envCream)" stroke={INK} strokeWidth="1.2" />
+    {/* Flap (back-of-envelope V) */}
+    <path d="M -28 -20 L 0 0 L 28 -20" fill="none" stroke={INK} strokeWidth="1" opacity="0.5" />
+  </g>
+);
+
+const LettersInside = ({ show }: { show: boolean }) => (
   <AnimatePresence>
     {show && (
-      <>
-        {phase === "front" && (
-          <g clipPath="url(#envelopeShadowClip)">
-            {/* Soft drop shadow beneath the envelope */}
-            <motion.ellipse
-              cx="190"
-              cy="262"
-              rx="62"
-              ry="6"
-              fill="#000"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.32 }}
-              transition={{ delay: 0.72, duration: 0.4 }}
-              style={{ filter: "blur(4px)" }}
-            />
-          </g>
-        )}
-
-        {phase === "behind" && (
-          <g clipPath="url(#envelopeSlotMouthClip)">
-            {/* Mechanical slide: envelope starts hidden above the slot,
-                slides DOWN at constant motor speed through the slot mouth.
-                The clip mask reveals only what's currently inside the slot,
-                creating an ATM/printer "pushing the bill out" feel. */}
-            <motion.g
-              initial={{ x: 190, y: 100 }}
-              animate={{ x: 190, y: 220 }}
-              exit={{ opacity: 0 }}
-              transition={{
-                duration: 1.4,
-                delay: 0.2,
-                ease: "linear",
-              }}
-            >
-              <EnvelopeArtwork />
-            </motion.g>
-          </g>
-        )}
-
-        {phase === "front" && (
-          <g clipPath="url(#envelopeFrontClip)">
-            {/* Same trajectory, but clipped to BELOW the slot so the
-                envelope appears on the front face as it emerges. Spring
-                settle gives a subtle physical bounce as the motor releases. */}
-            <motion.g
-              initial={{ x: 190, y: 100 }}
-              animate={{ x: 190, y: 210 }}
-              exit={{ opacity: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 100,
-                damping: 20,
-                delay: 0.2,
-                restDelta: 0.001,
-              }}
-              filter="url(#envDropShadow)"
-            >
-              <EnvelopeArtwork />
-            </motion.g>
-          </g>
-        )}
-      </>
+      <motion.g
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <g transform="translate(160 235)" filter="url(#softShadow)">
+          <CreamEnvelope rot={-8} />
+        </g>
+        <g transform="translate(185 225)" filter="url(#softShadow)">
+          <FloralEnvelope rot={-3} />
+        </g>
+        <g transform="translate(215 230)" filter="url(#softShadow)">
+          <BlushEnvelope rot={6} />
+        </g>
+      </motion.g>
     )}
   </AnimatePresence>
 );
 
-/* Bird body: idle gentle hop, on click flies far off-screen in facing direction */
-const birdBodyVariants = (dir: 1 | -1): Variants => ({
-  idle: {
-    y: [0, -2, 0],
-    x: 0,
-    opacity: 1,
-    transition: { duration: 2.8, repeat: Infinity, ease: "easeInOut" },
-  },
-  opening: {
-    x: dir * 520,
-    y: -220,
-    opacity: [1, 1, 1, 0],
-    rotate: dir * 10,
-    transition: {
-      duration: 4.5,
-      ease: "easeOut",
-      opacity: { duration: 4.5, times: [0, 0.7, 0.9, 1] },
-    },
-  },
-  delivered: { opacity: 0 },
-});
+/* ───────────────────── Door / flap ───────────────────── */
 
-/* Wing flap: slow up/down idle, fast flap when flying */
-const wingFlapVariants: Variants = {
-  idle: {
-    rotate: [-6, 10, -6],
-    transition: { duration: 1.8, repeat: Infinity, ease: "easeInOut" },
-  },
-  opening: {
-    rotate: [-30, 25, -30],
-    transition: { duration: 0.22, repeat: Infinity, ease: "easeInOut" },
-  },
-  delivered: { rotate: 0 },
-};
-
-const BirdLeft = () => (
-  <g transform="translate(170, 70)">
-    <motion.g variants={birdBodyVariants(-1)} style={{ transformOrigin: "0 0" }}>
-      {/* tail */}
-      <path d="M 12 -2 Q 20 -8 22 -14" fill="none" stroke={STROKE} strokeWidth="1.4" />
-      {/* body */}
-      <ellipse cx="0" cy="0" rx="14" ry="10" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
-      {/* feet */}
-      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
-      {/* head — facing LEFT (outward) */}
-      <circle cx="-10" cy="-6" r="7.5" fill="#F4E6C9" stroke={STROKE} strokeWidth="1.6" />
-      <polygon points="-17,-6 -22,-4 -17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
-      <circle cx="-12" cy="-7" r="1.3" fill={STROKE} />
-      {/* wing — pivots from shoulder */}
-      <motion.path
-        d="M 1 -3 Q 6 -10 12 -6 Q 8 0 1 1 Z"
-        fill="#E8D6A8"
-        stroke={STROKE}
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-        variants={wingFlapVariants}
-        style={{ transformOrigin: "1px -3px", transformBox: "fill-box" as any }}
-      />
-    </motion.g>
-  </g>
+const Door = ({ open }: { open: boolean }) => (
+  <motion.g
+    initial={false}
+    animate={{ rotateX: open ? -160 : 0 }}
+    transition={{ duration: 1.1, ease: [0.34, 1.3, 0.4, 1] }}
+    style={{ transformOrigin: "200px 288px", transformBox: "fill-box" }}
+  >
+    {/* Door outer */}
+    <path
+      d="M 100 288 L 100 175 Q 100 102 200 102 Q 295 102 295 175 L 295 288 Z"
+      fill="url(#doorOuter)"
+      stroke={INK}
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+    {/* Door inner panel (pink) */}
+    <path
+      d="M 110 285 L 110 178 Q 110 112 200 112 Q 285 112 285 178 L 285 285 Z"
+      fill="url(#doorInner)"
+      opacity="0.85"
+    />
+    {/* Tiny handle on door (bottom) */}
+    <rect x="190" y="276" width="20" height="4" rx="1.5" fill="url(#silver)" stroke={INK} strokeWidth="0.8" />
+    {/* Two rivets */}
+    <circle cx="118" cy="280" r="1.6" fill="#7A6499" />
+    <circle cx="278" cy="280" r="1.6" fill="#7A6499" />
+  </motion.g>
 );
 
-const BirdRight = () => (
-  <g transform="translate(240, 70)">
-    <motion.g variants={birdBodyVariants(1)} style={{ transformOrigin: "0 0" }}>
-      {/* tail */}
-      <path d="M -12 -2 Q -20 -8 -22 -14" fill="none" stroke={STROKE} strokeWidth="1.4" />
-      {/* body */}
-      <ellipse cx="0" cy="0" rx="14" ry="10" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
-      {/* feet */}
-      <path d="M -2 9 L -4 14 M 2 9 L 1 14" stroke={STROKE} strokeWidth="1.4" strokeLinecap="round" />
-      {/* head — facing RIGHT (outward) */}
-      <circle cx="10" cy="-6" r="7.5" fill="#FAFAF6" stroke={STROKE} strokeWidth="1.6" />
-      <polygon points="17,-6 22,-4 17,-2" fill="#E2A23C" stroke={STROKE} strokeWidth="1" />
-      <circle cx="12" cy="-7" r="1.3" fill={STROKE} />
-      {/* wing — pivots from shoulder */}
-      <motion.path
-        d="M -1 -3 Q -6 -10 -12 -6 Q -8 0 -1 1 Z"
-        fill="#ECEAE3"
-        stroke={STROKE}
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-        variants={wingFlapVariants}
-        style={{ transformOrigin: "-1px -3px", transformBox: "fill-box" as any }}
-      />
-    </motion.g>
-  </g>
+/* ───────────────────── Birds ───────────────────── */
+
+const GoldBird = ({ flying }: { flying: boolean }) => (
+  <motion.g
+    initial={false}
+    animate={
+      flying
+        ? { x: -180, y: -180, rotate: -18, opacity: 0 }
+        : { x: 0, y: [0, -1.5, 0], rotate: 0, opacity: 1 }
+    }
+    transition={
+      flying
+        ? { duration: 2.4, ease: "easeOut", opacity: { duration: 2.4, times: [0, 0.7, 1] } }
+        : { duration: 2.6, repeat: Infinity, ease: "easeInOut" }
+    }
+    style={{ transformOrigin: "215px 85px" }}
+  >
+    {/* Tail */}
+    <path d="M 232 86 L 248 80 L 244 88 Z" fill="url(#goldBird)" stroke={INK} strokeWidth="1" />
+    {/* Body */}
+    <ellipse cx="218" cy="85" rx="14" ry="9" fill="url(#goldBird)" stroke={INK} strokeWidth="1.2" />
+    {/* Wing */}
+    <motion.path
+      d="M 215 80 Q 225 78 228 88 Q 220 90 215 88 Z"
+      fill="#B89238"
+      stroke={INK}
+      strokeWidth="1"
+      animate={flying ? { rotate: [-20, 25, -20] } : { rotate: [-3, 5, -3] }}
+      transition={{ duration: flying ? 0.18 : 2.4, repeat: Infinity, ease: "easeInOut" }}
+      style={{ transformOrigin: "220px 84px" }}
+    />
+    {/* Head */}
+    <circle cx="208" cy="79" r="7" fill="url(#goldBird)" stroke={INK} strokeWidth="1.2" />
+    {/* Eye */}
+    <circle cx="205" cy="77" r="1.1" fill={INK} />
+    <circle cx="204.5" cy="76.5" r="0.4" fill="#FFF" />
+    {/* Beak */}
+    <path d="M 202 79 L 198 80 L 202 81 Z" fill="#D89A3A" stroke={INK} strokeWidth="0.7" />
+    {/* Feet */}
+    <line x1="214" y1="93" x2="213" y2="96" stroke={INK} strokeWidth="1" strokeLinecap="round" />
+    <line x1="220" y1="93" x2="221" y2="96" stroke={INK} strokeWidth="1" strokeLinecap="round" />
+  </motion.g>
 );
+
+const BlueBird = ({ flying }: { flying: boolean }) => (
+  <motion.g
+    initial={false}
+    animate={
+      flying
+        ? { x: 200, y: -160, rotate: 18, opacity: 0 }
+        : { x: 0, y: [0, -1, 0], rotate: 0, opacity: 1 }
+    }
+    transition={
+      flying
+        ? { duration: 2.4, ease: "easeOut", opacity: { duration: 2.4, times: [0, 0.7, 1] } }
+        : { duration: 3.1, repeat: Infinity, ease: "easeInOut" }
+    }
+    style={{ transformOrigin: "335px 230px" }}
+  >
+    {/* Tail */}
+    <path d="M 346 232 L 354 228 L 350 234 Z" fill="#7DB8D8" stroke={INK} strokeWidth="0.8" />
+    {/* Body */}
+    <ellipse cx="338" cy="232" rx="9" ry="6" fill="#9CCDE5" stroke={INK} strokeWidth="1" />
+    {/* Head */}
+    <circle cx="332" cy="228" r="5" fill="#9CCDE5" stroke={INK} strokeWidth="1" />
+    {/* Eye */}
+    <circle cx="330" cy="227" r="0.8" fill={INK} />
+    {/* Beak */}
+    <path d="M 328 228 L 326 229 L 328 230 Z" fill="#D89A3A" stroke={INK} strokeWidth="0.5" />
+    {/* Wing */}
+    <path d="M 336 229 Q 342 228 344 234 Q 339 235 336 233 Z" fill="#6FA8C8" stroke={INK} strokeWidth="0.8" />
+    {/* Feet */}
+    <line x1="335" y1="238" x2="334" y2="241" stroke={INK} strokeWidth="0.8" strokeLinecap="round" />
+    <line x1="339" y1="238" x2="340" y2="241" stroke={INK} strokeWidth="0.8" strokeLinecap="round" />
+  </motion.g>
+);
+
+/* ───────────────────── Caption ───────────────────── */
 
 const Caption = ({ senderName }: { senderName?: string }) => (
-  <g>
-    <motion.text
+  <motion.g
+    initial={{ opacity: 0, y: 6 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.4, duration: 0.6 }}
+  >
+    <text
       x="200"
-      y="450"
+      y="475"
       textAnchor="middle"
-      fontFamily="'Playfair Display', Georgia, serif"
-      fontSize="18"
-      fontWeight="600"
-      fill="#4b3a6b"
-      filter="url(#textGlow)"
-      initial={{ opacity: 0, y: 460 }}
-      animate={{ opacity: 1, y: 450 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      fontFamily="'Playfair Display', serif"
+      fontStyle="italic"
+      fontSize="15"
+      fill="#5A4870"
     >
-      You've got a mail from {senderName?.trim() || "someone special"}
-    </motion.text>
-    <motion.text
-      x="200"
-      y="478"
-      textAnchor="middle"
-      fontFamily="'Inter', system-ui, sans-serif"
-      fontSize="12"
-      fontWeight="500"
-      letterSpacing="2"
-      fill="#8a7aae"
-      filter="url(#textGlow)"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0.4, 1, 1, 0.5] }}
-      transition={{ duration: 2.6, repeat: Infinity }}
-    >
-      CLICK THE MAILBOX TO CONTINUE
-    </motion.text>
-  </g>
+      {senderName ? `A letter from ${senderName}` : "Tap to open your letter"}
+    </text>
+  </motion.g>
 );
 
 /* ───────────────────── Root ───────────────────── */
@@ -552,9 +530,12 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
     controls.start(state);
   }, [state, controls]);
 
-  useEffect(() => () => {
-    timersRef.current.forEach((timer) => window.clearTimeout(timer));
-  }, []);
+  useEffect(
+    () => () => {
+      timersRef.current.forEach((t) => window.clearTimeout(t));
+    },
+    []
+  );
 
   const handleClick = () => {
     if (state !== "idle") return;
@@ -583,89 +564,60 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
         whileTap={{ scale: open ? 1 : 0.98 }}
         animate={open ? { y: [0, -2, 0] } : { y: [0, -5, 0] }}
         transition={
-          open ? { duration: 0.4 } : { duration: 3.4, repeat: Infinity, ease: "easeInOut" }
+          open
+            ? { duration: 0.4 }
+            : { duration: 3.4, repeat: Infinity, ease: "easeInOut" }
         }
         style={{
           cursor: open ? "default" : "pointer",
-          width: "min(520px, 90%)",
+          width: "min(540px, 92%)",
           aspectRatio: "1 / 1",
           position: "relative",
-          perspective: "1200px",
+          perspective: "1400px",
           transformStyle: "preserve-3d",
         }}
       >
-        {/* Mailbox SVG — fades out (pure opacity, GPU-composited) as the
-            zoomed envelope takes over. No blur filter → no per-frame repaint. */}
         <motion.div
           animate={delivered ? { opacity: 0 } : { opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           style={{ width: "100%", height: "100%", willChange: "opacity" }}
         >
-        <svg
-          viewBox="0 0 400 495"
-          width="100%"
-          height="100%"
-          style={{ overflow: "visible", transformStyle: "preserve-3d" }}
-        >
-          <Defs />
+          <svg
+            viewBox="0 0 400 495"
+            width="100%"
+            height="100%"
+            style={{ overflow: "visible" }}
+          >
+            <Defs />
 
-          {/* Orchestrated parts share variants via parent animate controls */}
-          <motion.g initial="idle" animate={controls}>
-            <GroundShadow />
+            {/* Background warm wash */}
+            <rect x="0" y="0" width="400" height="495" fill="transparent" />
+
             <Post />
+            <Body />
 
-            <g filter="url(#bodyShadow)">
-              {/* Right-side wall strip — sells the ~15° left rotation (we see object's right side) */}
-              <g>
-                <path
-                  d="M 280 270 L 280 170 Q 280 85 195 85 L 200 78 Q 293 78 293 168 L 293 268 Z"
-                  fill="url(#lavMetalDark)"
-                  stroke={STROKE}
-                  strokeWidth="2.5"
-                  strokeLinejoin="round"
-                  opacity="0.95"
-                />
-                <path
-                  d="M 281 170 Q 281 88 198 82"
-                  fill="none"
-                  stroke="#000"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
-                <path
-                  d="M 285 265 L 285 279 L 292 276 L 292 263 Z"
-                  fill="url(#lavMetalDark)"
-                  stroke={STROKE}
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
-              </g>
-              <Roof />
-              <Interior open={open} />
-            </g>
+            {/* Cavity revealed only when door open */}
+            {open && <Interior />}
+            <LettersInside show={open} />
 
-            {/* Envelope and door MUST sit OUTSIDE the SVG filter — filters
-                rasterize their contents and break CSS 3D transforms on children,
-                which is why the door was disappearing. */}
-            <Envelope show={open} phase="behind" />
-            <FrontFaceOverlay />
-            <HingeSill />
-            <Envelope show={open} phase="front" />
+            {/* Door swings open from bottom */}
+            <Door open={open} />
 
-            <BirdLeft />
-            <BirdRight />
-          </motion.g>
-          {!open && <Caption senderName={senderName} />}
-        </svg>
+            <Flag />
+            <Plate />
+
+            <GoldBird flying={open} />
+            <BlueBird flying={open} />
+
+            <GardenBand />
+
+            {!open && <Caption senderName={senderName} />}
+          </svg>
         </motion.div>
 
-        {/* Shared layout overlay — handed to EnvelopeReveal via layoutId.
-            Sits over the landed SVG envelope at (190,245) in viewBox 400x495,
-            then scales 1.05 -> 1.6 with spring physics through the route swap. */}
+        {/* Shared layout overlay envelope — preserved zoom-into-letter handoff */}
         <AnimatePresence>
           {delivered && (
-            // Outer wrapper: handles centering ONLY (CSS transform). No motion values
-            // here, so nothing can drift. Inner motion.div handles the scale animation.
             <div
               style={{
                 position: "fixed",
@@ -680,7 +632,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             >
               <motion.div
                 key="shared-envelope"
-                
                 initial={{ scale: 0.4, opacity: 0 }}
                 animate={{ scale: zoomed ? 1 : 0.4, opacity: 1 }}
                 transition={{
@@ -695,7 +646,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                   willChange: "transform",
                 }}
               >
-                {/* Sibling drop shadow (matches Page 2 envelope) */}
                 <div
                   style={{
                     position: "absolute",
@@ -706,7 +656,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                     zIndex: 0,
                   }}
                 />
-                {/* Body */}
                 <div
                   style={{
                     position: "absolute",
@@ -718,7 +667,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                     zIndex: 1,
                   }}
                 />
-                {/* Flap (top 50%) */}
                 <div
                   style={{
                     position: "absolute",
