@@ -11,6 +11,7 @@ import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
+import mailboxClosedThumb from "@/assets/mailbox-closed.jpg";
 
 interface PreviewPaymentProps {
   letterData: {
