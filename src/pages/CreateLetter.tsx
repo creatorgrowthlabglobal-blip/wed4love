@@ -70,6 +70,7 @@ const CreateLetter = () => {
       quiz: quiz.filter((q) => q.question && q.correctAnswer),
       email,
       date: new Date().toLocaleDateString(),
+      template,
     });
 
     navigate(`/letter-ready/${letterId}`);
