@@ -12,6 +12,8 @@ import mailboxOpen from "@/assets/mailbox-open.jpg";
 
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [template, setTemplate] = useState<"photo" | "purple">("photo");
   const [previewStage, setPreviewStage] = useState<"mailbox" | "envelope">("mailbox");
 
   // Warm both mailbox frames into cache the moment the landing page mounts,
@@ -26,6 +28,11 @@ const Index = () => {
 
 
   const openPreview = () => {
+    setShowTemplatePicker(true);
+  };
+  const startPreviewWith = (t: "photo" | "purple") => {
+    setTemplate(t);
+    setShowTemplatePicker(false);
     setPreviewStage("mailbox");
     setShowPreview(true);
   };
