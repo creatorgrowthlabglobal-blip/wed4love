@@ -111,6 +111,8 @@ const CreateLetter = () => {
                 quiz,
                 letterType,
               }}
+              template={template}
+              onTemplateChange={setTemplate}
               onPay={handlePay}
               onBack={() => setStep(6)}
             />
