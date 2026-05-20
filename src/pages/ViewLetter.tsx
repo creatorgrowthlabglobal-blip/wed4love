@@ -7,10 +7,12 @@ import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
+import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
-type Stage = "envelope" | "quiz" | "balloons" | "video" | "folder";
+type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 
 const ViewLetter = () => {
   const { id } = useParams();
