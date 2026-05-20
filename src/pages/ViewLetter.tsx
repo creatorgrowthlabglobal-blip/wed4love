@@ -7,15 +7,17 @@ import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
+import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
-type Stage = "envelope" | "quiz" | "balloons" | "video" | "folder";
+type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 
 const ViewLetter = () => {
   const { id } = useParams();
   const [letter, setLetter] = useState<StoredLetter | null>(null);
-  const [stage, setStage] = useState<Stage>("envelope");
+  const [stage, setStage] = useState<Stage>("mailbox");
   const [notFound, setNotFound] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -92,7 +94,7 @@ const ViewLetter = () => {
     const isBirthday = letter.type === "birthday";
     const hasMedia = letter.videos.length > 0 || letter.audios.length > 0;
 
-    const flow: Stage[] = ["envelope"];
+    const flow: Stage[] = ["mailbox", "envelope"];
     if (hasQuiz) flow.push("quiz");
     if (isBirthday) flow.push("balloons");
     if (hasMedia) flow.push("video");
@@ -107,8 +109,21 @@ const ViewLetter = () => {
     if (next) setStage(next);
   };
 
+  const template = letter.template || "photo";
+
   return (
     <AnimatePresence mode="wait">
+      {stage === "mailbox" && (
+        <div key="mailbox" className="fixed inset-0 flex items-center justify-center" style={{ background: "#F2EFE8" }}>
+          <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
+            {template === "purple" ? (
+              <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+            ) : (
+              <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+            )}
+          </div>
+        </div>
+      )}
       {stage === "envelope" && (
         <EnvelopeReveal key="envelope" receiverName={letter.receiverName || "Someone Special"} onContinue={advance} />
       )}

@@ -15,6 +15,7 @@ export interface StoredLetter {
   quiz: QuizQuestion[];
   email: string;
   date: string;
+  template?: "photo" | "purple"; // mailbox template choice
 }
 
 export const fileToBase64 = (file: File): Promise<string> =>

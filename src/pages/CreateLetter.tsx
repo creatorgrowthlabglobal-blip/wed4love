@@ -35,6 +35,7 @@ const CreateLetter = () => {
   const [customMusic, setCustomMusic] = useState<File | null>(null);
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [email, setEmail] = useState("");
+  const [template, setTemplate] = useState<"photo" | "purple">("photo");
 
   const handleSelectType = (type: "love" | "birthday") => {
     setLetterType(type);
@@ -69,6 +70,7 @@ const CreateLetter = () => {
       quiz: quiz.filter((q) => q.question && q.correctAnswer),
       email,
       date: new Date().toLocaleDateString(),
+      template,
     });
 
     navigate(`/letter-ready/${letterId}`);
@@ -109,6 +111,8 @@ const CreateLetter = () => {
                 quiz,
                 letterType,
               }}
+              template={template}
+              onTemplateChange={setTemplate}
               onPay={handlePay}
               onBack={() => setStep(6)}
             />
