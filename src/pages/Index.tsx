@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
