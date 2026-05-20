@@ -10,6 +10,7 @@ import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 
 interface PreviewPaymentProps {
   letterData: {
@@ -23,6 +24,8 @@ interface PreviewPaymentProps {
     quiz: QuizQuestion[];
     letterType: "love" | "birthday" | null;
   };
+  template: "photo" | "purple";
+  onTemplateChange: (t: "photo" | "purple") => void;
   onPay: () => void;
   onBack: () => void;
 }
