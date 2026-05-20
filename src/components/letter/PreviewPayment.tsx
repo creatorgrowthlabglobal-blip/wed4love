@@ -194,7 +194,11 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                 style={{ background: "#F2EFE8" }}
               >
                 <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
-                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
+                  {template === "purple" ? (
+                    <PurpleMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
+                  ) : (
+                    <RealisticMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
+                  )}
                 </div>
               </div>
             )}
