@@ -32,8 +32,9 @@ interface PreviewPaymentProps {
 
 type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 
-const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
+const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
   const [previewStage, setPreviewStage] = useState<Stage>("envelope");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [previewVideos, setPreviewVideos] = useState<string[]>([]);
@@ -68,6 +69,12 @@ const PreviewPayment = ({ letterData, onPay, onBack }: PreviewPaymentProps) => {
   };
 
   const openPreview = () => {
+    setShowTemplatePicker(true);
+  };
+
+  const startPreviewWith = (t: "photo" | "purple") => {
+    onTemplateChange(t);
+    setShowTemplatePicker(false);
     setPreviewStage("mailbox");
     setShowPreview(true);
   };
