@@ -17,7 +17,7 @@ type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 const ViewLetter = () => {
   const { id } = useParams();
   const [letter, setLetter] = useState<StoredLetter | null>(null);
-  const [stage, setStage] = useState<Stage>("envelope");
+  const [stage, setStage] = useState<Stage>("mailbox");
   const [notFound, setNotFound] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
