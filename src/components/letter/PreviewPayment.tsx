@@ -255,7 +255,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                   className="rounded-2xl overflow-hidden text-left border-2 transition-all"
                   style={{ borderColor: template === "photo" ? "hsl(340 80% 70%)" : "rgba(0,0,0,0.08)", background: "#fff" }}
                 >
-                  <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: "url(${mailboxClosedThumb})" }} />
+                  <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${mailboxClosedThumb})` }} />
                   <div className="p-4">
                     <p className="font-display text-lg font-bold text-foreground">Template 1 · Lavender Garden</p>
                     <p className="font-body text-xs text-muted-foreground mt-1">Photoreal mailbox in a cottage garden with birds.</p>
