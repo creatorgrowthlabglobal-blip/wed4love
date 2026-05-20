@@ -94,7 +94,7 @@ const ViewLetter = () => {
     const isBirthday = letter.type === "birthday";
     const hasMedia = letter.videos.length > 0 || letter.audios.length > 0;
 
-    const flow: Stage[] = ["envelope"];
+    const flow: Stage[] = ["mailbox", "envelope"];
     if (hasQuiz) flow.push("quiz");
     if (isBirthday) flow.push("balloons");
     if (hasMedia) flow.push("video");
@@ -109,8 +109,21 @@ const ViewLetter = () => {
     if (next) setStage(next);
   };
 
+  const template = letter.template || "photo";
+
   return (
     <AnimatePresence mode="wait">
+      {stage === "mailbox" && (
+        <div key="mailbox" className="fixed inset-0 flex items-center justify-center" style={{ background: "#F2EFE8" }}>
+          <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
+            {template === "purple" ? (
+              <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+            ) : (
+              <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+            )}
+          </div>
+        </div>
+      )}
       {stage === "envelope" && (
         <EnvelopeReveal key="envelope" receiverName={letter.receiverName || "Someone Special"} onContinue={advance} />
       )}
