@@ -35,6 +35,7 @@ const CreateLetter = () => {
   const [customMusic, setCustomMusic] = useState<File | null>(null);
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [email, setEmail] = useState("");
+  const [template, setTemplate] = useState<"photo" | "purple">("photo");
 
   const handleSelectType = (type: "love" | "birthday") => {
     setLetterType(type);
