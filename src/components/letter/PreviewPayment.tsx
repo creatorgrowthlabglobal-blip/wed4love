@@ -226,6 +226,64 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
           </>
         )}
       </AnimatePresence>
+
+      {/* Template picker */}
+      <AnimatePresence>
+        {showTemplatePicker && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            style={{ background: "rgba(40,28,55,0.55)", backdropFilter: "blur(6px)" }}
+            onClick={() => setShowTemplatePicker(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
+              transition={{ type: "spring", stiffness: 220, damping: 22 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl rounded-3xl p-6 sm:p-8"
+              style={{ background: "linear-gradient(180deg,#FBF4E4,#F4E9D0)", boxShadow: "0 20px 60px rgba(90,70,120,0.25)" }}
+            >
+              <div className="text-center mb-6">
+                <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-1">Choose a mailbox</h3>
+                <p className="font-body text-sm text-muted-foreground">Pick the template your recipient will see</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <motion.button
+                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
+                  onClick={() => startPreviewWith("photo")}
+                  className="rounded-2xl overflow-hidden text-left border-2 transition-all"
+                  style={{ borderColor: template === "photo" ? "hsl(340 80% 70%)" : "rgba(0,0,0,0.08)", background: "#fff" }}
+                >
+                  <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: "url(/src/assets/mailbox-closed.jpg)" }} />
+                  <div className="p-4">
+                    <p className="font-display text-lg font-bold text-foreground">Template 1 · Lavender Garden</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1">Photoreal mailbox in a cottage garden with birds.</p>
+                  </div>
+                </motion.button>
+                <motion.button
+                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
+                  onClick={() => startPreviewWith("purple")}
+                  className="rounded-2xl overflow-hidden text-left border-2 transition-all"
+                  style={{ borderColor: template === "purple" ? "hsl(340 80% 70%)" : "rgba(0,0,0,0.08)", background: "#fff" }}
+                >
+                  <div className="aspect-[4/3] flex items-center justify-center" style={{ background: "linear-gradient(180deg,#F2EFE8,#E8DEFF)" }}>
+                    <div style={{ fontSize: 72 }}>📫</div>
+                  </div>
+                  <div className="p-4">
+                    <p className="font-display text-lg font-bold text-foreground">Template 2 · Purple Classic</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1">Illustrated purple mailbox — envelope slides out of the slot.</p>
+                  </div>
+                </motion.button>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button onClick={() => setShowTemplatePicker(false)} className="px-5 py-2 rounded-xl font-body text-sm text-muted-foreground hover:text-foreground transition">
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
