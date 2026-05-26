@@ -722,13 +722,15 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 loading="lazy"
                 style={{
                   position: "absolute",
-                  inset: "16% 16% 16% 16%",
-                  width: "68%",
-                  height: "68%",
+                  top: "20%",
+                  left: "20%",
+                  right: "20%",
+                  bottom: "20%",
                   objectFit: "cover",
                   borderRadius: "50%",
                 }}
               />
+
               <img
                 src={silverFrameOval}
                 alt=""
