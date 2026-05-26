@@ -637,12 +637,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 loading="lazy"
                 style={{
                   position: "absolute",
-                  top: "16%",
-                  left: "16%",
-                  right: "16%",
-                  bottom: "16%",
+                  top: "22%",
+                  left: "20%",
+                  right: "20%",
+                  bottom: "24%",
                   objectFit: "cover",
                   borderRadius: "2px",
+                  zIndex: 0,
                 }}
               />
 
