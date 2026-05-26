@@ -121,10 +121,12 @@ const Roof = () => (
 
 /* ───────────────────── Interior cavity ───────────────────── */
 const Interior = ({ open }: { open:boolean }) => (
-  <motion.g
+  <g
     clipPath="url(#frontClip)"
-    animate={{ filter: open ? "url(#cavityBlur)" : "none" }}
-    transition={{ duration:0.6, delay: open ? 0.7 : 0 }}
+    style={{
+      filter: open ? "url(#cavityBlur)" : "none",
+      transition: open ? "filter 0.6s ease 0.7s" : "filter 0.6s ease",
+    }}
   >
     <rect x="100" y="80" width="200" height="200" fill="url(#cavity)"/>
     <path d="M 110 170 Q 110 90 195 90 Q 280 90 280 170"
@@ -133,7 +135,7 @@ const Interior = ({ open }: { open:boolean }) => (
     <path d="M 268 170 L 268 262" stroke="#5a4a78" strokeWidth="1" opacity="0.35"/>
     <line x1="115" y1="262" x2="275" y2="262" stroke="#000" strokeWidth="1.5" opacity="0.7"/>
     <ellipse cx="195" cy="155" rx="60" ry="22" fill="#fff" opacity="0.04"/>
-  </motion.g>
+  </g>
 );
 
 /* ───────────────────── Hinge sill ───────────────────── */
@@ -148,20 +150,26 @@ const HingeSill = () => (
 
 /* ───────────────────── Swing door (pure SVG clipPath — all browsers) ───────────────────── */
 /* foreignObject + CSS rotateX is broken on iOS Safari. scaleY on SVG groups has wrong
-   transform-origin on iOS. Solution: animate a clipRect that slides from door-top (y=85)
-   down to the hinge (y=270) — the door shape never distorts, it just gets clipped away. */
-const SwingDoor = ({ open }: { open:boolean }) => (
+   transform-origin on iOS. motion.rect inside <defs> doesn't animate via WAAPI on Safari
+   (elements in defs are not rendered so WAAPI skips them). Solution: drive the clip rect
+   via useRef + CSS geometry property transitions, which work in Safari 14.1+. */
+const SwingDoor = ({ open }: { open:boolean }) => {
+  const rectRef = useRef<SVGRectElement>(null);
+
+  useEffect(() => {
+    const rect = rectRef.current;
+    if (!rect) return;
+    rect.style.transition = 'y 0.55s cubic-bezier(0.22, 1, 0.36, 1), height 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+    rect.style.setProperty('y', open ? '270' : '85');
+    rect.style.setProperty('height', open ? '0' : '185');
+  }, [open]);
+
+  return (
   <>
     <defs>
       <clipPath id="doorRevealClip">
-        {/* y goes 85→270, height goes 185→0, so bottom edge stays fixed at 270 (the hinge).
-            The door disappears from the top down — clean on every browser. */}
-        <motion.rect
-          x="108" width="176"
-          initial={{ y: 85, height: 185 }}
-          animate={{ y: open ? 270 : 85, height: open ? 0 : 185 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        />
+        {/* y goes 85→270, height goes 185→0 — bottom edge fixed at 270 (the hinge). */}
+        <rect ref={rectRef} x="108" width="176" y="85" height="185" />
       </clipPath>
     </defs>
 
@@ -217,7 +225,8 @@ const SwingDoor = ({ open }: { open:boolean }) => (
       transition={{ duration: 0.25 }}
     />
   </>
-);
+  );
+};
 
 /* ───────────────────── Rising envelope (Template 2 style) ───────────────────── */
 const RisingEnvelope = ({ show, delivered }: { show:boolean; delivered:boolean }) => (
@@ -231,8 +240,8 @@ const RisingEnvelope = ({ show, delivered }: { show:boolean; delivered:boolean }
           ? {type:"spring",stiffness:75,damping:16}
           : {type:"spring",stiffness:90,damping:20,delay:0.35}}
         style={{
-          position:"absolute", left:"49%", top:"36%",
-          transform:"translateX(-50%)",
+          position:"absolute", left:"50%", top:"36%",
+          marginLeft:-65,
           width:130, height:88, zIndex:20,
           pointerEvents:"none",
         }}
@@ -392,8 +401,6 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
           width:"min(520px,90%)",
           aspectRatio:"1/1",
           position:"relative",
-          perspective:"1200px",
-          transformStyle:"preserve-3d",
         }}
       >
         {/* SVG fades out as the zoomed envelope takes over */}
@@ -403,7 +410,7 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
           style={{width:"100%",height:"100%",willChange:"opacity"}}
         >
           <svg viewBox="0 0 400 495" width="100%" height="100%"
-            style={{overflow:"visible", transformStyle:"preserve-3d"}}>
+            style={{overflow:"visible"}}>
             <Defs/>
             <motion.g initial="idle" animate={controls}>
               <GroundShadow/>
