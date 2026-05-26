@@ -544,7 +544,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 fontSize: "clamp(48px, 8vw, 72px)",
                 fontFamily: "'Pinyon Script', 'Great Vibes', cursive",
                 fontStyle: "italic",
-                background: "linear-gradient(180deg, #C9A24A 0%, #8C6B22 100%)",
+                background: "linear-gradient(180deg, #DC2626 0%, #991B1B 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
