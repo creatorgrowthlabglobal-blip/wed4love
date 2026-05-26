@@ -483,10 +483,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               return (
                 <>
                   {/* edges */}
-                  <div aria-hidden style={{ ...line, top: 22, left: 40, right: 40, height: 1.5 }} />
-                  <div aria-hidden style={{ ...line, bottom: 22, left: 40, right: 40, height: 1.5 }} />
-                  <div aria-hidden style={{ ...line, left: 22, top: 40, bottom: 40, width: 1.5 }} />
-                  <div aria-hidden style={{ ...line, right: 22, top: 40, bottom: 40, width: 1.5 }} />
+                  <div aria-hidden style={{ ...line, top: 22, left: 40, right: 40, height: 2 }} />
+                  <div aria-hidden style={{ ...line, bottom: 22, left: 40, right: 40, height: 2 }} />
+                  <div aria-hidden style={{ ...line, left: 22, top: 40, bottom: 40, width: 2 }} />
+                  <div aria-hidden style={{ ...line, right: 22, top: 40, bottom: 40, width: 2 }} />
                   {/* corner bows */}
                   <img src={cornerBow} alt="" style={{ ...bow, top: -6, left: -6 }} />
                   <img src={cornerBow} alt="" style={{ ...bow, top: -6, right: -6, transform: "scaleX(-1)" }} />
@@ -631,60 +631,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               </p>
             </motion.div>
 
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.1, duration: 0.4 }}
-              onClick={handleClose}
-              style={{
-                position: "absolute",
-                top: "1.2rem",
-                right: "1.2rem",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: TEXT_MID,
-                opacity: 0.45,
-                fontSize: "20px",
-                lineHeight: 1,
-                padding: "4px 8px",
-                fontFamily: "sans-serif",
-                transition: "opacity 0.2s",
-                borderRadius: "3px",
-              }}
-              whileHover={{ opacity: 0.9 }}
-              aria-label="Close letter"
-            >
-              ×
-            </motion.button>
-
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.3, duration: 0.5 }}
-              style={{ display: "flex", justifyContent: "center", marginTop: "2.5rem" }}
-            >
-              <button
-                onClick={handleClose}
-                style={{
-                  background: "transparent",
-                  border: `1px solid ${TEXT_DARK}`,
-                  color: TEXT_DARK,
-                  padding: "10px 28px",
-                  fontSize: "11px",
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-                  cursor: "pointer",
-                  borderRadius: "2px",
-                  transition: "background 0.25s, color 0.25s",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = TEXT_DARK; e.currentTarget.style.color = PAPER_BG; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = TEXT_DARK; }}
-              >
-                Continue
-              </button>
-            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
