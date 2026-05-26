@@ -460,16 +460,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               border: `1px solid rgba(180,165,140,0.35)`,
             }}
           >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(180,165,140,0.12) 27px, rgba(180,165,140,0.12) 28px)",
-                backgroundPositionY: "64px",
-                borderRadius: "4px",
-                pointerEvents: "none",
-              }}
-            />
 
             <motion.h2
               initial={{ opacity: 0, y: -8 }}
