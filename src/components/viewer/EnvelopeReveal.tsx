@@ -495,12 +495,12 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             />
 
             {/* Ornamental corner flourishes */}
-            {[
-              { top: 4, left: 4, rotate: 0 },
-              { top: 4, right: 4, rotate: 90 },
-              { bottom: 4, right: 4, rotate: 180 },
-              { bottom: 4, left: 4, rotate: 270 },
-            ].map((pos, i) => (
+            {([
+              { pos: { top: 4, left: 4 }, rotate: 0 },
+              { pos: { top: 4, right: 4 }, rotate: 90 },
+              { pos: { bottom: 4, right: 4 }, rotate: 180 },
+              { pos: { bottom: 4, left: 4 }, rotate: 270 },
+            ] as const).map((item, i) => (
               <svg
                 key={i}
                 aria-hidden
