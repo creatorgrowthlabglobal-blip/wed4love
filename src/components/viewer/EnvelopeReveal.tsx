@@ -764,12 +764,16 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{
                 fontSize: "clamp(18px, 2.6vw, 22px)",
                 color: TEXT_DARK,
-                lineHeight: 1.55,
+                lineHeight: 1.8,
                 marginBottom: "1.5rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
                 clear: "both",
                 position: "relative",
                 zIndex: 2,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(160,120,70,0.35)",
+                textDecorationThickness: "1px",
+                textUnderlineOffset: "6px",
               }}
             >
               {letterContent.paragraphs[2]}
