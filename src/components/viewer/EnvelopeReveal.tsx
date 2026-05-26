@@ -22,6 +22,8 @@ const FLAP_COLOR = "#F4CADB";
 const TEXT_DARK = "#2C2A25";
 const TEXT_MID = "#6B6456";
 
+const PHOTOS = [photo1, photo2, photo3];
+
 const letterContent = {
   greeting: "My Dearest,",
   paragraphs: [
