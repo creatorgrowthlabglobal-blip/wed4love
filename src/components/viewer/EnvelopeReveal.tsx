@@ -376,7 +376,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 >
                   <span
                     style={{
-                      fontFamily: "'Dancing Script', cursive",
+                      fontFamily: "'Caveat', 'Dancing Script', cursive",
                       fontSize: "clamp(26px, 8vw, 42px)",
                       color: "#5C1832",
                       letterSpacing: "0.02em",
@@ -489,7 +489,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               transition={{ delay: 0.15, duration: 0.6 }}
               style={{
                 fontSize: "clamp(44px, 7vw, 64px)",
-                fontFamily: "'Pinyon Script', 'Great Vibes', 'Dancing Script', cursive",
+                fontFamily: "'Pinyon Script', 'Great Vibes', 'Caveat', 'Dancing Script', cursive",
                 fontStyle: "italic",
                 color: "#7A1535",
                 textAlign: "center",
@@ -522,7 +522,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 fontSize: "clamp(26px, 4vw, 32px)",
                 color: TEXT_DARK,
                 marginBottom: "1.5rem",
-                fontFamily: "'Dancing Script', cursive",
+                fontFamily: "'Caveat', 'Dancing Script', cursive",
                 lineHeight: 1.3,
               }}
             >
@@ -543,7 +543,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     color: TEXT_DARK,
                     lineHeight: 1.6,
                     marginBottom: i < letterContent.paragraphs.length - 1 ? "1.5rem" : "2rem",
-                    fontFamily: "'Dancing Script', cursive",
+                    fontFamily: "'Caveat', 'Dancing Script', cursive",
                     opacity: 0.92,
                     overflow: "hidden",
                     backgroundImage: "linear-gradient(to bottom, transparent calc(1.6em - 1px), rgba(120,90,60,0.18) calc(1.6em - 1px), rgba(120,90,60,0.18) 1.6em)",
@@ -598,14 +598,14 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               transition={{ delay: 0.95, duration: 0.5 }}
               style={{ marginTop: "1rem" }}
             >
-              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Dancing Script', cursive", marginBottom: "0.4rem", opacity: 0.85 }}>
+              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.4rem", opacity: 0.85 }}>
                 {letterContent.closing}
               </p>
               <p
                 style={{
                   fontSize: "clamp(32px, 5vw, 40px)",
                   color: TEXT_DARK,
-                  fontFamily: "'Dancing Script', cursive",
+                  fontFamily: "'Caveat', 'Dancing Script', cursive",
                   marginLeft: "8px",
                   lineHeight: 1.1,
                 }}
