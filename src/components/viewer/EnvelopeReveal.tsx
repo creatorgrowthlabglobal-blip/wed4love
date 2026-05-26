@@ -471,6 +471,37 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               }}
             />
 
+            <motion.h2
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.6 }}
+              style={{
+                fontSize: "clamp(44px, 7vw, 64px)",
+                fontFamily: "'Pinyon Script', 'Great Vibes', 'Dancing Script', cursive",
+                fontStyle: "italic",
+                color: "#7A1535",
+                textAlign: "center",
+                margin: "0 0 0.5rem",
+                lineHeight: 1.05,
+                letterSpacing: "0.5px",
+                textShadow: "0 1px 0 rgba(255,255,255,0.4)",
+              }}
+            >
+              Love letter
+            </motion.h2>
+            <motion.div
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              style={{
+                width: "60%",
+                height: "1px",
+                margin: "0 auto 1.75rem",
+                background: "linear-gradient(90deg, transparent, rgba(122,21,53,0.45), transparent)",
+              }}
+            />
+
+
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
