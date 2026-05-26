@@ -805,24 +805,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               </p>
             </motion.div>
 
-            {/* Gold wax seal — bottom center */}
-            <img
-              src={goldSeal}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              style={{
-                position: "absolute",
-                bottom: -28,
-                left: "50%",
-                transform: "translateX(-50%) rotate(-8deg)",
-                width: 88,
-                height: 88,
-                filter: "drop-shadow(0 8px 14px rgba(80,50,20,0.4))",
-                pointerEvents: "none",
-                zIndex: 4,
-              }}
-            />
           </motion.div>
         )}
       </AnimatePresence>
