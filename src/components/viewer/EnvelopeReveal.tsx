@@ -13,7 +13,11 @@ import goldSeal from "@/assets/gold-seal.png";
 
 interface EnvelopeRevealProps {
   receiverName: string;
+  senderName?: string;
+  letterText?: string;
+  images?: string[];
   onContinue: () => void;
+  onLetterOpen?: () => void;
 }
 
 const PAPER_BG = "#FDF6F0";
@@ -134,7 +138,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
 
 type Phase = "idle" | "opening" | "open";
 
-export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRevealProps) {
+export default function EnvelopeReveal({ receiverName, senderName, letterText, images, onContinue, onLetterOpen }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
 
@@ -149,6 +153,22 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
     }
     if (phase === "idle") setFlapBehind(false);
   }, [phase]);
+
+  useEffect(() => {
+    if (phase === "open") onLetterOpen?.();
+  }, [phase]);
+
+  const isUserLetter = Boolean(letterText?.trim());
+  const paragraphs = isUserLetter
+    ? letterText!.split(/\n/).map(p => p.trim()).filter(Boolean)
+    : [letterContent.paragraphs[0], letterContent.paragraphs[1], letterContent.paragraphs[2]];
+  const para0 = paragraphs[0] ?? "";
+  const para1 = paragraphs[1] ?? "";
+  const tailParas = isUserLetter ? paragraphs.slice(2) : [letterContent.paragraphs[2]];
+  const closing = "Yours, always —";
+  const signature = senderName || letterContent.signature;
+  const frameImg0 = images?.[0] ?? photo2;
+  const frameImg1 = images?.[1] ?? photo1;
 
   const handleClick = () => {
     if (phase === "idle") {
@@ -631,84 +651,28 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 zIndex: 2,
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: "25%",
-                  left: "23.5%",
-                  right: "23.5%",
-                  bottom: "17.5%",
-                  overflow: "hidden",
-                  borderRadius: "3px",
-                  zIndex: 0,
-                  background: "rgba(255,255,255,0.35)",
-                }}
-              >
-                <img
-                  src={photo2}
-                  alt="Memory"
-                  loading="lazy"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                    display: "block",
-                    transform: "scale(0.985)",
-                    transformOrigin: "center",
-                  }}
-                />
+              <div style={{ position: "absolute", top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%", overflow: "hidden", borderRadius: "3px", zIndex: 0, background: "rgba(255,255,255,0.35)" }}>
+                <img src={frameImg0} alt="Memory" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", transform: "scale(0.985)", transformOrigin: "center" }} />
               </div>
-
-              <img
-                src={silverFrameRect}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }}
-              />
+              <img src={silverFrameRect} alt="" aria-hidden loading="lazy" style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }} />
             </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              style={{
-                fontSize: "clamp(22px, 3.4vw, 28px)",
-                color: TEXT_DARK,
-                marginBottom: "1rem",
-                fontFamily: "'Caveat', 'Dancing Script', cursive",
-                lineHeight: 1.6,
-                position: "relative",
-                zIndex: 2,
-                textDecoration: "underline",
-                textDecorationColor: "rgba(160,120,70,0.35)",
-                textDecorationThickness: "1px",
-                textUnderlineOffset: "6px",
-              }}
+              style={{ fontSize: "clamp(22px, 3.4vw, 28px)", color: TEXT_DARK, marginBottom: "1rem", fontFamily: "'Caveat', 'Dancing Script', cursive", lineHeight: 1.6, position: "relative", zIndex: 2, textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
             >
-              {letterContent.greeting}
+              My Dearest,
             </motion.p>
 
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.55 }}
-              style={{
-                fontSize: "clamp(18px, 2.6vw, 22px)",
-                color: TEXT_DARK,
-                lineHeight: 1.8,
-                marginBottom: "1.25rem",
-                fontFamily: "'Caveat', 'Dancing Script', cursive",
-                position: "relative",
-                zIndex: 2,
-                textDecoration: "underline",
-                textDecorationColor: "rgba(160,120,70,0.35)",
-                textDecorationThickness: "1px",
-                textUnderlineOffset: "6px",
-              }}
+              style={{ fontSize: "clamp(18px, 2.6vw, 22px)", color: TEXT_DARK, lineHeight: 1.8, marginBottom: "1.25rem", fontFamily: "'Caveat', 'Dancing Script', cursive", position: "relative", zIndex: 2, textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
             >
-              {letterContent.paragraphs[0]}
+              {para0}
             </motion.p>
 
             {/* Bottom-left oval silver frame with photo */}
@@ -730,87 +694,33 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 zIndex: 2,
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: "20.5%",
-                  left: "21.75%",
-                  right: "21.75%",
-                  bottom: "19.75%",
-                  overflow: "hidden",
-                  borderRadius: "999px",
-                  clipPath: "ellipse(50% 50% at 50% 50%)",
-                  zIndex: 0,
-                  background: "rgba(255,255,255,0.28)",
-                }}
-              >
-                <img
-                  src={photo1}
-                  alt="Memory"
-                  loading="lazy"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                    display: "block",
-                    transform: "scale(0.985)",
-                    transformOrigin: "center",
-                  }}
-                />
+              <div style={{ position: "absolute", top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%", overflow: "hidden", borderRadius: "999px", clipPath: "ellipse(50% 50% at 50% 50%)", zIndex: 0, background: "rgba(255,255,255,0.28)" }}>
+                <img src={frameImg1} alt="Memory" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", transform: "scale(0.985)", transformOrigin: "center" }} />
               </div>
-
-              <img
-                src={silverFrameOval}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }}
-              />
+              <img src={silverFrameOval} alt="" aria-hidden loading="lazy" style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }} />
             </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55, duration: 0.55 }}
-              style={{
-                fontSize: "clamp(18px, 2.6vw, 22px)",
-                color: TEXT_DARK,
-                lineHeight: 1.8,
-                marginBottom: "1.25rem",
-                fontFamily: "'Caveat', 'Dancing Script', cursive",
-                position: "relative",
-                zIndex: 2,
-                textDecoration: "underline",
-                textDecorationColor: "rgba(160,120,70,0.35)",
-                textDecorationThickness: "1px",
-                textUnderlineOffset: "6px",
-              }}
+              style={{ fontSize: "clamp(18px, 2.6vw, 22px)", color: TEXT_DARK, lineHeight: 1.8, marginBottom: "1.25rem", fontFamily: "'Caveat', 'Dancing Script', cursive", position: "relative", zIndex: 2, textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
             >
-              {letterContent.paragraphs[1]}
+              {para1}
             </motion.p>
 
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.55 }}
-              style={{
-                fontSize: "clamp(18px, 2.6vw, 22px)",
-                color: TEXT_DARK,
-                lineHeight: 1.8,
-                marginBottom: "1.5rem",
-                fontFamily: "'Caveat', 'Dancing Script', cursive",
-                clear: "both",
-                position: "relative",
-                zIndex: 2,
-                textDecoration: "underline",
-                textDecorationColor: "rgba(160,120,70,0.35)",
-                textDecorationThickness: "1px",
-                textUnderlineOffset: "6px",
-              }}
-            >
-              {letterContent.paragraphs[2]}
-            </motion.p>
+            {/* Remaining lines — clear floats, each line on its own */}
+            {tailParas.map((line, i) => (
+              <motion.p
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 + i * 0.08, duration: 0.55 }}
+                style={{ fontSize: "clamp(18px, 2.6vw, 22px)", color: TEXT_DARK, lineHeight: 1.8, marginBottom: "1rem", fontFamily: "'Caveat', 'Dancing Script', cursive", clear: i === 0 ? "both" : undefined, position: "relative", zIndex: 2, textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
+              >
+                {line}
+              </motion.p>
+            ))}
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -819,7 +729,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{ marginTop: "1rem", position: "relative", zIndex: 2, textAlign: "right" }}
             >
               <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.2rem", opacity: 0.85 }}>
-                {letterContent.closing}
+                {closing}
               </p>
               <p
                 style={{
@@ -830,7 +740,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                   lineHeight: 1.1,
                 }}
               >
-                {letterContent.signature}
+                {signature}
               </p>
             </motion.div>
 
