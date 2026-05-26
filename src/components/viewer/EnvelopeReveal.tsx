@@ -465,6 +465,25 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               border: `1px solid rgba(180,165,140,0.35)`,
             }}
           >
+            {/* Decorative pink looped border */}
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: "10px",
+                pointerEvents: "none",
+                borderRadius: "2px",
+                padding: 0,
+                backgroundImage:
+                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'><path d='M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2' fill='none' stroke='%23E48BA8' stroke-width='1.6' stroke-linecap='round'/></svg>\")",
+                backgroundRepeat: "repeat-x, repeat-x, repeat-y, repeat-y",
+                backgroundPosition: "top left, bottom left, left top, right top",
+                backgroundSize: "44px 22px, 44px 22px, 22px 44px, 22px 44px",
+                WebkitMaskImage:
+                  "linear-gradient(#000,#000), linear-gradient(#000,#000), linear-gradient(#000,#000), linear-gradient(#000,#000)",
+              }}
+            />
+
 
             <motion.h2
               initial={{ opacity: 0, y: -8 }}
