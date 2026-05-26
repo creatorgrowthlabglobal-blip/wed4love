@@ -461,173 +461,279 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              width: "min(520px, 92vw)",
-              background: PAPER_BG,
-              borderRadius: "4px",
-              padding: "clamp(2rem, 6vw, 3.5rem)",
-              boxShadow: "0 8px 48px rgba(100,90,70,0.15), 0 2px 8px rgba(100,90,70,0.1)",
+              width: "min(560px, 94vw)",
+              background:
+                "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
+              padding: "clamp(2.5rem, 7vw, 4rem) clamp(1.75rem, 5vw, 3rem) clamp(2.5rem, 7vw, 4rem)",
+              boxShadow:
+                "0 24px 60px rgba(90,70,110,0.35), 0 8px 20px rgba(90,70,110,0.18), inset 0 0 80px rgba(220,195,150,0.25)",
               position: "relative",
-              border: `1px solid rgba(180,165,140,0.35)`,
+              // Deckled / torn paper edges via SVG mask
+              WebkitMaskImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 800' preserveAspectRatio='none'><path d='M8,14 Q20,6 32,12 T56,10 T82,14 T108,8 T134,14 T160,10 T186,14 T214,9 T240,14 T268,10 T296,14 T324,9 T352,14 T380,10 T408,14 T436,9 T464,14 T492,10 T520,14 T550,12 Q556,20 552,32 T556,58 T550,84 T556,110 T552,138 T556,164 T550,190 T556,216 T550,244 T556,270 T550,296 T556,324 T550,350 T556,376 T550,402 T556,430 T550,456 T556,482 T550,510 T556,536 T550,562 T556,588 T550,614 T556,642 T550,668 T556,694 T550,720 T556,748 T548,786 Q536,794 524,788 T498,790 T472,786 T446,792 T420,786 T394,790 T368,786 T342,791 T316,786 T290,790 T264,786 T238,791 T212,786 T186,790 T160,786 T134,791 T108,786 T82,790 T56,786 T30,790 T10,786 Q4,778 8,766 T4,740 T10,714 T4,688 T8,660 T4,634 T10,608 T4,582 T8,556 T4,530 T10,504 T4,478 T8,452 T4,426 T10,400 T4,374 T8,348 T4,322 T10,296 T4,270 T8,244 T4,218 T10,192 T4,166 T8,140 T4,114 T10,88 T4,62 T8,36 Z' fill='white'/></svg>\")",
+              WebkitMaskSize: "100% 100%",
+              WebkitMaskRepeat: "no-repeat",
+              maskImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 800' preserveAspectRatio='none'><path d='M8,14 Q20,6 32,12 T56,10 T82,14 T108,8 T134,14 T160,10 T186,14 T214,9 T240,14 T268,10 T296,14 T324,9 T352,14 T380,10 T408,14 T436,9 T464,14 T492,10 T520,14 T550,12 Q556,20 552,32 T556,58 T550,84 T556,110 T552,138 T556,164 T550,190 T556,216 T550,244 T556,270 T550,296 T556,324 T550,350 T556,376 T550,402 T556,430 T550,456 T556,482 T550,510 T556,536 T550,562 T556,588 T550,614 T556,642 T550,668 T556,694 T550,720 T556,748 T548,786 Q536,794 524,788 T498,790 T472,786 T446,792 T420,786 T394,790 T368,786 T342,791 T316,786 T290,790 T264,786 T238,791 T212,786 T186,790 T160,786 T134,791 T108,786 T82,790 T56,786 T30,790 T10,786 Q4,778 8,766 T4,740 T10,714 T4,688 T8,660 T4,634 T10,608 T4,582 T8,556 T4,530 T10,504 T4,478 T8,452 T4,426 T10,400 T4,374 T8,348 T4,322 T10,296 T4,270 T8,244 T4,218 T10,192 T4,166 T8,140 T4,114 T10,88 T4,62 T8,36 Z' fill='white'/></svg>\")",
+              maskSize: "100% 100%",
+              maskRepeat: "no-repeat",
             }}
           >
-            {/* Decorative pink frame: thin lines + bow in each corner */}
-            {(() => {
-              const line: React.CSSProperties = {
+            {/* Embossed lace inner border */}
+            <div
+              aria-hidden
+              style={{
                 position: "absolute",
-                background: "#E48BA8",
+                inset: "18px",
                 pointerEvents: "none",
-                borderRadius: 2,
-              };
-              const bow: React.CSSProperties = {
+                borderRadius: "2px",
+                backgroundImage:
+                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><g fill='none' stroke='rgba(180,150,110,0.30)' stroke-width='0.8'><circle cx='20' cy='20' r='3'/><circle cx='20' cy='20' r='6' stroke-dasharray='1.5 2'/><circle cx='0' cy='0' r='2'/><circle cx='40' cy='0' r='2'/><circle cx='0' cy='40' r='2'/><circle cx='40' cy='40' r='2'/></g></svg>\")",
+                backgroundRepeat: "repeat",
+                opacity: 0.65,
+                mixBlendMode: "multiply",
+                WebkitMaskImage:
+                  "linear-gradient(to right, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%), linear-gradient(to bottom, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%)",
+                WebkitMaskComposite: "source-in",
+                maskImage:
+                  "linear-gradient(to right, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%), linear-gradient(to bottom, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%)",
+              }}
+            />
+
+            {/* Pearl ribbon bows — top corners */}
+            <img
+              src={pearlBow}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              style={{
                 position: "absolute",
-                width: 56,
-                height: 56,
+                top: -18,
+                left: -10,
+                width: 110,
+                height: 110,
+                transform: "rotate(-18deg)",
+                filter: "drop-shadow(0 4px 8px rgba(80,60,40,0.25))",
                 pointerEvents: "none",
-              };
-              return (
-                <>
-                  {/* edges */}
-                  <div aria-hidden style={{ ...line, top: 22, left: 40, right: 40, height: 2 }} />
-                  <div aria-hidden style={{ ...line, bottom: 22, left: 40, right: 40, height: 2 }} />
-                  <div aria-hidden style={{ ...line, left: 22, top: 40, bottom: 40, width: 2 }} />
-                  <div aria-hidden style={{ ...line, right: 22, top: 40, bottom: 40, width: 2 }} />
-                  {/* corner bows */}
-                  <img src={cornerBow} alt="" style={{ ...bow, top: -6, left: -6 }} />
-                  <img src={cornerBow} alt="" style={{ ...bow, top: -6, right: -6, transform: "scaleX(-1)" }} />
-                  <img src={cornerBow} alt="" style={{ ...bow, bottom: -6, left: -6, transform: "scaleY(-1)" }} />
-                  <img src={cornerBow} alt="" style={{ ...bow, bottom: -6, right: -6, transform: "scale(-1,-1)" }} />
-                </>
-              );
-            })()}
+                zIndex: 4,
+              }}
+            />
+            <img
+              src={pearlBow}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              style={{
+                position: "absolute",
+                top: -18,
+                right: -10,
+                width: 110,
+                height: 110,
+                transform: "scaleX(-1) rotate(-18deg)",
+                filter: "drop-shadow(0 4px 8px rgba(80,60,40,0.25))",
+                pointerEvents: "none",
+                zIndex: 4,
+              }}
+            />
 
-
-
-
+            {/* Scattered rose petals */}
+            <img src={rosePetal} alt="" aria-hidden loading="lazy"
+              style={{ position: "absolute", top: "22%", right: -14, width: 64, height: 64, transform: "rotate(35deg)", pointerEvents: "none", zIndex: 3, filter: "drop-shadow(0 3px 6px rgba(80,30,50,0.25))" }} />
+            <img src={rosePetal} alt="" aria-hidden loading="lazy"
+              style={{ position: "absolute", top: "34%", right: 18, width: 48, height: 48, transform: "rotate(-15deg)", pointerEvents: "none", zIndex: 3, opacity: 0.9 }} />
+            <img src={rosePetal} alt="" aria-hidden loading="lazy"
+              style={{ position: "absolute", bottom: "26%", left: -10, width: 56, height: 56, transform: "rotate(-40deg)", pointerEvents: "none", zIndex: 3, filter: "drop-shadow(0 3px 6px rgba(80,30,50,0.25))" }} />
 
             <motion.h2
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.6 }}
               style={{
-                fontSize: "clamp(44px, 7vw, 64px)",
-                fontFamily: "'Pinyon Script', 'Great Vibes', 'Caveat', 'Dancing Script', cursive",
+                fontSize: "clamp(48px, 8vw, 72px)",
+                fontFamily: "'Pinyon Script', 'Great Vibes', cursive",
                 fontStyle: "italic",
-                color: "#7A1535",
+                background: "linear-gradient(180deg, #C9A24A 0%, #8C6B22 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
                 textAlign: "center",
-                margin: "0 0 0.5rem",
+                margin: "0 0 1.5rem",
                 lineHeight: 1.05,
-                letterSpacing: "0.5px",
-                textShadow: "0 1px 0 rgba(255,255,255,0.4)",
+                letterSpacing: "1px",
+                textShadow: "0 1px 0 rgba(255,255,255,0.3)",
+                position: "relative",
+                zIndex: 2,
               }}
             >
               Love letter
             </motion.h2>
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 1, scaleX: 1 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              style={{
-                width: "60%",
-                height: "1px",
-                margin: "0 auto 1.75rem",
-                background: "linear-gradient(90deg, transparent, rgba(122,21,53,0.45), transparent)",
-              }}
-            />
 
+            {/* Top-right vintage silver frame with photo */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, rotate: 0 }}
+              animate={{ opacity: 1, scale: 1, rotate: 6 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+              style={{
+                float: "right",
+                width: "44%",
+                maxWidth: 200,
+                aspectRatio: "4 / 5",
+                marginLeft: 16,
+                marginBottom: 12,
+                marginTop: 4,
+                position: "relative",
+                shapeOutside: "margin-box",
+                filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))",
+                zIndex: 2,
+              }}
+            >
+              <img
+                src={photo2}
+                alt="Memory"
+                loading="lazy"
+                style={{
+                  position: "absolute",
+                  inset: "14% 12% 12% 12%",
+                  width: "76%",
+                  height: "74%",
+                  objectFit: "cover",
+                  borderRadius: "4px",
+                }}
+              />
+              <img
+                src={silverFrameRect}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                style={{ position: "relative", width: "100%", height: "100%", display: "block" }}
+              />
+            </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
               style={{
-                fontSize: "clamp(26px, 4vw, 32px)",
+                fontSize: "clamp(22px, 3.4vw, 28px)",
                 color: TEXT_DARK,
-                marginBottom: "1.5rem",
+                marginBottom: "1rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
                 lineHeight: 1.3,
+                position: "relative",
+                zIndex: 2,
               }}
             >
               {letterContent.greeting}
             </motion.p>
 
-            {letterContent.paragraphs.map((p, i) => {
-              const floatSide: "right" | "left" = i % 2 === 0 ? "right" : "left";
-              const rotate = floatSide === "right" ? 3 : -3;
-              return (
-                <motion.p
-                  key={i}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.15, duration: 0.55, ease: "easeOut" }}
-                  style={{
-                    fontSize: "clamp(20px, 2.8vw, 24px)",
-                    color: TEXT_DARK,
-                    lineHeight: 1.6,
-                    marginBottom: i < letterContent.paragraphs.length - 1 ? "1.5rem" : "2rem",
-                    fontFamily: "'Caveat', 'Dancing Script', cursive",
-                    opacity: 0.92,
-                    overflow: "hidden",
-                    backgroundImage: "linear-gradient(to bottom, transparent calc(1.6em - 1px), rgba(120,90,60,0.18) calc(1.6em - 1px), rgba(120,90,60,0.18) 1.6em)",
-                    backgroundSize: "100% 1.6em",
-                    backgroundRepeat: "repeat-y",
-                    backgroundPosition: "0 0.1em",
-                  }}
-                >
-                  <span
-                    style={{
-                      float: floatSide,
-                      width: "38%",
-                      maxWidth: "150px",
-                      aspectRatio: "3 / 4",
-                      marginLeft: floatSide === "right" ? "14px" : 0,
-                      marginRight: floatSide === "left" ? "14px" : 0,
-                      marginBottom: "8px",
-                      background: "linear-gradient(160deg, #F5EBDC, #E8D9C3)",
-                      border: "1px solid rgba(120,95,60,0.35)",
-                      borderRadius: "2px",
-                      boxShadow: "0 4px 10px rgba(80,60,30,0.12), inset 0 0 20px rgba(180,150,110,0.18)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transform: `rotate(${rotate}deg)`,
-                      overflow: "hidden",
-                      shapeOutside: "margin-box",
-                    }}
-                  >
-                    <img
-                      src={PHOTOS[i]}
-                      alt={`Memory ${i + 1}`}
-                      loading="lazy"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                        opacity: 0.92,
-                      }}
-                    />
-                  </span>
-                  {p}
-                </motion.p>
-              );
-            })}
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.55 }}
+              style={{
+                fontSize: "clamp(18px, 2.6vw, 22px)",
+                color: TEXT_DARK,
+                lineHeight: 1.55,
+                marginBottom: "1.25rem",
+                fontFamily: "'Caveat', 'Dancing Script', cursive",
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              {letterContent.paragraphs[0]}
+            </motion.p>
 
+            {/* Bottom-left oval silver frame with photo */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1, rotate: -5 }}
+              transition={{ delay: 0.65, duration: 0.7 }}
+              style={{
+                float: "left",
+                width: "42%",
+                maxWidth: 190,
+                aspectRatio: "4 / 5",
+                marginRight: 16,
+                marginBottom: 12,
+                marginTop: 8,
+                position: "relative",
+                shapeOutside: "margin-box",
+                filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))",
+                zIndex: 2,
+              }}
+            >
+              <img
+                src={photo1}
+                alt="Memory"
+                loading="lazy"
+                style={{
+                  position: "absolute",
+                  inset: "16% 16% 16% 16%",
+                  width: "68%",
+                  height: "68%",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+              />
+              <img
+                src={silverFrameOval}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                style={{ position: "relative", width: "100%", height: "100%", display: "block" }}
+              />
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.55 }}
+              style={{
+                fontSize: "clamp(18px, 2.6vw, 22px)",
+                color: TEXT_DARK,
+                lineHeight: 1.55,
+                marginBottom: "1.25rem",
+                fontFamily: "'Caveat', 'Dancing Script', cursive",
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              {letterContent.paragraphs[1]}
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.55 }}
+              style={{
+                fontSize: "clamp(18px, 2.6vw, 22px)",
+                color: TEXT_DARK,
+                lineHeight: 1.55,
+                marginBottom: "1.5rem",
+                fontFamily: "'Caveat', 'Dancing Script', cursive",
+                clear: "both",
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              {letterContent.paragraphs[2]}
+            </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.95, duration: 0.5 }}
-              style={{ marginTop: "1rem" }}
+              style={{ marginTop: "1rem", position: "relative", zIndex: 2, textAlign: "right" }}
             >
-              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.4rem", opacity: 0.85 }}>
+              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.2rem", opacity: 0.85 }}>
                 {letterContent.closing}
               </p>
               <p
                 style={{
                   fontSize: "clamp(32px, 5vw, 40px)",
                   color: TEXT_DARK,
-                  fontFamily: "'Caveat', 'Dancing Script', cursive",
-                  marginLeft: "8px",
+                  fontFamily: "'Pinyon Script', 'Dancing Script', cursive",
+                  fontStyle: "italic",
                   lineHeight: 1.1,
                 }}
               >
@@ -635,9 +741,28 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               </p>
             </motion.div>
 
+            {/* Gold wax seal — bottom center */}
+            <img
+              src={goldSeal}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              style={{
+                position: "absolute",
+                bottom: -28,
+                left: "50%",
+                transform: "translateX(-50%) rotate(-8deg)",
+                width: 88,
+                height: 88,
+                filter: "drop-shadow(0 8px 14px rgba(80,50,20,0.4))",
+                pointerEvents: "none",
+                zIndex: 4,
+              }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
+
 
       <motion.div
         initial={{ opacity: 0 }}
