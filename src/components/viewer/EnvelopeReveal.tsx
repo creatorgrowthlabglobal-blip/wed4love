@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wand2 } from "lucide-react";
 import { sounds } from "@/lib/sounds";
+import photo1 from "@/assets/photo1.jpg";
+import photo2 from "@/assets/photo2.jpg";
+import photo3 from "@/assets/photo3.jpg";
 
 interface EnvelopeRevealProps {
   receiverName: string;
@@ -18,6 +21,8 @@ const ENVELOPE_DARK = "#1a1a1a";
 const FLAP_COLOR = "#F4CADB";
 const TEXT_DARK = "#2C2A25";
 const TEXT_MID = "#6B6456";
+
+const PHOTOS = [photo1, photo2, photo3];
 
 const letterContent = {
   greeting: "My Dearest,",
@@ -508,7 +513,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             </motion.p>
 
             {letterContent.paragraphs.map((p, i) => {
-              const photoLabel = `Photo ${i + 1}`;
               const floatSide: "right" | "left" = i % 2 === 0 ? "right" : "left";
               const rotate = floatSide === "right" ? 3 : -3;
               return (
@@ -537,20 +541,29 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                       marginRight: floatSide === "left" ? "14px" : 0,
                       marginBottom: "8px",
                       background: "linear-gradient(160deg, #F5EBDC, #E8D9C3)",
-                      border: "1px dashed rgba(120,95,60,0.5)",
+                      border: "1px solid rgba(120,95,60,0.35)",
                       borderRadius: "2px",
                       boxShadow: "0 4px 10px rgba(80,60,30,0.12), inset 0 0 20px rgba(180,150,110,0.18)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       transform: `rotate(${rotate}deg)`,
-                      fontFamily: "'Dancing Script', cursive",
-                      fontSize: "clamp(14px, 1.8vw, 18px)",
-                      color: TEXT_MID,
+                      overflow: "hidden",
                       shapeOutside: "margin-box",
                     }}
                   >
-                    {photoLabel}
+                    <img
+                      src={PHOTOS[i]}
+                      alt={`Memory ${i + 1}`}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        opacity: 0.92,
+                      }}
+                    />
                   </span>
                   {p}
                 </motion.p>
