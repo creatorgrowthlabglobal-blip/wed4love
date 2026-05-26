@@ -631,21 +631,34 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 zIndex: 2,
               }}
             >
-              <img
-                src={photo2}
-                alt="Memory"
-                loading="lazy"
+              <div
                 style={{
                   position: "absolute",
-                  top: "22%",
-                  left: "20%",
-                  right: "20%",
-                  bottom: "24%",
-                  objectFit: "cover",
-                  borderRadius: "2px",
+                  top: "25%",
+                  left: "23.5%",
+                  right: "23.5%",
+                  bottom: "17.5%",
+                  overflow: "hidden",
+                  borderRadius: "3px",
                   zIndex: 0,
+                  background: "rgba(255,255,255,0.35)",
                 }}
-              />
+              >
+                <img
+                  src={photo2}
+                  alt="Memory"
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                    display: "block",
+                    transform: "scale(0.985)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
 
               <img
                 src={silverFrameRect}
@@ -717,21 +730,35 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 zIndex: 2,
               }}
             >
-              <img
-                src={photo1}
-                alt="Memory"
-                loading="lazy"
+              <div
                 style={{
                   position: "absolute",
-                  top: "24%",
-                  left: "24%",
-                  right: "24%",
-                  bottom: "24%",
-                  objectFit: "cover",
-                  borderRadius: "50%",
+                  top: "20.5%",
+                  left: "21.75%",
+                  right: "21.75%",
+                  bottom: "19.75%",
+                  overflow: "hidden",
+                  borderRadius: "999px",
+                  clipPath: "ellipse(50% 50% at 50% 50%)",
                   zIndex: 0,
+                  background: "rgba(255,255,255,0.28)",
                 }}
-              />
+              >
+                <img
+                  src={photo1}
+                  alt="Memory"
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                    display: "block",
+                    transform: "scale(0.985)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
 
               <img
                 src={silverFrameOval}
