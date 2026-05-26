@@ -484,59 +484,56 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               {letterContent.greeting}
             </motion.p>
 
-            {letterContent.paragraphs.map((p, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + i * 0.15, duration: 0.55, ease: "easeOut" }}
-                style={{
-                  fontSize: "clamp(20px, 2.8vw, 24px)",
-                  color: TEXT_DARK,
-                  lineHeight: 1.6,
-                  marginBottom: i < letterContent.paragraphs.length - 1 ? "1.2rem" : "2rem",
-                  fontFamily: "'Dancing Script', cursive",
-                  opacity: 0.92,
-                }}
-              >
-                {p}
-              </motion.p>
-            ))}
-
-            {/* Photo placeholders */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "12px",
-                margin: "1.5rem 0 2rem",
-              }}
-            >
-              {["Photo 1", "Photo 2", "Photo 3"].map((label, i) => (
-                <div
-                  key={label}
+            {letterContent.paragraphs.map((p, i) => {
+              const photoLabel = `Photo ${i + 1}`;
+              const floatSide: "right" | "left" = i % 2 === 0 ? "right" : "left";
+              const rotate = floatSide === "right" ? 3 : -3;
+              return (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.15, duration: 0.55, ease: "easeOut" }}
                   style={{
-                    aspectRatio: "3 / 4",
-                    background: "linear-gradient(160deg, #F5EBDC, #E8D9C3)",
-                    border: "1px dashed rgba(120,95,60,0.5)",
-                    borderRadius: "2px",
-                    boxShadow: "0 4px 10px rgba(80,60,30,0.12), inset 0 0 20px rgba(180,150,110,0.18)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transform: `rotate(${(i - 1) * 2}deg)`,
+                    fontSize: "clamp(20px, 2.8vw, 24px)",
+                    color: TEXT_DARK,
+                    lineHeight: 1.6,
+                    marginBottom: i < letterContent.paragraphs.length - 1 ? "1.5rem" : "2rem",
                     fontFamily: "'Dancing Script', cursive",
-                    fontSize: "clamp(16px, 2vw, 20px)",
-                    color: TEXT_MID,
+                    opacity: 0.92,
+                    overflow: "hidden",
                   }}
                 >
-                  {label}
-                </div>
-              ))}
-            </motion.div>
+                  <span
+                    style={{
+                      float: floatSide,
+                      width: "38%",
+                      maxWidth: "150px",
+                      aspectRatio: "3 / 4",
+                      marginLeft: floatSide === "right" ? "14px" : 0,
+                      marginRight: floatSide === "left" ? "14px" : 0,
+                      marginBottom: "8px",
+                      background: "linear-gradient(160deg, #F5EBDC, #E8D9C3)",
+                      border: "1px dashed rgba(120,95,60,0.5)",
+                      borderRadius: "2px",
+                      boxShadow: "0 4px 10px rgba(80,60,30,0.12), inset 0 0 20px rgba(180,150,110,0.18)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transform: `rotate(${rotate}deg)`,
+                      fontFamily: "'Dancing Script', cursive",
+                      fontSize: "clamp(14px, 1.8vw, 18px)",
+                      color: TEXT_MID,
+                      shapeOutside: "margin-box",
+                    }}
+                  >
+                    {photoLabel}
+                  </span>
+                  {p}
+                </motion.p>
+              );
+            })}
+
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
