@@ -509,8 +509,8 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 viewBox="0 0 36 36"
                 style={{
                   position: "absolute",
-                  ...pos,
-                  transform: `rotate(${pos.rotate}deg)`,
+                  ...item.pos,
+                  transform: `rotate(${item.rotate}deg)`,
                   pointerEvents: "none",
                   zIndex: 3,
                 }}
