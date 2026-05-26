@@ -146,32 +146,42 @@ const HingeSill = () => (
   </g>
 );
 
-/* ───────────────────── Swing door (pure SVG — iOS Safari compatible) ───────────────────── */
-/* Was foreignObject + CSS rotateX, which is broken on iOS Safari inside SVG.
-   Now uses SVG scaleY from the bottom hinge to simulate the door folding open. */
+/* ───────────────────── Swing door (pure SVG clipPath — all browsers) ───────────────────── */
+/* foreignObject + CSS rotateX is broken on iOS Safari. scaleY on SVG groups has wrong
+   transform-origin on iOS. Solution: animate a clipRect that slides from door-top (y=85)
+   down to the hinge (y=270) — the door shape never distorts, it just gets clipped away. */
 const SwingDoor = ({ open }: { open:boolean }) => (
   <>
-    <motion.g
-      animate={{ scaleY: open ? 0 : 1 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      style={{ transformOrigin: "195px 270px" }}
-    >
+    <defs>
+      <clipPath id="doorRevealClip">
+        {/* y goes 85→270, height goes 185→0, so bottom edge stays fixed at 270 (the hinge).
+            The door disappears from the top down — clean on every browser. */}
+        <motion.rect
+          x="108" width="176"
+          initial={{ y: 85, height: 185 }}
+          animate={{ y: open ? 270 : 85, height: open ? 0 : 185 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </clipPath>
+    </defs>
+
+    <g clipPath="url(#doorRevealClip)">
       {/* Door face */}
       <path
         d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
         fill="url(#lavMetal)"
       />
-      {/* Shine — upper portion */}
+      {/* Shine — upper fade */}
       <path
         d="M 110 180 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 180 Z"
         fill="rgba(239,231,255,0.50)"
       />
-      {/* Inner bevel highlight */}
+      {/* Inner bevel */}
       <path
         d="M 116 268 L 116 173 Q 116 91 195 91 Q 274 91 274 173 L 274 268"
         fill="none" stroke="rgba(242,235,255,0.60)" strokeWidth="1.5"
       />
-      {/* Bottom bevel shadow */}
+      {/* Bottom shadow */}
       <line x1="110" y1="268" x2="280" y2="268" stroke="rgba(0,0,0,0.22)" strokeWidth="2"/>
 
       {/* Mail slot */}
@@ -179,22 +189,18 @@ const SwingDoor = ({ open }: { open:boolean }) => (
       <rect x="148" y="155" width="95" height="5"  rx="2" fill="#080210"/>
       <rect x="148" y="160" width="95" height="11"       fill="#0e0620"/>
       <rect x="148" y="171" width="95" height="2"        fill="#1e1040"/>
-      {/* Slot ambient pulse */}
       <motion.rect
         x="148" y="160" width="95" height="11" fill="rgba(150,100,240,0.08)"
         animate={open ? { opacity: 0 } : { opacity: [0.3, 1, 0.3] }}
         transition={{ duration: 2.4, repeat: open ? 0 : Infinity }}
       />
-      {/* Light catch on lip */}
       <rect x="148" y="172" width="95" height="1" fill="rgba(200,160,240,0.30)"/>
 
-      {/* Brass handle — shadow */}
+      {/* Brass handle */}
       <rect x="171" y="239" width="49" height="7" rx="4" fill="#7A5000"/>
-      {/* Brass handle — face */}
       <rect x="171" y="237" width="49" height="7" rx="4" fill="#C49018"/>
-      {/* Brass handle — shine */}
       <rect x="177" y="238" width="37" height="1.5" rx="1" fill="rgba(255,255,255,0.88)"/>
-    </motion.g>
+    </g>
 
     {/* Black arch outline — fades as door opens */}
     <motion.path
