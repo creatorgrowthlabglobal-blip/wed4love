@@ -12,13 +12,13 @@ import NotFound from "./pages/NotFound";
 import { saveLetter, getLetter } from "./lib/letterStorage";
 
 // Seed a test letter for dev testing
-const TEST_ID = "demo-test-letter";
+const TEST_ID = "demo-jungey";
 if (!getLetter(TEST_ID)) {
   saveLetter({
     id: TEST_ID,
     type: "love",
     senderName: "Alex",
-    receiverName: "Jordan",
+    receiverName: "Jungey",
     letterText: "Every moment with you feels like a dream I never want to wake up from. You are my sunshine on cloudy days, my calm in every storm. I love you more than words could ever say. 💕",
     images: [],
     videos: [],

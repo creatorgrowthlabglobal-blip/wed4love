@@ -408,14 +408,14 @@ const Index = () => {
               initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
               transition={{ type: "spring", stiffness: 220, damping: 22 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-2xl rounded-3xl p-6 sm:p-8"
+              className="w-full max-w-2xl rounded-3xl p-4 sm:p-8 max-h-[90vh] overflow-y-auto"
               style={{ background: "linear-gradient(180deg,#FBF4E4,#F4E9D0)", boxShadow: "0 20px 60px rgba(90,70,120,0.25)" }}
             >
-              <div className="text-center mb-6">
-                <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-1">Choose a mailbox</h3>
-                <p className="font-body text-sm text-muted-foreground">Pick a template to preview</p>
+              <div className="text-center mb-4 sm:mb-6">
+                <h3 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1">Choose a mailbox</h3>
+                <p className="font-body text-xs sm:text-sm text-muted-foreground">Pick a template to preview</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <motion.button
                   whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
                   onClick={() => startPreviewWith("photo")}
@@ -423,9 +423,10 @@ const Index = () => {
                   style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}
                 >
                   <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${mailboxClosed})` }} />
-                  <div className="p-4">
-                    <p className="font-display text-lg font-bold text-foreground">Template 1 · Lavender Garden</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">Photoreal mailbox in a cottage garden.</p>
+                  <div className="p-2 sm:p-4">
+                    <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">Template 1</p>
+                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Lavender Garden</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Photoreal mailbox in a cottage garden.</p>
                   </div>
                 </motion.button>
                 <motion.button
@@ -434,16 +435,19 @@ const Index = () => {
                   className="rounded-2xl overflow-hidden text-left border-2 transition-all"
                   style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}
                 >
-                  <div className="aspect-[4/3] flex items-center justify-center" style={{ background: "linear-gradient(180deg,#F2EFE8,#E8DEFF)" }}>
-                    <div style={{ fontSize: 72 }}>📫</div>
+                  <div className="aspect-[4/3] relative overflow-hidden" style={{ background: "linear-gradient(180deg,#F2EFE8,#E8DEFF)" }}>
+                    <div className="absolute inset-0 pointer-events-none" style={{ transform: "scale(0.78) translateY(12%)", transformOrigin: "center top" }}>
+                      <PurpleMailbox className="w-full h-full" />
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <p className="font-display text-lg font-bold text-foreground">Template 2 · Purple Classic</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">Illustrated purple mailbox — envelope slides out.</p>
+                  <div className="p-2 sm:p-4">
+                    <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">Template 2</p>
+                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Purple Classic</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Illustrated purple mailbox — envelope slides out.</p>
                   </div>
                 </motion.button>
               </div>
-              <div className="mt-6 flex justify-end">
+              <div className="mt-4 sm:mt-6 flex justify-end">
                 <button onClick={() => setShowTemplatePicker(false)} className="px-5 py-2 rounded-xl font-body text-sm text-muted-foreground hover:text-foreground transition">
                   Cancel
                 </button>
