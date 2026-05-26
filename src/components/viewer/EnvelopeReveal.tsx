@@ -463,7 +463,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             style={{
               width: "min(560px, 94vw)",
               background:
-                "repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(160,120,70,0.32) 31px, rgba(160,120,70,0.32) 32px), radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
+                "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4rem) clamp(1.75rem, 5vw, 3rem) clamp(2.5rem, 7vw, 4rem)",
               boxShadow:
                 "0 24px 60px rgba(90,70,110,0.35), 0 8px 20px rgba(90,70,110,0.18), inset 0 0 80px rgba(220,195,150,0.25)",
@@ -662,9 +662,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 color: TEXT_DARK,
                 marginBottom: "1rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
-                lineHeight: 1.3,
+                lineHeight: 1.6,
                 position: "relative",
                 zIndex: 2,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(160,120,70,0.35)",
+                textDecorationThickness: "1px",
+                textUnderlineOffset: "6px",
               }}
             >
               {letterContent.greeting}
@@ -677,11 +681,15 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{
                 fontSize: "clamp(18px, 2.6vw, 22px)",
                 color: TEXT_DARK,
-                lineHeight: 1.55,
+                lineHeight: 1.8,
                 marginBottom: "1.25rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
                 position: "relative",
                 zIndex: 2,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(160,120,70,0.35)",
+                textDecorationThickness: "1px",
+                textUnderlineOffset: "6px",
               }}
             >
               {letterContent.paragraphs[0]}
@@ -735,11 +743,15 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{
                 fontSize: "clamp(18px, 2.6vw, 22px)",
                 color: TEXT_DARK,
-                lineHeight: 1.55,
+                lineHeight: 1.8,
                 marginBottom: "1.25rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
                 position: "relative",
                 zIndex: 2,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(160,120,70,0.35)",
+                textDecorationThickness: "1px",
+                textUnderlineOffset: "6px",
               }}
             >
               {letterContent.paragraphs[1]}
@@ -752,12 +764,16 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               style={{
                 fontSize: "clamp(18px, 2.6vw, 22px)",
                 color: TEXT_DARK,
-                lineHeight: 1.55,
+                lineHeight: 1.8,
                 marginBottom: "1.5rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
                 clear: "both",
                 position: "relative",
                 zIndex: 2,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(160,120,70,0.35)",
+                textDecorationThickness: "1px",
+                textUnderlineOffset: "6px",
               }}
             >
               {letterContent.paragraphs[2]}
