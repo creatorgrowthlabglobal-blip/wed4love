@@ -529,6 +529,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     fontFamily: "'Dancing Script', cursive",
                     opacity: 0.92,
                     overflow: "hidden",
+                    backgroundImage: "linear-gradient(to bottom, transparent calc(1.6em - 1px), rgba(40,25,15,0.45) calc(1.6em - 1px), rgba(40,25,15,0.45) 1.6em)",
+                    backgroundSize: "100% 1.6em",
+                    backgroundRepeat: "repeat-y",
+                    backgroundPosition: "0 0.1em",
                   }}
                 >
                   <span
