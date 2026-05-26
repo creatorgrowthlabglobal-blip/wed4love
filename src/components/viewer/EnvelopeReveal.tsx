@@ -172,11 +172,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: phase === "open" ? "flex-start" : "center",
         background: "radial-gradient(ellipse at 50% 40%, #F5EDF2 0%, #EDE5EA 100%)",
         fontFamily: "Georgia, 'Times New Roman', serif",
         padding: "2rem",
-        overflow: "hidden",
+        overflowY: phase === "open" ? "auto" : "hidden",
+        overflowX: "hidden",
+        WebkitOverflowScrolling: "touch",
       }}
     >
       {/* Subtle grain overlay */}
