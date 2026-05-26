@@ -463,7 +463,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             style={{
               width: "min(560px, 94vw)",
               background:
-                "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
+                "repeating-linear-gradient(to bottom, transparent 0, transparent 35px, rgba(160,120,70,0.18) 35px, rgba(160,120,70,0.18) 36px), radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4rem) clamp(1.75rem, 5vw, 3rem) clamp(2.5rem, 7vw, 4rem)",
               boxShadow:
                 "0 24px 60px rgba(90,70,110,0.35), 0 8px 20px rgba(90,70,110,0.18), inset 0 0 80px rgba(220,195,150,0.25)",
