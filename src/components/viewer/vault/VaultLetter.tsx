@@ -147,15 +147,15 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
 
             {/* Dear line */}
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-              className="font-display text-base sm:text-lg font-semibold mb-6"
+              className="font-handwritten text-2xl sm:text-3xl mb-6"
               style={{ color: "hsl(30 20% 20%)" }}>
-              Dear, {receiverName}
+              Dear {receiverName},
             </motion.p>
 
-            {/* Letter body */}
+            {/* Letter body — cursive handwritten */}
             <div
-              className="font-body text-sm sm:text-base leading-[1.9] whitespace-pre-wrap min-h-[120px] cursor-pointer"
-              style={{ color: "hsl(30 15% 22%)" }}
+              className="font-handwritten text-xl sm:text-2xl leading-[1.7] whitespace-pre-wrap min-h-[120px] cursor-pointer"
+              style={{ color: "hsl(30 30% 25%)" }}
               onClick={!showFull ? skipTypewriter : undefined}
             >
               {showFull ? text : (
@@ -167,14 +167,39 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
               )}
             </div>
 
+            {/* Photo placeholders */}
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: showFull ? 1 : 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mt-10 grid grid-cols-3 gap-3 sm:gap-4"
+            >
+              {["Photo 1", "Photo 2", "Photo 3"].map((label, i) => (
+                <div
+                  key={label}
+                  className="aspect-[3/4] flex items-center justify-center rounded-sm relative"
+                  style={{
+                    background: "linear-gradient(160deg, hsl(40 30% 92%), hsl(35 25% 86%))",
+                    border: "1px dashed hsl(30 30% 45% / 0.5)",
+                    boxShadow: "0 6px 14px hsl(30 30% 20% / 0.15), inset 0 0 30px hsl(30 25% 70% / 0.2)",
+                    transform: `rotate(${(i - 1) * 2}deg)`,
+                  }}
+                >
+                  <span className="font-handwritten text-base sm:text-lg" style={{ color: "hsl(30 25% 35%)" }}>
+                    {label}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
+
             {/* Signature */}
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: showFull ? 1 : 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               className="mt-10 text-right"
             >
-              <p className="font-display text-xl sm:text-2xl italic" style={{ color: "hsl(30 25% 30%)" }}>{senderName}</p>
-              <p className="font-body text-sm font-medium mt-1" style={{ color: "hsl(30 20% 35%)" }}>{senderName}</p>
+              <p className="font-handwritten text-3xl sm:text-4xl" style={{ color: "hsl(30 30% 25%)" }}>
+                {senderName}
+              </p>
             </motion.div>
           </div>
         </div>
