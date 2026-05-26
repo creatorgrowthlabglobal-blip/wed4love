@@ -5,6 +5,7 @@ import { sounds } from "@/lib/sounds";
 import photo1 from "@/assets/photo1.jpg";
 import photo2 from "@/assets/photo2.jpg";
 import photo3 from "@/assets/photo3.jpg";
+import cornerBow from "@/assets/corner-bow.png";
 
 interface EnvelopeRevealProps {
   receiverName: string;
