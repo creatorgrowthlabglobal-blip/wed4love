@@ -513,7 +513,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             </motion.p>
 
             {letterContent.paragraphs.map((p, i) => {
-              const photoLabel = `Photo ${i + 1}`;
               const floatSide: "right" | "left" = i % 2 === 0 ? "right" : "left";
               const rotate = floatSide === "right" ? 3 : -3;
               return (
