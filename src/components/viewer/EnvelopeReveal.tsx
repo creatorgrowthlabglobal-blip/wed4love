@@ -537,26 +537,46 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             <img src={rosePetal} alt="" aria-hidden loading="lazy"
               style={{ position: "absolute", bottom: "26%", left: -10, width: 56, height: 56, transform: "rotate(-40deg)", pointerEvents: "none", zIndex: 3, filter: "drop-shadow(0 3px 6px rgba(80,30,50,0.25))" }} />
 
-            <motion.h2
+            <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.6 }}
               style={{
-                fontSize: "clamp(48px, 8vw, 72px)",
-                fontFamily: "'Pinyon Script', 'Great Vibes', cursive",
-                fontStyle: "italic",
-                color: "#DC2626",
                 textAlign: "center",
                 margin: "0 0 1.5rem",
-                lineHeight: 1.05,
-                letterSpacing: "1px",
-                textShadow: "0 1px 0 rgba(255,255,255,0.3)",
                 position: "relative",
                 zIndex: 2,
               }}
             >
-              Love letter
-            </motion.h2>
+              <h2
+                style={{
+                  fontSize: "clamp(48px, 8vw, 72px)",
+                  fontFamily: "'Pinyon Script', 'Great Vibes', cursive",
+                  fontStyle: "italic",
+                  color: "#DC2626",
+                  margin: 0,
+                  lineHeight: 1.05,
+                  letterSpacing: "1px",
+                  textShadow: "0 1px 0 rgba(255,255,255,0.3)",
+                }}
+              >
+                Love letter
+              </h2>
+              <div
+                aria-hidden
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "10px",
+                  marginTop: "10px",
+                }}
+              >
+                <span style={{ flex: "0 1 90px", height: "1px", background: "linear-gradient(to right, transparent, rgba(160,120,70,0.7), rgba(160,120,70,0.7))" }} />
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(160,120,70,0.7)" }} />
+                <span style={{ flex: "0 1 90px", height: "1px", background: "linear-gradient(to left, transparent, rgba(160,120,70,0.7), rgba(160,120,70,0.7))" }} />
+              </div>
+            </motion.div>
 
             {/* Top-right vintage silver frame with photo */}
             <motion.div
