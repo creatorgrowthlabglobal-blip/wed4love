@@ -1,28 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Heart, Lock, Play, X } from "lucide-react";
-import { QuizQuestion } from "@/components/letter/QuizCreation";
 import { filesToBase64 } from "@/lib/letterStorage";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
-import QuizExperience from "@/components/viewer/QuizExperience";
-import BalloonGame from "@/components/viewer/BalloonGame";
-import VideoPlayer from "@/components/viewer/VideoPlayer";
-import MemoryFolder from "@/components/viewer/MemoryFolder";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
-import mailboxClosedThumb from "@/assets/mailbox-closed.jpg";
-
 interface PreviewPaymentProps {
   letterData: {
     senderName: string;
     receiverName: string;
     letterText: string;
     images: File[];
-    videos: File[];
-    audios: File[];
     selectedMusic: string | null;
-    quiz: QuizQuestion[];
     letterType: "love" | "birthday" | null;
   };
   template: "photo" | "purple";
@@ -31,51 +21,25 @@ interface PreviewPaymentProps {
   onBack: () => void;
 }
 
-type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
+type Stage = "mailbox" | "envelope";
 
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
-  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
-  const [previewStage, setPreviewStage] = useState<Stage>("envelope");
+  const [previewStage, setPreviewStage] = useState<Stage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [previewVideos, setPreviewVideos] = useState<string[]>([]);
-  const [previewAudios, setPreviewAudios] = useState<string[]>([]);
 
   useEffect(() => {
     if (showPreview) {
       filesToBase64(letterData.images).then(setPreviewImages);
-      filesToBase64(letterData.videos).then(setPreviewVideos);
-      filesToBase64(letterData.audios).then(setPreviewAudios);
     }
-  }, [showPreview, letterData.images, letterData.videos, letterData.audios]);
-
-  const hasQuiz = letterData.quiz.filter(q => q.question && q.correctAnswer).length > 0;
-  const isBirthday = letterData.letterType === "birthday";
-  const hasMedia = letterData.videos.length > 0 || letterData.audios.length > 0;
-
-  const getNextStage = (current: Stage): Stage | null => {
-    const flow: Stage[] = ["mailbox", "envelope"];
-    if (hasQuiz) flow.push("quiz");
-    if (isBirthday) flow.push("balloons");
-    if (hasMedia) flow.push("video");
-    flow.push("folder");
-    const idx = flow.indexOf(current);
-    return idx < flow.length - 1 ? flow[idx + 1] : null;
-  };
+  }, [showPreview, letterData.images]);
 
   const advancePreview = () => {
-    const next = getNextStage(previewStage);
-    if (next) setPreviewStage(next);
+    if (previewStage === "mailbox") setPreviewStage("envelope");
     else setShowPreview(false);
   };
 
   const openPreview = () => {
-    setShowTemplatePicker(true);
-  };
-
-  const startPreviewWith = (t: "photo" | "purple") => {
-    onTemplateChange(t);
-    setShowTemplatePicker(false);
     setPreviewStage("mailbox");
     setShowPreview(true);
   };
@@ -182,10 +146,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
               exit={{ opacity: 0 }}
               onClick={closePreview}
               className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
-              style={{
-                background: "rgba(37, 31, 40, 0.72)",
-                boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)",
-              }}
+              style={{ background: "rgba(37, 31, 40, 0.72)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)" }}
             >
               <X className="w-5 h-5 text-white" />
             </motion.button>
@@ -204,87 +165,19 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
               </div>
             )}
             {previewStage === "envelope" && (
-              <EnvelopeReveal key="p-envelope" receiverName={letterData.receiverName} onContinue={advancePreview} />
-            )}
-            {previewStage === "quiz" && (
-              <QuizExperience key="p-quiz" questions={letterData.quiz.filter(q => q.question && q.correctAnswer)} onComplete={advancePreview} />
-            )}
-            {previewStage === "balloons" && (
-              <BalloonGame key="p-balloons" onComplete={advancePreview} />
-            )}
-            {previewStage === "video" && (
-              <VideoPlayer key="p-video" videos={previewVideos} audios={previewAudios} onContinue={advancePreview} />
-            )}
-            {previewStage === "folder" && (
-              <MemoryFolder
-                key="p-folder"
-                letterText={letterData.letterText}
-                senderName={letterData.senderName}
+              <EnvelopeReveal
+                key="p-envelope"
                 receiverName={letterData.receiverName}
+                senderName={letterData.senderName}
+                letterText={letterData.letterText}
                 images={previewImages}
+                onContinue={closePreview}
               />
             )}
           </>
         )}
       </AnimatePresence>
 
-      {/* Template picker */}
-      <AnimatePresence>
-        {showTemplatePicker && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
-            style={{ background: "rgba(40,28,55,0.55)", backdropFilter: "blur(6px)" }}
-            onClick={() => setShowTemplatePicker(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
-              transition={{ type: "spring", stiffness: 220, damping: 22 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-2xl rounded-3xl p-6 sm:p-8"
-              style={{ background: "linear-gradient(180deg,#FBF4E4,#F4E9D0)", boxShadow: "0 20px 60px rgba(90,70,120,0.25)" }}
-            >
-              <div className="text-center mb-6">
-                <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-1">Choose a mailbox</h3>
-                <p className="font-body text-sm text-muted-foreground">Pick the template your recipient will see</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <motion.button
-                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => startPreviewWith("photo")}
-                  className="rounded-2xl overflow-hidden text-left border-2 transition-all"
-                  style={{ borderColor: template === "photo" ? "hsl(340 80% 70%)" : "rgba(0,0,0,0.08)", background: "#fff" }}
-                >
-                  <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${mailboxClosedThumb})` }} />
-                  <div className="p-4">
-                    <p className="font-display text-lg font-bold text-foreground">Template 1 · Lavender Garden</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">Photoreal mailbox in a cottage garden with birds.</p>
-                  </div>
-                </motion.button>
-                <motion.button
-                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => startPreviewWith("purple")}
-                  className="rounded-2xl overflow-hidden text-left border-2 transition-all"
-                  style={{ borderColor: template === "purple" ? "hsl(340 80% 70%)" : "rgba(0,0,0,0.08)", background: "#fff" }}
-                >
-                  <div className="aspect-[4/3] flex items-center justify-center" style={{ background: "linear-gradient(180deg,#F2EFE8,#E8DEFF)" }}>
-                    <div style={{ fontSize: 72 }}>📫</div>
-                  </div>
-                  <div className="p-4">
-                    <p className="font-display text-lg font-bold text-foreground">Template 2 · Purple Classic</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">Illustrated purple mailbox — envelope slides out of the slot.</p>
-                  </div>
-                </motion.button>
-              </div>
-              <div className="mt-6 flex justify-end">
-                <button onClick={() => setShowTemplatePicker(false)} className="px-5 py-2 rounded-xl font-body text-sm text-muted-foreground hover:text-foreground transition">
-                  Cancel
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };

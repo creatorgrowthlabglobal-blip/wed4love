@@ -9,17 +9,16 @@ import SenderReceiverDetails from "@/components/letter/SenderReceiverDetails";
 import LetterWriting from "@/components/letter/LetterWriting";
 import MediaUpload from "@/components/letter/MediaUpload";
 import MusicSelection from "@/components/letter/MusicSelection";
-import QuizCreation, { QuizQuestion } from "@/components/letter/QuizCreation";
-import EmailCollection from "@/components/letter/EmailCollection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import { fileToBase64, filesToBase64, saveLetter } from "@/lib/letterStorage";
 
-const STEP_LABELS = ["Details", "Write", "Media", "Music", "Quiz", "Email", "Preview"];
+const STEP_LABELS = ["Details", "Write", "Photos", "Music", "Preview"];
 
 const CreateLetter = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [letterType, setLetterType] = useState<"love" | "birthday" | null>(null);
+  const [template, setTemplate] = useState<"photo" | "purple">("photo");
   const [details, setDetails] = useState({
     senderName: "",
     receiverName: "",
@@ -29,27 +28,19 @@ const CreateLetter = () => {
   });
   const [letterText, setLetterText] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [videos, setVideos] = useState<File[]>([]);
-  const [audios, setAudios] = useState<File[]>([]);
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [customMusic, setCustomMusic] = useState<File | null>(null);
-  const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
-  const [email, setEmail] = useState("");
-  const [template, setTemplate] = useState<"photo" | "purple">("photo");
 
-  const handleSelectType = (type: "love" | "birthday") => {
+  const handleSelectType = (type: "love" | "birthday", tmpl: "photo" | "purple") => {
     setLetterType(type);
+    setTemplate(tmpl);
     setStep(1);
   };
 
   const handlePay = async () => {
     const letterId = Math.random().toString(36).substring(2, 10);
 
-    const [imgData, vidData, audData] = await Promise.all([
-      filesToBase64(images),
-      filesToBase64(videos),
-      filesToBase64(audios),
-    ]);
+    const imgData = await filesToBase64(images);
 
     let customMusicData: string | null = null;
     if (customMusic) {
@@ -63,12 +54,12 @@ const CreateLetter = () => {
       receiverName: details.receiverName,
       letterText,
       images: imgData,
-      videos: vidData,
-      audios: audData,
+      videos: [],
+      audios: [],
       selectedMusic,
       customMusicData,
-      quiz: quiz.filter((q) => q.question && q.correctAnswer),
-      email,
+      quiz: [],
+      email: "",
       date: new Date().toLocaleDateString(),
       template,
     });
@@ -93,11 +84,27 @@ const CreateLetter = () => {
           {step === 0 && <LetterTypeSelection key="type" onSelect={handleSelectType} />}
           {step === 1 && <SenderReceiverDetails key="details" data={details} onChange={setDetails} onNext={() => setStep(2)} />}
           {step === 2 && <LetterWriting key="write" letterText={letterText} onChange={setLetterText} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-          {step === 3 && <MediaUpload key="media" images={images} videos={videos} audios={audios} onImagesChange={setImages} onVideosChange={setVideos} onAudiosChange={setAudios} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
-          {step === 4 && <MusicSelection key="music" selectedMusic={selectedMusic} customMusic={customMusic} onSelectMusic={setSelectedMusic} onCustomMusic={setCustomMusic} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
-          {step === 5 && <QuizCreation key="quiz" quiz={quiz} onChange={setQuiz} onNext={() => setStep(6)} onBack={() => setStep(4)} />}
-          {step === 6 && <EmailCollection key="email" email={email} onChange={setEmail} onNext={() => setStep(7)} onBack={() => setStep(5)} />}
-          {step === 7 && (
+          {step === 3 && (
+            <MediaUpload
+              key="media"
+              images={images}
+              onImagesChange={setImages}
+              onNext={() => setStep(4)}
+              onBack={() => setStep(2)}
+            />
+          )}
+          {step === 4 && (
+            <MusicSelection
+              key="music"
+              selectedMusic={selectedMusic}
+              customMusic={customMusic}
+              onSelectMusic={setSelectedMusic}
+              onCustomMusic={setCustomMusic}
+              onNext={() => setStep(5)}
+              onBack={() => setStep(3)}
+            />
+          )}
+          {step === 5 && (
             <PreviewPayment
               key="preview"
               letterData={{
@@ -105,16 +112,13 @@ const CreateLetter = () => {
                 receiverName: details.receiverName,
                 letterText,
                 images,
-                videos,
-                audios,
                 selectedMusic,
-                quiz,
                 letterType,
               }}
               template={template}
               onTemplateChange={setTemplate}
               onPay={handlePay}
-              onBack={() => setStep(6)}
+              onBack={() => setStep(4)}
             />
           )}
         </AnimatePresence>

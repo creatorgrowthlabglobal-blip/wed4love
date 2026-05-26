@@ -40,8 +40,7 @@ const ViewLetter = () => {
   }, [id]);
 
 
-  // Start music playback
-  useEffect(() => {
+  const startMusic = () => {
     if (letter?.customMusicData && !audioRef.current) {
       const audio = new Audio(letter.customMusicData);
       audio.loop = true;
@@ -49,7 +48,7 @@ const ViewLetter = () => {
       audio.play().catch(() => {});
       audioRef.current = audio;
     }
-  }, [letter]);
+  };
 
   if (notFound) {
     return (
@@ -125,7 +124,15 @@ const ViewLetter = () => {
         </div>
       )}
       {stage === "envelope" && (
-        <EnvelopeReveal key="envelope" receiverName={letter.receiverName || "Someone Special"} onContinue={advance} />
+        <EnvelopeReveal
+          key="envelope"
+          receiverName={letter.receiverName || "Someone Special"}
+          senderName={letter.senderName}
+          letterText={letter.letterText}
+          images={letter.images}
+          onLetterOpen={startMusic}
+          onContinue={advance}
+        />
       )}
       {stage === "quiz" && (
         <QuizExperience key="quiz" questions={letter.quiz} onComplete={advance} />
