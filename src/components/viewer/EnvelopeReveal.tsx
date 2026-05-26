@@ -5,7 +5,11 @@ import { sounds } from "@/lib/sounds";
 import photo1 from "@/assets/photo1.jpg";
 import photo2 from "@/assets/photo2.jpg";
 import photo3 from "@/assets/photo3.jpg";
-import cornerBow from "@/assets/corner-bow.png";
+import pearlBow from "@/assets/pearl-bow.png";
+import silverFrameRect from "@/assets/silver-frame-rect.png";
+import silverFrameOval from "@/assets/silver-frame-oval.png";
+import rosePetal from "@/assets/rose-petal.png";
+import goldSeal from "@/assets/gold-seal.png";
 
 interface EnvelopeRevealProps {
   receiverName: string;
@@ -179,7 +183,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
         flexDirection: "column",
         alignItems: "center",
         justifyContent: phase === "open" ? "flex-start" : "center",
-        background: "radial-gradient(ellipse at 50% 40%, #F5EDF2 0%, #EDE5EA 100%)",
+        background: "radial-gradient(ellipse at 50% 30%, #DCCFE6 0%, #C4B3D6 100%)",
         fontFamily: "Georgia, 'Times New Roman', serif",
         padding: "2rem",
         overflowY: phase === "open" ? "auto" : "hidden",
