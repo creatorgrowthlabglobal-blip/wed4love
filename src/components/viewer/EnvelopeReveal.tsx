@@ -637,12 +637,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 loading="lazy"
                 style={{
                   position: "absolute",
-                  top: "16%",
-                  left: "16%",
-                  right: "16%",
-                  bottom: "16%",
+                  top: "22%",
+                  left: "20%",
+                  right: "20%",
+                  bottom: "24%",
                   objectFit: "cover",
                   borderRadius: "2px",
+                  zIndex: 0,
                 }}
               />
 
@@ -651,7 +652,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 alt=""
                 aria-hidden
                 loading="lazy"
-                style={{ position: "relative", width: "100%", height: "100%", display: "block" }}
+                style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }}
               />
             </motion.div>
 
@@ -722,12 +723,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 loading="lazy"
                 style={{
                   position: "absolute",
-                  top: "20%",
-                  left: "20%",
-                  right: "20%",
-                  bottom: "20%",
+                  top: "24%",
+                  left: "24%",
+                  right: "24%",
+                  bottom: "24%",
                   objectFit: "cover",
                   borderRadius: "50%",
+                  zIndex: 0,
                 }}
               />
 
@@ -736,7 +738,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 alt=""
                 aria-hidden
                 loading="lazy"
-                style={{ position: "relative", width: "100%", height: "100%", display: "block" }}
+                style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }}
               />
             </motion.div>
 
