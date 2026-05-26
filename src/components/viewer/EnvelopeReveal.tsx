@@ -738,7 +738,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 alt=""
                 aria-hidden
                 loading="lazy"
-                style={{ position: "relative", width: "100%", height: "100%", display: "block" }}
+                style={{ position: "relative", width: "100%", height: "100%", display: "block", zIndex: 1, pointerEvents: "none" }}
               />
             </motion.div>
 
