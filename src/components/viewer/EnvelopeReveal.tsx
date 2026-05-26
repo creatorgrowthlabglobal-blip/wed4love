@@ -466,30 +466,20 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             }}
           >
             {/* Decorative pink looped border */}
-            <svg
-              aria-hidden
-              width="100%"
-              height="100%"
-              preserveAspectRatio="none"
-              style={{
-                position: "absolute",
-                inset: 0,
-                pointerEvents: "none",
-              }}
-            >
-              <defs>
-                <pattern id="loopH" x="0" y="0" width="44" height="22" patternUnits="userSpaceOnUse">
-                  <path d="M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2 L 44 2" fill="none" stroke="#E48BA8" strokeWidth="1.8" strokeLinecap="round"/>
-                </pattern>
-                <pattern id="loopV" x="0" y="0" width="22" height="44" patternUnits="userSpaceOnUse">
-                  <path d="M14 0 C 14 6, 2 8, 2 14 C 2 20, 14 22, 14 28 C 14 34, 2 36, 2 42 L 2 44" fill="none" stroke="#E48BA8" strokeWidth="1.8" strokeLinecap="round"/>
-                </pattern>
-              </defs>
-              <rect x="12" y="12" width="calc(100% - 24px)" height="20" fill="url(#loopH)"/>
-              <rect x="12" y="calc(100% - 32px)" width="calc(100% - 24px)" height="20" fill="url(#loopH)"/>
-              <rect x="12" y="12" width="20" height="calc(100% - 24px)" fill="url(#loopV)"/>
-              <rect x="calc(100% - 32px)" y="12" width="20" height="calc(100% - 24px)" fill="url(#loopV)"/>
-            </svg>
+            {(() => {
+              const loopH = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'><path d='M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2 L 44 2' fill='none' stroke='%23E48BA8' stroke-width='1.8' stroke-linecap='round'/></svg>\")";
+              const loopV = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='44' viewBox='0 0 22 44'><path d='M14 0 C 14 6, 2 8, 2 14 C 2 20, 14 22, 14 28 C 14 34, 2 36, 2 42 L 2 44' fill='none' stroke='%23E48BA8' stroke-width='1.8' stroke-linecap='round'/></svg>\")";
+              const edge: React.CSSProperties = { position: "absolute", pointerEvents: "none" };
+              return (
+                <>
+                  <div aria-hidden style={{ ...edge, top: 10, left: 22, right: 22, height: 22, backgroundImage: loopH, backgroundRepeat: "repeat-x" }} />
+                  <div aria-hidden style={{ ...edge, bottom: 10, left: 22, right: 22, height: 22, backgroundImage: loopH, backgroundRepeat: "repeat-x", transform: "scaleY(-1)" }} />
+                  <div aria-hidden style={{ ...edge, left: 10, top: 22, bottom: 22, width: 22, backgroundImage: loopV, backgroundRepeat: "repeat-y" }} />
+                  <div aria-hidden style={{ ...edge, right: 10, top: 22, bottom: 22, width: 22, backgroundImage: loopV, backgroundRepeat: "repeat-y", transform: "scaleX(-1)" }} />
+                </>
+              );
+            })()}
+
 
 
 
