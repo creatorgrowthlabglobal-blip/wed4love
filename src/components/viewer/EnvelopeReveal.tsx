@@ -634,10 +634,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               <div
                 style={{
                   position: "absolute",
-                  top: "23.5%",
-                  left: "21.5%",
-                  right: "21.5%",
-                  bottom: "26%",
+                  top: "25%",
+                  left: "23.5%",
+                  right: "23.5%",
+                  bottom: "17.5%",
                   overflow: "hidden",
                   borderRadius: "3px",
                   zIndex: 0,
@@ -654,7 +654,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     objectFit: "cover",
                     objectPosition: "center",
                     display: "block",
-                    transform: "scale(0.98)",
+                    transform: "scale(0.985)",
                     transformOrigin: "center",
                   }}
                 />
@@ -733,10 +733,10 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               <div
                 style={{
                   position: "absolute",
-                  top: "25.5%",
-                  left: "25.5%",
-                  right: "25.5%",
-                  bottom: "25.5%",
+                  top: "20.5%",
+                  left: "21.75%",
+                  right: "21.75%",
+                  bottom: "19.75%",
                   overflow: "hidden",
                   borderRadius: "999px",
                   clipPath: "ellipse(50% 50% at 50% 50%)",
@@ -754,7 +754,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     objectFit: "cover",
                     objectPosition: "center",
                     display: "block",
-                    transform: "scale(0.97)",
+                    transform: "scale(0.985)",
                     transformOrigin: "center",
                   }}
                 />
