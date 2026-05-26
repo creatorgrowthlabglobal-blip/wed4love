@@ -70,8 +70,10 @@ const VaultMemories = ({ images, onClose }: VaultMemoriesProps) => {
                   background: "hsl(30 60% 97%)",
                   padding: "8px 8px 32px 8px",
                   boxShadow: "0 8px 30px hsl(340 40% 60% / 0.15), 0 2px 8px hsl(0 0% 0% / 0.08)",
+                  isolation: "isolate",
+                  transform: "translateZ(0)",
                 }}>
-                <img src={src} alt={`Memory ${i + 1}`} className="w-full aspect-square object-cover" />
+                <img src={src} alt={`Memory ${i + 1}`} className="w-full aspect-square object-contain" />
                 <p className="absolute bottom-2 left-0 right-0 text-center font-typewriter text-[10px] tracking-wider"
                   style={{ color: "hsl(340 20% 55%)" }}>
                   Memory #{i + 1}
