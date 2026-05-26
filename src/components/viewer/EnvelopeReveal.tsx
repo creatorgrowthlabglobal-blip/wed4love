@@ -466,20 +466,36 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               border: `1px solid rgba(180,165,140,0.35)`,
             }}
           >
-            {/* Decorative pink looped border */}
+            {/* Decorative pink frame: thin lines + bow in each corner */}
             {(() => {
-              const loopH = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'><path d='M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2 L 44 2' fill='none' stroke='%23E48BA8' stroke-width='1.8' stroke-linecap='round'/></svg>\")";
-              const loopV = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='44' viewBox='0 0 22 44'><path d='M14 0 C 14 6, 2 8, 2 14 C 2 20, 14 22, 14 28 C 14 34, 2 36, 2 42 L 2 44' fill='none' stroke='%23E48BA8' stroke-width='1.8' stroke-linecap='round'/></svg>\")";
-              const edge: React.CSSProperties = { position: "absolute", pointerEvents: "none" };
+              const line: React.CSSProperties = {
+                position: "absolute",
+                background: "#E48BA8",
+                pointerEvents: "none",
+                borderRadius: 2,
+              };
+              const bow: React.CSSProperties = {
+                position: "absolute",
+                width: 56,
+                height: 56,
+                pointerEvents: "none",
+              };
               return (
                 <>
-                  <div aria-hidden style={{ ...edge, top: 10, left: 22, right: 22, height: 22, backgroundImage: loopH, backgroundRepeat: "repeat-x" }} />
-                  <div aria-hidden style={{ ...edge, bottom: 10, left: 22, right: 22, height: 22, backgroundImage: loopH, backgroundRepeat: "repeat-x", transform: "scaleY(-1)" }} />
-                  <div aria-hidden style={{ ...edge, left: 10, top: 22, bottom: 22, width: 22, backgroundImage: loopV, backgroundRepeat: "repeat-y" }} />
-                  <div aria-hidden style={{ ...edge, right: 10, top: 22, bottom: 22, width: 22, backgroundImage: loopV, backgroundRepeat: "repeat-y", transform: "scaleX(-1)" }} />
+                  {/* edges */}
+                  <div aria-hidden style={{ ...line, top: 22, left: 40, right: 40, height: 1.5 }} />
+                  <div aria-hidden style={{ ...line, bottom: 22, left: 40, right: 40, height: 1.5 }} />
+                  <div aria-hidden style={{ ...line, left: 22, top: 40, bottom: 40, width: 1.5 }} />
+                  <div aria-hidden style={{ ...line, right: 22, top: 40, bottom: 40, width: 1.5 }} />
+                  {/* corner bows */}
+                  <img src={cornerBow} alt="" style={{ ...bow, top: -6, left: -6 }} />
+                  <img src={cornerBow} alt="" style={{ ...bow, top: -6, right: -6, transform: "scaleX(-1)" }} />
+                  <img src={cornerBow} alt="" style={{ ...bow, bottom: -6, left: -6, transform: "scaleY(-1)" }} />
+                  <img src={cornerBow} alt="" style={{ ...bow, bottom: -6, right: -6, transform: "scale(-1,-1)" }} />
                 </>
               );
             })()}
+
 
 
 
