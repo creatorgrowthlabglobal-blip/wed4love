@@ -542,20 +542,29 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                       marginRight: floatSide === "left" ? "14px" : 0,
                       marginBottom: "8px",
                       background: "linear-gradient(160deg, #F5EBDC, #E8D9C3)",
-                      border: "1px dashed rgba(120,95,60,0.5)",
+                      border: "1px solid rgba(120,95,60,0.35)",
                       borderRadius: "2px",
                       boxShadow: "0 4px 10px rgba(80,60,30,0.12), inset 0 0 20px rgba(180,150,110,0.18)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       transform: `rotate(${rotate}deg)`,
-                      fontFamily: "'Dancing Script', cursive",
-                      fontSize: "clamp(14px, 1.8vw, 18px)",
-                      color: TEXT_MID,
+                      overflow: "hidden",
                       shapeOutside: "margin-box",
                     }}
                   >
-                    {photoLabel}
+                    <img
+                      src={PHOTOS[i]}
+                      alt={`Memory ${i + 1}`}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        opacity: 0.92,
+                      }}
+                    />
                   </span>
                   {p}
                 </motion.p>
