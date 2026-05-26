@@ -463,7 +463,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             style={{
               width: "min(560px, 94vw)",
               background:
-                "repeating-linear-gradient(to bottom, transparent 0, transparent 35px, rgba(160,120,70,0.18) 35px, rgba(160,120,70,0.18) 36px), radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
+                "repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(160,120,70,0.32) 31px, rgba(160,120,70,0.32) 32px), radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4rem) clamp(1.75rem, 5vw, 3rem) clamp(2.5rem, 7vw, 4rem)",
               boxShadow:
                 "0 24px 60px rgba(90,70,110,0.35), 0 8px 20px rgba(90,70,110,0.18), inset 0 0 80px rgba(220,195,150,0.25)",
@@ -471,15 +471,16 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               borderRadius: "6px",
             }}
           >
-            {/* Double border frame */}
+            {/* Decorative double border frame */}
             <div
               aria-hidden
               style={{
                 position: "absolute",
-                inset: "14px",
+                inset: "12px",
                 pointerEvents: "none",
-                border: "1.5px solid rgba(160,120,70,0.55)",
-                borderRadius: "3px",
+                border: "2px solid rgba(160,120,70,0.7)",
+                borderRadius: "4px",
+                boxShadow: "inset 0 0 0 1px rgba(255,245,220,0.6)",
               }}
             />
             <div
@@ -488,10 +489,43 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 position: "absolute",
                 inset: "20px",
                 pointerEvents: "none",
-                border: "0.75px solid rgba(160,120,70,0.4)",
+                border: "1px solid rgba(160,120,70,0.5)",
                 borderRadius: "2px",
               }}
             />
+
+            {/* Ornamental corner flourishes */}
+            {[
+              { top: 4, left: 4, rotate: 0 },
+              { top: 4, right: 4, rotate: 90 },
+              { bottom: 4, right: 4, rotate: 180 },
+              { bottom: 4, left: 4, rotate: 270 },
+            ].map((pos, i) => (
+              <svg
+                key={i}
+                aria-hidden
+                width="36"
+                height="36"
+                viewBox="0 0 36 36"
+                style={{
+                  position: "absolute",
+                  ...pos,
+                  transform: `rotate(${pos.rotate}deg)`,
+                  pointerEvents: "none",
+                  zIndex: 3,
+                }}
+              >
+                <path
+                  d="M3 18 Q3 3 18 3 M3 11 Q11 11 11 3 M8 18 Q8 8 18 8"
+                  fill="none"
+                  stroke="rgba(160,120,70,0.9)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                <circle cx="7" cy="7" r="1.3" fill="rgba(160,120,70,0.9)" />
+              </svg>
+            ))}
+
 
             {/* Pearl ribbon bows — top corners */}
             <img
