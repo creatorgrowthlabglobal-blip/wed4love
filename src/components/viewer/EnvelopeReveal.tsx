@@ -662,9 +662,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 color: TEXT_DARK,
                 marginBottom: "1rem",
                 fontFamily: "'Caveat', 'Dancing Script', cursive",
-                lineHeight: 1.3,
+                lineHeight: 1.6,
                 position: "relative",
                 zIndex: 2,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(160,120,70,0.35)",
+                textDecorationThickness: "1px",
+                textUnderlineOffset: "6px",
               }}
             >
               {letterContent.greeting}
