@@ -466,23 +466,31 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             }}
           >
             {/* Decorative pink looped border */}
-            <div
+            <svg
               aria-hidden
+              width="100%"
+              height="100%"
+              preserveAspectRatio="none"
               style={{
                 position: "absolute",
-                inset: "10px",
+                inset: 0,
                 pointerEvents: "none",
-                borderRadius: "2px",
-                padding: 0,
-                backgroundImage:
-                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'><path d='M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2' fill='none' stroke='%23E48BA8' stroke-width='1.6' stroke-linecap='round'/></svg>\")",
-                backgroundRepeat: "repeat-x, repeat-x, repeat-y, repeat-y",
-                backgroundPosition: "top left, bottom left, left top, right top",
-                backgroundSize: "44px 22px, 44px 22px, 22px 44px, 22px 44px",
-                WebkitMaskImage:
-                  "linear-gradient(#000,#000), linear-gradient(#000,#000), linear-gradient(#000,#000), linear-gradient(#000,#000)",
               }}
-            />
+            >
+              <defs>
+                <pattern id="loopH" x="0" y="0" width="44" height="22" patternUnits="userSpaceOnUse">
+                  <path d="M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2 L 44 2" fill="none" stroke="#E48BA8" strokeWidth="1.8" strokeLinecap="round"/>
+                </pattern>
+                <pattern id="loopV" x="0" y="0" width="22" height="44" patternUnits="userSpaceOnUse">
+                  <path d="M14 0 C 14 6, 2 8, 2 14 C 2 20, 14 22, 14 28 C 14 34, 2 36, 2 42 L 2 44" fill="none" stroke="#E48BA8" strokeWidth="1.8" strokeLinecap="round"/>
+                </pattern>
+              </defs>
+              <rect x="12" y="12" width="calc(100% - 24px)" height="20" fill="url(#loopH)"/>
+              <rect x="12" y="calc(100% - 32px)" width="calc(100% - 24px)" height="20" fill="url(#loopH)"/>
+              <rect x="12" y="12" width="20" height="calc(100% - 24px)" fill="url(#loopV)"/>
+              <rect x="calc(100% - 32px)" y="12" width="20" height="calc(100% - 24px)" fill="url(#loopV)"/>
+            </svg>
+
 
 
             <motion.h2
