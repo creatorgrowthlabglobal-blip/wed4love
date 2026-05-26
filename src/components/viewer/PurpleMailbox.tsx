@@ -146,98 +146,69 @@ const HingeSill = () => (
   </g>
 );
 
-/* ───────────────────── Swing door (foreignObject CSS 3D) ───────────────────── */
+/* ───────────────────── Swing door (pure SVG — iOS Safari compatible) ───────────────────── */
+/* Was foreignObject + CSS rotateX, which is broken on iOS Safari inside SVG.
+   Now uses SVG scaleY from the bottom hinge to simulate the door folding open. */
 const SwingDoor = ({ open }: { open:boolean }) => (
   <>
-    <foreignObject x="108" y="83" width="174" height="185" style={{overflow:"visible"}}>
-      <div
-        // @ts-expect-error xmlns required inside SVG foreignObject
-        xmlns="http://www.w3.org/1999/xhtml"
-        style={{ width:"174px", height:"185px", perspective:"900px", perspectiveOrigin:"87px 183px" }}
-      >
-        <motion.div
-          animate={{ rotateX: open ? -92 : 0 }}
-          transition={{ type:"spring", stiffness:60, damping:14, mass:1.1 }}
-          style={{
-            width:"174px", height:"185px",
-            clipPath:"path('M 2 183 L 2 87 Q 2 2 87 2 Q 172 2 172 87 L 172 183 Z')",
-            /* Replicates Template 2's lavMetal SVG gradient in CSS */
-            background:"linear-gradient(90deg, #A99BD8 0%, #D4C8F2 22%, #BDAEE7 50%, #D8CCF4 78%, #9C8DCC 100%)",
-            transformOrigin:"87px 183px",
-            position:"relative",
-            overflow:"hidden",
-            boxSizing:"border-box",
-          }}
-        >
-          {/* Shine overlay — matches Template 2's lavRoofShine pattern */}
-          <div style={{
-            position:"absolute", inset:0, pointerEvents:"none",
-            background:"linear-gradient(180deg, rgba(239,231,255,0.65) 0%, rgba(239,231,255,0) 52%)",
-          }}/>
-          {/* Inner bevel highlight line */}
-          <div style={{
-            position:"absolute", inset:0, pointerEvents:"none",
-            boxShadow:"inset 0 2px 0 rgba(242,235,255,0.72), inset 0 -2px 0 rgba(0,0,0,0.22)",
-          }}/>
+    <motion.g
+      animate={{ scaleY: open ? 0 : 1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      style={{ transformOrigin: "195px 270px" }}
+    >
+      {/* Door face */}
+      <path
+        d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+        fill="url(#lavMetal)"
+      />
+      {/* Shine — upper portion */}
+      <path
+        d="M 110 180 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 180 Z"
+        fill="rgba(239,231,255,0.50)"
+      />
+      {/* Inner bevel highlight */}
+      <path
+        d="M 116 268 L 116 173 Q 116 91 195 91 Q 274 91 274 173 L 274 268"
+        fill="none" stroke="rgba(242,235,255,0.60)" strokeWidth="1.5"
+      />
+      {/* Bottom bevel shadow */}
+      <line x1="110" y1="268" x2="280" y2="268" stroke="rgba(0,0,0,0.22)" strokeWidth="2"/>
 
-          {/* ── Mail slot — sharp inset, no glow ── */}
-          <div style={{
-            position:"absolute", top:"37%", left:"50%", transform:"translateX(-50%)",
-            width:"57%",
-          }}>
-            <div style={{
-              width:"100%", background:"#3a243a", borderRadius:3, padding:"2px",
-              boxShadow:"0 -1px 0 rgba(200,180,240,0.28), 0 1px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(0,0,0,0.4)",
-            }}>
-              <div style={{height:5, borderRadius:"2px 2px 0 0", background:"#080210"}}/>
-              <div style={{height:11, background:"#0e0620", position:"relative"}}>
-                {/* Idle ambient pulse */}
-                <motion.div
-                  style={{
-                    position:"absolute", inset:0,
-                    background:"linear-gradient(90deg, transparent 8%, rgba(150,100,240,0.08) 50%, transparent 92%)",
-                  }}
-                  animate={open ? {opacity:0} : {opacity:[0.3,1,0.3]}}
-                  transition={{duration:2.4, repeat: open ? 0 : Infinity}}
-                />
-                {/* 1 px light catch on metal lip */}
-                <div style={{
-                  position:"absolute", bottom:0, left:"5%", right:"5%",
-                  height:1, background:"rgba(200,160,240,0.30)",
-                }}/>
-              </div>
-              <div style={{height:2, borderRadius:"0 0 2px 2px", background:"#1e1040"}}/>
-            </div>
-          </div>
+      {/* Mail slot */}
+      <rect x="146" y="153" width="99" height="22" rx="3" fill="#3a243a"/>
+      <rect x="148" y="155" width="95" height="5"  rx="2" fill="#080210"/>
+      <rect x="148" y="160" width="95" height="11"       fill="#0e0620"/>
+      <rect x="148" y="171" width="95" height="2"        fill="#1e1040"/>
+      {/* Slot ambient pulse */}
+      <motion.rect
+        x="148" y="160" width="95" height="11" fill="rgba(150,100,240,0.08)"
+        animate={open ? { opacity: 0 } : { opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 2.4, repeat: open ? 0 : Infinity }}
+      />
+      {/* Light catch on lip */}
+      <rect x="148" y="172" width="95" height="1" fill="rgba(200,160,240,0.30)"/>
 
-          {/* ── Brass handle ── */}
-          <div style={{
-            position:"absolute", bottom:"16%", left:"50%", transform:"translateX(-50%)",
-            width:"28%",
-          }}>
-            <div style={{position:"absolute", top:2, left:"-3px", right:"-3px", height:7, borderRadius:4, background:"#7A5000"}}/>
-            <div style={{position:"relative", width:"100%", height:7, borderRadius:4, background:"#C49018"}}>
-              <div style={{position:"absolute", top:1, left:"12%", right:"12%", height:1.5, borderRadius:1, background:"rgba(255,255,255,0.88)"}}/>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </foreignObject>
+      {/* Brass handle — shadow */}
+      <rect x="171" y="239" width="49" height="7" rx="4" fill="#7A5000"/>
+      {/* Brass handle — face */}
+      <rect x="171" y="237" width="49" height="7" rx="4" fill="#C49018"/>
+      {/* Brass handle — shine */}
+      <rect x="177" y="238" width="37" height="1.5" rx="1" fill="rgba(255,255,255,0.88)"/>
+    </motion.g>
 
-    {/* Black arch outline — matches Template 2's stroke style.
-        Fades out as door swings open so the opening feels clean. */}
+    {/* Black arch outline — fades as door opens */}
     <motion.path
       d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270"
       fill="none" stroke={STROKE} strokeWidth="3" strokeLinejoin="round"
       animate={{ opacity: open ? 0 : 1 }}
-      transition={{ duration:0.25 }}
+      transition={{ duration: 0.25 }}
     />
-    {/* Inner highlight ring (from original FrontFaceOverlay) */}
+    {/* Inner highlight ring */}
     <motion.path
       d="M 113 268 L 113 170 Q 113 88 195 88 Q 277 88 277 170 L 277 268"
-      fill="none" stroke="#F2EBFF" strokeWidth="1.2" opacity="0.85"
+      fill="none" stroke="#F2EBFF" strokeWidth="1.2"
       animate={{ opacity: open ? 0 : 0.85 }}
-      transition={{ duration:0.25 }}
+      transition={{ duration: 0.25 }}
     />
   </>
 );
