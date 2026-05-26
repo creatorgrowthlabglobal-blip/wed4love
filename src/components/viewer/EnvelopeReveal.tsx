@@ -637,13 +637,15 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 loading="lazy"
                 style={{
                   position: "absolute",
-                  inset: "14% 12% 12% 12%",
-                  width: "76%",
-                  height: "74%",
+                  top: "16%",
+                  left: "16%",
+                  right: "16%",
+                  bottom: "16%",
                   objectFit: "cover",
-                  borderRadius: "4px",
+                  borderRadius: "2px",
                 }}
               />
+
               <img
                 src={silverFrameRect}
                 alt=""
@@ -720,13 +722,15 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 loading="lazy"
                 style={{
                   position: "absolute",
-                  inset: "16% 16% 16% 16%",
-                  width: "68%",
-                  height: "68%",
+                  top: "20%",
+                  left: "20%",
+                  right: "20%",
+                  bottom: "20%",
                   objectFit: "cover",
                   borderRadius: "50%",
                 }}
               />
+
               <img
                 src={silverFrameOval}
                 alt=""
@@ -801,24 +805,6 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               </p>
             </motion.div>
 
-            {/* Gold wax seal — bottom center */}
-            <img
-              src={goldSeal}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              style={{
-                position: "absolute",
-                bottom: -28,
-                left: "50%",
-                transform: "translateX(-50%) rotate(-8deg)",
-                width: 88,
-                height: 88,
-                filter: "drop-shadow(0 8px 14px rgba(80,50,20,0.4))",
-                pointerEvents: "none",
-                zIndex: 4,
-              }}
-            />
           </motion.div>
         )}
       </AnimatePresence>
