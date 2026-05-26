@@ -376,7 +376,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 >
                   <span
                     style={{
-                      fontFamily: "'Dancing Script', cursive",
+                      fontFamily: "'Caveat', 'Dancing Script', cursive",
                       fontSize: "clamp(26px, 8vw, 42px)",
                       color: "#5C1832",
                       letterSpacing: "0.02em",
@@ -465,6 +465,23 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               border: `1px solid rgba(180,165,140,0.35)`,
             }}
           >
+            {/* Decorative pink looped border */}
+            {(() => {
+              const loopH = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'><path d='M0 14 C 6 14, 8 2, 14 2 C 20 2, 22 14, 28 14 C 34 14, 36 2, 42 2 L 44 2' fill='none' stroke='%23E48BA8' stroke-width='1.8' stroke-linecap='round'/></svg>\")";
+              const loopV = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='44' viewBox='0 0 22 44'><path d='M14 0 C 14 6, 2 8, 2 14 C 2 20, 14 22, 14 28 C 14 34, 2 36, 2 42 L 2 44' fill='none' stroke='%23E48BA8' stroke-width='1.8' stroke-linecap='round'/></svg>\")";
+              const edge: React.CSSProperties = { position: "absolute", pointerEvents: "none" };
+              return (
+                <>
+                  <div aria-hidden style={{ ...edge, top: 10, left: 22, right: 22, height: 22, backgroundImage: loopH, backgroundRepeat: "repeat-x" }} />
+                  <div aria-hidden style={{ ...edge, bottom: 10, left: 22, right: 22, height: 22, backgroundImage: loopH, backgroundRepeat: "repeat-x", transform: "scaleY(-1)" }} />
+                  <div aria-hidden style={{ ...edge, left: 10, top: 22, bottom: 22, width: 22, backgroundImage: loopV, backgroundRepeat: "repeat-y" }} />
+                  <div aria-hidden style={{ ...edge, right: 10, top: 22, bottom: 22, width: 22, backgroundImage: loopV, backgroundRepeat: "repeat-y", transform: "scaleX(-1)" }} />
+                </>
+              );
+            })()}
+
+
+
 
             <motion.h2
               initial={{ opacity: 0, y: -8 }}
@@ -472,7 +489,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               transition={{ delay: 0.15, duration: 0.6 }}
               style={{
                 fontSize: "clamp(44px, 7vw, 64px)",
-                fontFamily: "'Pinyon Script', 'Great Vibes', 'Dancing Script', cursive",
+                fontFamily: "'Pinyon Script', 'Great Vibes', 'Caveat', 'Dancing Script', cursive",
                 fontStyle: "italic",
                 color: "#7A1535",
                 textAlign: "center",
@@ -505,7 +522,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 fontSize: "clamp(26px, 4vw, 32px)",
                 color: TEXT_DARK,
                 marginBottom: "1.5rem",
-                fontFamily: "'Dancing Script', cursive",
+                fontFamily: "'Caveat', 'Dancing Script', cursive",
                 lineHeight: 1.3,
               }}
             >
@@ -526,7 +543,7 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                     color: TEXT_DARK,
                     lineHeight: 1.6,
                     marginBottom: i < letterContent.paragraphs.length - 1 ? "1.5rem" : "2rem",
-                    fontFamily: "'Dancing Script', cursive",
+                    fontFamily: "'Caveat', 'Dancing Script', cursive",
                     opacity: 0.92,
                     overflow: "hidden",
                     backgroundImage: "linear-gradient(to bottom, transparent calc(1.6em - 1px), rgba(120,90,60,0.18) calc(1.6em - 1px), rgba(120,90,60,0.18) 1.6em)",
@@ -581,14 +598,14 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               transition={{ delay: 0.95, duration: 0.5 }}
               style={{ marginTop: "1rem" }}
             >
-              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Dancing Script', cursive", marginBottom: "0.4rem", opacity: 0.85 }}>
+              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.4rem", opacity: 0.85 }}>
                 {letterContent.closing}
               </p>
               <p
                 style={{
                   fontSize: "clamp(32px, 5vw, 40px)",
                   color: TEXT_DARK,
-                  fontFamily: "'Dancing Script', cursive",
+                  fontFamily: "'Caveat', 'Dancing Script', cursive",
                   marginLeft: "8px",
                   lineHeight: 1.1,
                 }}
