@@ -472,31 +472,13 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              style={{
-                fontSize: "12px",
-                color: TEXT_MID,
-                opacity: 0.65,
-                fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
-                fontStyle: "normal",
-                letterSpacing: "0.08em",
-                marginBottom: "2rem",
-                textAlign: "right",
-              }}
-            >
-              {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-            </motion.p>
-
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
               style={{
-                fontSize: "clamp(17px, 2.5vw, 20px)",
+                fontSize: "clamp(26px, 4vw, 32px)",
                 color: TEXT_DARK,
                 marginBottom: "1.5rem",
-                fontStyle: "italic",
-                lineHeight: 1.5,
+                fontFamily: "'Dancing Script', cursive",
+                lineHeight: 1.3,
               }}
             >
               {letterContent.greeting}
@@ -509,33 +491,69 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + i * 0.15, duration: 0.55, ease: "easeOut" }}
                 style={{
-                  fontSize: "clamp(14px, 2vw, 16px)",
+                  fontSize: "clamp(20px, 2.8vw, 24px)",
                   color: TEXT_DARK,
-                  lineHeight: 1.85,
+                  lineHeight: 1.6,
                   marginBottom: i < letterContent.paragraphs.length - 1 ? "1.2rem" : "2rem",
-                  opacity: 0.88,
+                  fontFamily: "'Dancing Script', cursive",
+                  opacity: 0.92,
                 }}
               >
                 {p}
               </motion.p>
             ))}
 
+            {/* Photo placeholders */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.85, duration: 0.5 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "12px",
+                margin: "1.5rem 0 2rem",
+              }}
+            >
+              {["Photo 1", "Photo 2", "Photo 3"].map((label, i) => (
+                <div
+                  key={label}
+                  style={{
+                    aspectRatio: "3 / 4",
+                    background: "linear-gradient(160deg, #F5EBDC, #E8D9C3)",
+                    border: "1px dashed rgba(120,95,60,0.5)",
+                    borderRadius: "2px",
+                    boxShadow: "0 4px 10px rgba(80,60,30,0.12), inset 0 0 20px rgba(180,150,110,0.18)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transform: `rotate(${(i - 1) * 2}deg)`,
+                    fontFamily: "'Dancing Script', cursive",
+                    fontSize: "clamp(16px, 2vw, 20px)",
+                    color: TEXT_MID,
+                  }}
+                >
+                  {label}
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.95, duration: 0.5 }}
               style={{ marginTop: "1rem" }}
             >
-              <p style={{ fontSize: "15px", color: TEXT_DARK, fontStyle: "italic", marginBottom: "0.4rem", opacity: 0.8 }}>
+              <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Dancing Script', cursive", marginBottom: "0.4rem", opacity: 0.85 }}>
                 {letterContent.closing}
               </p>
               <p
                 style={{
-                  fontSize: "clamp(22px, 4vw, 28px)",
+                  fontSize: "clamp(32px, 5vw, 40px)",
                   color: TEXT_DARK,
-                  fontFamily: "Georgia, serif",
-                  fontStyle: "italic",
+                  fontFamily: "'Dancing Script', cursive",
                   marginLeft: "8px",
+                  lineHeight: 1.1,
                 }}
               >
                 {letterContent.signature}
