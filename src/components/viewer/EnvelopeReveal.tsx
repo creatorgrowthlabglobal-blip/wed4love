@@ -471,24 +471,25 @@ export default function EnvelopeReveal({ receiverName, onContinue }: EnvelopeRev
               borderRadius: "6px",
             }}
           >
-            {/* Embossed lace inner border */}
+            {/* Double border frame */}
             <div
               aria-hidden
               style={{
                 position: "absolute",
-                inset: "18px",
+                inset: "14px",
                 pointerEvents: "none",
+                border: "1.5px solid rgba(160,120,70,0.55)",
+                borderRadius: "3px",
+              }}
+            />
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: "20px",
+                pointerEvents: "none",
+                border: "0.75px solid rgba(160,120,70,0.4)",
                 borderRadius: "2px",
-                backgroundImage:
-                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><g fill='none' stroke='rgba(180,150,110,0.30)' stroke-width='0.8'><circle cx='20' cy='20' r='3'/><circle cx='20' cy='20' r='6' stroke-dasharray='1.5 2'/><circle cx='0' cy='0' r='2'/><circle cx='40' cy='0' r='2'/><circle cx='0' cy='40' r='2'/><circle cx='40' cy='40' r='2'/></g></svg>\")",
-                backgroundRepeat: "repeat",
-                opacity: 0.65,
-                mixBlendMode: "multiply",
-                WebkitMaskImage:
-                  "linear-gradient(to right, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%), linear-gradient(to bottom, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%)",
-                WebkitMaskComposite: "source-in",
-                maskImage:
-                  "linear-gradient(to right, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%), linear-gradient(to bottom, black 0, black 70px, transparent 90px, transparent calc(100% - 90px), black calc(100% - 70px), black 100%)",
               }}
             />
 
