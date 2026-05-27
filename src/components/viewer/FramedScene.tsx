@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 interface FramedSceneProps {
-  children: ReactNode;
+  children?: ReactNode;
   /** When true, renders only the decorative frame border as an overlay
    *  (transparent center) — use on top of an existing full-screen scene. */
   overlay?: boolean;
