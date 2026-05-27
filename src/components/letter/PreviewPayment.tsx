@@ -6,6 +6,8 @@ import { filesToBase64 } from "@/lib/letterStorage";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
+import FramedScene from "@/components/viewer/FramedScene";
+import framePng from "@/assets/pink-hearts-frame.png";
 interface PreviewPaymentProps {
   letterData: {
     senderName: string;
@@ -152,27 +154,35 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             </motion.button>
 
             {previewStage === "mailbox" && (
-              <div key="p-mailbox" className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{ background: "#F2EFE8" }}
-              >
-                <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
-                  {template === "purple" ? (
-                    <PurpleMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
-                  ) : (
-                    <RealisticMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
-                  )}
-                </div>
-              </div>
+              <FramedScene key="p-mailbox">
+                {template === "purple" ? (
+                  <PurpleMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
+                ) : (
+                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
+                )}
+              </FramedScene>
             )}
             {previewStage === "envelope" && (
-              <EnvelopeReveal
-                key="p-envelope"
-                receiverName={letterData.receiverName}
-                senderName={letterData.senderName}
-                letterText={letterData.letterText}
-                images={previewImages}
-                onContinue={closePreview}
-              />
+              <div key="p-envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
+                <EnvelopeReveal
+                  receiverName={letterData.receiverName}
+                  senderName={letterData.senderName}
+                  letterText={letterData.letterText}
+                  images={previewImages}
+                  onContinue={closePreview}
+                />
+                <div
+                  aria-hidden
+                  style={{
+                    position: "fixed", inset: 0, pointerEvents: "none", zIndex: 200,
+                    backgroundImage: `url(${framePng})`,
+                    backgroundSize: "100% 100%",
+                    backgroundRepeat: "no-repeat",
+                    WebkitMaskImage: "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
+                    maskImage: "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
+                  }}
+                />
+              </div>
             )}
           </>
         )}
