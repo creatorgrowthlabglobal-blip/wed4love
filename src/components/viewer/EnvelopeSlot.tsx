@@ -196,7 +196,7 @@ export default function EnvelopeSlot({ receiverName, onContinue }: EnvelopeSlotP
                   <stop offset="100%" stopColor="#EDB8CE" />
                 </linearGradient>
               </defs>
-              <polygon points="0,0 360,0 180,180" fill="url(#esFlapGrad)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round" />
+              <path d="M 0,0 L 180,180 L 360,0" fill="url(#esFlapGrad)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
               <line x1="20" y1="4" x2="340" y2="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             </svg>
             {/* Wax seal */}

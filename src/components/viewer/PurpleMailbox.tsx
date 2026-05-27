@@ -57,8 +57,13 @@ const Defs = () => (
     <radialGradient id="cavity" cx="0.5" cy="0.4" r="0.7">
       <stop offset="0%"   stopColor="#3a2f4d"/>
       <stop offset="55%"  stopColor="#1a1424"/>
-      <stop offset="100%" stopColor="#0a0610"/>
+      <stop offset="100%" stopColor="#221838"/>
     </radialGradient>
+    <linearGradient id="doorShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stopColor="rgba(239,231,255,0.55)"/>
+      <stop offset="42%"  stopColor="rgba(239,231,255,0.22)"/>
+      <stop offset="100%" stopColor="rgba(239,231,255,0.06)"/>
+    </linearGradient>
     <clipPath id="frontClip">
       <path d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"/>
     </clipPath>
@@ -179,10 +184,10 @@ const SwingDoor = ({ open }: { open:boolean }) => {
         d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
         fill="url(#lavMetal)"
       />
-      {/* Shine — upper fade */}
+      {/* Shine — full door, fades toward bottom */}
       <path
-        d="M 110 180 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 180 Z"
-        fill="rgba(239,231,255,0.50)"
+        d="M 110 270 L 110 170 Q 110 85 195 85 Q 280 85 280 170 L 280 270 Z"
+        fill="url(#doorShine)"
       />
       {/* Inner bevel */}
       <path
@@ -236,13 +241,13 @@ const RisingEnvelope = ({ show, delivered }: { show:boolean; delivered:boolean }
         initial={{ scaleY: 0.04, y: 0, opacity: 1 }}
         animate={delivered
           ? { scaleY: 1, y: -280, opacity: 0 }
-          : { scaleY: 1, y: 72, opacity: 1 }}
+          : { scaleY: 1, y: 95, opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={delivered
           ? { type:"spring", stiffness:75, damping:16 }
           : {
-              scaleY: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-              y:      { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 },
+              scaleY: { duration: 0.7,  ease: [0.22, 1, 0.36, 1] },
+              y:      { duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: 0.05 },
             }}
         style={{
           position:"absolute", left:"50%", top:"31%",
@@ -262,6 +267,7 @@ const RisingEnvelope = ({ show, delivered }: { show:boolean; delivered:boolean }
           boxShadow:"inset 0 0 0 1px rgba(255,255,255,0.6)",
         }}>
           <svg viewBox="0 0 360 240" style={{position:"absolute",inset:0,width:"100%",height:"100%"}} preserveAspectRatio="none">
+
             <defs>
               <linearGradient id="rmLeft" x1="0%" y1="50%" x2="100%" y2="50%">
                 <stop offset="0%" stopColor="#E0A8C0"/><stop offset="100%" stopColor="#F0CAD8"/>
@@ -305,7 +311,7 @@ const RisingEnvelope = ({ show, delivered }: { show:boolean; delivered:boolean }
                 <stop offset="0%" stopColor="#F8DDE8"/><stop offset="100%" stopColor="#EDB8CE"/>
               </linearGradient>
             </defs>
-            <polygon points="0,0 360,0 180,180" fill="url(#rmFlap)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
+            <path d="M 0,0 L 180,180 L 360,0" fill="url(#rmFlap)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
           </svg>
           {/* Wax seal */}
           <div style={{position:"absolute",bottom:-14,left:"50%",width:28,height:28,marginLeft:-14,filter:"drop-shadow(0 3px 6px rgba(70,10,35,0.4))"}}>
@@ -418,9 +424,9 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
     setState("opening");
     timersRef.current = [
       window.setTimeout(() => setState("open"), 800),
-      // envelope fully risen ~600ms after "open"; wait 700ms then auto-advance
-      window.setTimeout(() => { setState("delivered"); setZoomed(true); }, 1500),
-      window.setTimeout(() => onContinue?.(), 2400),
+      // envelope fully risen ~900ms after "open"; wait 1000ms then auto-advance
+      window.setTimeout(() => { setState("delivered"); setZoomed(true); }, 1800),
+      window.setTimeout(() => onContinue?.(), 2700),
     ];
   };
 
@@ -562,8 +568,7 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
                       <defs>
                         <linearGradient id="hoFlap" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stopColor="#F8DDE8"/><stop offset="100%" stopColor="#EDB8CE"/></linearGradient>
                       </defs>
-                      <polygon points="0,0 360,0 180,180" fill="url(#hoFlap)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
-                      <line x1="20" y1="4" x2="340" y2="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5"/>
+                      <path d="M 0,0 L 180,180 L 360,0" fill="url(#hoFlap)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
                     </svg>
                     {/* Wax seal */}
                     <div style={{position:"absolute",bottom:-36,left:"50%",width:72,height:72,marginLeft:-36,filter:"drop-shadow(0 5px 10px rgba(70,10,35,0.40))"}}>
