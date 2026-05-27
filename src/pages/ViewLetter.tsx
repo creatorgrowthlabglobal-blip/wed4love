@@ -123,17 +123,15 @@ const ViewLetter = () => {
         </FramedScene>
       )}
       {stage === "envelope" && (
-        <FramedScene key="envelope">
-          <EnvelopeReveal
-            receiverName={letter.receiverName || "Someone Special"}
-            senderName={letter.senderName}
-            letterText={letter.letterText}
-            images={letter.images}
-            onLetterOpen={startMusic}
-            onContinue={advance}
-            embedded
-          />
-        </FramedScene>
+        <EnvelopeReveal
+          key="envelope"
+          receiverName={letter.receiverName || "Someone Special"}
+          senderName={letter.senderName}
+          letterText={letter.letterText}
+          images={letter.images}
+          onLetterOpen={startMusic}
+          onContinue={advance}
+        />
       )}
       {stage === "quiz" && (
         <QuizExperience key="quiz" questions={letter.quiz} onComplete={advance} />
