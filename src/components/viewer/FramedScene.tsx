@@ -60,8 +60,9 @@ function FrameDecoration({ overlay }: { overlay: boolean }) {
   const gold = "#E9C77B";
   const cream = "#FFF6F0";
 
-  // Outer pink band inset from viewport edge
-  const outerInset = "clamp(10px, 2.5vmin, 28px)";
+  // Outer pink band inset from viewport edge — 0 in overlay so the frame fully
+  // clips anything bleeding past it (mailbox/envelope zoom).
+  const outerInset = overlay ? "0px" : "clamp(10px, 2.5vmin, 28px)";
   // Cream window inset from the outer pink band
   const windowInset = "clamp(20px, 5vmin, 52px)";
 
