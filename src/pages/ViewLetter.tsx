@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
+import FramedScene from "@/components/viewer/FramedScene";
+import framePng from "@/assets/pink-hearts-frame.png";
 import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
@@ -113,26 +115,42 @@ const ViewLetter = () => {
   return (
     <AnimatePresence mode="wait">
       {stage === "mailbox" && (
-        <div key="mailbox" className="fixed inset-0 flex items-center justify-center" style={{ background: "#F2EFE8" }}>
-          <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
-            {template === "purple" ? (
-              <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
-            ) : (
-              <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
-            )}
-          </div>
-        </div>
+        <FramedScene key="mailbox">
+          {template === "purple" ? (
+            <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+          ) : (
+            <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+          )}
+        </FramedScene>
       )}
       {stage === "envelope" && (
-        <EnvelopeReveal
-          key="envelope"
-          receiverName={letter.receiverName || "Someone Special"}
-          senderName={letter.senderName}
-          letterText={letter.letterText}
-          images={letter.images}
-          onLetterOpen={startMusic}
-          onContinue={advance}
-        />
+        <div key="envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
+          <EnvelopeReveal
+            receiverName={letter.receiverName || "Someone Special"}
+            senderName={letter.senderName}
+            letterText={letter.letterText}
+            images={letter.images}
+            onLetterOpen={startMusic}
+            onContinue={advance}
+          />
+          {/* Decorative pink-hearts lace frame overlay (border only — center is masked out) */}
+          <div
+            aria-hidden
+            style={{
+              position: "fixed",
+              inset: 0,
+              pointerEvents: "none",
+              zIndex: 200,
+              backgroundImage: `url(${framePng})`,
+              backgroundSize: "100% 100%",
+              backgroundRepeat: "no-repeat",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
+              maskImage:
+                "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
+            }}
+          />
+        </div>
       )}
       {stage === "quiz" && (
         <QuizExperience key="quiz" questions={letter.quiz} onComplete={advance} />
