@@ -100,22 +100,23 @@ function FrameDecoration() {
             id="lace-hearts"
             x="0"
             y="0"
-            width="6"
-            height="6"
+            width="5"
+            height="5"
             patternUnits="userSpaceOnUse"
           >
+            {/* Small heart centered in a 5x5 cell with padding around it */}
             <path
-              d="M3 4.6 C 1.2 3.2, 1.2 1.4, 2.4 1.0 C 3.0 0.8, 3.0 1.5, 3 1.8 C 3 1.5, 3.0 0.8, 3.6 1.0 C 4.8 1.4, 4.8 3.2, 3 4.6 Z"
-              fill="rgba(255,255,255,0.55)"
+              d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
+              fill="rgba(255,255,255,0.6)"
             />
           </pattern>
         </defs>
-        {/* Top & bottom bands */}
-        <rect x="0" y="0" width="100" height="6" fill="url(#lace-hearts)" />
-        <rect x="0" y="94" width="100" height="6" fill="url(#lace-hearts)" />
+        {/* Top & bottom bands — inset from edges so hearts don't touch frame */}
+        <rect x="2" y="1.2" width="96" height="3.2" fill="url(#lace-hearts)" />
+        <rect x="2" y="95.6" width="96" height="3.2" fill="url(#lace-hearts)" />
         {/* Left & right bands */}
-        <rect x="0" y="0" width="4" height="100" fill="url(#lace-hearts)" />
-        <rect x="96" y="0" width="4" height="100" fill="url(#lace-hearts)" />
+        <rect x="1.2" y="2" width="2.4" height="96" fill="url(#lace-hearts)" />
+        <rect x="96.4" y="2" width="2.4" height="96" fill="url(#lace-hearts)" />
       </svg>
 
       {/* Gold piping */}
