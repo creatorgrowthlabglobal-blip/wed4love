@@ -16,6 +16,7 @@ export default function FramedScene({ children }: FramedSceneProps) {
       style={{
         position: "fixed",
         inset: 0,
+        zIndex: 50,
         background:
           "radial-gradient(ellipse at 50% 40%, #FBE9EF 0%, #F2D6E0 100%)",
         display: "flex",
