@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
-import framePng from "@/assets/pink-hearts-frame.png";
+
 import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
