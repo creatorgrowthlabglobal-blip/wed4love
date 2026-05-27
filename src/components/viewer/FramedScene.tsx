@@ -96,15 +96,21 @@ function FrameDecoration() {
         preserveAspectRatio="none"
       >
         <defs>
-          <pattern
-            id="lace-hearts"
-            x="0"
-            y="0"
-            width="5"
-            height="5"
-            patternUnits="userSpaceOnUse"
-          >
-            {/* Small heart centered in a 5x5 cell with padding around it */}
+          <pattern id="lace-hearts" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+            <path
+              d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
+              fill="rgba(255,255,255,0.6)"
+            />
+          </pattern>
+          {/* Left band — hearts nudged left */}
+          <pattern id="lace-hearts-left" x="-1.2" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+            <path
+              d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
+              fill="rgba(255,255,255,0.6)"
+            />
+          </pattern>
+          {/* Right band — hearts nudged right */}
+          <pattern id="lace-hearts-right" x="1.2" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
             <path
               d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
               fill="rgba(255,255,255,0.6)"
@@ -114,9 +120,9 @@ function FrameDecoration() {
         {/* Top & bottom bands — inset from edges so hearts don't touch frame */}
         <rect x="2" y="1" width="96" height="5" fill="url(#lace-hearts)" />
         <rect x="2" y="94" width="96" height="5" fill="url(#lace-hearts)" />
-        {/* Left & right bands — full pattern width so hearts aren't clipped */}
-        <rect x="1" y="2" width="5" height="96" fill="url(#lace-hearts)" />
-        <rect x="94" y="2" width="5" height="96" fill="url(#lace-hearts)" />
+        {/* Left & right bands — narrow, hearts shifted to sit cleanly inside */}
+        <rect x="0.5" y="2" width="3.5" height="96" fill="url(#lace-hearts-left)" />
+        <rect x="96" y="2" width="3.5" height="96" fill="url(#lace-hearts-right)" />
       </svg>
 
       {/* Gold piping */}
