@@ -33,7 +33,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         overflow: "hidden",
       }}
     >
-      <FrameDecoration />
+      <FrameDecoration overlay={overlay} />
       {!overlay && (
         <div
           style={{
