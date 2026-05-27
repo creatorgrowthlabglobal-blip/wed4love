@@ -76,7 +76,7 @@ const MediaUpload = ({ images, onImagesChange, onNext, onBack }: MediaUploadProp
 
       <div className="mt-8 flex justify-between">
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}
-          className="px-6 py-3 bg-secondary text-secondary-foreground font-display text-sm font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card">
+          className="px-8 py-3 bg-secondary text-secondary-foreground font-display text-sm font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card">
           ← Go Back
         </motion.button>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onNext}
