@@ -7,6 +7,8 @@ import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
+import FramedScene from "@/components/viewer/FramedScene";
+import framePng from "@/assets/pink-hearts-frame.png";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
@@ -366,30 +368,37 @@ const Index = () => {
               <X className="w-5 h-5 text-white" />
             </motion.button>
             {previewStage === "mailbox" && (
-              <div
-                key="p-mailbox"
-                className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{ background: "#F2EFE8" }}
-              >
-                <div className="relative w-screen h-screen">
-                  <Suspense fallback={null}>
-                    {template === "purple" ? (
-                      <PurpleMailbox
-                        className="w-full h-full"
-                        onContinue={() => setPreviewStage("envelope")}
-                      />
-                    ) : (
-                      <RealisticMailbox
-                        className="w-full h-full"
-                        onContinue={() => setPreviewStage("envelope")}
-                      />
-                    )}
-                  </Suspense>
-                </div>
-              </div>
+              <FramedScene key="p-mailbox">
+                <Suspense fallback={null}>
+                  {template === "purple" ? (
+                    <PurpleMailbox
+                      className="w-full h-full"
+                      onContinue={() => setPreviewStage("envelope")}
+                    />
+                  ) : (
+                    <RealisticMailbox
+                      className="w-full h-full"
+                      onContinue={() => setPreviewStage("envelope")}
+                    />
+                  )}
+                </Suspense>
+              </FramedScene>
             )}
             {previewStage === "envelope" && (
-              <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
+              <div key="p-envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
+                <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
+                <div
+                  aria-hidden
+                  style={{
+                    position: "fixed", inset: 0, pointerEvents: "none", zIndex: 200,
+                    backgroundImage: `url(${framePng})`,
+                    backgroundSize: "100% 100%",
+                    backgroundRepeat: "no-repeat",
+                    WebkitMaskImage: "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
+                    maskImage: "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
+                  }}
+                />
+              </div>
             )}
           </>
         )}
