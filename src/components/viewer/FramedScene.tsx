@@ -134,47 +134,45 @@ function FrameDecoration({ overlay }: { overlay: boolean }) {
         }}
       />
 
-      {/* Edge-centered heart accents — small, centered along each border */}
-      <EdgeHeart position="top" pink={deepPink} gold={gold} />
-      <EdgeHeart position="bottom" pink={deepPink} gold={gold} />
-      <EdgeHeart position="left" pink={deepPink} gold={gold} />
-      <EdgeHeart position="right" pink={deepPink} gold={gold} />
+      {/* Corner heart medallions — small */}
+      <CornerHeart corner="tl" pink={deepPink} gold={gold} />
+      <CornerHeart corner="tr" pink={deepPink} gold={gold} />
+      <CornerHeart corner="bl" pink={deepPink} gold={gold} />
+      <CornerHeart corner="br" pink={deepPink} gold={gold} />
     </div>
   );
 }
 
-function EdgeHeart({
-  position,
+function CornerHeart({
+  corner,
   pink,
   gold,
 }: {
-  position: "top" | "bottom" | "left" | "right";
+  corner: "tl" | "tr" | "bl" | "br";
   pink: string;
   gold: string;
 }) {
-  // Heart size — small (~half of the previous corner hearts)
+  // Small heart size
   const size = "clamp(18px, 3.2vmin, 34px)";
 
-  const base: CSSProperties = {
-    position: "absolute",
-    width: size,
-    height: size,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+  const offsets: Record<typeof corner, CSSProperties> = {
+    tl: { top: 0, left: 0, transform: "translate(-25%, -25%)" },
+    tr: { top: 0, right: 0, transform: "translate(25%, -25%)" },
+    bl: { bottom: 0, left: 0, transform: "translate(-25%, 25%)" },
+    br: { bottom: 0, right: 0, transform: "translate(25%, 25%)" },
   };
 
-  const map: Record<typeof position, CSSProperties> = {
-    top: { ...base, top: 0, left: "50%", transform: "translate(-50%, -45%)" },
-    bottom: { ...base, bottom: 0, left: "50%", transform: "translate(-50%, 45%)" },
-    left: { ...base, left: 0, top: "50%", transform: "translate(-45%, -50%)" },
-    right: { ...base, right: 0, top: "50%", transform: "translate(45%, -50%)" },
-  };
-
-  const gradId = `heart-grad-${position}`;
+  const gradId = `heart-grad-${corner}`;
 
   return (
-    <div style={map[position]}>
+    <div
+      style={{
+        position: "absolute",
+        width: size,
+        height: size,
+        ...offsets[corner],
+      }}
+    >
       <svg viewBox="0 0 24 24" width="100%" height="100%">
         <defs>
           <radialGradient id={gradId} cx="35%" cy="30%" r="70%">
@@ -193,3 +191,4 @@ function EdgeHeart({
     </div>
   );
 }
+
