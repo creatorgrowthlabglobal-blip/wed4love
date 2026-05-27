@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
-import framePng from "@/assets/pink-hearts-frame.png";
+
 import QuizExperience from "@/components/viewer/QuizExperience";
 import BalloonGame from "@/components/viewer/BalloonGame";
 import VideoPlayer from "@/components/viewer/VideoPlayer";
@@ -133,23 +133,8 @@ const ViewLetter = () => {
             onLetterOpen={startMusic}
             onContinue={advance}
           />
-          {/* Decorative pink-hearts lace frame overlay (border only — center is masked out) */}
-          <div
-            aria-hidden
-            style={{
-              position: "fixed",
-              inset: 0,
-              pointerEvents: "none",
-              zIndex: 200,
-              backgroundImage: `url(${framePng})`,
-              backgroundSize: "100% 100%",
-              backgroundRepeat: "no-repeat",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
-              maskImage:
-                "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
-            }}
-          />
+          <FramedScene overlay />
+
         </div>
       )}
       {stage === "quiz" && (
