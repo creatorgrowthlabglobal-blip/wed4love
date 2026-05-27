@@ -58,7 +58,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
 }
 
 /** The decorative border itself — absolutely positioned, purely CSS + SVG. */
-function FrameDecoration() {
+function FrameDecoration({ overlay = false }: { overlay?: boolean }) {
   const pink = "#E48BA8";
   const deepPink = "#C9628A";
   const gold = "#E9C77B";
@@ -66,6 +66,36 @@ function FrameDecoration() {
 
   // Inset of the border from the viewport edge (responsive).
   const inset = "clamp(10px, 2.5vmin, 28px)";
+
+  if (overlay) {
+    // Hollow decorative ring — transparent center so underlying scene shows through.
+    return (
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset,
+          pointerEvents: "none",
+          zIndex: 0,
+          borderRadius: "clamp(18px, 3vmin, 36px)",
+          boxShadow: [
+            `inset 0 0 0 clamp(8px, 2vmin, 22px) ${pink}`,
+            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 4px) ${cream}`,
+            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 5px) ${gold}`,
+          ].join(", "),
+        }}
+      >
+        {[
+          { top: 0, left: 0 },
+          { top: 0, right: 0 },
+          { bottom: 0, left: 0 },
+          { bottom: 0, right: 0 },
+        ].map((pos, i) => (
+          <CornerHeart key={i} style={pos} pink={deepPink} gold={gold} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div
