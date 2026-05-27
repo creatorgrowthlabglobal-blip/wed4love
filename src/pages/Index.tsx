@@ -387,17 +387,7 @@ const Index = () => {
             {previewStage === "envelope" && (
               <div key="p-envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
                 <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
-                <div
-                  aria-hidden
-                  style={{
-                    position: "fixed", inset: 0, pointerEvents: "none", zIndex: 200,
-                    backgroundImage: `url(${framePng})`,
-                    backgroundSize: "100% 100%",
-                    backgroundRepeat: "no-repeat",
-                    WebkitMaskImage: "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
-                    maskImage: "radial-gradient(ellipse 55% 50% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 75%, black 100%)",
-                  }}
-                />
+                <FramedScene overlay />
               </div>
             )}
           </>
