@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
-import { PenLine } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+
+const TEXT_DARK = "#2C2A25";
+const TEXT_MID = "#6B6456";
 
 interface LetterWritingProps {
   letterText: string;
@@ -18,34 +20,55 @@ const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingPr
       transition={{ duration: 0.5 }}
       className="max-w-2xl mx-auto"
     >
-      <div className="text-center mb-8">
-        <p className="font-display text-xl text-primary mb-1">Let your heart speak</p>
-        <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.125rem", color: "#5C1832", marginBottom: "0.25rem", fontStyle: "italic", opacity: 0.85 }}>
+          Let your heart speak
+        </p>
+        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 700, color: TEXT_DARK, marginBottom: "0.5rem" }}>
           Write Your Letter
         </h2>
-        <p className="font-body text-base text-muted-foreground">
+        <p style={{ color: TEXT_MID, fontSize: "1rem" }}>
           Pour your feelings onto this page — every word matters
         </p>
       </div>
 
-      {/* Letter paper editor */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <PenLine className="w-5 h-5 text-primary" />
-          <span className="font-heading text-base font-semibold text-foreground">Your Heartfelt Words</span>
-        </div>
-        <div className="letter-paper rounded-2xl p-6">
-          <Textarea
-            value={letterText}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="My dearest, I want you to know..."
-            className="bg-transparent border-none font-handwritten text-xl sm:text-2xl min-h-[260px] resize-y leading-[2.2] focus:ring-0 focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50 placeholder:font-handwritten placeholder:text-lg"
-            style={{
-              backgroundImage: "repeating-linear-gradient(transparent, transparent 43px, hsl(var(--border) / 0.3) 43px, hsl(var(--border) / 0.3) 44px)",
-              backgroundAttachment: "local",
-            }}
-          />
-        </div>
+      {/* Parchment paper — matches final letter */}
+      <div
+        style={{
+          background: "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
+          borderRadius: "6px",
+          padding: "clamp(1.75rem, 5vw, 2.75rem)",
+          boxShadow: "0 24px 60px rgba(90,70,110,0.28), 0 8px 20px rgba(90,70,110,0.14), inset 0 0 70px rgba(220,195,150,0.22)",
+          position: "relative",
+          marginBottom: "1.75rem",
+          border: "1px solid rgba(160,120,70,0.25)",
+        }}
+      >
+        <div style={{ position: "absolute", inset: "10px", border: "1px solid rgba(160,120,70,0.4)", borderRadius: "4px", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: "16px", border: "1px solid rgba(160,120,70,0.22)", borderRadius: "3px", pointerEvents: "none" }} />
+
+        <Textarea
+          value={letterText}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="My dearest, I want you to know..."
+          style={{
+            background: "transparent",
+            border: "none",
+            fontFamily: "'Caveat', 'Dancing Script', cursive",
+            fontSize: "clamp(18px, 2.6vw, 22px)",
+            color: TEXT_DARK,
+            lineHeight: "1.8",
+            minHeight: "280px",
+            resize: "vertical",
+            padding: "0.75rem 0.25rem",
+            outline: "none",
+            boxShadow: "none",
+            width: "100%",
+            backgroundImage: "repeating-linear-gradient(transparent, transparent 43px, rgba(160,120,70,0.18) 43px, rgba(160,120,70,0.18) 44px)",
+            backgroundAttachment: "local",
+          }}
+          className="focus:ring-0 focus-visible:ring-0 focus:outline-none placeholder:opacity-40"
+        />
       </div>
 
       <div className="flex justify-between">
@@ -53,7 +76,18 @@ const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingPr
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           onClick={onBack}
-          className="px-6 py-3.5 bg-secondary text-secondary-foreground font-heading text-base font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card"
+          style={{
+            padding: "0.875rem 2rem",
+            background: "rgba(255,255,255,0.45)",
+            color: TEXT_DARK,
+            border: "1px solid rgba(160,120,70,0.35)",
+            borderRadius: "0.75rem",
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontWeight: 600,
+            fontSize: "1rem",
+            cursor: "pointer",
+            backdropFilter: "blur(8px)",
+          }}
         >
           ← Go Back
         </motion.button>
@@ -61,7 +95,18 @@ const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingPr
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
-          className="btn-glow px-10 py-3.5 bg-primary text-primary-foreground font-heading text-base font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow"
+          style={{
+            padding: "0.875rem 2rem",
+            background: "linear-gradient(135deg, #9E2550 0%, #7A1535 100%)",
+            color: "white",
+            border: "none",
+            borderRadius: "0.75rem",
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontWeight: 600,
+            fontSize: "1rem",
+            cursor: "pointer",
+            boxShadow: "0 8px 24px rgba(122,21,53,0.35)",
+          }}
         >
           Continue →
         </motion.button>

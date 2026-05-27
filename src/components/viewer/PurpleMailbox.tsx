@@ -228,53 +228,93 @@ const SwingDoor = ({ open }: { open:boolean }) => {
   );
 };
 
-/* ───────────────────── Rising envelope (Template 2 style) ───────────────────── */
+/* ───────────────────── Rising envelope — ATM slot style ───────────────────── */
 const RisingEnvelope = ({ show, delivered }: { show:boolean; delivered:boolean }) => (
   <AnimatePresence>
     {show && (
       <motion.div
-        initial={{y:30, opacity:0, scale:0.85}}
-        animate={delivered ? {y:-220, opacity:0, scale:1.1} : {y:-70, opacity:1, scale:1}}
-        exit={{opacity:0}}
+        initial={{ scaleY: 0.04, y: 0, opacity: 1 }}
+        animate={delivered
+          ? { scaleY: 1, y: -280, opacity: 0 }
+          : { scaleY: 1, y: 72, opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={delivered
-          ? {type:"spring",stiffness:75,damping:16}
-          : {type:"spring",stiffness:90,damping:20,delay:0.35}}
+          ? { type:"spring", stiffness:75, damping:16 }
+          : {
+              scaleY: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+              y:      { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 },
+            }}
         style={{
-          position:"absolute", left:"50%", top:"36%",
+          position:"absolute", left:"50%", top:"31%",
           marginLeft:-65,
-          width:130, height:88, zIndex:20,
-          pointerEvents:"none",
+          width:130, height:87, zIndex:20,
+          transformOrigin:"50% 0%",
+          cursor:"default",
+          filter:"drop-shadow(0 10px 22px rgba(100,40,70,0.30))",
         }}
       >
-        {/* Body — Template 2 style: pink with black outline */}
+        {/* Envelope body — refined */}
         <div style={{
-          width:130, height:88, borderRadius:5,
-          background:"linear-gradient(175deg, #FBF6ED 0%, #F5C9DA 55%, #EDB6CC 100%)",
-          border:"2.5px solid #1a1a1a",
-          boxShadow:"0 10px 26px rgba(0,0,0,0.24)",
-          position:"relative", overflow:"hidden",
-          boxSizing:"border-box",
+          position:"absolute", inset:0, borderRadius:4,
+          background:"#FFF0F4",
+          border:"1.5px solid rgba(160,80,110,0.55)",
+          overflow:"hidden",
+          boxShadow:"inset 0 0 0 1px rgba(255,255,255,0.6)",
         }}>
-          <svg style={{position:"absolute",inset:0,width:"100%",height:"100%"}} viewBox="0 0 130 88">
-            <line x1="0"   y1="88" x2="65" y2="46" stroke="rgba(26,18,36,0.14)" strokeWidth="1.2"/>
-            <line x1="130" y1="88" x2="65" y2="46" stroke="rgba(26,18,36,0.14)" strokeWidth="1.2"/>
+          <svg viewBox="0 0 360 240" style={{position:"absolute",inset:0,width:"100%",height:"100%"}} preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="rmLeft" x1="0%" y1="50%" x2="100%" y2="50%">
+                <stop offset="0%" stopColor="#E0A8C0"/><stop offset="100%" stopColor="#F0CAD8"/>
+              </linearGradient>
+              <linearGradient id="rmRight" x1="100%" y1="50%" x2="0%" y2="50%">
+                <stop offset="0%" stopColor="#E0A8C0"/><stop offset="100%" stopColor="#F5D5E5"/>
+              </linearGradient>
+              <linearGradient id="rmBottom" x1="50%" y1="100%" x2="50%" y2="0%">
+                <stop offset="0%" stopColor="#D9A0BC"/><stop offset="100%" stopColor="#EDB8CE"/>
+              </linearGradient>
+            </defs>
+            <polygon points="0,240 360,240 180,120" fill="url(#rmBottom)"/>
+            <polygon points="0,0 0,240 180,120" fill="url(#rmLeft)"/>
+            <polygon points="360,0 360,240 180,120" fill="url(#rmRight)"/>
+            <line x1="0" y1="0" x2="180" y2="120" stroke="rgba(140,70,100,0.35)" strokeWidth="1.5"/>
+            <line x1="360" y1="0" x2="180" y2="120" stroke="rgba(140,70,100,0.35)" strokeWidth="1.5"/>
+            <rect x="8" y="8" width="344" height="224" fill="none" stroke="rgba(190,120,150,0.45)" strokeWidth="1" rx="3"/>
+            {/* Stamp */}
+            <g transform="translate(280,16)">
+              <rect width="60" height="70" fill="#FFF8F2" stroke="rgba(180,110,140,0.7)" strokeWidth="1.2" rx="2"/>
+              <path d="M30 51 C22 43,19 37,21 31.5 C23 27,27.5 26.5,30 30.5 C32.5 26.5,37 27,39 31.5 C41 37,38 43,30 51Z" fill="#C0607A" opacity="0.8"/>
+            </g>
+            {/* Corner roses */}
+            <g transform="translate(26,210)">
+              <ellipse cx="0" cy="-7" rx="3" ry="4.5" fill="#E8B0C8" opacity="0.6"/>
+              <ellipse cx="7" cy="0" rx="4.5" ry="3" fill="#E8B0C8" opacity="0.6" transform="rotate(90 7 0)"/>
+              <circle cx="0" cy="0" r="3.5" fill="#F0C5D5" opacity="0.8"/>
+            </g>
+            <g transform="translate(334,210)">
+              <ellipse cx="0" cy="-7" rx="3" ry="4.5" fill="#E8B0C8" opacity="0.6"/>
+              <ellipse cx="-7" cy="0" rx="4.5" ry="3" fill="#E8B0C8" opacity="0.6" transform="rotate(90 -7 0)"/>
+              <circle cx="0" cy="0" r="3.5" fill="#F0C5D5" opacity="0.8"/>
+            </g>
           </svg>
-          {/* Wax seal */}
-          <div style={{
-            position:"absolute", bottom:10, left:"50%", transform:"translateX(-50%)",
-            width:26, height:26, borderRadius:"50%",
-            background:"radial-gradient(circle at 35% 30%, #FF8FA0, #D8304A, #7A1020)",
-            border:"1.5px solid #1a1a1a",
-            display:"flex", alignItems:"center", justifyContent:"center",
-            fontSize:11, color:"rgba(255,255,255,0.92)",
-          }}>♥</div>
         </div>
         {/* Flap */}
-        <div style={{position:"absolute",top:0,left:0,right:0,height:46,overflow:"hidden",pointerEvents:"none"}}>
-          <svg viewBox="0 0 130 44" style={{width:130,height:44}}>
-            <polygon points="0,0 130,0 65,44"
-              fill="#F5C9DA" stroke="#1a1a1a" strokeWidth="2.2" strokeLinejoin="round"/>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:"50%",zIndex:5}}>
+          <svg viewBox="0 0 360 180" style={{width:"100%",height:"100%",display:"block",overflow:"visible"}} preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="rmFlap" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stopColor="#F8DDE8"/><stop offset="100%" stopColor="#EDB8CE"/>
+              </linearGradient>
+            </defs>
+            <polygon points="0,0 360,0 180,180" fill="url(#rmFlap)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
           </svg>
+          {/* Wax seal */}
+          <div style={{position:"absolute",bottom:-14,left:"50%",width:28,height:28,marginLeft:-14,filter:"drop-shadow(0 3px 6px rgba(70,10,35,0.4))"}}>
+            <svg viewBox="0 0 72 72" style={{width:"100%",height:"100%"}}>
+              <circle cx="36" cy="36" r="32" fill="#8B1A40"/>
+              <circle cx="36" cy="36" r="23" fill="#7A1535"/>
+              <path d="M36 50 C24 41,20 33,23 26.5 C25.5 21.5,31 21,36 26 C41 21,46.5 21.5,49 26.5 C52 33,48 41,36 50Z" fill="#FFE4EF"/>
+            </svg>
+          </div>
         </div>
       </motion.div>
     )}
@@ -372,14 +412,15 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
   const isOpen    = state === "open" || state === "delivered";
   const delivered = state === "delivered";
 
-  const handleClick = () => {
+  const handleMailboxClick = () => {
     if (state !== "idle") return;
     sounds.birdsFly();
     setState("opening");
     timersRef.current = [
-      window.setTimeout(() => setState("open"),                         800),
-      window.setTimeout(() => { setState("delivered"); setZoomed(true); }, 2500),
-      window.setTimeout(() => onContinue?.(),                           3400),
+      window.setTimeout(() => setState("open"), 800),
+      // envelope fully risen ~600ms after "open"; wait 700ms then auto-advance
+      window.setTimeout(() => { setState("delivered"); setZoomed(true); }, 1500),
+      window.setTimeout(() => onContinue?.(), 2400),
     ];
   };
 
@@ -389,7 +430,7 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
       style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
     >
       <motion.div
-        onClick={handleClick}
+        onClick={handleMailboxClick}
         whileHover={{ scale: isOpen ? 1 : 1.02 }}
         whileTap={{  scale: isOpen ? 1 : 0.98 }}
         animate={isOpen ? { y:[0,-2,0] } : { y:[0,-5,0] }}
@@ -428,12 +469,11 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
                     fill="url(#lavMetalDark)" stroke={STROKE} strokeWidth="2" strokeLinejoin="round"/>
                 </g>
                 <Roof/>
-                <Interior open={isOpen}/>
+                <Interior open={false}/>
               </g>
 
-              {/* Door and sill sit OUTSIDE the body shadow filter
-                  so the foreignObject CSS 3D transforms work correctly */}
-              <SwingDoor open={isOpen}/>
+              {/* Door stays closed — envelope comes out of the slot */}
+              <SwingDoor open={false}/>
               <HingeSill/>
             </motion.g>
 
@@ -443,59 +483,107 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
               <BirdRight/>
             </motion.g>
 
-            {!isOpen && <Caption senderName={senderName}/>}
+            {state === "idle" && <Caption senderName={senderName}/>}
           </svg>
         </motion.div>
 
         {/* Rising envelope — appears from cavity once door is open */}
         <RisingEnvelope show={isOpen} delivered={delivered}/>
 
-        {/* Full-screen handoff envelope */}
+        {/* Full-screen handoff — refined envelope zooms in */}
         <AnimatePresence>
           {delivered && (
             <div style={{
-              position:"fixed", top:"50%", left:"50%",
-              transform:"translate(-50%,-50%)",
-              width:"min(360px,90vw)", aspectRatio:"360/240",
+              position:"fixed", inset:0,
+              display:"flex", alignItems:"center", justifyContent:"center",
               pointerEvents:"none", zIndex:60,
+              background:"radial-gradient(ellipse at 50% 30%, #DCCFE6 0%, #C4B3D6 100%)",
             }}>
               <motion.div
-                key="shared-envelope"
-                initial={{scale:0.4,opacity:0}}
-                animate={{scale:zoomed?1:0.4,opacity:1}}
+                key="handoff-envelope"
+                initial={{scale:0.35, opacity:0}}
+                animate={{scale:zoomed?1:0.35, opacity:1}}
                 transition={{
-                  scale:{type:"spring",stiffness:100,damping:20,mass:1},
-                  opacity:{duration:0.35,ease:"easeOut"},
+                  scale:{type:"spring",stiffness:90,damping:20,mass:1},
+                  opacity:{duration:0.3,ease:"easeOut"},
                 }}
                 style={{
-                  position:"absolute", inset:0,
-                  transformOrigin:"50% 50%",
-                  perspective:"800px",
-                  willChange:"transform",
+                  width:"min(360px,90vw)", aspectRatio:"360/240",
+                  position:"relative",
+                  filter:"drop-shadow(0 28px 48px rgba(100,40,70,0.30))",
                 }}
               >
-                <div style={{
-                  position:"absolute", inset:"8px 12px -12px 12px", borderRadius:6,
-                  background:"rgba(120,110,90,0.18)",
-                  boxShadow:"0 22px 34px rgba(120,110,90,0.22)",
-                  zIndex:0,
-                }}/>
-                <div style={{
-                  position:"absolute", inset:0, borderRadius:6,
-                  background:"#F5C9DA",
-                  border:"2.5px solid #1a1a1a",
-                  overflow:"hidden", zIndex:1,
-                }}/>
-                <div style={{
-                  position:"absolute", top:0, left:0, width:"100%", height:"50%",
-                  zIndex:10, transformOrigin:"top center",
-                }}>
-                  <svg viewBox="0 0 360 180"
-                    style={{width:"100%",height:"100%",display:"block",overflow:"visible"}}
-                    preserveAspectRatio="none">
-                    <polygon points="0,0 360,0 180,180"
-                      fill="#F5C9DA" stroke="#1a1a1a" strokeWidth="3" strokeLinejoin="round"/>
+                {/* Body */}
+                <div style={{position:"absolute",inset:0,borderRadius:6,background:"#FFF0F4",border:"2px solid rgba(160,80,110,0.55)",overflow:"hidden",boxShadow:"inset 0 0 0 1px rgba(255,255,255,0.6)"}}>
+                  <svg viewBox="0 0 360 240" style={{position:"absolute",inset:0,width:"100%",height:"100%"}} preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="hoLeft" x1="0%" y1="50%" x2="100%" y2="50%"><stop offset="0%" stopColor="#E0A8C0"/><stop offset="100%" stopColor="#F0CAD8"/></linearGradient>
+                      <linearGradient id="hoRight" x1="100%" y1="50%" x2="0%" y2="50%"><stop offset="0%" stopColor="#E0A8C0"/><stop offset="100%" stopColor="#F5D5E5"/></linearGradient>
+                      <linearGradient id="hoBottom" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stopColor="#D9A0BC"/><stop offset="100%" stopColor="#EDB8CE"/></linearGradient>
+                      <linearGradient id="hoSeamL" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="rgba(100,30,60,0.18)"/><stop offset="100%" stopColor="rgba(100,30,60,0)"/></linearGradient>
+                      <linearGradient id="hoSeamR" x1="100%" y1="0%" x2="0%" y2="0%"><stop offset="0%" stopColor="rgba(100,30,60,0.18)"/><stop offset="100%" stopColor="rgba(100,30,60,0)"/></linearGradient>
+                    </defs>
+                    <polygon points="0,240 360,240 180,120" fill="url(#hoBottom)"/>
+                    <polygon points="0,0 0,240 180,120" fill="url(#hoLeft)"/>
+                    <polygon points="360,0 360,240 180,120" fill="url(#hoRight)"/>
+                    <polygon points="0,0 0,240 22,218 22,22" fill="url(#hoSeamL)" opacity="0.7"/>
+                    <polygon points="360,0 360,240 338,218 338,22" fill="url(#hoSeamR)" opacity="0.7"/>
+                    <line x1="0" y1="0" x2="180" y2="120" stroke="rgba(140,70,100,0.35)" strokeWidth="1.2"/>
+                    <line x1="360" y1="0" x2="180" y2="120" stroke="rgba(140,70,100,0.35)" strokeWidth="1.2"/>
+                    <rect x="8" y="8" width="344" height="224" fill="none" stroke="rgba(190,120,150,0.50)" strokeWidth="0.9" rx="3"/>
+                    <rect x="12" y="12" width="336" height="216" fill="none" stroke="rgba(220,165,185,0.35)" strokeWidth="0.6" rx="2"/>
+                    <g transform="translate(280,16)">
+                      <rect width="60" height="70" fill="#FFF8F2" stroke="rgba(180,110,140,0.70)" strokeWidth="1.2" rx="2"/>
+                      <rect x="5" y="5" width="50" height="60" fill="none" stroke="rgba(200,140,160,0.55)" strokeWidth="0.7" strokeDasharray="2.5,2" rx="1"/>
+                      <path d="M30 51 C22 43,19 37,21 31.5 C23 27,27.5 26.5,30 30.5 C32.5 26.5,37 27,39 31.5 C41 37,38 43,30 51Z" fill="#C0607A" opacity="0.80"/>
+                    </g>
+                    <g transform="translate(26,210)">
+                      <ellipse cx="0" cy="-8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55"/>
+                      <ellipse cx="8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(90 8 0)"/>
+                      <ellipse cx="0" cy="8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55" transform="rotate(180)"/>
+                      <ellipse cx="-8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(270 -8 0)"/>
+                      <circle cx="0" cy="0" r="4" fill="#F0C5D5" opacity="0.75"/>
+                      <circle cx="0" cy="0" r="1.8" fill="#C88090" opacity="0.60"/>
+                    </g>
+                    <g transform="translate(334,210)">
+                      <ellipse cx="0" cy="-8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55"/>
+                      <ellipse cx="8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(90 8 0)"/>
+                      <ellipse cx="0" cy="8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55" transform="rotate(180)"/>
+                      <ellipse cx="-8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(270 -8 0)"/>
+                      <circle cx="0" cy="0" r="4" fill="#F0C5D5" opacity="0.75"/>
+                      <circle cx="0" cy="0" r="1.8" fill="#C88090" opacity="0.60"/>
+                    </g>
                   </svg>
+                </div>
+                {/* Flap */}
+                <div style={{position:"absolute",inset:0,perspective:"600px",transformStyle:"preserve-3d",zIndex:10}}>
+                  <div style={{position:"absolute",top:0,left:0,width:"100%",height:"50%",transformOrigin:"top center",transformStyle:"preserve-3d"}}>
+                    <svg viewBox="0 0 360 180" style={{width:"100%",height:"100%",display:"block",overflow:"visible"}} preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="hoFlap" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stopColor="#F8DDE8"/><stop offset="100%" stopColor="#EDB8CE"/></linearGradient>
+                      </defs>
+                      <polygon points="0,0 360,0 180,180" fill="url(#hoFlap)" stroke="rgba(140,70,100,0.45)" strokeWidth="2" strokeLinejoin="round"/>
+                      <line x1="20" y1="4" x2="340" y2="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5"/>
+                    </svg>
+                    {/* Wax seal */}
+                    <div style={{position:"absolute",bottom:-36,left:"50%",width:72,height:72,marginLeft:-36,filter:"drop-shadow(0 5px 10px rgba(70,10,35,0.40))"}}>
+                      <svg viewBox="0 0 72 72" style={{width:"100%",height:"100%",display:"block"}}>
+                        {Array.from({length:16}).map((_,i)=>{
+                          const a=(i*360)/16, r1=33, r2=36;
+                          const x1=36+r1*Math.cos((a*Math.PI)/180), y1=36+r1*Math.sin((a*Math.PI)/180);
+                          const x2=36+r2*Math.cos(((a-5)*Math.PI)/180), y2=36+r2*Math.sin(((a-5)*Math.PI)/180);
+                          const x3=36+r2*Math.cos(((a+5)*Math.PI)/180), y3=36+r2*Math.sin(((a+5)*Math.PI)/180);
+                          return <polygon key={i} points={`${x1},${y1} ${x2},${y2} ${x3},${y3}`} fill="#7A1535"/>;
+                        })}
+                        <circle cx="36" cy="36" r="32" fill="#8B1A40"/>
+                        <circle cx="36" cy="36" r="28" fill="#9E2550"/>
+                        <circle cx="36" cy="36" r="25" fill="none" stroke="#F8D8E8" strokeWidth="1" opacity="0.55"/>
+                        <circle cx="36" cy="36" r="23" fill="#7A1535"/>
+                        <path d="M36 50 C24 41,20 33,23 26.5 C25.5 21.5,31 21,36 26 C41 21,46.5 21.5,49 26.5 C52 33,48 41,36 50Z" fill="#FFE4EF"/>
+                        <ellipse cx="30" cy="30" rx="4" ry="2.5" fill="white" opacity="0.22" transform="rotate(-25 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>

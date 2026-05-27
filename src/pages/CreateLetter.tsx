@@ -68,7 +68,9 @@ const CreateLetter = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-blush relative">
+    <div
+      className="min-h-screen gradient-blush relative"
+    >
       <Header />
       <FloatingHearts count={5} />
       <main className="relative z-10 pt-28 pb-20 px-6">
