@@ -112,11 +112,11 @@ function FrameDecoration() {
           </pattern>
         </defs>
         {/* Top & bottom bands — inset from edges so hearts don't touch frame */}
-        <rect x="2" y="1.2" width="96" height="3.2" fill="url(#lace-hearts)" />
-        <rect x="2" y="95.6" width="96" height="3.2" fill="url(#lace-hearts)" />
-        {/* Left & right bands */}
-        <rect x="1.2" y="2" width="2.4" height="96" fill="url(#lace-hearts)" />
-        <rect x="96.4" y="2" width="2.4" height="96" fill="url(#lace-hearts)" />
+        <rect x="2" y="1" width="96" height="5" fill="url(#lace-hearts)" />
+        <rect x="2" y="94" width="96" height="5" fill="url(#lace-hearts)" />
+        {/* Left & right bands — full pattern width so hearts aren't clipped */}
+        <rect x="1" y="2" width="5" height="96" fill="url(#lace-hearts)" />
+        <rect x="94" y="2" width="5" height="96" fill="url(#lace-hearts)" />
       </svg>
 
       {/* Gold piping */}
