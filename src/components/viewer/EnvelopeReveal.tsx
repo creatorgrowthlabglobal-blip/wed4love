@@ -121,15 +121,13 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
             <stop offset="100%" stopColor="#EDB8CE" />
           </linearGradient>
         </defs>
-        <polygon
-          points="0,0 360,0 180,180"
+        <path
+          d="M 0,0 L 180,180 L 360,0"
           fill="url(#flapGrad)"
           stroke="rgba(140,70,100,0.45)"
           strokeWidth="2"
           strokeLinejoin="round"
         />
-        {/* Subtle inner highlight near top edge */}
-        <line x1="20" y1="4" x2="340" y2="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
       </svg>
       <SealSVG />
     </motion.div>
@@ -141,6 +139,19 @@ type Phase = "idle" | "opening" | "open";
 export default function EnvelopeReveal({ receiverName, senderName, letterText, images, onContinue, onLetterOpen }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
+  const [heartBurst, setHeartBurst] = useState(false);
+
+  const HEART_DIRS = [
+    { x: -158, y: -272 },  // upper-left
+    { x:    0, y: -312 },  // upper-center
+    { x:  158, y: -272 },  // upper-right
+    { x: -158, y:  158 },  // lower-left
+    { x:    0, y:  172 },  // lower-center
+    { x:  158, y:  158 },  // lower-right
+  ];
+
+  const HEART_STROKE = "#C9607A";
+  const HEART_FILL   = "#F4CADB";
 
   // Once the flap finishes rotating open (~1.5s after click), drop it behind
   // the body so the letter can rise above it. Driven by a real timeout so the
@@ -172,8 +183,12 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
 
   const handleClick = () => {
     if (phase === "idle") {
-      sounds.envelopeOpen();
-      setPhase("opening");
+      setHeartBurst(true);
+      // Wait for all hearts to land before opening the envelope
+      setTimeout(() => {
+        sounds.envelopeOpen();
+        setPhase("opening");
+      }, 1000);
       return;
     }
     if (phase === "opening") {
@@ -259,7 +274,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               animate={{ opacity: [0.5, 0.85, 0.5] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
             >
-              {phase === "idle" ? `For ${receiverName}` : "Click to read the letter"}
+              {phase === "idle" ? "A letter for you" : "Click to read the letter"}
             </motion.p>
 
             {/* Envelope — fixed/centered wrapper (never animated) so the
@@ -290,6 +305,35 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 transformOrigin: "50% 50%",
               }}
             >
+              {/* Heart burst on click */}
+              {heartBurst && HEART_DIRS.map((dir, i) => (
+                <motion.div
+                  key={`hb-${i}`}
+                  initial={{ opacity: 0, x: 0, y: 0, scale: 0.3 }}
+                  animate={{ opacity: 1, x: dir.x, y: dir.y, scale: 1 }}
+                  transition={{ duration: 0.6, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    position: "absolute",
+                    top: "50%", left: "50%",
+                    marginTop: -14, marginLeft: -14,
+                    width: 28, height: 28,
+                    pointerEvents: "none",
+                    zIndex: 50,
+                  }}
+                >
+                  <svg viewBox="0 0 28 28" width="28" height="28" style={{ display: "block" }}>
+                    <path
+                      d="M14 24 C14 24 3 16.5 3 9.5 C3 6.4 5.4 4 8.5 4 C10.5 4 12.2 5.1 13.1 6.7 C13.5 7.4 14.5 7.4 14.9 6.7 C15.8 5.1 17.5 4 19.5 4 C22.6 4 25 6.4 25 9.5 C25 16.5 14 24 14 24 Z"
+                      fill={HEART_FILL}
+                      stroke={HEART_STROKE}
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </motion.div>
+              ))}
+
               {/* Envelope body */}
               <div
                 style={{
@@ -385,48 +429,15 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                   </g>
                 </svg>
 
-                {/* Recipient name — centered on envelope body (below the flap crease) */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingTop: "30%",
-                    gap: "4px",
-                    pointerEvents: "none",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Caveat', 'Dancing Script', cursive",
-                      fontSize: "clamp(26px, 8vw, 42px)",
-                      color: "#5C1832",
-                      letterSpacing: "0.02em",
-                      lineHeight: 1.1,
-                      textShadow: "0 1px 6px rgba(92,24,50,0.20)",
-                    }}
-                  >
-                    {receiverName}
-                  </span>
-                  {/* Decorative underline flourish */}
-                  <svg viewBox="0 0 120 12" style={{ width: "clamp(80px, 22vw, 120px)", marginTop: "2px", opacity: 0.35 }}>
-                    <path d="M10 6 Q 30 2, 60 6 Q 90 10, 110 6" fill="none" stroke="#9B5570" strokeWidth="1" />
-                    <circle cx="4" cy="6" r="2" fill="#9B5570" />
-                    <circle cx="116" cy="6" r="2" fill="#9B5570" />
-                  </svg>
-                </div>
               </div>
 
               {/* Letter peeking while opening */}
               {phase === "opening" && (
                 <motion.div
                   initial={{ y: 0, zIndex: 0 }}
-                  animate={{ y: -90, zIndex: 5 }}
+                  animate={{ y: -155, zIndex: 5 }}
                   transition={{
-                    y: { delay: 1.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] },
+                    y: { delay: 1.6, duration: 1.1, ease: [0.22, 1, 0.36, 1] },
                     zIndex: { delay: 1.5, duration: 0 },
                   }}
                   style={{
@@ -439,15 +450,21 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                     borderRadius: "3px",
                     boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
                     display: "flex",
-                    alignItems: "center",
+                    alignItems: "flex-start",
                     justifyContent: "center",
                     overflow: "hidden",
                   }}
                 >
-                  <div style={{ padding: "16px", textAlign: "center" }}>
-                    <div style={{ width: 60, height: 3, background: TEXT_MID, opacity: 0.2, borderRadius: 2, margin: "0 auto 8px" }} />
-                    <div style={{ width: 80, height: 3, background: TEXT_MID, opacity: 0.15, borderRadius: 2, margin: "0 auto 8px" }} />
-                    <div style={{ width: 50, height: 3, background: TEXT_MID, opacity: 0.1, borderRadius: 2, margin: "0 auto" }} />
+                  <div style={{ padding: "14px 16px 0", textAlign: "center" }}>
+                    <span style={{
+                      fontFamily: "'Caveat', 'Dancing Script', cursive",
+                      fontSize: "clamp(16px, 4.5vw, 21px)",
+                      color: TEXT_DARK,
+                      opacity: 0.75,
+                      letterSpacing: "0.03em",
+                    }}>
+                      For my special person
+                    </span>
                   </div>
                 </motion.div>
               )}
