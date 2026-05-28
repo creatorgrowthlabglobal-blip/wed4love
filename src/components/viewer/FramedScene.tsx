@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useCallback } from "react";
 import frameImg from "@/assets/letter-frame.png";
 
 interface FramedSceneProps {
@@ -18,6 +18,10 @@ interface FramedSceneProps {
  *  - overlay: just the frame artwork on top of an existing scene
  */
 export default function FramedScene({ children, overlay = false }: FramedSceneProps) {
+  const [loaded, setLoaded] = useState(false);
+
+  const handleLoad = useCallback(() => setLoaded(true), []);
+
   return (
     <div
       style={{
@@ -34,11 +38,29 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         overflow: "hidden",
       }}
     >
+      {/* Skeleton shimmer placeholder while frame loads */}
+      {!loaded && !overlay && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, #FDF1F5 25%, #FCE8EF 50%, #FDF1F5 75%)",
+            backgroundSize: "200% 100%",
+            animation: "shimmer 1.4s ease-in-out infinite",
+            zIndex: 0,
+          }}
+        />
+      )}
+
       {/* Decorative watercolor frame */}
       <img
         src={frameImg}
         alt=""
         aria-hidden
+        loading="eager"
+        decoding="async"
+        onLoad={handleLoad}
         style={{
           position: "absolute",
           inset: 0,
@@ -47,6 +69,8 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
           objectFit: "fill",
           pointerEvents: "none",
           zIndex: overlay ? 0 : 1,
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 0.6s ease-out",
           filter: overlay
             ? "drop-shadow(0 10px 24px rgba(160,80,110,0.18))"
             : "none",
@@ -72,6 +96,10 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
           </div>
         </div>
       )}
+
+      {/* Shimmer keyframes */}
+      <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
     </div>
   );
 }
+
