@@ -124,8 +124,6 @@ const ViewLetter = () => {
         </FramedScene>
       )}
       {stage === "envelope" && (
-        <div key="envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
-      {stage === "envelope" && (
         <FramedScene key="envelope">
           <EnvelopeReveal
             receiverName={letter.receiverName || "Someone Special"}
@@ -137,6 +135,7 @@ const ViewLetter = () => {
           />
         </FramedScene>
       )}
+      {stage === "quiz" && (
         <QuizExperience key="quiz" questions={letter.quiz} onComplete={advance} />
       )}
       {stage === "balloons" && (

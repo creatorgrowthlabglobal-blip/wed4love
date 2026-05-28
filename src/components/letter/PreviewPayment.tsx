@@ -163,8 +163,6 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
               </FramedScene>
             )}
             {previewStage === "envelope" && (
-              <div key="p-envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
-            {previewStage === "envelope" && (
               <FramedScene key="p-envelope">
                 <EnvelopeReveal
                   receiverName={letterData.receiverName}
