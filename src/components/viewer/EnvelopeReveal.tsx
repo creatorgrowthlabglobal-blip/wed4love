@@ -210,15 +210,17 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
       animate={{ opacity: 1 }}
       transition={{ duration: 0 }}
       style={{
-        position: "fixed",
+        position: "absolute",
         inset: 0,
         zIndex: 50,
-        minHeight: "100vh",
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: phase === "open" ? "flex-start" : "center",
         background: "radial-gradient(ellipse at 50% 30%, #DCCFE6 0%, #C4B3D6 100%)",
+        borderRadius: "12px",
         fontFamily: "Georgia, 'Times New Roman', serif",
         padding: "2rem",
         overflowY: phase === "open" ? "auto" : "hidden",
@@ -236,7 +238,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
       </svg>
       <div
         style={{
-          position: "fixed", inset: 0, opacity: 0.025,
+          position: "absolute", inset: 0, opacity: 0.025,
           backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
           backgroundSize: "200px",
           pointerEvents: "none",
@@ -282,11 +284,11 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 breakpoints, zoom levels, and hover/tap states. */}
             <div
               style={{
-                position: "fixed",
+                position: "absolute",
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                width: "min(360px, 90vw)",
+                width: "min(360px, 80%)",
                 aspectRatio: "360 / 240",
                 pointerEvents: "none",
                 zIndex: 60,
@@ -771,7 +773,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
         style={{
-          position: "fixed",
+          position: "absolute",
           bottom: "1.5rem",
           display: "flex",
           alignItems: "center",
