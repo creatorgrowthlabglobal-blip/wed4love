@@ -773,7 +773,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
         style={{
-          position: "fixed",
+          position: "absolute",
           bottom: "1.5rem",
           display: "flex",
           alignItems: "center",
