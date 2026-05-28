@@ -205,11 +205,11 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
         {delivered && (
           <div
             style={{
-              position: "fixed",
+              position: "absolute",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "min(360px, 90vw)",
+              width: "min(78%, 360px)",
               aspectRatio: "360 / 240",
               pointerEvents: "none",
               zIndex: 60,
