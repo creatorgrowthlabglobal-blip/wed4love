@@ -56,12 +56,12 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
     </div>
   );
 }
-
-/** The decorative border itself — absolutely positioned, purely CSS + SVG. */
 function FrameDecoration({ overlay = false }: { overlay?: boolean }) {
-  const pink = "#E48BA8";
+  const pink = "#E89AB4";
   const deepPink = "#C9628A";
-  const gold = "#E9C77B";
+  const softPink = "#F6C2D3";
+  const gold = "#D9B25F";
+  const lightGold = "#F2DCA0";
   const cream = "#FFF6F0";
 
   // Inset of the border from the viewport edge (responsive).
@@ -80,8 +80,9 @@ function FrameDecoration({ overlay = false }: { overlay?: boolean }) {
           borderRadius: "clamp(18px, 3vmin, 36px)",
           boxShadow: [
             `inset 0 0 0 clamp(8px, 2vmin, 22px) ${pink}`,
-            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 4px) ${cream}`,
-            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 5px) ${gold}`,
+            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 3px) ${lightGold}`,
+            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 4px) ${gold}`,
+            `inset 0 0 0 calc(clamp(8px, 2vmin, 22px) + 7px) ${cream}`,
           ].join(", "),
         }}
       >
@@ -91,7 +92,7 @@ function FrameDecoration({ overlay = false }: { overlay?: boolean }) {
           { bottom: 0, left: 0 },
           { bottom: 0, right: 0 },
         ].map((pos, i) => (
-          <CornerHeart key={i} style={pos} pink={deepPink} gold={gold} />
+          <CornerOrnament key={i} style={pos} pink={deepPink} gold={gold} lightGold={lightGold} />
         ))}
       </div>
     );
@@ -105,133 +106,171 @@ function FrameDecoration({ overlay = false }: { overlay?: boolean }) {
         inset,
         pointerEvents: "none",
         zIndex: 0,
+        filter: "drop-shadow(0 28px 60px rgba(160,60,100,0.40))",
       }}
     >
-      {/* Outer scalloped pink band */}
+      {/* Outer velvet pink band with soft sheen */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           borderRadius: "clamp(18px, 3vmin, 36px)",
-          background: `linear-gradient(135deg, ${pink} 0%, #F2A5BD 50%, ${deepPink} 100%)`,
-          boxShadow:
-            "0 24px 60px -20px rgba(160,60,100,0.45), inset 0 0 0 1px rgba(255,255,255,0.4)",
+          background: `
+            radial-gradient(120% 80% at 30% 0%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 45%),
+            linear-gradient(135deg, ${softPink} 0%, ${pink} 45%, ${deepPink} 100%)`,
+          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.5), inset 0 -10px 30px rgba(150,50,90,0.25)",
         }}
       />
 
-      {/* Scalloped hearts outline — repeating SVG along the border */}
+      {/* Lace scallop trim hugging the outer rim */}
       <svg
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
       >
         <defs>
-          <pattern id="lace-hearts" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
-            <path
-              d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
-              fill="rgba(255,255,255,0.6)"
-            />
-          </pattern>
-          {/* Left band — hearts nudged left */}
-          <pattern id="lace-hearts-left" x="-1.2" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
-            <path
-              d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
-              fill="rgba(255,255,255,0.6)"
-            />
-          </pattern>
-          {/* Right band — hearts nudged right */}
-          <pattern id="lace-hearts-right" x="1.2" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
-            <path
-              d="M2.5 3.4 C 1.65 2.7, 1.65 1.85, 2.2 1.65 C 2.5 1.57, 2.5 1.88, 2.5 2.03 C 2.5 1.88, 2.5 1.57, 2.8 1.65 C 3.35 1.85, 3.35 2.7, 2.5 3.4 Z"
-              fill="rgba(255,255,255,0.6)"
-            />
+          <pattern id="lace-scallop" x="0" y="0" width="3.2" height="3.2" patternUnits="userSpaceOnUse">
+            <circle cx="1.6" cy="1.6" r="1.05" fill="rgba(255,255,255,0.72)" />
+            <circle cx="1.6" cy="1.6" r="0.42" fill="rgba(255,255,255,0.95)" />
           </pattern>
         </defs>
-        {/* Top & bottom bands — inset from edges so hearts don't touch frame */}
-        <rect x="2" y="1" width="96" height="5" fill="url(#lace-hearts)" />
-        <rect x="2" y="94" width="96" height="5" fill="url(#lace-hearts)" />
-        {/* Left & right bands — narrow, hearts shifted to sit cleanly inside */}
-        <rect x="0.5" y="2" width="3.5" height="96" fill="url(#lace-hearts-left)" />
-        <rect x="96" y="2" width="3.5" height="96" fill="url(#lace-hearts-right)" />
+        <rect x="1.4" y="0.6" width="97.2" height="2.6" fill="url(#lace-scallop)" />
+        <rect x="1.4" y="96.8" width="97.2" height="2.6" fill="url(#lace-scallop)" />
+        <rect x="0.6" y="1.4" width="2.6" height="97.2" fill="url(#lace-scallop)" />
+        <rect x="96.8" y="1.4" width="2.6" height="97.2" fill="url(#lace-scallop)" />
       </svg>
 
-      {/* Gold piping */}
+      {/* Gold ornamental band with pearl trim */}
       <div
         style={{
           position: "absolute",
-          inset: "clamp(14px, 3.5vmin, 36px)",
+          inset: "clamp(13px, 3.2vmin, 34px)",
           borderRadius: "clamp(12px, 2.2vmin, 26px)",
-          border: `1.5px solid ${gold}`,
-          boxShadow: `inset 0 0 0 4px ${cream}, inset 0 0 0 5px ${gold}`,
+          background: `linear-gradient(135deg, ${lightGold}, ${gold} 55%, #B8923F)`,
+          boxShadow: `inset 0 1px 2px rgba(255,255,255,0.6), inset 0 0 0 1px rgba(140,105,40,0.5)`,
         }}
       />
+
+      {/* Pearl dots running along the gold band */}
+      <svg
+        style={{ position: "absolute", inset: "clamp(13px, 3.2vmin, 34px)", width: "auto", height: "auto", left: "clamp(13px, 3.2vmin, 34px)", right: "clamp(13px, 3.2vmin, 34px)", top: "clamp(13px, 3.2vmin, 34px)", bottom: "clamp(13px, 3.2vmin, 34px)" }}
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <pattern id="pearl-trim" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="rgba(255,250,235,0.9)" />
+            <circle cx="1.6" cy="1.6" r="0.35" fill="rgba(255,255,255,1)" />
+          </pattern>
+        </defs>
+        <rect x="2" y="1" width="96" height="2.5" fill="url(#pearl-trim)" />
+        <rect x="2" y="96.5" width="96" height="2.5" fill="url(#pearl-trim)" />
+        <rect x="1" y="2" width="2.5" height="96" fill="url(#pearl-trim)" />
+        <rect x="96.5" y="2" width="2.5" height="96" fill="url(#pearl-trim)" />
+      </svg>
 
       {/* Inner cream window — this is the "hole" you see through */}
       <div
         style={{
           position: "absolute",
-          inset: "clamp(20px, 5vmin, 52px)",
+          inset: "clamp(22px, 5.4vmin, 56px)",
           borderRadius: "clamp(8px, 1.6vmin, 20px)",
           background: cream,
-          boxShadow:
-            "inset 0 2px 8px rgba(180,100,130,0.18), 0 0 0 1px rgba(201,98,138,0.25)",
+          boxShadow: `inset 0 0 0 1.5px ${gold}, inset 0 2px 10px rgba(180,100,130,0.20)`,
         }}
       />
 
-      {/* Corner heart medallions */}
+      {/* Ornate gilded corner medallions */}
       {[
         { top: 0, left: 0 },
         { top: 0, right: 0 },
         { bottom: 0, left: 0 },
         { bottom: 0, right: 0 },
       ].map((pos, i) => (
-        <CornerHeart key={i} style={pos} pink={deepPink} gold={gold} />
+        <CornerOrnament key={i} style={pos} pink={deepPink} gold={gold} lightGold={lightGold} />
       ))}
     </div>
   );
 }
 
-function CornerHeart({
+function CornerOrnament({
   style,
   pink,
   gold,
+  lightGold,
 }: {
   style: React.CSSProperties;
   pink: string;
   gold: string;
+  lightGold: string;
 }) {
+  const isRight = style.right !== undefined;
+  const isBottom = style.bottom !== undefined;
+  // Orient the SVG so the flourish always points inward.
+  const rot = isBottom ? (isRight ? 180 : 270) : isRight ? 90 : 0;
+  const tx = isRight ? "12%" : "-12%";
+  const ty = isBottom ? "12%" : "-12%";
+  const uid = `${rot}-${pink.slice(1)}`;
+
   return (
     <div
       style={{
         position: "absolute",
-        width: "clamp(28px, 6vmin, 64px)",
-        height: "clamp(28px, 6vmin, 64px)",
-        transform: "translate(-15%, -15%)",
+        width: "clamp(38px, 8vmin, 86px)",
+        height: "clamp(38px, 8vmin, 86px)",
+        transform: `translate(${tx}, ${ty})`,
         ...style,
-        ...(style.right !== undefined ? { transform: "translate(15%, -15%)" } : {}),
-        ...(style.bottom !== undefined && style.left !== undefined
-          ? { transform: "translate(-15%, 15%)" }
-          : {}),
-        ...(style.bottom !== undefined && style.right !== undefined
-          ? { transform: "translate(15%, 15%)" }
-          : {}),
       }}
     >
-      <svg viewBox="0 0 24 24" width="100%" height="100%">
+      <svg viewBox="0 0 48 48" width="100%" height="100%" style={{ transform: `rotate(${rot}deg)` }}>
         <defs>
-          <radialGradient id={`heart-grad-${pink.slice(1)}`} cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#FFD6E2" />
-            <stop offset="60%" stopColor={pink} />
+          <radialGradient id={`heart-${uid}`} cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stopColor="#FFE0EA" />
+            <stop offset="55%" stopColor={pink} />
             <stop offset="100%" stopColor="#9A4669" />
           </radialGradient>
+          <linearGradient id={`gold-${uid}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={lightGold} />
+            <stop offset="100%" stopColor="#B8923F" />
+          </linearGradient>
         </defs>
+        {/* Gold filigree scrolls sweeping from the corner */}
         <path
-          d="M12 21s-7-4.35-9.5-9.05C.9 8.6 2.6 5 6 5c2 0 3.2 1.1 4 2.3C10.8 6.1 12 5 14 5c3.4 0 5.1 3.6 3.5 6.95C19 16.65 12 21 12 21z"
-          fill={`url(#heart-grad-${pink.slice(1)})`}
-          stroke={gold}
-          strokeWidth="0.8"
+          d="M4 4 C 20 4, 30 8, 33 20 M4 4 C 4 20, 8 30, 20 33"
+          fill="none"
+          stroke={`url(#gold-${uid})`}
+          strokeWidth="2.4"
+          strokeLinecap="round"
         />
+        <path
+          d="M33 20 C 38 22, 40 16, 35 14 C 31 12.5, 31 18, 35 19"
+          fill="none"
+          stroke={`url(#gold-${uid})`}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M20 33 C 22 38, 16 40, 14 35 C 12.5 31, 18 31, 19 35"
+          fill="none"
+          stroke={`url(#gold-${uid})`}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        {/* Pearl accents */}
+        <circle cx="33" cy="20" r="1.4" fill={lightGold} />
+        <circle cx="20" cy="33" r="1.4" fill={lightGold} />
+        {/* Corner heart gem */}
+        <g transform="translate(6 6)">
+          <path
+            d="M9 16s-5.3-3.3-7.2-6.9C.7 6.5 2 4 4.6 4c1.5 0 2.4.8 3 1.7C8.3 4.8 9.2 4 10.7 4c2.6 0 3.9 2.5 2.6 5.3C11.3 12.7 9 16 9 16z"
+            fill={`url(#heart-${uid})`}
+            stroke={gold}
+            strokeWidth="0.9"
+          />
+          <ellipse cx="6" cy="7" rx="1.6" ry="1" fill="rgba(255,255,255,0.55)" transform="rotate(-30 6 7)" />
+        </g>
       </svg>
     </div>
   );
 }
+
