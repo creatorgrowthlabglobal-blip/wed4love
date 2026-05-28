@@ -256,136 +256,98 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Pricing Section — premium minimalist */}
-      <section
-        id="pricing"
-        className="relative py-32 sm:py-40 px-6 overflow-hidden"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 0%, hsl(240 6% 14%) 0%, hsl(240 8% 7%) 55%, hsl(240 10% 4%) 100%)",
-        }}
-      >
-        {/* subtle grid wash */}
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-            maskImage:
-              "radial-gradient(ellipse at center, black 40%, transparent 75%)",
-          }}
-        />
-
-        <div className="container mx-auto max-w-5xl relative">
-          {/* Eyebrow + headline */}
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-background to-[hsl(350_100%_97%)]">
+        <div className="container mx-auto max-w-lg">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mb-20 sm:mb-24"
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
           >
-            <p className="text-[11px] tracking-[0.28em] uppercase text-neutral-500 font-medium mb-6">
-              Pricing
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-2">
+              Simple Pricing
             </p>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-white leading-[1.05]">
-              One price.
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
+              The{" "}
+              <span className="text-primary italic">"Grand Gesture"</span>
               <br />
-              <span className="text-neutral-500">Every feeling.</span>
+              Package
             </h2>
-            <p className="mt-8 text-base sm:text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed">
-              A single, one-time purchase. No subscriptions, no tiers, no fine print.
+            <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
+              Everything you need to make your message unforgettable. One purchase, unlimited emotion.
             </p>
           </motion.div>
 
-          {/* Card */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative mx-auto max-w-xl rounded-[28px] border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm transition-all duration-500 ease-out hover:bg-white/[0.035] hover:border-white/[0.10]"
+            transition={{ delay: 0.15, duration: 0.6 }}
+            className="rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden bg-white border border-primary/10"
+            style={{
+              boxShadow: "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
+            }}
           >
-            {/* hairline highlight */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            />
-
-            <div className="p-10 sm:p-14">
-              {/* Label row */}
-              <div className="flex items-center justify-between mb-12">
-                <span className="text-[10px] tracking-[0.28em] uppercase text-neutral-500 font-medium">
-                  Grand Gesture
-                </span>
-                <span className="text-[10px] tracking-[0.28em] uppercase text-neutral-400 font-medium px-2.5 py-1 rounded-full border border-white/[0.08]">
-                  Lifetime
-                </span>
-              </div>
-
-              {/* Price */}
-              <div className="flex items-baseline gap-2 mb-2">
-                <span className="font-display text-6xl sm:text-7xl font-semibold tracking-tight text-white tabular-nums">
-                  $6.99
-                </span>
-                <span className="text-sm text-neutral-500">USD</span>
-              </div>
-              <p className="text-sm text-neutral-500 mb-12">
-                Billed once. Yours forever.
-              </p>
-
-              {/* Features */}
-              <ul className="space-y-4 mb-12">
-                {[
-                  "Shareable private link",
-                  "Custom background music",
-                  "Interactive reveal experience",
-                  "Cinematic memory vault",
-                  "Secret message with PIN lock",
-                  "Heartfelt long-form letter",
-                ].map((text, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-3.5 text-[15px] text-neutral-300"
-                  >
-                    <Check className="w-4 h-4 text-neutral-400 shrink-0" strokeWidth={2} />
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA */}
-              <Link
-                to="/create-letter"
-                className="group/btn relative flex items-center justify-center w-full h-12 rounded-full bg-white text-neutral-950 text-sm font-medium tracking-tight transition-all duration-300 ease-out hover:bg-neutral-200 active:scale-[0.99]"
-              >
-                Create your letter
-                <span className="ml-1.5 transition-transform duration-300 ease-out group-hover/btn:translate-x-0.5">
-                  →
-                </span>
-              </Link>
-
-              <p className="text-center text-[12px] tracking-wide text-neutral-500 mt-5">
-                Instant access · Secure checkout
-              </p>
+            {/* Best value badge */}
+            <div className="absolute top-4 right-4">
+              <span className="font-body text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
+                Best Value
+              </span>
             </div>
+
+            <p className="font-body text-sm text-muted-foreground mb-1">One-time payment</p>
+            <p className="font-display text-5xl sm:text-6xl font-bold text-foreground mb-6">
+              $6.99
+            </p>
+
+            <ul className="space-y-3 text-left max-w-xs mx-auto mb-8">
+              {[
+                { icon: LinkIcon, text: "Shareable unique link" },
+                { icon: Music, text: "Custom background music" },
+                { icon: Bell, text: "Interactive experience" },
+                { icon: PartyPopper, text: "Cinematic Memory Vault" },
+                { icon: MessageSquare, text: "Secret message & PIN lock" },
+                { icon: Heart, text: "Write a heartfelt letter" },
+              ].map((f, i) => (
+                <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
+                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                  {f.text}
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              to="/create-letter"
+              className="inline-flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97]"
+              style={{
+                boxShadow: "0 8px 24px hsl(340 100% 76% / 0.3)",
+              }}
+            >
+              Create Your Letter
+            </Link>
+
+            <p className="font-body text-xs text-muted-foreground mt-4">
+              One-time Payment • Instant Access
+            </p>
           </motion.div>
 
-          {/* Footnote */}
+          {/* Pro tip */}
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.25, duration: 0.6 }}
-            className="text-center text-xs text-neutral-600 mt-12 max-w-md mx-auto leading-relaxed"
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="font-body text-xs text-muted-foreground text-center mt-6"
           >
-            A bouquet costs $50. This costs less than a coffee — and lasts a lifetime.
+            💡 <strong>Pro tip:</strong> A bouquet costs $50+. This costs less than a coffee
+            and creates a memory that lasts forever.
           </motion.p>
         </div>
       </section>
-
 
       {/* Envelope preview overlay */}
       <AnimatePresence>
