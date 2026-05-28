@@ -210,15 +210,17 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
       animate={{ opacity: 1 }}
       transition={{ duration: 0 }}
       style={{
-        position: "fixed",
+        position: "absolute",
         inset: 0,
         zIndex: 50,
-        minHeight: "100vh",
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: phase === "open" ? "flex-start" : "center",
         background: "radial-gradient(ellipse at 50% 30%, #DCCFE6 0%, #C4B3D6 100%)",
+        borderRadius: "12px",
         fontFamily: "Georgia, 'Times New Roman', serif",
         padding: "2rem",
         overflowY: phase === "open" ? "auto" : "hidden",
