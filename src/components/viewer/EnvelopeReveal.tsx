@@ -284,11 +284,11 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 breakpoints, zoom levels, and hover/tap states. */}
             <div
               style={{
-                position: "fixed",
+                position: "absolute",
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                width: "min(360px, 90vw)",
+                width: "min(360px, 80%)",
                 aspectRatio: "360 / 240",
                 pointerEvents: "none",
                 zIndex: 60,
