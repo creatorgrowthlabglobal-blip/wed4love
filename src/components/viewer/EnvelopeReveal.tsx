@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wand2 } from "lucide-react";
 import { sounds } from "@/lib/sounds";
 import photo1 from "@/assets/photo1.jpg";
 import photo2 from "@/assets/photo2.jpg";
@@ -48,11 +47,11 @@ const SealSVG = () => (
   <div
     style={{
       position: "absolute",
-      bottom: -36,
+      bottom: "clamp(-36px, -5vw, -22px)",
       left: "50%",
-      width: 72,
-      height: 72,
-      marginLeft: -36,
+      transform: "translateX(-50%)",
+      width: "clamp(44px, 10vw, 72px)",
+      height: "clamp(44px, 10vw, 72px)",
       pointerEvents: "none",
       filter: "drop-shadow(0 5px 10px rgba(70,10,35,0.40)) drop-shadow(0 2px 4px rgba(0,0,0,0.25))",
     }}
@@ -230,23 +229,6 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
         isolation: "isolate",
       }}
     >
-      {/* Subtle grain overlay */}
-      <svg style={{ position: "fixed", width: 0, height: 0 }}>
-        <filter id="grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves={3} stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-          <feBlend in="SourceGraphic" mode="multiply" />
-        </filter>
-      </svg>
-      <div
-        style={{
-          position: "absolute", inset: 0, opacity: 0.025,
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundSize: "200px",
-          pointerEvents: "none",
-        }}
-      />
-
       {/* Envelope scene */}
       <AnimatePresence mode="wait">
         {phase !== "open" && (
@@ -263,24 +245,22 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             <motion.p
               style={{
                 position: "absolute",
-                top: "calc(50% - min(360px, 90vw) * (240 / 360) / 2 - 2.5rem)",
+                top: "clamp(120px, 22%, 160px)",
                 left: "50%",
                 transform: "translateX(-50%)",
-                fontSize: "12px",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: TEXT_MID,
-                opacity: 0.7,
-                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-                fontStyle: "normal",
+                fontSize: "clamp(36px, 7vw, 56px)",
+                fontFamily: "'Pinyon Script', cursive",
+                color: "#C0396A",
                 whiteSpace: "nowrap",
                 pointerEvents: "none",
                 zIndex: 2,
+                margin: 0,
               }}
-              animate={{ opacity: [0.5, 0.85, 0.5] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: phase === "idle" ? 1 : 0 }}
+              transition={{ duration: 0.5 }}
             >
-              {phase === "idle" ? "A letter for you" : "Click to read the letter"}
+              Click Me
             </motion.p>
 
             {/* Envelope — fixed/centered wrapper (never animated) so the
@@ -289,7 +269,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             <div
               style={{
                 position: "absolute",
-                top: "50%",
+                top: "55%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
                 width: envelopeSceneSize,
@@ -500,24 +480,40 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
       <AnimatePresence>
         {phase === "open" && (
           <motion.div
+            key="letter-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 200,
+              overflowY: "auto",
+              overflowX: "hidden",
+              WebkitOverflowScrolling: "touch",
+              background: "#fff",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: 0,
+            }}
+          >
+          <motion.div
             key="letter"
             initial={{ opacity: 0, y: 40, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              width: "min(560px, calc(100% - 2rem))",
-              maxWidth: "100%",
-              maxHeight: "100%",
-              background:
-                "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
-              padding: "clamp(2.5rem, 7vw, 4rem) clamp(1.75rem, 5vw, 3rem) clamp(2.5rem, 7vw, 4rem)",
-              boxShadow:
-                "0 24px 60px rgba(90,70,110,0.35), 0 8px 20px rgba(90,70,110,0.18), inset 0 0 80px rgba(220,195,150,0.25)",
+              width: "100%",
+              maxWidth: "560px",
+              minHeight: "100vh",
+              background: "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
+              padding: "clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 3rem) clamp(3rem, 8vw, 5rem)",
               position: "relative",
-              borderRadius: "6px",
               margin: "0 auto",
-              overflow: "hidden",
+              overflow: "visible",
             }}
           >
             {/* Decorative double border frame */}
@@ -755,7 +751,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.95, duration: 0.5 }}
-              style={{ marginTop: "1rem", position: "relative", zIndex: 2, textAlign: "right" }}
+              style={{ marginTop: "1rem", position: "relative", zIndex: 2, textAlign: "right", clear: "both" }}
             >
               <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.2rem", opacity: 0.85 }}>
                 {closing}
@@ -774,33 +770,9 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             </motion.div>
 
           </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
-
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        style={{
-          position: "absolute",
-          bottom: "1.5rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          opacity: 0.35,
-        }}
-      >
-        <Wand2 size={12} color={TEXT_MID} />
-        <span style={{
-          fontSize: "11px",
-          color: TEXT_MID,
-          fontFamily: "'Helvetica Neue', sans-serif",
-          letterSpacing: "0.1em",
-        }}>
-          click to open
-        </span>
-      </motion.div>
     </motion.div>
   );
 }

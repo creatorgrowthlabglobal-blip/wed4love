@@ -593,29 +593,6 @@ const PurpleMailboxV4 = ({ className, onContinue, senderName }: Props) => {
       width:"100%", height:"100%",
       position:"relative", overflow:"hidden",
     }}>
-      {/* ── Soft pink-to-cream background ── */}
-      <div style={{ position:"absolute", inset:0,
-        background:"linear-gradient(180deg, #FEF5F0 0%, #FAE8E3 38%, #F3DBD4 68%, #EDD0C8 100%)"
-      }}/>
-      {/* Bokeh */}
-      {[{x:"5%",y:"8%",s:230,o:0.36,d:0},{x:"66%",y:"4%",s:195,o:0.27,d:1.7},{x:"74%",y:"53%",s:175,o:0.3,d:0.9},{x:"2%",y:"56%",s:155,o:0.25,d:2.2}]
-        .map((b,i)=>(
-          <motion.div key={i} style={{
-            position:"absolute", left:b.x, top:b.y, width:b.s, height:b.s,
-            borderRadius:"50%",
-            background:"radial-gradient(circle, rgba(230,190,210,0.9), transparent 70%)",
-            filter:"blur(30px)", pointerEvents:"none"
-          }}
-          animate={{scale:[1,1.16,1],opacity:[b.o,b.o*1.4,b.o]}}
-          transition={{duration:5+b.d,repeat:Infinity,ease:"easeInOut",delay:b.d}}/>
-        ))}
-      {/* Ground gradient */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,height:"30%",
-        background:"linear-gradient(180deg,transparent,rgba(200,155,145,0.13))",pointerEvents:"none"}}/>
-      {/* Vignette */}
-      <div style={{position:"absolute",inset:0,
-        background:"radial-gradient(ellipse at 50% 50%,transparent 46%,rgba(165,115,105,0.2) 100%)",pointerEvents:"none"}}/>
-
       {/* ── Mailbox ── */}
       <div style={{ perspective:"900px", perspectiveOrigin:"50% 42%" }}>
         <motion.div
@@ -707,7 +684,7 @@ const PurpleMailboxV4 = ({ className, onContinue, senderName }: Props) => {
 
           <AnimatePresence>
             {delivered && (
-              <div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"min(360px,90vw)",aspectRatio:"360/240",pointerEvents:"none",zIndex:60}}>
+              <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"min(360px,90vw)",aspectRatio:"360/240",pointerEvents:"none",zIndex:60}}>
                 <motion.div
                   key="shared-envelope-v4"
                   initial={{scale:0.4,opacity:0}}
@@ -715,7 +692,6 @@ const PurpleMailboxV4 = ({ className, onContinue, senderName }: Props) => {
                   transition={{scale:{type:"spring",stiffness:100,damping:20,mass:1},opacity:{duration:0.35}}}
                   style={{position:"absolute",inset:0,transformOrigin:"50% 50%",perspective:"800px",willChange:"transform"}}
                 >
-                  <div style={{position:"absolute",inset:"8px 12px -12px 12px",borderRadius:6,background:"rgba(120,110,90,0.18)",boxShadow:"0 22px 34px rgba(120,110,90,0.22)",zIndex:0}}/>
                   <div style={{position:"absolute",inset:0,borderRadius:6,background:"#F5C9DA",border:"2.5px solid #1a1a1a",overflow:"hidden",zIndex:1}}/>
                   <div style={{position:"absolute",top:0,left:0,width:"100%",height:"50%",zIndex:10}}>
                     <svg viewBox="0 0 360 180" style={{width:"100%",height:"100%",display:"block",overflow:"visible"}} preserveAspectRatio="none">
@@ -738,11 +714,17 @@ const PurpleMailboxV4 = ({ className, onContinue, senderName }: Props) => {
             style={{position:"absolute",bottom:"8%",textAlign:"center",pointerEvents:"none"}}
           >
             <motion.p
-              animate={{opacity:[0.45,1,0.45]}} transition={{duration:2.5,repeat:Infinity}}
-              style={{fontSize:10.5,color:"#9A78AE",letterSpacing:"0.2em",
-                fontFamily:"Inter, system-ui, sans-serif",fontWeight:500}}
+              animate={{opacity:[0.6,1,0.6]}} transition={{duration:2.5,repeat:Infinity}}
+              style={{
+                fontFamily:"'Pinyon Script', cursive",
+                fontSize:"clamp(32px, 6vw, 48px)",
+                color:"#C0396A",
+                letterSpacing:"0.02em",
+                textShadow:"0 2px 8px rgba(192,57,106,0.18)",
+                margin:0,
+              }}
             >
-              CLICK TO OPEN
+              Click Me
             </motion.p>
           </motion.div>
         )}

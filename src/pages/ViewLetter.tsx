@@ -19,7 +19,7 @@ type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 const ViewLetter = () => {
   const { id } = useParams();
   const [letter, setLetter] = useState<StoredLetter | null>(null);
-  const [stage, setStage] = useState<Stage>("mailbox");
+  const [stage, setStage] = useState<Stage>("mailbox"); // overridden below for purple template
   const [notFound, setNotFound] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -28,6 +28,10 @@ const ViewLetter = () => {
       const found = getLetter(id);
       if (found) {
         setLetter(found);
+        // Purple template skips the mailbox and lands directly on the envelope
+        if ((found.template || "photo") === "purple") {
+          setStage("envelope");
+        }
       } else {
         setNotFound(true);
       }

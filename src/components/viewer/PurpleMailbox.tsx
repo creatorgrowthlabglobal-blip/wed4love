@@ -383,24 +383,16 @@ const BirdRight = () => (
 );
 
 /* ───────────────────── Caption ───────────────────── */
-const Caption = ({ senderName }: { senderName?: string }) => (
+const Caption = ({ senderName: _ }: { senderName?: string }) => (
   <g>
-    <motion.text x="200" y="450" textAnchor="middle"
-      fontFamily="'Playfair Display', Georgia, serif"
-      fontSize="18" fontWeight="600" fill="#4b3a6b"
+    <motion.text x="200" y="30" textAnchor="middle"
+      fontFamily="'Pinyon Script', cursive"
+      fontSize="62" fill="#C0396A"
       filter="url(#textGlow)"
-      initial={{opacity:0,y:460}} animate={{opacity:1,y:450}} transition={{duration:0.8,ease:"easeOut"}}
+      initial={{opacity:0, y:40}} animate={{opacity:1, y:30}}
+      transition={{duration:0.8, ease:"easeOut"}}
     >
-      You've got a mail from {senderName?.trim() || "someone special"}
-    </motion.text>
-    <motion.text x="200" y="478" textAnchor="middle"
-      fontFamily="'Inter', system-ui, sans-serif"
-      fontSize="12" fontWeight="500" letterSpacing="2" fill="#8a7aae"
-      filter="url(#textGlow)"
-      initial={{opacity:0}}
-      animate={{opacity:[0.4,1,1,0.5]}} transition={{duration:2.6, repeat:Infinity}}
-    >
-      CLICK THE MAILBOX TO CONTINUE
+      Click Me
     </motion.text>
   </g>
 );
@@ -439,10 +431,8 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
         onClick={handleMailboxClick}
         whileHover={{ scale: isOpen ? 1 : 1.02 }}
         whileTap={{  scale: isOpen ? 1 : 0.98 }}
-        animate={isOpen ? { y:[0,-2,0] } : { y:[0,-5,0] }}
-        transition={isOpen
-          ? { duration:0.4 }
-          : { duration:3.4, repeat:Infinity, ease:"easeInOut" }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.4 }}
         style={{
           cursor: isOpen ? "default" : "pointer",
           width:"min(520px,90%)",

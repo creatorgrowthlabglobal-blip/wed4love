@@ -67,12 +67,8 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
         onClick={handleClick}
         whileHover={{ scale: open ? 1 : 1.025 }}
         whileTap={{ scale: open ? 1 : 0.97 }}
-        animate={open ? { y: 0 } : { y: [0, -6, 0] }}
-        transition={
-          open
-            ? { duration: 0.5 }
-            : { duration: 3.6, repeat: Infinity, ease: "easeInOut" }
-        }
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
         style={{
           cursor: open ? "default" : "pointer",
           width: "100%",
@@ -163,25 +159,17 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 pointerEvents: "none",
               }}
             >
-              <div
+              <span
                 style={{
-                  display: "inline-block",
-                  padding: "8px 18px",
-                  borderRadius: 999,
-                  background: "rgba(255, 250, 246, 0.78)",
-                  backdropFilter: "blur(8px)",
-                  WebkitBackdropFilter: "blur(8px)",
-                  boxShadow: "0 8px 24px rgba(90, 70, 120, 0.18)",
-                  fontFamily: "'Playfair Display', serif",
-                  fontStyle: "italic",
-                  fontSize: 15,
-                  color: "#5A4870",
+                  fontFamily: "'Pinyon Script', cursive",
+                  fontSize: "clamp(32px, 6vw, 48px)",
+                  color: "#C0396A",
+                  letterSpacing: "0.02em",
+                  textShadow: "0 2px 8px rgba(192,57,106,0.18)",
                 }}
               >
-                {senderName
-                  ? `A letter from ${senderName} — tap to open`
-                  : "Tap the mailbox to open your letter"}
-              </div>
+                Click Me
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -231,16 +219,6 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
                 willChange: "transform",
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  inset: "8px 12px -12px 12px",
-                  borderRadius: "6px",
-                  background: "rgba(120,110,90,0.18)",
-                  boxShadow: "0 22px 34px rgba(120,110,90,0.22)",
-                  zIndex: 0,
-                }}
-              />
               <div
                 style={{
                   position: "absolute",
