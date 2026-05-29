@@ -29,7 +29,7 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
-      className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-6 overflow-y-auto"
+      className="fixed inset-0 z-[70] overflow-y-auto px-4 py-6"
       style={{ background: "hsl(30 20% 30% / 0.7)", backdropFilter: "blur(12px)" }}
     >
       <motion.button
@@ -42,15 +42,16 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
         <span className="font-body text-xs tracking-wider" style={{ color: "hsl(30 20% 30%)" }}>Back</span>
       </motion.button>
 
+      <div className="min-h-full flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-lg relative"
+        className="w-full max-w-lg relative my-6"
       >
         {/* Vintage paper */}
         <div
-          className="relative overflow-hidden"
+          className="relative"
           style={{
             background: "linear-gradient(170deg, hsl(38 45% 86%) 0%, hsl(32 40% 82%) 40%, hsl(28 35% 78%) 100%)",
             boxShadow: "0 20px 60px hsl(30 30% 20% / 0.35), 0 4px 16px hsl(0 0% 0% / 0.1), inset 0 0 80px hsl(30 30% 60% / 0.15)",
@@ -131,7 +132,7 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
           }} />
 
           {/* Content */}
-          <div className="relative z-10 px-8 sm:px-12 py-10 sm:py-14">
+          <div className="relative z-10 px-10 sm:px-14 pt-28 pb-28 sm:pt-32 sm:pb-32">
             {/* Header */}
             <div className="text-center mb-8">
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
@@ -204,6 +205,7 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
           </div>
         </div>
       </motion.div>
+      </div>
     </motion.div>
   );
 };
