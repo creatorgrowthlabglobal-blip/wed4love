@@ -1,5 +1,5 @@
-import { ReactNode, useState, useCallback } from "react";
-import frameImg from "@/assets/letter-frame.png";
+import { ReactNode, useState, useCallback, useEffect } from "react";
+import frameImg from "@/assets/letter-frame.webp";
 
 interface FramedSceneProps {
   children?: ReactNode;
