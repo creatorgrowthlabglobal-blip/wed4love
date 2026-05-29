@@ -194,7 +194,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(circle at 50% 55%, transparent 0%, rgba(40,28,55,0.55) 100%)",
+              "radial-gradient(circle at 50% 55%, transparent 0%, rgba(239,201,214,0.55) 100%)",
             pointerEvents: "none",
           }}
         />
