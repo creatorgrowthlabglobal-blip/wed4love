@@ -4,6 +4,7 @@ import { Heart, Play, X, ArrowRight } from "lucide-react";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
+import FramedScene from "@/components/viewer/FramedScene";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 
 type SubPhase = "type" | "template";
@@ -225,7 +226,9 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
             )}
 
             {previewStage === "envelope" && (
-              <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
+              <FramedScene>
+                <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
+              </FramedScene>
             )}
           </>
         )}
