@@ -45,27 +45,29 @@ const Index = () => {
       <FloatingHearts count={6} />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-16">
+      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16">
         {/* Subtle gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(350_100%_96%)] to-background" />
 
-        {/* Floating sparkle decorations */}
-        {[
-          { left: "8%", top: "30%", size: 12, delay: 0 },
-          { left: "85%", top: "25%", size: 10, delay: 1.2 },
-          { left: "5%", top: "65%", size: 14, delay: 2 },
-          { left: "90%", top: "55%", size: 8, delay: 0.6 },
-        ].map((s, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-primary/20"
-            style={{ left: s.left, top: s.top }}
-            animate={{ opacity: [0.15, 0.5, 0.15], scale: [0.8, 1.2, 0.8], rotate: [0, 180, 360] }}
-            transition={{ duration: 5, repeat: Infinity, delay: s.delay }}
-          >
-            <Sparkles style={{ width: s.size, height: s.size }} />
-          </motion.div>
-        ))}
+        {/* Floating sparkle decorations — clipped separately so they don't affect text layout */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[
+            { left: "8%", top: "30%", size: 12, delay: 0 },
+            { left: "85%", top: "25%", size: 10, delay: 1.2 },
+            { left: "5%", top: "65%", size: 14, delay: 2 },
+            { left: "90%", top: "55%", size: 8, delay: 0.6 },
+          ].map((s, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-primary/20"
+              style={{ left: s.left, top: s.top }}
+              animate={{ opacity: [0.15, 0.5, 0.15], scale: [0.8, 1.2, 0.8], rotate: [0, 180, 360] }}
+              transition={{ duration: 5, repeat: Infinity, delay: s.delay }}
+            >
+              <Sparkles style={{ width: s.size, height: s.size }} />
+            </motion.div>
+          ))}
+        </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl">
           {/* Icon badge */}
