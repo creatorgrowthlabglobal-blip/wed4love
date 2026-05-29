@@ -208,21 +208,37 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
               <X className="w-5 h-5 text-white" />
             </motion.button>
 
-            {previewStage === "mailbox" && (
+            {previewStage === "mailbox" && previewTemplate === "purple" && (
               <div
+                key="prev-mailbox-purple"
                 className="fixed inset-0 z-50 flex items-center justify-center"
                 style={{ background: "#F2EFE8" }}
               >
                 <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
                   <Suspense fallback={null}>
-                    {previewTemplate === "purple" ? (
-                      <PurpleMailbox className="w-full h-full" onContinue={advancePreview} />
-                    ) : (
-                      <RealisticMailbox className="w-full h-full" onContinue={advancePreview} />
-                    )}
+                    <PurpleMailbox className="w-full h-full" onContinue={advancePreview} />
                   </Suspense>
                 </div>
               </div>
+            )}
+            {previewStage === "mailbox" && previewTemplate !== "purple" && (
+              <motion.div
+                key="prev-mailbox-photo"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 50,
+                  background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
+                }}
+              >
+                <Suspense fallback={null}>
+                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} />
+                </Suspense>
+              </motion.div>
             )}
 
             {previewStage === "envelope" && (

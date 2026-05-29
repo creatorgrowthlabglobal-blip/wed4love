@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Heart, Lock, Play, X } from "lucide-react";
 import { filesToBase64 } from "@/lib/letterStorage";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
+import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 
 interface PreviewPaymentProps {
   letterData: {
@@ -21,8 +22,11 @@ interface PreviewPaymentProps {
   onBack: () => void;
 }
 
+type PreviewStage = "mailbox" | "envelope";
+
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
+  const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -31,8 +35,16 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
     }
   }, [showPreview, letterData.images]);
 
-  const openPreview = () => setShowPreview(true);
+  const openPreview = () => {
+    // Photo template starts at the mailbox; purple skips straight to the envelope
+    setPreviewStage(template === "purple" ? "envelope" : "mailbox");
+    setShowPreview(true);
+  };
   const closePreview = () => setShowPreview(false);
+  const advancePreview = () => {
+    if (previewStage === "mailbox") setPreviewStage("envelope");
+    else closePreview();
+  };
 
   return (
     <>
@@ -139,15 +151,39 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
               <X className="w-5 h-5 text-white" />
             </motion.button>
 
-            <FramedScene key="p-envelope">
-              <EnvelopeReveal
-                receiverName={letterData.receiverName}
-                senderName={letterData.senderName}
-                letterText={letterData.letterText}
-                images={previewImages}
-                onContinue={closePreview}
-              />
-            </FramedScene>
+            {/* Template 1 — full-screen mailbox, no decorative frame */}
+            {previewStage === "mailbox" && (
+              <motion.div
+                key="prev-mailbox"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 50,
+                  background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
+                }}
+              >
+                <Suspense fallback={null}>
+                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} />
+                </Suspense>
+              </motion.div>
+            )}
+
+            {/* Envelope stage — both templates use FramedScene here */}
+            {previewStage === "envelope" && (
+              <FramedScene key="prev-envelope">
+                <EnvelopeReveal
+                  receiverName={letterData.receiverName}
+                  senderName={letterData.senderName}
+                  letterText={letterData.letterText}
+                  images={previewImages}
+                  onContinue={closePreview}
+                />
+              </FramedScene>
+            )}
           </>
         )}
       </AnimatePresence>

@@ -369,22 +369,37 @@ const Index = () => {
             >
               <X className="w-5 h-5 text-white" />
             </motion.button>
-            {previewStage === "mailbox" && (
-              <FramedScene key="p-mailbox">
+            {previewStage === "mailbox" && template === "purple" && (
+              <FramedScene key="p-mailbox-purple">
                 <Suspense fallback={null}>
-                  {template === "purple" ? (
-                    <PurpleMailbox
-                      className="w-full h-full"
-                      onContinue={() => setPreviewStage("envelope")}
-                    />
-                  ) : (
-                    <RealisticMailbox
-                      className="w-full h-full"
-                      onContinue={() => setPreviewStage("envelope")}
-                    />
-                  )}
+                  <PurpleMailbox
+                    className="w-full h-full"
+                    onContinue={() => setPreviewStage("envelope")}
+                  />
                 </Suspense>
               </FramedScene>
+            )}
+            {previewStage === "mailbox" && template !== "purple" && (
+              <motion.div
+                key="p-mailbox-photo"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 50,
+                  background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
+                }}
+              >
+                <Suspense fallback={null}>
+                  <RealisticMailbox
+                    className="w-full h-full"
+                    onContinue={() => setPreviewStage("envelope")}
+                  />
+                </Suspense>
+              </motion.div>
             )}
             {previewStage === "envelope" && (
               <FramedScene key="p-envelope">

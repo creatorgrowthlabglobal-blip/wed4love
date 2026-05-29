@@ -139,6 +139,8 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [typingDone, setTypingDone] = useState(false);
   const envelopeSceneSize = "min(280px, 52vw, calc(100% - 2rem))";
 
   const HEART_DIRS = [
@@ -169,17 +171,82 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
     if (phase === "open") onLetterOpen?.();
   }, [phase]);
 
+  // ── Derived text values (must be above the effects that reference them) ──
   const isUserLetter = Boolean(letterText?.trim());
-  const paragraphs = isUserLetter
-    ? letterText!.split(/\n/).map(p => p.trim()).filter(Boolean)
-    : [letterContent.paragraphs[0], letterContent.paragraphs[1], letterContent.paragraphs[2]];
-  const para0 = paragraphs[0] ?? "";
-  const para1 = paragraphs[1] ?? "";
-  const tailParas = isUserLetter ? paragraphs.slice(2) : [letterContent.paragraphs[2]];
   const closing = "Yours, always —";
   const signature = senderName || letterContent.signature;
-  const frameImg0 = images?.[0] ?? photo2;
-  const frameImg1 = images?.[1] ?? photo1;
+
+  const userImages = images?.filter(Boolean) ?? [];
+  const displayPhotos: string[] = isUserLetter ? userImages : [photo2, photo1];
+
+  const bodyText = isUserLetter
+    ? (letterText?.trim() ?? "")
+    : [letterContent.paragraphs[0], letterContent.paragraphs[1], letterContent.paragraphs[2]].join(" ");
+
+  // Split text at the midpoint so image 2 is interleaved further down the flow
+  const bodyWords = bodyText.split(/\s+/).filter(Boolean);
+  const mid = Math.floor(bodyWords.length / 2);
+  const textSeg0 = displayPhotos.length >= 2 ? bodyWords.slice(0, mid).join(" ") : bodyText;
+  const textSeg1 = displayPhotos.length >= 2 ? bodyWords.slice(mid).join(" ") : "";
+
+  // Reset typewriter whenever the envelope is closed
+  useEffect(() => {
+    if (phase === "idle") {
+      setVisibleCount(0);
+      setTypingDone(false);
+    }
+  }, [phase]);
+
+  // RAF-based typewriter: time-driven so it always finishes within the cap.
+  // Starts 0.8 s after the letter slides in (the slide-in takes ~0.7 s).
+  useEffect(() => {
+    if (phase !== "open" || typingDone) return;
+    const totalChars = bodyText.length;
+    if (totalChars === 0) { setTypingDone(true); return; }
+    // 20 ms/char, but never longer than 3.5 s for a full reveal
+    const duration = Math.min(3500, totalChars * 20);
+    let startTime: number | null = null;
+    let rafId: number;
+    const delay = setTimeout(() => {
+      const tick = (now: number) => {
+        if (startTime === null) startTime = now;
+        const chars = Math.min(totalChars, Math.floor(((now - startTime) / duration) * totalChars));
+        setVisibleCount(chars);
+        if (chars < totalChars) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          setTypingDone(true);
+        }
+      };
+      rafId = requestAnimationFrame(tick);
+    }, 800);
+    return () => { clearTimeout(delay); cancelAnimationFrame(rafId); };
+  }, [phase, bodyText, typingDone]);
+
+  // Typewriter rendering helpers — split each segment into visible + transparent tail.
+  // Keeping the full text in the DOM at all times prevents any layout reflow while typing.
+  const seg0Shown = Math.min(textSeg0.length, visibleCount);
+  const seg1Shown = Math.max(0, visibleCount - textSeg0.length - 1); // -1 for the joining space
+  const seg0Typing = !typingDone && phase === "open" && visibleCount <= textSeg0.length;
+  const seg1Typing = !typingDone && phase === "open" && visibleCount > textSeg0.length;
+  const CURSOR: React.CSSProperties = {
+    display: "inline-block", width: 2, height: "1.1em",
+    background: TEXT_DARK, verticalAlign: "text-bottom", marginLeft: 1,
+    animation: "typewriter-cursor 0.7s step-end infinite",
+  };
+  const TEXT_STYLE: React.CSSProperties = {
+    fontSize: "clamp(18px, 2.6vw, 22px)",
+    color: TEXT_DARK,
+    lineHeight: 1.8,
+    fontFamily: "'Caveat', 'Dancing Script', cursive",
+    textDecoration: "underline",
+    textDecorationColor: "rgba(160,120,70,0.35)",
+    textDecorationThickness: "1px",
+    textUnderlineOffset: "6px",
+    wordBreak: "break-word",
+    overflowWrap: "anywhere",
+  };
+  const skipTyping = () => { setVisibleCount(bodyText.length); setTypingDone(true); };
 
   const handleClick = () => {
     if (phase === "idle") {
@@ -509,6 +576,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               width: "100%",
               maxWidth: "560px",
               minHeight: "100vh",
+              flexShrink: 0,
               background: "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4.5rem) clamp(1.5rem, 5vw, 3rem) clamp(6rem, 12vw, 8rem)",
               position: "relative",
@@ -657,74 +725,120 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               </div>
             </motion.div>
 
-            {/* Row 1: greeting + para0 (left) | rect photo frame (right) */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: "2rem" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                  style={{ fontSize: "clamp(22px, 3.4vw, 28px)", color: TEXT_DARK, marginBottom: "0.75rem", fontFamily: "'Caveat', 'Dancing Script', cursive", lineHeight: 1.6, textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
+            {/* Greeting — always full width */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              style={{ fontSize: "clamp(22px, 3.4vw, 28px)", color: TEXT_DARK, marginBottom: "1rem", fontFamily: "'Caveat', 'Dancing Script', cursive", lineHeight: 1.6, textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
+            >
+              My Dearest,
+            </motion.p>
+
+            {/* Letter body — single text wrapper; image frames inserted inline so CSS
+                float causes text to wrap tightly around them without gaps. Plain divs
+                handle the float (not motion.div) so Framer transforms don't interfere. */}
+            <div style={{ overflow: "hidden", position: "relative", zIndex: 2 }}>
+
+              {/* Image 1 — float right, anchored at the very start of the text block */}
+              {displayPhotos[0] && (
+                <div
+                  className="float-right ml-4 mb-4 clear-right"
+                  style={{ width: "42%", maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
                 >
-                  My Dearest,
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.55 }}
-                  style={{ fontSize: "clamp(18px, 2.6vw, 22px)", color: TEXT_DARK, lineHeight: 1.8, fontFamily: "'Caveat', 'Dancing Script', cursive", textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
-                >
-                  {para0}
-                </motion.p>
-              </div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, rotate: 0 }}
-                animate={{ opacity: 1, scale: 1, rotate: 6 }}
-                transition={{ delay: 0.5, duration: 0.7 }}
-                style={{ flexShrink: 0, width: "40%", maxWidth: 180, aspectRatio: "4 / 5", position: "relative", filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
-              >
-                <div style={{ position: "absolute", top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%", overflow: "hidden", borderRadius: "3px", background: "rgba(255,255,255,0.35)" }}>
-                  <img src={frameImg0} alt="Memory" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 5 }}
+                    transition={{ delay: 0.4, duration: 0.7 }}
+                    style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                  >
+                    <div style={{
+                      position: "absolute",
+                      top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%",
+                      overflow: "hidden", borderRadius: "3px", background: "rgba(255,255,255,0.35)",
+                    }}>
+                      <img src={displayPhotos[0]} alt="Memory" loading="lazy"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                    </div>
+                    <img src={silverFrameRect} alt="" aria-hidden loading="lazy"
+                      style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                  </motion.div>
                 </div>
-                <img src={silverFrameRect} alt="" aria-hidden loading="lazy" style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
-              </motion.div>
+              )}
+
+              {/* First text segment — flows beside image 1.
+                  Full text always in the DOM; untyped tail is transparent → zero reflow. */}
+              <span style={TEXT_STYLE}>
+                {textSeg0.slice(0, seg0Shown)}
+                {seg0Typing && <span style={CURSOR} />}
+                <span style={{ color: "transparent" }}>{textSeg0.slice(seg0Shown)}</span>
+              </span>
+
+              {/* Image 2 — float left, interleaved at the midpoint of the text */}
+              {displayPhotos[1] && (
+                <div
+                  className="float-left mr-4 mb-4 clear-left"
+                  style={{ width: "42%", maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1, rotate: -4 }}
+                    transition={{ delay: 0.48, duration: 0.7 }}
+                    style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                  >
+                    <div style={{
+                      position: "absolute",
+                      top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%",
+                      overflow: "hidden", borderRadius: "999px",
+                      clipPath: "ellipse(50% 50% at 50% 50%)", background: "rgba(255,255,255,0.35)",
+                    }}>
+                      <img src={displayPhotos[1]} alt="Memory" loading="lazy"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                    </div>
+                    <img src={silverFrameOval} alt="" aria-hidden loading="lazy"
+                      style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                  </motion.div>
+                </div>
+              )}
+
+              {/* Second text segment — flows beside image 2 */}
+              {displayPhotos[1] && (
+                <span style={TEXT_STYLE}>
+                  {" "}
+                  {textSeg1.slice(0, seg1Shown)}
+                  {seg1Typing && <span style={CURSOR} />}
+                  <span style={{ color: "transparent" }}>{textSeg1.slice(seg1Shown)}</span>
+                </span>
+              )}
             </div>
 
-            {/* Row 2: oval photo frame (left) | para1 (right) */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: "2rem" }}>
+            {/* Skip button — visible only while typewriter is in progress */}
+            {!typingDone && phase === "open" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1, rotate: -5 }}
-                transition={{ delay: 0.65, duration: 0.7 }}
-                style={{ flexShrink: 0, width: "38%", maxWidth: 170, aspectRatio: "4 / 5", position: "relative", filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 1.2, duration: 0.4 }}
+                style={{ textAlign: "right", marginTop: "0.75rem" }}
               >
-                <div style={{ position: "absolute", top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%", overflow: "hidden", borderRadius: "999px", clipPath: "ellipse(50% 50% at 50% 50%)", background: "rgba(255,255,255,0.28)" }}>
-                  <img src={frameImg1} alt="Memory" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-                </div>
-                <img src={silverFrameOval} alt="" aria-hidden loading="lazy" style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                <button
+                  onClick={skipTyping}
+                  style={{
+                    background: "rgba(160,120,70,0.08)",
+                    border: "1px solid rgba(160,120,70,0.35)",
+                    borderRadius: "20px",
+                    padding: "4px 14px",
+                    fontFamily: "'Caveat', 'Dancing Script', cursive",
+                    fontSize: "clamp(14px, 2vw, 16px)",
+                    color: TEXT_MID,
+                    cursor: "pointer",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  Skip ▶
+                </button>
               </motion.div>
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55, duration: 0.55 }}
-                style={{ flex: 1, minWidth: 0, fontSize: "clamp(18px, 2.6vw, 22px)", color: TEXT_DARK, lineHeight: 1.8, fontFamily: "'Caveat', 'Dancing Script', cursive", textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
-              >
-                {para1}
-              </motion.p>
-            </div>
-
-            {/* Remaining paragraphs — full width, no floats */}
-            {tailParas.map((line, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + i * 0.08, duration: 0.55 }}
-                style={{ fontSize: "clamp(18px, 2.6vw, 22px)", color: TEXT_DARK, lineHeight: 1.8, marginBottom: "1rem", fontFamily: "'Caveat', 'Dancing Script', cursive", textDecoration: "underline", textDecorationColor: "rgba(160,120,70,0.35)", textDecorationThickness: "1px", textUnderlineOffset: "6px" }}
-              >
-                {line}
-              </motion.p>
-            ))}
+            )}
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}

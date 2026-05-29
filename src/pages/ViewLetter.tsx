@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
@@ -118,14 +118,27 @@ const ViewLetter = () => {
 
   return (
     <AnimatePresence mode="wait">
-      {stage === "mailbox" && (
-        <FramedScene key="mailbox">
-          {template === "purple" ? (
-            <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
-          ) : (
-            <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
-          )}
+      {stage === "mailbox" && template === "purple" && (
+        <FramedScene key="mailbox-purple">
+          <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
         </FramedScene>
+      )}
+      {stage === "mailbox" && template !== "purple" && (
+        <motion.div
+          key="mailbox-photo"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
+          }}
+        >
+          <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+        </motion.div>
       )}
       {stage === "envelope" && (
         <FramedScene key="envelope">
