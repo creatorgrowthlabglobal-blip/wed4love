@@ -510,7 +510,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               maxWidth: "560px",
               minHeight: "100vh",
               background: "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
-              padding: "clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 3rem) clamp(3rem, 8vw, 5rem)",
+              padding: "clamp(2.5rem, 7vw, 4.5rem) clamp(1.5rem, 5vw, 3rem) clamp(6rem, 12vw, 8rem)",
               position: "relative",
               margin: "0 auto",
               overflow: "visible",
@@ -658,7 +658,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             </motion.div>
 
             {/* Row 1: greeting + para0 (left) | rect photo frame (right) */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: "2rem" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <motion.p
                   initial={{ opacity: 0, y: 10 }}
@@ -691,7 +691,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             </div>
 
             {/* Row 2: oval photo frame (left) | para1 (right) */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: "2rem" }}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1, rotate: -5 }}
@@ -730,7 +730,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.95, duration: 0.5 }}
-              style={{ marginTop: "1rem", textAlign: "right" }}
+              style={{ marginTop: "2.5rem", textAlign: "right" }}
             >
               <p style={{ fontSize: "clamp(20px, 2.6vw, 22px)", color: TEXT_DARK, fontFamily: "'Caveat', 'Dancing Script', cursive", marginBottom: "0.2rem", opacity: 0.85 }}>
                 {closing}
