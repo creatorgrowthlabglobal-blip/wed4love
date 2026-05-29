@@ -3,6 +3,8 @@ import { Textarea } from "@/components/ui/textarea";
 
 const TEXT_DARK = "#2C2A25";
 const TEXT_MID = "#6B6456";
+const MIN_CHARS = 800;
+const MAX_CHARS = 2500;
 
 interface LetterWritingProps {
   letterText: string;
@@ -12,6 +14,18 @@ interface LetterWritingProps {
 }
 
 const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingProps) => {
+  const charCount = letterText.length;
+  const tooShort = charCount > 0 && charCount < MIN_CHARS;
+  const atMax = charCount >= MAX_CHARS;
+  const counterColor = atMax ? "#B91C1C" : tooShort ? "#B45309" : "#6B8E5A";
+  const hint = atMax
+    ? "Maximum length reached"
+    : tooShort
+    ? `A little short — aim for at least ${MIN_CHARS} characters for a full page`
+    : charCount >= MIN_CHARS
+    ? "Looks great!"
+    : "";
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
@@ -49,8 +63,9 @@ const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingPr
 
         <Textarea
           value={letterText}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value.slice(0, MAX_CHARS))}
           placeholder="My dearest, I want you to know..."
+          maxLength={MAX_CHARS}
           style={{
             background: "transparent",
             border: "none",
@@ -69,6 +84,16 @@ const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingPr
           }}
           className="focus:ring-0 focus-visible:ring-0 focus:outline-none placeholder:opacity-40"
         />
+      </div>
+
+      {/* Character counter */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem", gap: "1rem" }}>
+        <span style={{ fontFamily: "'Caveat', cursive", fontSize: "0.9rem", color: counterColor, transition: "color 0.3s" }}>
+          {hint}
+        </span>
+        <span style={{ fontFamily: "'Caveat', cursive", fontSize: "0.95rem", color: counterColor, whiteSpace: "nowrap", transition: "color 0.3s" }}>
+          {charCount} / {MAX_CHARS}
+        </span>
       </div>
 
       <div className="flex justify-between">

@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { ImagePlus, X, Upload } from "lucide-react";
 
+const MAX_PHOTOS = 5;
+
 interface MediaUploadProps {
   images: File[];
   onImagesChange: (files: File[]) => void;
@@ -11,9 +13,13 @@ interface MediaUploadProps {
 
 const MediaUpload = ({ images, onImagesChange, onNext, onBack }: MediaUploadProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
+  const atLimit = images.length >= MAX_PHOTOS;
 
   const handleImageFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) onImagesChange([...images, ...Array.from(e.target.files)]);
+    if (!e.target.files) return;
+    const combined = [...images, ...Array.from(e.target.files)].slice(0, MAX_PHOTOS);
+    onImagesChange(combined);
+    e.target.value = "";
   };
 
   const removeImage = (index: number) => onImagesChange(images.filter((_, i) => i !== index));
@@ -48,14 +54,31 @@ const MediaUpload = ({ images, onImagesChange, onNext, onBack }: MediaUploadProp
         </div>
 
         <div
-          onClick={() => imageRef.current?.click()}
-          className="border-2 border-dashed border-primary/30 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+          onClick={() => !atLimit && imageRef.current?.click()}
+          className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center transition-all duration-300 ${
+            atLimit
+              ? "border-muted/40 bg-muted/10 cursor-not-allowed opacity-60"
+              : "border-primary/30 cursor-pointer hover:border-primary/50 hover:bg-primary/5"
+          }`}
         >
           <Upload className="w-8 h-8 text-primary/50 mb-2" />
-          <p className="font-display text-sm font-medium text-foreground mb-0.5">Click to upload photos</p>
-          <p className="font-body text-xs text-muted-foreground">JPG, PNG, WEBP supported</p>
+          {atLimit ? (
+            <>
+              <p className="font-display text-sm font-medium text-foreground mb-0.5">Maximum reached</p>
+              <p className="font-body text-xs text-muted-foreground">Remove a photo to add a different one</p>
+            </>
+          ) : (
+            <>
+              <p className="font-display text-sm font-medium text-foreground mb-0.5">Click to upload photos</p>
+              <p className="font-body text-xs text-muted-foreground">JPG, PNG, WEBP · Up to {MAX_PHOTOS} photos</p>
+            </>
+          )}
         </div>
-        <input ref={imageRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageFiles} />
+        <input ref={imageRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageFiles} disabled={atLimit} />
+
+        <p className="font-body text-xs text-muted-foreground mt-2 text-right">
+          {images.length} / {MAX_PHOTOS} photos
+        </p>
 
         {images.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mt-4">
