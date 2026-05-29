@@ -740,11 +740,11 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 handle the float (not motion.div) so Framer transforms don't interfere. */}
             <div style={{ overflow: "hidden", position: "relative", zIndex: 2 }}>
 
-              {/* Image 1 — float right, anchored at the very start of the text block */}
+              {/* Image 1 — centered block on mobile, floats right on md+ */}
               {displayPhotos[0] && (
                 <div
-                  className="float-right ml-4 mb-4 clear-right"
-                  style={{ width: "42%", maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
+                  className="block w-[65%] mx-auto my-4 md:float-right md:w-[42%] md:ml-4 md:mb-4 md:clear-right md:mx-0 md:my-0"
+                  style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
                 >
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -766,19 +766,18 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 </div>
               )}
 
-              {/* First text segment — flows beside image 1.
-                  Full text always in the DOM; untyped tail is transparent → zero reflow. */}
-              <span style={TEXT_STYLE}>
+              {/* First text segment — block on mobile (full-width), inline on md+ (wraps around float) */}
+              <span className="block my-3 md:inline md:my-0" style={TEXT_STYLE}>
                 {textSeg0.slice(0, seg0Shown)}
                 {seg0Typing && <span style={CURSOR} />}
                 <span style={{ color: "transparent" }}>{textSeg0.slice(seg0Shown)}</span>
               </span>
 
-              {/* Image 2 — float left, interleaved at the midpoint of the text */}
+              {/* Image 2 — centered block on mobile, floats left on md+ */}
               {displayPhotos[1] && (
                 <div
-                  className="float-left mr-4 mb-4 clear-left"
-                  style={{ width: "42%", maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
+                  className="block w-[65%] mx-auto my-4 md:float-left md:w-[42%] md:mr-4 md:mb-4 md:clear-left md:mx-0 md:my-0"
+                  style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
                 >
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -801,9 +800,9 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 </div>
               )}
 
-              {/* Second text segment — flows beside image 2 */}
+              {/* Second text segment — block on mobile, inline on md+ */}
               {displayPhotos[1] && (
-                <span style={TEXT_STYLE}>
+                <span className="block my-3 md:inline md:my-0" style={TEXT_STYLE}>
                   {" "}
                   {textSeg1.slice(0, seg1Shown)}
                   {seg1Typing && <span style={CURSOR} />}
