@@ -29,8 +29,12 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
     return () => clearTimeout(t);
   }, []);
 
-  // Frame artwork natural aspect ratio (1600 x 1067 ≈ 3:2 landscape).
-  const FRAME_ASPECT = 1600 / 1067;
+  // The frame artwork is rendered via CSS `border-image` so the four painted
+  // edges stretch independently to fill any viewport (portrait phone, square
+  // tablet, ultra-wide desktop) without ever squeezing the decoration itself.
+  // Slice value = thickness of the painted band in source pixels (image is
+  // 1600x1067; the floral edge occupies ~260px on each side).
+  const borderImageSlice = 260;
 
   return (
     <div
@@ -42,11 +46,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         background: overlay
           ? "transparent"
           : "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         overflow: "hidden",
-        padding: "clamp(8px, 2.5vmin, 24px)",
       }}
     >
       {/* Skeleton shimmer placeholder while frame loads */}
@@ -64,65 +64,64 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         />
       )}
 
-      {/* Aspect-locked stage — keeps the frame from being squeezed on
-          portrait phones while still using the viewport as much as possible. */}
+      {/* Decorative painted frame — uses border-image so the four edges
+          stretch to fill the full viewport without distorting the artwork. */}
       <div
+        aria-hidden
         style={{
-          position: "relative",
-          width: "min(100%, calc(100vh * " + FRAME_ASPECT + "))",
-          aspectRatio: `${FRAME_ASPECT}`,
-          maxHeight: "100%",
-          pointerEvents: overlay ? "none" : "auto",
+          position: "absolute",
+          inset: 0,
+          borderStyle: "solid",
+          borderColor: "transparent",
+          borderWidth: "clamp(56px, 13vmin, 180px)",
+          borderImageSource: `url(${frameImg})`,
+          borderImageSlice: borderImageSlice,
+          borderImageRepeat: "stretch",
+          borderImageWidth: 1,
+          pointerEvents: "none",
+          zIndex: overlay ? 0 : 1,
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 0.6s ease-out",
+          filter: overlay
+            ? "drop-shadow(0 10px 24px rgba(160,80,110,0.18))"
+            : "none",
         }}
-      >
-        {/* Decorative watercolor frame */}
-        <img
-          src={frameImg}
-          alt=""
-          aria-hidden
-          loading="eager"
-          decoding="async"
-          onLoad={handleLoad}
+      />
+
+      {/* Hidden image used purely to fire onLoad for the shimmer fade-out */}
+      <img
+        src={frameImg}
+        alt=""
+        aria-hidden
+        loading="eager"
+        decoding="async"
+        onLoad={handleLoad}
+        style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
+      />
+
+      {!overlay && (
+        <div
           style={{
             position: "absolute",
             inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            pointerEvents: "none",
-            zIndex: overlay ? 0 : 1,
-            opacity: loaded ? 1 : 0,
-            transition: "opacity 0.6s ease-out",
-            filter: overlay
-              ? "drop-shadow(0 10px 24px rgba(160,80,110,0.18))"
-              : "none",
+            zIndex: 2,
+            // Keep children inside the painted border — matches border width.
+            padding: "clamp(60px, 14vmin, 190px) clamp(56px, 13vmin, 180px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
-        />
-
-        {!overlay && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 2,
-              // Inner safe area — keeps content inside the painted border.
-              padding: "clamp(32px, 7%, 110px) clamp(28px, 7%, 110px)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              pointerEvents: "auto",
-            }}
-          >
-            <div style={{ position: "relative", width: "100%", height: "100%" }}>
-              {children}
-            </div>
+        >
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            {children}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Shimmer keyframes */}
       <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
     </div>
   );
+}
 }
 
