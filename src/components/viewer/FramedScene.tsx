@@ -22,6 +22,13 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
 
   const handleLoad = useCallback(() => setLoaded(true), []);
 
+  // Safety fallback — reveal the frame even if onLoad never fires (some
+  // mobile browsers skip the event when an image is served from cache).
+  useEffect(() => {
+    const t = setTimeout(() => setLoaded(true), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div
       style={{
