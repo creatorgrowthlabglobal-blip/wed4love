@@ -385,10 +385,9 @@ const Index = () => {
               </FramedScene>
             )}
             {previewStage === "envelope" && (
-              <div key="p-envelope" style={{ position: "fixed", inset: 0, zIndex: 40 }}>
+              <FramedScene key="p-envelope">
                 <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
-                <FramedScene overlay />
-              </div>
+              </FramedScene>
             )}
           </>
         )}
