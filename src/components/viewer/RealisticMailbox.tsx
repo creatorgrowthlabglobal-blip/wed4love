@@ -61,7 +61,7 @@ const RealisticMailbox = ({ className, onContinue, senderName }: Props) => {
   return (
     <div
       className={className}
-      style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}
     >
       <motion.div
         onClick={handleClick}
