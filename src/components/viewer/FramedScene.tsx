@@ -29,6 +29,9 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
     return () => clearTimeout(t);
   }, []);
 
+  // Frame artwork natural aspect ratio (1600 x 1067 ≈ 3:2 landscape).
+  const FRAME_ASPECT = 1600 / 1067;
+
   return (
     <div
       style={{
@@ -43,6 +46,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        padding: "clamp(8px, 2.5vmin, 24px)",
       }}
     >
       {/* Skeleton shimmer placeholder while frame loads */}
@@ -60,49 +64,61 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         />
       )}
 
-      {/* Decorative watercolor frame */}
-      <img
-        src={frameImg}
-        alt=""
-        aria-hidden
-        loading="eager"
-        decoding="async"
-        onLoad={handleLoad}
+      {/* Aspect-locked stage — keeps the frame from being squeezed on
+          portrait phones while still using the viewport as much as possible. */}
+      <div
         style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "fill",
-          pointerEvents: "none",
-          zIndex: overlay ? 0 : 1,
-          opacity: loaded ? 1 : 0,
-          transition: "opacity 0.6s ease-out",
-          filter: overlay
-            ? "drop-shadow(0 10px 24px rgba(160,80,110,0.18))"
-            : "none",
+          position: "relative",
+          width: "min(100%, calc(100vh * " + FRAME_ASPECT + "))",
+          aspectRatio: `${FRAME_ASPECT}`,
+          maxHeight: "100%",
+          pointerEvents: overlay ? "none" : "auto",
         }}
-      />
-
-      {!overlay && (
-        <div
+      >
+        {/* Decorative watercolor frame */}
+        <img
+          src={frameImg}
+          alt=""
+          aria-hidden
+          loading="eager"
+          decoding="async"
+          onLoad={handleLoad}
           style={{
-            position: "relative",
-            zIndex: 2,
+            position: "absolute",
+            inset: 0,
             width: "100%",
             height: "100%",
-            // Inner safe area — keeps content inside the painted border.
-            padding: "clamp(48px, 11vmin, 150px) clamp(40px, 9vmin, 150px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            objectFit: "contain",
+            pointerEvents: "none",
+            zIndex: overlay ? 0 : 1,
+            opacity: loaded ? 1 : 0,
+            transition: "opacity 0.6s ease-out",
+            filter: overlay
+              ? "drop-shadow(0 10px 24px rgba(160,80,110,0.18))"
+              : "none",
           }}
-        >
-          <div style={{ position: "relative", width: "100%", height: "100%" }}>
-            {children}
+        />
+
+        {!overlay && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 2,
+              // Inner safe area — keeps content inside the painted border.
+              padding: "clamp(32px, 7%, 110px) clamp(28px, 7%, 110px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "auto",
+            }}
+          >
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+              {children}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Shimmer keyframes */}
       <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
