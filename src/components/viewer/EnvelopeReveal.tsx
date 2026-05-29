@@ -513,7 +513,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               padding: "clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 3rem) clamp(3rem, 8vw, 5rem)",
               position: "relative",
               margin: "0 auto",
-              overflow: "visible",
+              display: "flow-root",
             }}
           >
             {/* Decorative double border frame */}
