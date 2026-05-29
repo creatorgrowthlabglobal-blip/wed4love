@@ -70,7 +70,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         aria-hidden
         style={{
           position: "absolute",
-          inset: 0,
+          borderWidth: "clamp(68px, 15.5vmin, 210px)",
           borderStyle: "solid",
           borderColor: "transparent",
           borderWidth: "clamp(56px, 13vmin, 180px)",
