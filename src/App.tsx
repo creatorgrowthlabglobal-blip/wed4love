@@ -29,6 +29,24 @@ if (!getLetter(TEST_ID)) {
     date: new Date().toISOString(),
   });
 }
+const ENVELOPE_TEST_ID = "demo-envelope";
+if (!getLetter(ENVELOPE_TEST_ID)) {
+  saveLetter({
+    id: ENVELOPE_TEST_ID,
+    type: "love",
+    senderName: "Alex",
+    receiverName: "Someone Special",
+    letterText: "Every moment with you feels like a dream I never want to wake up from.",
+    images: [],
+    videos: [],
+    audios: [],
+    selectedMusic: null,
+    quiz: [],
+    email: "test@example.com",
+    date: new Date().toISOString(),
+    template: "purple",
+  });
+}
 
 const queryClient = new QueryClient();
 

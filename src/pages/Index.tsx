@@ -35,7 +35,7 @@ const Index = () => {
   const startPreviewWith = (t: "photo" | "purple") => {
     setTemplate(t);
     setShowTemplatePicker(false);
-    setPreviewStage("mailbox");
+    setPreviewStage(t === "purple" ? "envelope" : "mailbox");
     setShowPreview(true);
   };
   const closePreview = () => setShowPreview(false);
@@ -433,15 +433,14 @@ const Index = () => {
                   className="rounded-2xl overflow-hidden text-left border-2 transition-all"
                   style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}
                 >
-                  <div className="aspect-[4/3] relative overflow-hidden" style={{ background: "linear-gradient(180deg,#F2EFE8,#E8DEFF)" }}>
-                    <div className="absolute inset-0 pointer-events-none" style={{ transform: "scale(0.78) translateY(12%)", transformOrigin: "center top" }}>
-                      <PurpleMailbox className="w-full h-full" />
-                    </div>
+                  <div className="aspect-[4/3] relative overflow-hidden">
+                    <img src="/envelope-preview.png" alt="Envelope preview"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} />
                   </div>
                   <div className="p-2 sm:p-4">
                     <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">Template 2</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Purple Classic</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Illustrated purple mailbox — envelope slides out.</p>
+                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Envelope Classic</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Opens straight to a beautiful envelope reveal.</p>
                   </div>
                 </motion.button>
               </div>
