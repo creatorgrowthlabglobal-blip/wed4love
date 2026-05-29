@@ -140,6 +140,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
+  const envelopeSceneSize = "min(280px, 52vw, calc(100% - 2rem))";
 
   const HEART_DIRS = [
     { x: -158, y: -272 },  // upper-left
@@ -226,6 +227,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
         overflowY: phase === "open" ? "auto" : "hidden",
         overflowX: "hidden",
         WebkitOverflowScrolling: "touch",
+        isolation: "isolate",
       }}
     >
       {/* Subtle grain overlay */}
@@ -272,6 +274,8 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 fontStyle: "normal",
                 whiteSpace: "nowrap",
+                pointerEvents: "none",
+                zIndex: 2,
               }}
               animate={{ opacity: [0.5, 0.85, 0.5] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
@@ -288,7 +292,9 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                width: "min(280px, 52%)",
+                width: envelopeSceneSize,
+                maxWidth: "100%",
+                maxHeight: "100%",
                 aspectRatio: "360 / 240",
                 pointerEvents: "none",
                 zIndex: 60,
@@ -500,7 +506,9 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              width: "min(560px, 94vw)",
+              width: "min(560px, calc(100% - 2rem))",
+              maxWidth: "100%",
+              maxHeight: "100%",
               background:
                 "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4rem) clamp(1.75rem, 5vw, 3rem) clamp(2.5rem, 7vw, 4rem)",
@@ -508,6 +516,8 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 "0 24px 60px rgba(90,70,110,0.35), 0 8px 20px rgba(90,70,110,0.18), inset 0 0 80px rgba(220,195,150,0.25)",
               position: "relative",
               borderRadius: "6px",
+              margin: "0 auto",
+              overflow: "hidden",
             }}
           >
             {/* Decorative double border frame */}
