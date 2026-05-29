@@ -4,8 +4,6 @@ import { Eye, Heart, Lock, Play, X } from "lucide-react";
 import { filesToBase64 } from "@/lib/letterStorage";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
-import RealisticMailbox from "@/components/viewer/RealisticMailbox";
-import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import FramedScene from "@/components/viewer/FramedScene";
 
 interface PreviewPaymentProps {
@@ -23,11 +21,8 @@ interface PreviewPaymentProps {
   onBack: () => void;
 }
 
-type Stage = "mailbox" | "envelope";
-
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
-  const [previewStage, setPreviewStage] = useState<Stage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -36,16 +31,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
     }
   }, [showPreview, letterData.images]);
 
-  const advancePreview = () => {
-    if (previewStage === "mailbox") setPreviewStage("envelope");
-    else setShowPreview(false);
-  };
-
-  const openPreview = () => {
-    setPreviewStage("mailbox");
-    setShowPreview(true);
-  };
-
+  const openPreview = () => setShowPreview(true);
   const closePreview = () => setShowPreview(false);
 
   return (
@@ -153,26 +139,15 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
               <X className="w-5 h-5 text-white" />
             </motion.button>
 
-            {previewStage === "mailbox" && (
-              <FramedScene key="p-mailbox">
-                {template === "purple" ? (
-                  <PurpleMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
-                ) : (
-                  <RealisticMailbox className="w-full h-full" onContinue={advancePreview} senderName={letterData.senderName} />
-                )}
-              </FramedScene>
-            )}
-            {previewStage === "envelope" && (
-              <FramedScene key="p-envelope">
-                <EnvelopeReveal
-                  receiverName={letterData.receiverName}
-                  senderName={letterData.senderName}
-                  letterText={letterData.letterText}
-                  images={previewImages}
-                  onContinue={closePreview}
-                />
-              </FramedScene>
-            )}
+            <FramedScene key="p-envelope">
+              <EnvelopeReveal
+                receiverName={letterData.receiverName}
+                senderName={letterData.senderName}
+                letterText={letterData.letterText}
+                images={previewImages}
+                onContinue={closePreview}
+              />
+            </FramedScene>
           </>
         )}
       </AnimatePresence>

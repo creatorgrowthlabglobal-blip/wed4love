@@ -46,7 +46,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
         background: overlay
           ? "transparent"
           : "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
-        overflow: "hidden",
+        overflow: "clip",
       }}
     >
       {/* Skeleton shimmer placeholder while frame loads */}
