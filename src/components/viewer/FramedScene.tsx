@@ -73,7 +73,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
           inset: 0,
           borderStyle: "solid",
           borderColor: "transparent",
-          borderWidth: "clamp(56px, 13vmin, 180px)",
+          borderWidth: "clamp(68px, 15.5vmin, 210px)",
           borderImageSource: `url(${frameImg})`,
           borderImageSlice: borderImageSlice,
           borderImageRepeat: "stretch",
@@ -106,7 +106,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
             inset: 0,
             zIndex: 2,
             // Keep children inside the painted border — matches border width.
-            padding: "clamp(60px, 14vmin, 190px) clamp(56px, 13vmin, 180px)",
+            padding: "clamp(72px, 16.5vmin, 220px) clamp(68px, 15.5vmin, 210px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
