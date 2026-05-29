@@ -123,5 +123,4 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
     </div>
   );
 }
-}
 
