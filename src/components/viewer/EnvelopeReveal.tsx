@@ -288,7 +288,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                width: "min(320px, 68%)",
+                width: "min(280px, 52%)",
                 aspectRatio: "360 / 240",
                 pointerEvents: "none",
                 zIndex: 60,
