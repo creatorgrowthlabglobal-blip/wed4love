@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { sounds } from "@/lib/sounds";
 import photo1 from "@/assets/photo1.jpg";
@@ -141,6 +142,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
   const [heartBurst, setHeartBurst] = useState(false);
   const [visibleCount, setVisibleCount] = useState(0);
   const [typingDone, setTypingDone] = useState(false);
+  const isMobile = useIsMobile();
   const envelopeSceneSize = "min(280px, 52vw, calc(100% - 2rem))";
 
   const HEART_DIRS = [
@@ -735,81 +737,136 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               My Dearest,
             </motion.p>
 
-            {/* Letter body — single text wrapper; image frames inserted inline so CSS
-                float causes text to wrap tightly around them without gaps. Plain divs
-                handle the float (not motion.div) so Framer transforms don't interfere. */}
-            <div style={{ overflow: "hidden", position: "relative", zIndex: 2 }}>
-
-              {/* Image 1 — centered block on mobile, floats right on md+ */}
-              {displayPhotos[0] && (
-                <div
-                  className="block w-[65%] mx-auto my-4 md:float-right md:w-[42%] md:ml-4 md:mb-4 md:clear-right md:mx-0 md:my-0"
-                  style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 5 }}
-                    transition={{ delay: 0.4, duration: 0.7 }}
-                    style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+            {/* Letter body — mobile: explicit vertical stack (no transparent placeholder);
+                desktop: CSS float layout with transparent placeholder for reflow stability. */}
+            {isMobile ? (
+              <div style={{ position: "relative", zIndex: 2 }}>
+                {displayPhotos[0] && (
+                  <div
+                    className="w-[65%] mx-auto mb-6"
+                    style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
                   >
-                    <div style={{
-                      position: "absolute",
-                      top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%",
-                      overflow: "hidden", borderRadius: "3px", background: "rgba(255,255,255,0.35)",
-                    }}>
-                      <img src={displayPhotos[0]} alt="Memory" loading="lazy"
-                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-                    </div>
-                    <img src={silverFrameRect} alt="" aria-hidden loading="lazy"
-                      style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
-                  </motion.div>
-                </div>
-              )}
-
-              {/* First text segment — block on mobile (full-width), inline on md+ (wraps around float) */}
-              <span className="block my-3 md:inline md:my-0" style={TEXT_STYLE}>
-                {textSeg0.slice(0, seg0Shown)}
-                {seg0Typing && <span style={CURSOR} />}
-                <span style={{ color: "transparent" }}>{textSeg0.slice(seg0Shown)}</span>
-              </span>
-
-              {/* Image 2 — centered block on mobile, floats left on md+ */}
-              {displayPhotos[1] && (
-                <div
-                  className="block w-[65%] mx-auto my-4 md:float-left md:w-[42%] md:mr-4 md:mb-4 md:clear-left md:mx-0 md:my-0"
-                  style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1, rotate: -4 }}
-                    transition={{ delay: 0.48, duration: 0.7 }}
-                    style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 5 }}
+                      transition={{ delay: 0.4, duration: 0.7 }}
+                      style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                    >
+                      <div style={{
+                        position: "absolute",
+                        top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%",
+                        overflow: "hidden", borderRadius: "3px", background: "rgba(255,255,255,0.35)",
+                      }}>
+                        <img src={displayPhotos[0]} alt="Memory" loading="lazy"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                      </div>
+                      <img src={silverFrameRect} alt="" aria-hidden loading="lazy"
+                        style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                    </motion.div>
+                  </div>
+                )}
+                <p style={{ ...TEXT_STYLE, display: "block", marginBottom: "0.75rem" }}>
+                  {textSeg0.slice(0, seg0Shown)}
+                  {seg0Typing && <span style={CURSOR} />}
+                </p>
+                {displayPhotos[1] && (
+                  <div
+                    className="w-[65%] mx-auto mb-6"
+                    style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
                   >
-                    <div style={{
-                      position: "absolute",
-                      top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%",
-                      overflow: "hidden", borderRadius: "999px",
-                      clipPath: "ellipse(50% 50% at 50% 50%)", background: "rgba(255,255,255,0.35)",
-                    }}>
-                      <img src={displayPhotos[1]} alt="Memory" loading="lazy"
-                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-                    </div>
-                    <img src={silverFrameOval} alt="" aria-hidden loading="lazy"
-                      style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
-                  </motion.div>
-                </div>
-              )}
-
-              {/* Second text segment — block on mobile, inline on md+ */}
-              {displayPhotos[1] && (
-                <span className="block my-3 md:inline md:my-0" style={TEXT_STYLE}>
-                  {" "}
-                  {textSeg1.slice(0, seg1Shown)}
-                  {seg1Typing && <span style={CURSOR} />}
-                  <span style={{ color: "transparent" }}>{textSeg1.slice(seg1Shown)}</span>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1, rotate: -4 }}
+                      transition={{ delay: 0.48, duration: 0.7 }}
+                      style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                    >
+                      <div style={{
+                        position: "absolute",
+                        top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%",
+                        overflow: "hidden", borderRadius: "999px",
+                        clipPath: "ellipse(50% 50% at 50% 50%)", background: "rgba(255,255,255,0.35)",
+                      }}>
+                        <img src={displayPhotos[1]} alt="Memory" loading="lazy"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                      </div>
+                      <img src={silverFrameOval} alt="" aria-hidden loading="lazy"
+                        style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                    </motion.div>
+                  </div>
+                )}
+                {displayPhotos[1] && (
+                  <p style={{ ...TEXT_STYLE, display: "block" }}>
+                    {textSeg1.slice(0, seg1Shown)}
+                    {seg1Typing && <span style={CURSOR} />}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div style={{ overflow: "hidden", position: "relative", zIndex: 2 }}>
+                {displayPhotos[0] && (
+                  <div
+                    className="float-right w-[42%] ml-4 mb-4 clear-right"
+                    style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 5 }}
+                      transition={{ delay: 0.4, duration: 0.7 }}
+                      style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                    >
+                      <div style={{
+                        position: "absolute",
+                        top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%",
+                        overflow: "hidden", borderRadius: "3px", background: "rgba(255,255,255,0.35)",
+                      }}>
+                        <img src={displayPhotos[0]} alt="Memory" loading="lazy"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                      </div>
+                      <img src={silverFrameRect} alt="" aria-hidden loading="lazy"
+                        style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                    </motion.div>
+                  </div>
+                )}
+                <span style={TEXT_STYLE}>
+                  {textSeg0.slice(0, seg0Shown)}
+                  {seg0Typing && <span style={CURSOR} />}
+                  <span style={{ color: "transparent" }}>{textSeg0.slice(seg0Shown)}</span>
                 </span>
-              )}
-            </div>
+                {displayPhotos[1] && (
+                  <div
+                    className="float-left w-[42%] mr-4 mb-4 clear-left"
+                    style={{ maxWidth: 185, aspectRatio: "4 / 5", position: "relative" }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1, rotate: -4 }}
+                      transition={{ delay: 0.48, duration: 0.7 }}
+                      style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
+                    >
+                      <div style={{
+                        position: "absolute",
+                        top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%",
+                        overflow: "hidden", borderRadius: "999px",
+                        clipPath: "ellipse(50% 50% at 50% 50%)", background: "rgba(255,255,255,0.35)",
+                      }}>
+                        <img src={displayPhotos[1]} alt="Memory" loading="lazy"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                      </div>
+                      <img src={silverFrameOval} alt="" aria-hidden loading="lazy"
+                        style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                    </motion.div>
+                  </div>
+                )}
+                {displayPhotos[1] && (
+                  <span style={TEXT_STYLE}>
+                    {" "}
+                    {textSeg1.slice(0, seg1Shown)}
+                    {seg1Typing && <span style={CURSOR} />}
+                    <span style={{ color: "transparent" }}>{textSeg1.slice(seg1Shown)}</span>
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Skip button — visible only while typewriter is in progress */}
             {!typingDone && phase === "open" && (
