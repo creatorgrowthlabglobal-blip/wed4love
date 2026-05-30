@@ -141,16 +141,15 @@ const LetterReady = () => {
               {copied ? "Copied! 💌" : "Copy Link"}
             </motion.button>
 
-            <motion.a
+            <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              href={qrCodeUrl}
-              download={`letter-${id}-qr.png`}
+              onClick={handleDownloadQR}
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-secondary text-secondary-foreground font-heading text-base font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card"
             >
               <Download className="w-4 h-4" />
               Download QR
-            </motion.a>
+            </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.03 }}
