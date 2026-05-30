@@ -98,11 +98,11 @@ const MusicSelection = ({
                   <p className="font-heading text-sm font-semibold text-foreground truncate">{m.title}</p>
                   <p className="font-body text-xs text-muted-foreground truncate">{m.artist}</p>
                 </div>
-                {isSelected && (
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-primary-foreground" />
-                  </div>
-                )}
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                  isSelected ? "bg-primary border-2 border-primary" : "bg-transparent border-2 border-primary/40"
+                }`}>
+                  {isSelected && <Check className="w-4 h-4 text-primary-foreground" />}
+                </div>
               </div>
             );
           })}
