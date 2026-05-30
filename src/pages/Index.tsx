@@ -80,6 +80,16 @@ const Index = () => {
             <PenLine className="w-7 h-7 text-primary" />
           </motion.div>
 
+          {/* Eyebrow */}
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-4"
+          >
+            For the people who matter most
+          </motion.p>
+
           {/* Main Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -87,8 +97,8 @@ const Index = () => {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.15] mb-5"
           >
-            Pour Your Heart Out{" "}
-            <span className="text-primary italic">The Right Way</span>
+            Wish them with memories —{" "}
+            <span className="text-primary italic">and never miss their day</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -98,25 +108,34 @@ const Index = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="font-body text-base sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed"
           >
-            Create a personalized letter with your special song, photos, and a
-            heartfelt message. Send it with love — they'll never forget it 💕
+            Send a beautifully crafted letter with photos and music — or schedule a voice
+            reminder call for birthdays, anniversaries, and special days. For your loved one,
+            family, mom, partner, or best friend 💕
           </motion.p>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.45 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3"
           >
             <Link
               to="/create-letter"
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
               style={{
                 boxShadow: "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
               }}
             >
               <Heart className="w-5 h-5 fill-current" />
-              Create Your Letter
+              Create a Letter
+            </Link>
+            <Link
+              to="/schedule-call"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-foreground border border-primary/20 font-display text-base sm:text-lg font-semibold shadow-md hover:shadow-lg hover:border-primary/40 transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
+            >
+              <Bell className="w-5 h-5 text-primary" />
+              Schedule a Call
             </Link>
           </motion.div>
 
@@ -127,8 +146,8 @@ const Index = () => {
             transition={{ delay: 0.65, duration: 0.5 }}
             className="font-body text-sm text-muted-foreground mt-5"
           >
-            Only <strong className="text-foreground">$4.99</strong> • Instant
-            delivery • Unforgettable experience
+            Letters from <strong className="text-foreground">$6.99</strong> • Reminder calls{" "}
+            <strong className="text-foreground">free to start</strong> • Instant delivery
           </motion.p>
 
           {/* Preview the experience button */}
