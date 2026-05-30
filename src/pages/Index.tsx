@@ -127,7 +127,7 @@ const Index = () => {
             transition={{ delay: 0.65, duration: 0.5 }}
             className="font-body text-sm text-muted-foreground mt-5"
           >
-            Only <strong className="text-foreground">$6.99</strong> • Instant
+            Only <strong className="text-foreground">$4.99</strong> • Instant
             delivery • Unforgettable experience
           </motion.p>
 
@@ -301,7 +301,7 @@ const Index = () => {
 
             <p className="font-body text-sm text-muted-foreground mb-1">One-time payment</p>
             <p className="font-display text-5xl sm:text-6xl font-bold text-foreground mb-6">
-              $6.99
+              $4.99
             </p>
 
             <ul className="space-y-3 text-left max-w-xs mx-auto mb-8">

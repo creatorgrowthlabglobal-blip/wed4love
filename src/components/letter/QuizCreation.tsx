@@ -111,7 +111,7 @@ const QuizCreation = ({ quiz, onChange, onNext, onBack }: QuizCreationProps) => 
                       value={opt}
                       onChange={(e) => updateOption(i, oi, e.target.value)}
                       placeholder={`Option ${String.fromCharCode(65 + oi)}`}
-                      className="flex-1 bg-background/50 border-border/60 font-body text-sm py-2"
+                      className="flex-1 bg-background/50 border-border/60 font-body text-base md:text-sm py-2"
                     />
                   </div>
                 ))}
@@ -127,7 +127,7 @@ const QuizCreation = ({ quiz, onChange, onNext, onBack }: QuizCreationProps) => 
                 <select
                   value={q.correctAnswer}
                   onChange={(e) => updateField(i, "correctAnswer", e.target.value)}
-                  className="w-full bg-background/50 border border-border/60 rounded-lg py-2 px-3 text-sm font-body focus:outline-none focus:border-primary/50"
+                  className="w-full bg-background/50 border border-border/60 rounded-lg py-2 px-3 text-base md:text-sm font-body focus:outline-none focus:border-primary/50"
                 >
                   <option value="">Select correct answer</option>
                   {q.options.filter(Boolean).map((opt, oi) => (

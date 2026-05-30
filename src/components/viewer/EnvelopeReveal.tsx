@@ -138,22 +138,9 @@ type Phase = "idle" | "opening" | "open";
 export default function EnvelopeReveal({ receiverName, senderName, letterText, images, onContinue, onLetterOpen }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
-  const [heartBurst, setHeartBurst] = useState(false);
   const [visibleCount, setVisibleCount] = useState(0);
   const [typingDone, setTypingDone] = useState(false);
   const envelopeSceneSize = "min(280px, 52vw, calc(100% - 2rem))";
-
-  const HEART_DIRS = [
-    { x: -158, y: -272 },  // upper-left
-    { x:    0, y: -312 },  // upper-center
-    { x:  158, y: -272 },  // upper-right
-    { x: -158, y:  158 },  // lower-left
-    { x:    0, y:  172 },  // lower-center
-    { x:  158, y:  158 },  // lower-right
-  ];
-
-  const HEART_STROKE = "#C9607A";
-  const HEART_FILL   = "#F4CADB";
 
   // Once the flap finishes rotating open (~1.5s after click), drop it behind
   // the body so the letter can rise above it. Driven by a real timeout so the
@@ -250,12 +237,8 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
 
   const handleClick = () => {
     if (phase === "idle") {
-      setHeartBurst(true);
-      // Wait for all hearts to land before opening the envelope
-      setTimeout(() => {
-        sounds.envelopeOpen();
-        setPhase("opening");
-      }, 1000);
+      sounds.envelopeOpen();
+      setPhase("opening");
       return;
     }
     if (phase === "opening") {
@@ -360,35 +343,6 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 transformOrigin: "50% 50%",
               }}
             >
-              {/* Heart burst on click */}
-              {heartBurst && HEART_DIRS.map((dir, i) => (
-                <motion.div
-                  key={`hb-${i}`}
-                  initial={{ opacity: 0, x: 0, y: 0, scale: 0.3 }}
-                  animate={{ opacity: 1, x: dir.x, y: dir.y, scale: 1 }}
-                  transition={{ duration: 0.6, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    position: "absolute",
-                    top: "50%", left: "50%",
-                    marginTop: -14, marginLeft: -14,
-                    width: 28, height: 28,
-                    pointerEvents: "none",
-                    zIndex: 50,
-                  }}
-                >
-                  <svg viewBox="0 0 28 28" width="28" height="28" style={{ display: "block" }}>
-                    <path
-                      d="M14 24 C14 24 3 16.5 3 9.5 C3 6.4 5.4 4 8.5 4 C10.5 4 12.2 5.1 13.1 6.7 C13.5 7.4 14.5 7.4 14.9 6.7 C15.8 5.1 17.5 4 19.5 4 C22.6 4 25 6.4 25 9.5 C25 16.5 14 24 14 24 Z"
-                      fill={HEART_FILL}
-                      stroke={HEART_STROKE}
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </motion.div>
-              ))}
-
               {/* Envelope body */}
               <div
                 style={{
