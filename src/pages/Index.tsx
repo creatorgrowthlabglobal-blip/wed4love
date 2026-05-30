@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X } from "lucide-react";
+import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X, Phone, Mic, CalendarClock } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -80,6 +80,16 @@ const Index = () => {
             <PenLine className="w-7 h-7 text-primary" />
           </motion.div>
 
+          {/* Eyebrow */}
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-4"
+          >
+            For the people who matter most
+          </motion.p>
+
           {/* Main Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -87,8 +97,8 @@ const Index = () => {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.15] mb-5"
           >
-            Pour Your Heart Out{" "}
-            <span className="text-primary italic">The Right Way</span>
+            Wish them with memories —{" "}
+            <span className="text-primary italic">and never miss their day</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -98,25 +108,34 @@ const Index = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="font-body text-base sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed"
           >
-            Create a personalized letter with your special song, photos, and a
-            heartfelt message. Send it with love — they'll never forget it 💕
+            Send a beautifully crafted letter with photos and music — or schedule a voice
+            reminder call for birthdays, anniversaries, and special days. For your loved one,
+            family, mom, partner, or best friend 💕
           </motion.p>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.45 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3"
           >
             <Link
               to="/create-letter"
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
               style={{
                 boxShadow: "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
               }}
             >
               <Heart className="w-5 h-5 fill-current" />
-              Create Your Letter
+              Create a Letter
+            </Link>
+            <Link
+              to="/schedule-call"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-foreground border border-primary/20 font-display text-base sm:text-lg font-semibold shadow-md hover:shadow-lg hover:border-primary/40 transition-all duration-400 hover:scale-[1.04] active:scale-[0.97]"
+            >
+              <Bell className="w-5 h-5 text-primary" />
+              Schedule a Call
             </Link>
           </motion.div>
 
@@ -127,8 +146,8 @@ const Index = () => {
             transition={{ delay: 0.65, duration: 0.5 }}
             className="font-body text-sm text-muted-foreground mt-5"
           >
-            Only <strong className="text-foreground">$4.99</strong> • Instant
-            delivery • Unforgettable experience
+            Letters from <strong className="text-foreground">$6.99</strong> • Reminder calls{" "}
+            <strong className="text-foreground">free to start</strong> • Instant delivery
           </motion.p>
 
           {/* Preview the experience button */}
@@ -258,9 +277,73 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Reminder Calls Section */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-[hsl(350_100%_97%)] to-background">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14"
+          >
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-2">
+              Reminder Calls
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
+              Never miss a{" "}
+              <span className="text-primary italic">special day</span> again
+            </h2>
+            <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
+              Record your voice or type a message — we'll call your loved one at the perfect moment.
+              Birthdays, anniversaries, "just because" days.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-12">
+            {[
+              { icon: Mic, title: "Record your voice", desc: "Or type a message and pick a warm voice — we handle the rest." },
+              { icon: CalendarClock, title: "Pick date & time", desc: "Schedule it for their birthday, anniversary, or any meaningful day." },
+              { icon: Phone, title: "We ring them up", desc: "Your message reaches them at the exact moment that matters." },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.6 }}
+                className="text-center"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                  <item.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-2">{item.title}</h3>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <Link
+              to="/schedule-call"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white border border-primary/20 text-foreground font-display text-base font-semibold shadow-md hover:shadow-lg hover:border-primary/40 transition-all duration-300 hover:scale-[1.03]"
+            >
+              <Bell className="w-4 h-4 text-primary" />
+              Schedule a Reminder — 2 calls free
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-background to-[hsl(350_100%_97%)]">
-        <div className="container mx-auto max-w-lg">
+        <div className="container mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -272,70 +355,106 @@ const Index = () => {
               Simple Pricing
             </p>
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
-              The{" "}
-              <span className="text-primary italic">"Grand Gesture"</span>
-              <br />
-              Package
+              Two ways to{" "}
+              <span className="text-primary italic">say it best</span>
             </h2>
             <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
-              Everything you need to make your message unforgettable. One purchase, unlimited emotion.
+              A keepsake letter or a heartfelt reminder call — both built to be unforgettable.
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.6 }}
-            className="rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden bg-white border border-primary/10"
-            style={{
-              boxShadow: "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
-            }}
-          >
-            {/* Best value badge */}
-            <div className="absolute top-4 right-4">
-              <span className="font-body text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
-                Best Value
-              </span>
-            </div>
-
-            <p className="font-body text-sm text-muted-foreground mb-1">One-time payment</p>
-            <p className="font-display text-5xl sm:text-6xl font-bold text-foreground mb-6">
-              $4.99
-            </p>
-
-            <ul className="space-y-3 text-left max-w-xs mx-auto mb-8">
-              {[
-                { icon: LinkIcon, text: "Shareable unique link" },
-                { icon: Music, text: "Custom background music" },
-                { icon: Bell, text: "Interactive experience" },
-                { icon: PartyPopper, text: "Cinematic Memory Vault" },
-                { icon: MessageSquare, text: "Secret message & PIN lock" },
-                { icon: Heart, text: "Write a heartfelt letter" },
-              ].map((f, i) => (
-                <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
-                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Check className="w-3 h-3 text-primary" />
-                  </div>
-                  {f.text}
-                </li>
-              ))}
-            </ul>
-
-            <Link
-              to="/create-letter"
-              className="inline-flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97]"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Letter card */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="rounded-3xl p-8 text-center relative overflow-hidden bg-white border border-primary/10 flex flex-col"
               style={{
-                boxShadow: "0 8px 24px hsl(340 100% 76% / 0.3)",
+                boxShadow: "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
               }}
             >
-              Create Your Letter
-            </Link>
+              <div className="absolute top-4 right-4">
+                <span className="font-body text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
+                  Keepsake
+                </span>
+              </div>
+              <p className="font-display text-lg font-bold text-foreground mb-1">The Grand Gesture</p>
+              <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
+              <p className="font-display text-5xl font-bold text-foreground mb-6">$6.99</p>
 
-            <p className="font-body text-xs text-muted-foreground mt-4">
-              One-time Payment • Instant Access
-            </p>
-          </motion.div>
+              <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
+                {[
+                  { icon: LinkIcon, text: "Shareable unique link" },
+                  { icon: Music, text: "Custom background music" },
+                  { icon: PartyPopper, text: "Cinematic Memory Vault" },
+                  { icon: Heart, text: "Photos, videos & heartfelt letter" },
+                ].map((f, i) => (
+                  <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
+                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    {f.text}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                to="/create-letter"
+                className="inline-flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97]"
+                style={{ boxShadow: "0 8px 24px hsl(340 100% 76% / 0.3)" }}
+              >
+                Create Your Letter
+              </Link>
+            </motion.div>
+
+            {/* Reminder Calls card */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="rounded-3xl p-8 text-center relative overflow-hidden bg-gradient-to-br from-white to-[hsl(350_100%_97%)] border border-primary/20 flex flex-col"
+              style={{
+                boxShadow: "0 20px 60px hsl(340 60% 80% / 0.25), 0 4px 16px hsl(0 0% 0% / 0.04)",
+              }}
+            >
+              <div className="absolute top-4 right-4">
+                <span className="font-body text-xs font-semibold bg-primary/15 text-primary px-3 py-1 rounded-full">
+                  Free to start
+                </span>
+              </div>
+              <p className="font-display text-lg font-bold text-foreground mb-1">Reminder Calls</p>
+              <p className="font-body text-sm text-muted-foreground mb-3">Pay as you go</p>
+              <p className="font-display text-5xl font-bold text-foreground mb-1">Free</p>
+              <p className="font-body text-xs text-muted-foreground mb-6">2 calls included</p>
+
+              <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
+                {[
+                  { icon: Mic, text: "Record your voice or use TTS" },
+                  { icon: CalendarClock, text: "Schedule for the perfect day" },
+                  { icon: Bell, text: "Birthday & anniversary reminders" },
+                  { icon: Phone, text: "Then $0.50 / call · $5 for 10-pack" },
+                ].map((f, i) => (
+                  <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
+                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    {f.text}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                to="/schedule-call"
+                className="inline-flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-white border border-primary/30 text-foreground font-display text-base font-semibold shadow-md hover:shadow-lg hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.97]"
+              >
+                <Bell className="w-4 h-4 text-primary" />
+                Schedule a Call
+              </Link>
+            </motion.div>
+          </div>
 
           {/* Pro tip */}
           <motion.p
@@ -345,8 +464,7 @@ const Index = () => {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="font-body text-xs text-muted-foreground text-center mt-6"
           >
-            💡 <strong>Pro tip:</strong> A bouquet costs $50+. This costs less than a coffee
-            and creates a memory that lasts forever.
+            💡 <strong>Pro tip:</strong> Pair a letter with a reminder call on their special day for the ultimate surprise.
           </motion.p>
         </div>
       </section>
