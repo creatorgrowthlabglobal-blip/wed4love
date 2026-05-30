@@ -1,7 +1,8 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Heart, Lock, Play, X } from "lucide-react";
-import { filesToBase64 } from "@/lib/letterStorage";
+import { fileToBase64, filesToBase64 } from "@/lib/letterStorage";
+import { getPresetById } from "@/lib/musicPresets";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
@@ -14,6 +15,7 @@ interface PreviewPaymentProps {
     letterText: string;
     images: File[];
     selectedMusic: string | null;
+    customMusic: File | null;
     letterType: "love" | "birthday" | null;
   };
   template: "photo" | "purple";
@@ -28,19 +30,89 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
   const [showPreview, setShowPreview] = useState(false);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [previewCustomMusicData, setPreviewCustomMusicData] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (showPreview) {
-      filesToBase64(letterData.images).then(setPreviewImages);
+      Promise.all([
+        filesToBase64(letterData.images),
+        letterData.customMusic ? fileToBase64(letterData.customMusic) : Promise.resolve<string | null>(null),
+      ]).then(([images, customMusicData]) => {
+        setPreviewImages(images);
+        setPreviewCustomMusicData(customMusicData);
+      });
     }
-  }, [showPreview, letterData.images]);
+  }, [showPreview, letterData.customMusic, letterData.images]);
+
+  const startMusic = () => {
+    const preset = getPresetById(letterData.selectedMusic);
+    const src = preset?.url || previewCustomMusicData;
+
+    if (!src) return;
+
+    if (!audioRef.current) {
+      const audio = new Audio(src);
+      audio.loop = true;
+      audio.volume = 0.3;
+      audioRef.current = audio;
+    }
+
+    const audio = audioRef.current;
+    if (!audio.paused) return;
+
+    audio.play().catch(() => {
+      // Will retry on the next user interaction.
+    });
+  };
+
+  useEffect(() => {
+    if (!showPreview) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+      return;
+    }
+
+    const handler = () => {
+      startMusic();
+
+      if (audioRef.current && !audioRef.current.paused) {
+        window.removeEventListener("pointerdown", handler, true);
+        window.removeEventListener("touchstart", handler, true);
+        window.removeEventListener("click", handler, true);
+        window.removeEventListener("keydown", handler, true);
+      }
+    };
+
+    window.addEventListener("pointerdown", handler, true);
+    window.addEventListener("touchstart", handler, true);
+    window.addEventListener("click", handler, true);
+    window.addEventListener("keydown", handler, true);
+
+    return () => {
+      window.removeEventListener("pointerdown", handler, true);
+      window.removeEventListener("touchstart", handler, true);
+      window.removeEventListener("click", handler, true);
+      window.removeEventListener("keydown", handler, true);
+    };
+  }, [showPreview, letterData.selectedMusic, previewCustomMusicData]);
 
   const openPreview = () => {
     // Photo template starts at the mailbox; purple skips straight to the envelope
     setPreviewStage(template === "purple" ? "envelope" : "mailbox");
     setShowPreview(true);
   };
-  const closePreview = () => setShowPreview(false);
+  const closePreview = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setShowPreview(false);
+  };
   const advancePreview = () => {
     if (previewStage === "mailbox") setPreviewStage("envelope");
     else closePreview();
@@ -179,6 +251,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                   senderName={letterData.senderName}
                   letterText={letterData.letterText}
                   images={previewImages}
+                  onLetterOpen={startMusic}
                   onContinue={closePreview}
                 />
               </FramedScene>

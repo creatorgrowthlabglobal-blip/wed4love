@@ -115,6 +115,7 @@ const CreateLetter = () => {
                 letterText,
                 images,
                 selectedMusic,
+                customMusic,
                 letterType,
               }}
               template={template}
