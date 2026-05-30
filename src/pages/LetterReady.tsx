@@ -8,7 +8,8 @@ import FloatingHearts from "@/components/FloatingHearts";
 
 const LetterReady = () => {
   const { id } = useParams();
-  const letterLink = `${window.location.origin}/view/${id}`;
+  const PUBLIC_BASE_URL = "https://wish4love.com";
+  const letterLink = `${PUBLIC_BASE_URL}/view/${id}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
