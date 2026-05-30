@@ -10,6 +10,12 @@ export const MUSIC_PRESETS: MusicPreset[] = [
   { id: "birds-of-a-feather", title: "Birds of a Feather", artist: "Billie Eilish", url: "/music/birds-of-a-feather.mp3" },
   { id: "my-love-mine-all-mine", title: "My Love Mine All Mine", artist: "Mitski", url: "/music/my-love-mine-all-mine.mp3" },
   { id: "no-one-noticed", title: "No One Noticed", artist: "The Marías", url: "/music/no-one-noticed.mp3" },
+  { id: "lovers-rock", title: "Lovers Rock", artist: "TV Girl", url: "/music/lovers-rock.mp3" },
+  { id: "those-eyes", title: "Those Eyes", artist: "New West", url: "/music/those-eyes.mp3" },
+  { id: "just-the-way-you-are", title: "Just The Way You Are", artist: "Bruno Mars", url: "/music/just-the-way-you-are.mp3" },
+  { id: "da-kidds-story", title: "Da Kidd's Story", artist: "Da Kidd", url: "/music/da-kidds-story.mp3" },
+  { id: "heavy", title: "Heavy", artist: "The Marías", url: "/music/heavy.mp3" },
+  { id: "wgft", title: "wgft (feat. Burna Boy)", artist: "Gunna", url: "/music/wgft.mp3" },
 ];
 
 export const getPresetById = (id: string | null | undefined): MusicPreset | undefined =>
