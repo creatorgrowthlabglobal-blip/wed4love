@@ -48,34 +48,55 @@ const ViewLetter = () => {
 
 
   const startMusic = () => {
-    if (audioRef.current || !letter) return;
+    if (!letter) return;
     const preset = getPresetById(letter.selectedMusic);
     const src = preset?.url || letter.customMusicData;
-    if (!src) return;
-    const audio = new Audio(src);
-    audio.loop = true;
-    audio.volume = 0.3;
-    audio.play().catch(() => {});
-    audioRef.current = audio;
+    if (!src) {
+      console.warn("[ViewLetter] No music source", { selectedMusic: letter.selectedMusic, hasCustom: !!letter.customMusicData });
+      return;
+    }
+    if (!audioRef.current) {
+      const audio = new Audio(src);
+      audio.loop = true;
+      audio.volume = 0.3;
+      audioRef.current = audio;
+    }
+    const audio = audioRef.current;
+    if (!audio.paused) return;
+    audio.play().then(() => {
+      console.log("[ViewLetter] Music started:", src);
+    }).catch((e) => {
+      console.warn("[ViewLetter] Music play blocked, will retry on next interaction:", e);
+    });
   };
 
-  // Start music on the first user interaction anywhere on the page,
-  // regardless of which template/stage they're on.
+  // Start music on the first user interaction anywhere on the page.
+  // Keep retrying on each interaction until play() actually succeeds,
+  // in case the first attempt was blocked by autoplay policy.
   useEffect(() => {
     if (!letter) return;
     const handler = () => {
       startMusic();
-      window.removeEventListener("pointerdown", handler);
-      window.removeEventListener("keydown", handler);
+      if (audioRef.current && !audioRef.current.paused) {
+        window.removeEventListener("pointerdown", handler, true);
+        window.removeEventListener("touchstart", handler, true);
+        window.removeEventListener("click", handler, true);
+        window.removeEventListener("keydown", handler, true);
+      }
     };
-    window.addEventListener("pointerdown", handler);
-    window.addEventListener("keydown", handler);
+    window.addEventListener("pointerdown", handler, true);
+    window.addEventListener("touchstart", handler, true);
+    window.addEventListener("click", handler, true);
+    window.addEventListener("keydown", handler, true);
     return () => {
-      window.removeEventListener("pointerdown", handler);
-      window.removeEventListener("keydown", handler);
+      window.removeEventListener("pointerdown", handler, true);
+      window.removeEventListener("touchstart", handler, true);
+      window.removeEventListener("click", handler, true);
+      window.removeEventListener("keydown", handler, true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [letter]);
+
 
   if (notFound) {
     return (
