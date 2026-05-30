@@ -443,28 +443,20 @@ const ScheduleCall = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-8 grid sm:grid-cols-2 gap-4"
+          className="mt-8"
         >
           <button
-            onClick={() => handleBuy("$0.50 single call top-up")}
-            className="bg-white rounded-2xl p-5 border border-primary/10 text-left hover:border-primary/30 transition"
-          >
-            <p className="font-display text-lg font-bold">$0.50</p>
-            <p className="font-body text-xs text-muted-foreground">
-              One extra reminder call
-            </p>
-          </button>
-          <button
             onClick={() => handleBuy("$5 reminder pack (10 calls)")}
-            className="bg-gradient-to-br from-primary/10 to-[hsl(340_90%_88%)] rounded-2xl p-5 border border-primary/20 text-left hover:border-primary/40 transition"
+            className="w-full bg-gradient-to-br from-primary/10 to-[hsl(340_90%_88%)] rounded-2xl p-5 border border-primary/20 text-left hover:border-primary/40 transition"
           >
             <p className="font-display text-lg font-bold">
-              $5 <span className="text-xs font-body text-muted-foreground">— 10 calls</span>
+              $5 <span className="text-xs font-body text-muted-foreground">— 10 extra reminder calls</span>
             </p>
             <p className="font-body text-xs text-muted-foreground">
-              Best value reminder pack
+              Top up when your 2 free calls run out
             </p>
           </button>
+        </motion.div>
         </motion.div>
       </main>
     </div>
