@@ -8,7 +8,10 @@ import FloatingHearts from "@/components/FloatingHearts";
 
 const LetterReady = () => {
   const { id } = useParams();
-  const PUBLIC_BASE_URL = "https://wish4love.com";
+  // Use the current origin so the link works wherever the letter was created
+  // (preview, custom domain, published URL). Letters live in this browser's
+  // localStorage, so the link must point back to the same origin.
+  const PUBLIC_BASE_URL = typeof window !== "undefined" ? window.location.origin : "https://wish4love.com";
   const letterLink = `${PUBLIC_BASE_URL}/view/${id}`;
   const [copied, setCopied] = useState(false);
 
