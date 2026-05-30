@@ -90,7 +90,7 @@ const AuthPage = () => {
       setOtp(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } else {
-      navigate(from, { replace: true });
+      navigate("/create-letter", { replace: true });
     }
   };
 
@@ -182,6 +182,14 @@ const AuthPage = () => {
                 className="space-y-5"
               >
                 <div>
+                  <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    Back
+                  </button>
                   <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 mb-4">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
