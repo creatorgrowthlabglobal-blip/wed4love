@@ -65,6 +65,7 @@ const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetails
             Your Name <Heart className="w-3 h-3 inline text-primary/50 fill-primary/30" />
           </Label>
           <Input
+            ref={senderRef}
             value={data.senderName}
             onChange={(e) => update("senderName", e.target.value)}
             placeholder="The one who writes with love..."
@@ -76,6 +77,7 @@ const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetails
             Recipient's Name <Heart className="w-3 h-3 inline text-primary/50 fill-primary/30" />
           </Label>
           <Input
+            ref={receiverRef}
             value={data.receiverName}
             onChange={(e) => update("receiverName", e.target.value)}
             placeholder="The one who holds your heart..."
@@ -86,11 +88,10 @@ const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetails
 
       <div className="mt-8 flex justify-end">
         <motion.button
-          whileHover={canProceed ? { scale: 1.03 } : undefined}
-          whileTap={canProceed ? { scale: 0.97 } : undefined}
-          onClick={() => canProceed && onNext()}
-          disabled={!canProceed}
-          className="btn-glow px-10 py-4 bg-primary text-primary-foreground font-heading text-lg font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-romantic"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={handleContinue}
+          className="btn-glow px-10 py-4 bg-primary text-primary-foreground font-heading text-lg font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow"
         >
           Continue →
         </motion.button>
