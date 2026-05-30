@@ -46,7 +46,7 @@ const Index = () => {
       <FloatingHearts count={6} />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16">
+      <section className="relative min-h-screen flex items-center justify-center pt-32 sm:pt-24 pb-16">
         {/* Subtle gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(350_100%_96%)] to-background" />
 
