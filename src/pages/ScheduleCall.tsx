@@ -457,7 +457,6 @@ const ScheduleCall = () => {
             </p>
           </button>
         </motion.div>
-        </motion.div>
       </main>
     </div>
   );
