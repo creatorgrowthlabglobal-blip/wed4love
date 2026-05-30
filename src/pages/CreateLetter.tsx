@@ -73,7 +73,7 @@ const CreateLetter = () => {
     >
       {step !== 5 && <Header />}
       <FloatingHearts count={5} />
-      <main className="relative z-10 pt-36 sm:pt-28 pb-20 px-4 sm:px-6">
+      <main className={`relative z-10 ${step === 5 ? "pt-8" : "pt-36 sm:pt-28"} pb-20 px-4 sm:px-6`}>
         {step > 0 && (
           <ProgressBar
             currentStep={step - 1}
