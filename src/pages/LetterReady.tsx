@@ -31,6 +31,40 @@ const LetterReady = () => {
     }
   };
 
+  const handleDownloadQR = async () => {
+    try {
+      const res = await fetch(qrCodeUrl, { mode: "cors" });
+      const blob = await res.blob();
+      const fileName = `wish4love-letter-${id}.png`;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      // On mobile, prefer the native share sheet so users can save to Photos/Gallery.
+      if (isMobile && typeof navigator.canShare === "function") {
+        const file = new File([blob], fileName, { type: blob.type || "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: "Wish4Love QR Code" });
+            return;
+          } catch (err: any) {
+            if (err?.name === "AbortError") return;
+          }
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success("QR code downloaded 💌");
+    } catch {
+      toast.error("Couldn't download QR. Try again.");
+    }
+  };
+
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(letterLink)}&bgcolor=FFF3E8&color=3A3A3A`;
 
   return (
