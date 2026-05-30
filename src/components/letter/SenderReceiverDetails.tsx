@@ -1,7 +1,9 @@
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heart } from "lucide-react";
+import { toast } from "sonner";
 
 interface SenderReceiverDetailsProps {
   data: {
