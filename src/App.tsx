@@ -10,6 +10,7 @@ import LetterHistory from "./pages/LetterHistory";
 import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import ScheduleCall from "./pages/ScheduleCall";
 import { saveLetter, getLetter } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
@@ -73,6 +74,7 @@ const App = () => (
           <Route path="/letter-ready/:id" element={<ProtectedRoute><LetterReady /></ProtectedRoute>} />
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
+          <Route path="/schedule-call" element={<ScheduleCall />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
