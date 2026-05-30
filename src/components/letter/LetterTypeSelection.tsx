@@ -61,7 +61,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   onClick={() => setSubPhase("template")}
                   className="group relative overflow-hidden rounded-2xl cursor-pointer text-left w-full"
                 >
-                  <div className="letter-paper p-5 sm:p-6 rounded-2xl transition-all duration-300 group-hover:shadow-glow">
+                  <div className="p-5 sm:p-6 rounded-2xl transition-all duration-300 group-hover:shadow-glow" style={{ background: "#ffffff", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 24px -4px hsl(0 20% 20% / 0.06), 0 1px 3px hsl(0 20% 20% / 0.04)" }}>
                     <div className="flex items-center gap-4">
                       <span className="text-3xl sm:text-4xl flex-shrink-0">💌</span>
                       <motion.div

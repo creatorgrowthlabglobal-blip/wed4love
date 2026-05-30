@@ -111,7 +111,7 @@ const AuthPage = () => {
 
   // ── Shared UI ─────────────────────────────────────────────────────────────
   const inputClass =
-    "w-full px-4 py-3 rounded-xl bg-input border border-border font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all";
+    "w-full px-4 py-3 rounded-xl bg-input border border-border font-body text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all";
 
   return (
     <div className="min-h-screen bg-background relative flex items-center justify-center px-4 py-12">
