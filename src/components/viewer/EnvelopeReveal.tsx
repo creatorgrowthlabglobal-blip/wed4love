@@ -736,7 +736,10 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             </motion.p>
 
             {/* Letter body — CSS float layout; images shrink on mobile so text wraps beside them */}
-            <div style={{ overflow: "hidden", position: "relative", zIndex: 2 }}>
+            <div
+              className="break-words [word-break:break-word] [overflow-wrap:anywhere]"
+              style={{ overflow: "hidden", position: "relative", zIndex: 2 }}
+            >
 
               {/* Image 1 — floats right; smaller on mobile, larger on desktop */}
               {displayPhotos[0] && (
