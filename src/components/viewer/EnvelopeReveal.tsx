@@ -461,16 +461,18 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "center",
-                    overflow: "hidden",
+                    overflow: "visible",
                   }}
                 >
-                  <div style={{ padding: "14px 16px 0", textAlign: "center" }}>
+                  <div style={{ padding: "14px 22px 0 18px", textAlign: "center", overflow: "visible" }}>
                     <span style={{
                       fontFamily: "'Caveat', 'Dancing Script', cursive",
                       fontSize: "clamp(16px, 4.5vw, 21px)",
                       color: TEXT_DARK,
                       opacity: 0.75,
                       letterSpacing: "0.03em",
+                      paddingRight: "8px",
+                      display: "inline-block",
                     }}>
                       For my special person
                     </span>
