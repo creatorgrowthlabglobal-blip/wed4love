@@ -18,11 +18,28 @@ interface SenderReceiverDetailsProps {
 }
 
 const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetailsProps) => {
+  const senderRef = useRef<HTMLInputElement>(null);
+  const receiverRef = useRef<HTMLInputElement>(null);
+
   const update = (field: string, value: string) => {
     onChange({ ...data, [field]: value });
   };
 
-  const canProceed = data.senderName.trim() && data.receiverName.trim();
+  const canProceed = !!(data.senderName.trim() && data.receiverName.trim());
+
+  const handleContinue = () => {
+    if (!data.senderName.trim()) {
+      toast.error("Please enter your name to continue");
+      senderRef.current?.focus();
+      return;
+    }
+    if (!data.receiverName.trim()) {
+      toast.error("Please enter the recipient's name to continue");
+      receiverRef.current?.focus();
+      return;
+    }
+    onNext();
+  };
 
   return (
     <motion.div
