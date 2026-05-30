@@ -14,6 +14,7 @@ interface Props {
   className?: string;
   onContinue?: () => void;
   senderName?: string;
+  hideCaption?: boolean;
 }
 
 const STROKE = "#1a1a1a";
@@ -398,7 +399,7 @@ const Caption = ({ senderName: _ }: { senderName?: string }) => (
 );
 
 /* ───────────────────── Root ───────────────────── */
-const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
+const PurpleMailbox = ({ className, onContinue, senderName, hideCaption }: Props) => {
   const [state, setState]   = useState<MailboxState>("idle");
   const [zoomed, setZoomed] = useState(false);
   const controls            = useAnimation();
@@ -479,7 +480,7 @@ const PurpleMailbox = ({ className, onContinue, senderName }: Props) => {
               <BirdRight/>
             </motion.g>
 
-            {state === "idle" && <Caption senderName={senderName}/>}
+            {state === "idle" && !hideCaption && <Caption senderName={senderName}/>}
           </svg>
         </motion.div>
 
