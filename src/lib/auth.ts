@@ -30,45 +30,20 @@ export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 
+import { supabase } from "@/integrations/supabase/client";
+
 function generateOTP(): string {
-  const apiKey = import.meta.env.VITE_RESEND_API_KEY as string | undefined;
-  // Use bypass code until Resend API key is configured
-  return apiKey ? String(Math.floor(100000 + Math.random() * 900000)) : "111111";
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
-// ---------------------------------------------------------------------------
-// Resend integration — plug in VITE_RESEND_API_KEY when ready
-// ---------------------------------------------------------------------------
 async function sendEmailViaResend(email: string, code: string): Promise<void> {
-  const apiKey = import.meta.env.VITE_RESEND_API_KEY as string | undefined;
-  if (!apiKey) {
-    // Development fallback: log the OTP to the browser console
-    console.log(`[Wish4Love OTP] Code for ${email}: ${code}`);
-    return;
-  }
-
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Wish4Love <noreply@wish4love.com>",
-      to: [email],
-      subject: "Your Wish4Love verification code",
-      html: `
-        <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">
-          <h2 style="color:#f472b6;margin-bottom:8px;">Wish4Love 💕</h2>
-          <p style="color:#555;margin-bottom:24px;">Here is your one-time verification code:</p>
-          <div style="font-size:36px;font-weight:bold;letter-spacing:12px;color:#1a1a1a;text-align:center;padding:20px;background:#fff;border-radius:12px;border:1px solid #fce7f3;">
-            ${code}
-          </div>
-          <p style="color:#999;font-size:13px;margin-top:20px;">Expires in 10 minutes. If you didn't request this, ignore this email.</p>
-        </div>
-      `,
-    }),
+  const { error } = await supabase.functions.invoke("send-otp-email", {
+    body: { email: email.trim(), code },
   });
+  if (error) {
+    console.error("[Wish4Love OTP] send failed:", error);
+    throw new Error("Email send failed");
+  }
 }
 
 export async function sendOTP(email: string): Promise<{ success: true } | { error: string }> {
