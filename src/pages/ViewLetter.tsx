@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
+import { getPresetById } from "@/lib/musicPresets";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
 
@@ -47,14 +48,34 @@ const ViewLetter = () => {
 
 
   const startMusic = () => {
-    if (letter?.customMusicData && !audioRef.current) {
-      const audio = new Audio(letter.customMusicData);
-      audio.loop = true;
-      audio.volume = 0.3;
-      audio.play().catch(() => {});
-      audioRef.current = audio;
-    }
+    if (audioRef.current || !letter) return;
+    const preset = getPresetById(letter.selectedMusic);
+    const src = preset?.url || letter.customMusicData;
+    if (!src) return;
+    const audio = new Audio(src);
+    audio.loop = true;
+    audio.volume = 0.3;
+    audio.play().catch(() => {});
+    audioRef.current = audio;
   };
+
+  // Start music on the first user interaction anywhere on the page,
+  // regardless of which template/stage they're on.
+  useEffect(() => {
+    if (!letter) return;
+    const handler = () => {
+      startMusic();
+      window.removeEventListener("pointerdown", handler);
+      window.removeEventListener("keydown", handler);
+    };
+    window.addEventListener("pointerdown", handler);
+    window.addEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("pointerdown", handler);
+      window.removeEventListener("keydown", handler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [letter]);
 
   if (notFound) {
     return (
