@@ -142,33 +142,46 @@ const AuthPage = () => {
       <FloatingHearts count={5} />
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Branding */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8"
-        >
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-4">
-            <Heart className="w-6 h-6 text-primary fill-primary" />
-          </div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Wish4Love</h1>
-          <p className="font-body text-sm text-muted-foreground mt-1">
-            Pour your heart out,{" "}
-            <span className="text-primary italic">the right way</span>
-          </p>
-        </motion.div>
-
         {/* Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-white/80 backdrop-blur-xl rounded-3xl border border-primary/10 p-8"
+          className="relative bg-white/80 backdrop-blur-xl rounded-3xl border border-primary/10 p-8 pt-10"
           style={{
             boxShadow: "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
           }}
         >
+          {/* Back button — top-left corner */}
+          <button
+            type="button"
+            onClick={() => {
+              if (step === "otp") { setStep("email"); setOtpError(""); }
+              else navigate(-1);
+            }}
+            className="absolute top-4 left-4 inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back
+          </button>
+
+          {/* Branding — inside card */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-6"
+          >
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-3">
+              <Heart className="w-6 h-6 text-primary fill-primary" />
+            </div>
+            <h1 className="font-display text-2xl font-bold text-foreground">Wish4Love</h1>
+            <p className="font-body text-sm text-muted-foreground mt-1">
+              Pour your heart out,{" "}
+              <span className="text-primary italic">the right way</span>
+            </p>
+          </motion.div>
+
           <AnimatePresence mode="wait">
             {/* ── Step 1: Email ─────────────────────────────────────────── */}
             {step === "email" && (
@@ -182,14 +195,6 @@ const AuthPage = () => {
                 className="space-y-5"
               >
                 <div>
-                  <button
-                    type="button"
-                    onClick={() => navigate(-1)}
-                    className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    Back
-                  </button>
                   <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 mb-4">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
@@ -254,14 +259,6 @@ const AuthPage = () => {
                 className="space-y-6"
               >
                 <div>
-                  <button
-                    type="button"
-                    onClick={() => { setStep("email"); setOtpError(""); }}
-                    className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    Back
-                  </button>
                   <h2 className="font-display text-xl font-bold text-foreground">
                     Check your email 💕
                   </h2>
@@ -270,6 +267,7 @@ const AuthPage = () => {
                     <span className="font-semibold text-foreground">{email}</span>
                   </p>
                 </div>
+
 
                 {/* OTP boxes */}
                 <div className="flex gap-2 sm:gap-3 justify-center">
