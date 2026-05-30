@@ -8,6 +8,7 @@ import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import FramedScene from "@/components/viewer/FramedScene";
+import GlassLoveLetter3D from "@/components/landing/GlassLoveLetter3D";
 
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
@@ -70,14 +71,14 @@ const Index = () => {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl">
-          {/* Icon badge */}
+          {/* 3D glass love letter — resend.com cube vibe */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-8"
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            className="mb-2 sm:mb-4"
           >
-            <PenLine className="w-7 h-7 text-primary" />
+            <GlassLoveLetter3D />
           </motion.div>
 
           {/* Eyebrow */}
