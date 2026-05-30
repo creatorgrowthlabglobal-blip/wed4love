@@ -1,8 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
+import { getCurrentUser, signOut } from "@/lib/auth";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const user = getCurrentUser();
+
+  const handleSignOut = () => {
+    signOut();
+    navigate("/auth", { replace: true });
+  };
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -10 }}
@@ -37,12 +46,21 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          <Link
-            to="/letter-history"
-            className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 hidden sm:block"
-          >
-            Sign in
-          </Link>
+          {user ? (
+            <button
+              onClick={handleSignOut}
+              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 hidden sm:block"
+            >
+              Sign out
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 hidden sm:block"
+            >
+              Sign in
+            </Link>
+          )}
           <Link
             to="/create-letter"
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
