@@ -382,7 +382,8 @@ const Index = () => {
               </div>
               <p className="font-display text-lg font-bold text-foreground mb-1">The Grand Gesture</p>
               <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
-              <p className="font-display text-5xl font-bold text-foreground mb-6">$6.99</p>
+              <p className="font-display text-5xl font-bold text-foreground mb-1">$4.99</p>
+              <p className="font-body text-xs text-muted-foreground mb-6">Includes 2 free reminder calls</p>
 
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
                 {[
@@ -390,6 +391,7 @@ const Index = () => {
                   { icon: Music, text: "Custom background music" },
                   { icon: PartyPopper, text: "Cinematic Memory Vault" },
                   { icon: Heart, text: "Photos, videos & heartfelt letter" },
+                  { icon: Phone, text: "2 free reminder calls included" },
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
                     <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -409,7 +411,7 @@ const Index = () => {
               </Link>
             </motion.div>
 
-            {/* Reminder Calls card */}
+            {/* Reminder Calls top-up card */}
             <motion.div
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -422,20 +424,20 @@ const Index = () => {
             >
               <div className="absolute top-4 right-4">
                 <span className="font-body text-xs font-semibold bg-primary/15 text-primary px-3 py-1 rounded-full">
-                  Free to start
+                  Top-up
                 </span>
               </div>
-              <p className="font-display text-lg font-bold text-foreground mb-1">Reminder Calls</p>
-              <p className="font-body text-sm text-muted-foreground mb-3">Pay as you go</p>
-              <p className="font-display text-5xl font-bold text-foreground mb-1">Free</p>
-              <p className="font-body text-xs text-muted-foreground mb-6">2 calls included</p>
+              <p className="font-display text-lg font-bold text-foreground mb-1">Extra Reminder Calls</p>
+              <p className="font-body text-sm text-muted-foreground mb-3">For when 2 isn't enough</p>
+              <p className="font-display text-5xl font-bold text-foreground mb-1">$5</p>
+              <p className="font-body text-xs text-muted-foreground mb-6">10 additional reminder calls</p>
 
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
                 {[
+                  { icon: Phone, text: "10 scheduled reminder calls" },
                   { icon: Mic, text: "Record your voice or use TTS" },
                   { icon: CalendarClock, text: "Schedule for the perfect day" },
                   { icon: Bell, text: "Birthday & anniversary reminders" },
-                  { icon: Phone, text: "Then $0.50 / call · $5 for 10-pack" },
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
                     <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
