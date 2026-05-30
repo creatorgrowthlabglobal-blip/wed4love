@@ -120,18 +120,7 @@ const LetterWriting = ({ letterText, onChange, onNext, onBack }: LetterWritingPr
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
-          style={{
-            padding: "0.875rem 2rem",
-            background: "linear-gradient(135deg, #9E2550 0%, #7A1535 100%)",
-            color: "white",
-            border: "none",
-            borderRadius: "0.75rem",
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontWeight: 600,
-            fontSize: "1rem",
-            cursor: "pointer",
-            boxShadow: "0 8px 24px rgba(122,21,53,0.35)",
-          }}
+          className="btn-glow px-10 py-4 bg-primary text-primary-foreground font-heading text-lg font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow"
         >
           Continue →
         </motion.button>

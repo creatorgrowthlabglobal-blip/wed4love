@@ -67,10 +67,11 @@ const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetails
 
       <div className="mt-8 flex justify-end">
         <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={onNext}
-          className="btn-glow px-10 py-4 bg-primary text-primary-foreground font-heading text-lg font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow"
+          whileHover={canProceed ? { scale: 1.03 } : undefined}
+          whileTap={canProceed ? { scale: 0.97 } : undefined}
+          onClick={() => canProceed && onNext()}
+          disabled={!canProceed}
+          className="btn-glow px-10 py-4 bg-primary text-primary-foreground font-heading text-lg font-semibold rounded-xl shadow-romantic transition-all duration-400 hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-romantic"
         >
           Continue →
         </motion.button>
