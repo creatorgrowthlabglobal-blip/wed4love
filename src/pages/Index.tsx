@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X } from "lucide-react";
+import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X, Phone, Mic, CalendarClock } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -273,6 +273,70 @@ const Index = () => {
                 <strong className="text-foreground">Fun fact:</strong> Our letters include a secret PIN lock, interactive quizzes, and a cinematic Memory Vault experience!
               </p>
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Reminder Calls Section */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-[hsl(350_100%_97%)] to-background">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14"
+          >
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-2">
+              Reminder Calls
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
+              Never miss a{" "}
+              <span className="text-primary italic">special day</span> again
+            </h2>
+            <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
+              Record your voice or type a message — we'll call your loved one at the perfect moment.
+              Birthdays, anniversaries, "just because" days.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-12">
+            {[
+              { icon: Mic, title: "Record your voice", desc: "Or type a message and pick a warm voice — we handle the rest." },
+              { icon: CalendarClock, title: "Pick date & time", desc: "Schedule it for their birthday, anniversary, or any meaningful day." },
+              { icon: Phone, title: "We ring them up", desc: "Your message reaches them at the exact moment that matters." },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.6 }}
+                className="text-center"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                  <item.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-2">{item.title}</h3>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <Link
+              to="/schedule-call"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white border border-primary/20 text-foreground font-display text-base font-semibold shadow-md hover:shadow-lg hover:border-primary/40 transition-all duration-300 hover:scale-[1.03]"
+            >
+              <Bell className="w-4 h-4 text-primary" />
+              Schedule a Reminder — 2 calls free
+            </Link>
           </motion.div>
         </div>
       </section>
