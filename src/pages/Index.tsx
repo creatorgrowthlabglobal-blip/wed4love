@@ -569,9 +569,9 @@ const Index = () => {
                   className="rounded-2xl overflow-hidden text-left border-2 transition-all"
                   style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}
                 >
-                  <div className="aspect-[4/3] relative overflow-hidden">
+                  <div className="aspect-[4/3] relative overflow-hidden bg-[hsl(350_100%_96%)]">
                     <img src="/envelope-preview.png" alt="Envelope preview"
-                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} />
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 85%" }} />
                   </div>
                   <div className="p-2 sm:p-4">
                     <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">Template 2</p>
