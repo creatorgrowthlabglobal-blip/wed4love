@@ -90,6 +90,7 @@ const AuthPage = () => {
       setOtp(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       navigate("/create-letter", { replace: true });
     }
   };

@@ -139,16 +139,16 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
       {/* Full-screen cinematic preview overlay */}
       <AnimatePresence>
         {showPreview && (
-          <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 100 }}>
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(37, 31, 40, 0.72)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)" }}
+              className="fixed top-4 left-4 z-[110] inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-sm font-semibold text-white"
+              style={{ background: "rgba(37, 31, 40, 0.78)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.2)" }}
             >
-              <X className="w-5 h-5 text-white" />
+              ← Go back
             </motion.button>
 
             {/* Template 1 — full-screen mailbox, no decorative frame */}
@@ -160,9 +160,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
                 style={{
-                  position: "fixed",
+                  position: "absolute",
                   inset: 0,
-                  zIndex: 50,
                   background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
                 }}
               >
@@ -184,7 +183,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                 />
               </FramedScene>
             )}
-          </>
+          </div>
         )}
       </AnimatePresence>
 
