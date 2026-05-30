@@ -152,7 +152,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                       style={{ transform: "scale(0.78) translateY(12%)", transformOrigin: "center top" }}
                     >
                       <Suspense fallback={null}>
-                        <PurpleMailbox className="w-full h-full" />
+                        <PurpleMailbox className="w-full h-full" hideCaption />
                       </Suspense>
                     </div>
                   </div>

@@ -9,7 +9,7 @@ const Header = () => {
 
   const handleSignOut = () => {
     signOut();
-    navigate("/auth", { replace: true });
+    navigate("/create-letter", { replace: true });
   };
 
   return (
