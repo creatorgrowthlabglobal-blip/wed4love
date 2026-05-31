@@ -606,11 +606,16 @@ const ScheduleCall = () => {
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
             <Phone className="w-4 h-4 mr-2" />
-            {placing ? "Working…" : "Schedule call"}
+            {placing
+              ? "Working…"
+              : sendMode === "now"
+                ? "Call now"
+                : "Schedule call"}
           </Button>
           <p className="font-body text-[11px] text-muted-foreground text-center -mt-2">
-            Picks a future time? We'll ring at the exact moment. Picks now/past? We'll call right
-            away.
+            {sendMode === "now"
+              ? "We'll ring your loved one immediately."
+              : "We'll ring at the exact date & time you picked."}
           </p>
         </motion.div>
 
