@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -26,13 +26,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { COUNTRIES, buildE164, sanitizeLocalNumber } from "@/lib/countries";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -56,10 +59,15 @@ const occasions = [
 ];
 
 const ttsVoices = [
-  "Warm Female (Default)",
-  "Soft Male",
-  "Playful Female",
-  "Gentle Male",
+  { id: "female", label: "Female" },
+  { id: "male", label: "Male" },
+];
+
+const REGIONS: Array<"Asia" | "Europe" | "Africa" | "Americas"> = [
+  "Americas",
+  "Europe",
+  "Asia",
+  "Africa",
 ];
 
 const ScheduleCall = () => {
@@ -67,13 +75,14 @@ const ScheduleCall = () => {
   const { toast } = useToast();
 
   const [recipientName, setRecipientName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("US");
+  const [localPhone, setLocalPhone] = useState("");
   const [occasion, setOccasion] = useState("birthday");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState("09:00");
   const [mode, setMode] = useState<"voice" | "tts">("voice");
   const [ttsText, setTtsText] = useState("");
-  const [voice, setVoice] = useState(ttsVoices[0]);
+  const [voice, setVoice] = useState<"female" | "male">("female");
 
   const [recording, setRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
@@ -84,6 +93,12 @@ const ScheduleCall = () => {
 
   const [freeLeft, setFreeLeft] = useState<number>(FREE_TOTAL);
   const [success, setSuccess] = useState(false);
+  const [successInfo, setSuccessInfo] = useState<{ scheduled: boolean; when?: Date } | null>(null);
+
+  const country = useMemo(
+    () => COUNTRIES.find((c) => c.code === countryCode) ?? COUNTRIES[0],
+    [countryCode],
+  );
 
   useEffect(() => {
     const stored = localStorage.getItem(FREE_KEY);
@@ -132,7 +147,8 @@ const ScheduleCall = () => {
   };
 
   const handleSchedule = async () => {
-    if (!recipientName.trim() || !phone.trim() || !date) {
+    const cleanLocal = sanitizeLocalNumber(localPhone);
+    if (!recipientName.trim() || !cleanLocal || !date) {
       toast({
         title: "Almost there",
         description: "Please add the recipient, phone, and date for the call.",
@@ -140,10 +156,10 @@ const ScheduleCall = () => {
       });
       return;
     }
-    if (!/^\+[1-9]\d{6,14}$/.test(phone.trim())) {
+    if (cleanLocal.length < 6) {
       toast({
-        title: "Phone format",
-        description: "Use E.164 format, e.g. +9779765987716",
+        title: "Phone too short",
+        description: "Enter a valid local phone number (we auto-strip leading 0 and spaces).",
         variant: "destructive",
       });
       return;
@@ -165,16 +181,29 @@ const ScheduleCall = () => {
       return;
     }
 
+    // Compose scheduled datetime from date + time
+    const [hh, mm] = time.split(":").map((n) => parseInt(n, 10));
+    const when = new Date(date);
+    when.setHours(hh || 0, mm || 0, 0, 0);
+    const isFuture = when.getTime() - Date.now() > 60 * 1000;
+
     setPlacing(true);
     try {
-      const body: Record<string, unknown> = { number: phone.trim() };
+      const e164 = buildE164(country.dial, localPhone);
+      const body: Record<string, unknown> = {
+        number: e164,
+        recipientName: recipientName.trim(),
+        occasion,
+      };
+      if (isFuture) body.scheduledAt = when.toISOString();
+
       if (mode === "voice" && recordedBlobRef.current) {
         body.audioBase64 = await blobToBase64(recordedBlobRef.current);
         body.audioMime = recordedBlobRef.current.type || "audio/webm";
         body.audioName = "message.webm";
       } else {
         body.text = ttsText.trim();
-        body.voice = voice.toLowerCase().includes("female") ? "female" : "male";
+        body.voice = voice; // "female" | "male"
       }
 
       const { data, error } = await supabase.functions.invoke("place-call", { body });
@@ -186,6 +215,7 @@ const ScheduleCall = () => {
       const next = freeLeft - 1;
       localStorage.setItem(FREE_KEY, String(next));
       setFreeLeft(next);
+      setSuccessInfo({ scheduled: isFuture, when: isFuture ? when : undefined });
       setSuccess(true);
     } catch (err) {
       toast({
@@ -213,11 +243,13 @@ const ScheduleCall = () => {
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
               <Check className="w-7 h-7 text-primary" />
             </div>
-            <h1 className="font-display text-2xl font-bold mb-2">Call scheduled ✨</h1>
+            <h1 className="font-display text-2xl font-bold mb-2">
+              {successInfo?.scheduled ? "Call scheduled ✨" : "Call placed ✨"}
+            </h1>
             <p className="font-body text-sm text-muted-foreground mb-6">
-              We'll ring {recipientName} on{" "}
-              {date && format(date, "PPP")} at {time}. They'll hear your{" "}
-              {mode === "voice" ? "voice message" : "personalized message"}.
+              {successInfo?.scheduled
+                ? `We'll ring ${recipientName} on ${successInfo.when && format(successInfo.when, "PPP")} at ${time}. They'll hear your ${mode === "voice" ? "voice message" : "personalized message"}.`
+                : `Ringing ${recipientName} now with your ${mode === "voice" ? "voice message" : "personalized message"}.`}
             </p>
             <p className="font-body text-xs text-muted-foreground mb-6">
               {freeLeft} of {FREE_TOTAL} free calls remaining
@@ -227,7 +259,7 @@ const ScheduleCall = () => {
                 onClick={() => {
                   setSuccess(false);
                   setRecipientName("");
-                  setPhone("");
+                  setLocalPhone("");
                   setDate(undefined);
                   setRecordedUrl(null);
                   setTtsText("");
@@ -293,28 +325,61 @@ const ScheduleCall = () => {
           style={{ boxShadow: "0 20px 60px hsl(340 60% 80% / 0.18)" }}
         >
           {/* Recipient */}
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
-                Recipient name
-              </label>
+          <div>
+            <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
+              Recipient name
+            </label>
+            <Input
+              value={recipientName}
+              onChange={(e) => setRecipientName(e.target.value)}
+              placeholder="Mom, Sarah, Best Friend…"
+            />
+          </div>
+
+          {/* Phone with country code */}
+          <div>
+            <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
+              Phone number
+            </label>
+            <div className="grid grid-cols-[170px_1fr] gap-2">
+              <Select value={countryCode} onValueChange={setCountryCode}>
+                <SelectTrigger>
+                  <SelectValue>
+                    {country.name} (+{country.dial})
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {REGIONS.map((region) => (
+                    <SelectGroup key={region}>
+                      <SelectLabel>{region}</SelectLabel>
+                      {COUNTRIES.filter((c) => c.region === region)
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((c) => (
+                          <SelectItem key={c.code} value={c.code}>
+                            {c.name} (+{c.dial})
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input
-                value={recipientName}
-                onChange={(e) => setRecipientName(e.target.value)}
-                placeholder="Mom, Sarah, Best Friend…"
-              />
-            </div>
-            <div>
-              <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
-                Phone number
-              </label>
-              <Input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+1 555 123 4567"
+                value={localPhone}
+                onChange={(e) => setLocalPhone(e.target.value)}
+                placeholder={country.placeholder}
                 type="tel"
+                inputMode="tel"
               />
             </div>
+            <p className="font-body text-[11px] text-muted-foreground mt-1.5">
+              Don't include the country code. Leading 0, spaces, dashes and parentheses are removed
+              automatically. We'll dial{" "}
+              <span className="font-semibold text-foreground">
+                {localPhone.trim()
+                  ? buildE164(country.dial, localPhone)
+                  : `+${country.dial}…`}
+              </span>
+            </p>
           </div>
 
           {/* Occasion */}
@@ -471,14 +536,14 @@ const ScheduleCall = () => {
                     placeholder="Happy birthday Mom! Just wanted to remind you how much you mean to me…"
                     rows={4}
                   />
-                  <Select value={voice} onValueChange={setVoice}>
+                  <Select value={voice} onValueChange={(v) => setVoice(v as "female" | "male")}>
                     <SelectTrigger>
                       <SelectValue placeholder="Choose a voice" />
                     </SelectTrigger>
                     <SelectContent>
                       {ttsVoices.map((v) => (
-                        <SelectItem key={v} value={v}>
-                          {v}
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -494,8 +559,12 @@ const ScheduleCall = () => {
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
             <Phone className="w-4 h-4 mr-2" />
-            {placing ? "Placing call…" : "Place call now"}
+            {placing ? "Working…" : "Schedule call"}
           </Button>
+          <p className="font-body text-[11px] text-muted-foreground text-center -mt-2">
+            Picks a future time? We'll ring at the exact moment. Picks now/past? We'll call right
+            away.
+          </p>
         </motion.div>
 
         {/* Top-ups */}
@@ -513,7 +582,7 @@ const ScheduleCall = () => {
               $5 <span className="text-xs font-body text-muted-foreground">— 10 extra reminder calls</span>
             </p>
             <p className="font-body text-xs text-muted-foreground">
-              Top up when your 2 free calls run out
+              Top up when your free calls run out
             </p>
           </button>
         </motion.div>

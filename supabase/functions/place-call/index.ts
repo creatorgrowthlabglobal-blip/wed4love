@@ -1,4 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -15,7 +16,21 @@ Deno.serve(async (req) => {
     }
 
     const payload = await req.json();
-    const { number, text, audioBase64, audioMime, audioName, lang, voice, max_duration } = payload ?? {};
+    const {
+      number,
+      text,
+      audioBase64,
+      audioMime,
+      audioName,
+      lang,
+      voice,
+      max_duration,
+      // scheduling fields
+      scheduledAt, // ISO string in the future
+      recipientName,
+      occasion,
+      userEmail,
+    } = payload ?? {};
 
     if (!number || typeof number !== 'string') {
       return new Response(JSON.stringify({ error: 'number is required (E.164)' }), {
@@ -30,6 +45,48 @@ Deno.serve(async (req) => {
       });
     }
 
+    // --- Scheduled (future) path: persist and let cron pick it up ---
+    if (scheduledAt) {
+      const when = new Date(scheduledAt);
+      if (isNaN(when.getTime())) {
+        return new Response(JSON.stringify({ error: 'Invalid scheduledAt' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      // If user picked a moment more than 60s in the future, store it.
+      if (when.getTime() - Date.now() > 60 * 1000) {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const admin = createClient(supabaseUrl, serviceKey);
+
+        const { data, error } = await admin
+          .from('scheduled_calls')
+          .insert({
+            user_email: userEmail ?? null,
+            recipient_name: recipientName ?? 'Recipient',
+            phone: number,
+            occasion: occasion ?? null,
+            scheduled_at: when.toISOString(),
+            mode: audioBase64 ? 'voice' : 'tts',
+            text_message: audioBase64 ? null : String(text),
+            voice: audioBase64 ? null : (voice ?? null),
+            audio_base64: audioBase64 ?? null,
+            audio_mime: audioMime ?? null,
+          })
+          .select('id, scheduled_at')
+          .single();
+
+        if (error) throw error;
+
+        return new Response(
+          JSON.stringify({ scheduled: true, id: data.id, scheduled_at: data.scheduled_at }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+    }
+
+    // --- Immediate call path ---
     const form = new FormData();
     form.append('number', number);
     if (max_duration) form.append('max_duration', String(max_duration));
