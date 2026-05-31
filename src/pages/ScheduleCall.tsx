@@ -490,10 +490,11 @@ const ScheduleCall = () => {
 
           <Button
             onClick={handleSchedule}
+            disabled={placing}
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
             <Phone className="w-4 h-4 mr-2" />
-            Schedule call
+            {placing ? "Placing call…" : "Place call now"}
           </Button>
         </motion.div>
 
