@@ -62,6 +62,27 @@ Deno.serve(async (req) => {
       });
     }
 
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const emailKey = `e:${body.email.toLowerCase()}`;
+    const ipKey = `i:${ip}`;
+    for (const key of [emailKey, ipKey]) {
+      const r = checkRate(key);
+      if (!r.ok) {
+        return new Response(
+          JSON.stringify({ error: 'Too many requests', retryAfter: r.retryAfter }),
+          {
+            status: 429,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+              'Retry-After': String(r.retryAfter ?? 60),
+            },
+          },
+        );
+      }
+    }
+
+
     const html = `
       <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">
         <h2 style="color:#f472b6;margin-bottom:8px;">Wish4Love 💕</h2>
