@@ -378,9 +378,9 @@ const Index = () => {
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
                 {[
                   { icon: LinkIcon, text: "Shareable unique link" },
+                  { icon: Mailbox, text: "Vintage mailbox reveal" },
+                  { icon: Heart, text: "Handwritten letter with your photos" },
                   { icon: Music, text: "Custom background music" },
-                  { icon: PartyPopper, text: "Cinematic Memory Vault" },
-                  { icon: Heart, text: "Photos, videos & heartfelt letter" },
                   { icon: Phone, text: "2 free reminder calls included" },
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
