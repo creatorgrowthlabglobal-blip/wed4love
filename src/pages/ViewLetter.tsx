@@ -25,25 +25,26 @@ const ViewLetter = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     if (id) {
-      const found = getLetter(id);
-      if (found) {
-        setLetter(found);
-        // Purple template skips the mailbox and lands directly on the envelope
-        if ((found.template || "photo") === "purple") {
-          setStage("envelope");
+      getLetter(id).then((found) => {
+        if (cancelled) return;
+        if (found) {
+          setLetter(found);
+          if ((found.template || "photo") === "purple") {
+            setStage("envelope");
+          }
+        } else {
+          setNotFound(true);
         }
-      } else {
-        setNotFound(true);
-      }
+      });
     }
-    // Preload mailbox frames immediately on route mount so the recipient
-    // sees the image instantly, not a top-to-bottom progressive load.
     [mailboxClosed, mailboxOpen].forEach((src) => {
       const img = new Image();
       img.decoding = "async";
       img.src = src;
     });
+    return () => { cancelled = true; };
   }, [id]);
 
 
