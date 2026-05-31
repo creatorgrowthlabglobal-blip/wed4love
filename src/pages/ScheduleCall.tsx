@@ -501,6 +501,9 @@ const ScheduleCall = () => {
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                   />
+                  <p className="font-body text-[11px] text-muted-foreground mt-1.5">
+                    Local to {country.name} ({tzOffsetLabel(country.tz)})
+                  </p>
                 </div>
               </div>
             )}
