@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, X, Phone, Mic, CalendarClock } from "lucide-react";
+import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, Mailbox, X, Phone, Mic, CalendarClock } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -260,7 +260,7 @@ const Index = () => {
             <div className="inline-flex items-start gap-2 px-5 py-3 rounded-xl bg-primary/5 border border-primary/10">
               <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <p className="font-body text-sm text-muted-foreground text-left">
-                <strong className="text-foreground">Fun fact:</strong> Our letters include a secret PIN lock, interactive quizzes, and a cinematic Memory Vault experience!
+                <strong className="text-foreground">Fun fact:</strong> Every letter arrives in a beautiful vintage mailbox, opens into a handwritten note with your photos, and plays your chosen song.
               </p>
             </div>
           </motion.div>
@@ -378,9 +378,9 @@ const Index = () => {
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
                 {[
                   { icon: LinkIcon, text: "Shareable unique link" },
+                  { icon: Mailbox, text: "Vintage mailbox reveal" },
+                  { icon: Heart, text: "Handwritten letter with your photos" },
                   { icon: Music, text: "Custom background music" },
-                  { icon: PartyPopper, text: "Cinematic Memory Vault" },
-                  { icon: Heart, text: "Photos, videos & heartfelt letter" },
                   { icon: Phone, text: "2 free reminder calls included" },
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
