@@ -531,7 +531,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             style={{
               width: "100%",
               maxWidth: "560px",
-              minHeight: "100vh",
+              minHeight: "calc(100vh - 20px)",
               flexShrink: 0,
               background: "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4.5rem) clamp(1.5rem, 5vw, 3rem) clamp(6rem, 12vw, 8rem)",
