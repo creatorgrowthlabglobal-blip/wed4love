@@ -260,7 +260,7 @@ const Index = () => {
             <div className="inline-flex items-start gap-2 px-5 py-3 rounded-xl bg-primary/5 border border-primary/10">
               <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <p className="font-body text-sm text-muted-foreground text-left">
-                <strong className="text-foreground">Fun fact:</strong> Our letters include a secret PIN lock, interactive quizzes, and a cinematic Memory Vault experience!
+                <strong className="text-foreground">Fun fact:</strong> Every letter arrives in a beautiful vintage mailbox, opens into a handwritten note with your photos, and plays your chosen song.
               </p>
             </div>
           </motion.div>
