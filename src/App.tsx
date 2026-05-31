@@ -11,7 +11,7 @@ import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import ScheduleCall from "./pages/ScheduleCall";
-import { saveLetter, getLetter } from "./lib/letterStorage";
+import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
 // Seed a test letter for dev testing
