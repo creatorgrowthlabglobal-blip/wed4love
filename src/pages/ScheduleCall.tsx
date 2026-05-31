@@ -78,6 +78,7 @@ const ScheduleCall = () => {
   const [countryCode, setCountryCode] = useState("US");
   const [localPhone, setLocalPhone] = useState("");
   const [occasion, setOccasion] = useState("birthday");
+  const [sendMode, setSendMode] = useState<"now" | "later">("now");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState("09:00");
   const [mode, setMode] = useState<"voice" | "tts">("voice");
