@@ -131,13 +131,29 @@ const ScheduleCall = () => {
     });
   };
 
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
     if (!recipientName.trim() || !phone.trim() || !date) {
       toast({
         title: "Almost there",
         description: "Please add the recipient, phone, and date for the call.",
         variant: "destructive",
       });
+      return;
+    }
+    if (!/^\+[1-9]\d{6,14}$/.test(phone.trim())) {
+      toast({
+        title: "Phone format",
+        description: "Use E.164 format, e.g. +9779765987716",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (mode === "voice" && !recordedBlobRef.current) {
+      toast({ title: "Record a message first", variant: "destructive" });
+      return;
+    }
+    if (mode === "tts" && !ttsText.trim()) {
+      toast({ title: "Type a message first", variant: "destructive" });
       return;
     }
     if (freeLeft <= 0) {
@@ -148,10 +164,38 @@ const ScheduleCall = () => {
       });
       return;
     }
-    const next = freeLeft - 1;
-    localStorage.setItem(FREE_KEY, String(next));
-    setFreeLeft(next);
-    setSuccess(true);
+
+    setPlacing(true);
+    try {
+      const body: Record<string, unknown> = { number: phone.trim() };
+      if (mode === "voice" && recordedBlobRef.current) {
+        body.audioBase64 = await blobToBase64(recordedBlobRef.current);
+        body.audioMime = recordedBlobRef.current.type || "audio/webm";
+        body.audioName = "message.webm";
+      } else {
+        body.text = ttsText.trim();
+        body.voice = voice.toLowerCase().includes("female") ? "female" : "male";
+      }
+
+      const { data, error } = await supabase.functions.invoke("place-call", { body });
+      if (error) throw error;
+      if (data && typeof data === "object" && "error" in data && (data as { error: unknown }).error) {
+        throw new Error(String((data as { error: unknown }).error));
+      }
+
+      const next = freeLeft - 1;
+      localStorage.setItem(FREE_KEY, String(next));
+      setFreeLeft(next);
+      setSuccess(true);
+    } catch (err) {
+      toast({
+        title: "Couldn't place the call",
+        description: (err as Error).message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setPlacing(false);
+    }
   };
 
   if (success) {
