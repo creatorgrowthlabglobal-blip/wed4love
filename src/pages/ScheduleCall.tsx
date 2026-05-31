@@ -78,6 +78,7 @@ const ScheduleCall = () => {
   const [countryCode, setCountryCode] = useState("US");
   const [localPhone, setLocalPhone] = useState("");
   const [occasion, setOccasion] = useState("birthday");
+  const [sendMode, setSendMode] = useState<"now" | "later">("now");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState("09:00");
   const [mode, setMode] = useState<"voice" | "tts">("voice");
@@ -148,10 +149,18 @@ const ScheduleCall = () => {
 
   const handleSchedule = async () => {
     const cleanLocal = sanitizeLocalNumber(localPhone);
-    if (!recipientName.trim() || !cleanLocal || !date) {
+    if (!recipientName.trim() || !cleanLocal) {
       toast({
         title: "Almost there",
-        description: "Please add the recipient, phone, and date for the call.",
+        description: "Please add the recipient name and phone number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (sendMode === "later" && !date) {
+      toast({
+        title: "Pick a date",
+        description: "Choose when to ring — or switch to 'Send now'.",
         variant: "destructive",
       });
       return;
@@ -181,11 +190,15 @@ const ScheduleCall = () => {
       return;
     }
 
-    // Compose scheduled datetime from date + time
-    const [hh, mm] = time.split(":").map((n) => parseInt(n, 10));
-    const when = new Date(date);
-    when.setHours(hh || 0, mm || 0, 0, 0);
-    const isFuture = when.getTime() - Date.now() > 60 * 1000;
+    // Compose scheduled datetime from date + time (only used when sendMode === "later")
+    let when: Date | undefined;
+    let isFuture = false;
+    if (sendMode === "later" && date) {
+      const [hh, mm] = time.split(":").map((n) => parseInt(n, 10));
+      when = new Date(date);
+      when.setHours(hh || 0, mm || 0, 0, 0);
+      isFuture = when.getTime() - Date.now() > 60 * 1000;
+    }
 
     setPlacing(true);
     try {
@@ -195,7 +208,8 @@ const ScheduleCall = () => {
         recipientName: recipientName.trim(),
         occasion,
       };
-      if (isFuture) body.scheduledAt = when.toISOString();
+      if (isFuture && when) body.scheduledAt = when.toISOString();
+
 
       if (mode === "voice" && recordedBlobRef.current) {
         body.audioBase64 = await blobToBase64(recordedBlobRef.current);
@@ -410,48 +424,81 @@ const ScheduleCall = () => {
             </div>
           </div>
 
-          {/* Date + time */}
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
-                Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
+          {/* When to send */}
+          <div>
+            <label className="font-body text-xs font-semibold text-foreground mb-2 block">
+              When to send
+            </label>
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => setSendMode("now")}
+                className={cn(
+                  "flex-1 py-2 rounded-xl font-body text-sm font-medium transition-all border",
+                  sendMode === "now"
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/30",
+                )}
+              >
+                Send now
+              </button>
+              <button
+                onClick={() => setSendMode("later")}
+                className={cn(
+                  "flex-1 py-2 rounded-xl font-body text-sm font-medium transition-all border",
+                  sendMode === "later"
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/30",
+                )}
+              >
+                Schedule for later
+              </button>
+            </div>
+
+            {sendMode === "later" && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
+                    Date
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !date && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
+                    Time
+                  </label>
+                  <Input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
-                Time
-              </label>
-              <Input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
-            </div>
+                </div>
+              </div>
+            )}
           </div>
+
 
           {/* Mode toggle */}
           <div>
@@ -559,11 +606,16 @@ const ScheduleCall = () => {
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
             <Phone className="w-4 h-4 mr-2" />
-            {placing ? "Working…" : "Schedule call"}
+            {placing
+              ? "Working…"
+              : sendMode === "now"
+                ? "Call now"
+                : "Schedule call"}
           </Button>
           <p className="font-body text-[11px] text-muted-foreground text-center -mt-2">
-            Picks a future time? We'll ring at the exact moment. Picks now/past? We'll call right
-            away.
+            {sendMode === "now"
+              ? "We'll ring your loved one immediately."
+              : "We'll ring at the exact date & time you picked."}
           </p>
         </motion.div>
 
