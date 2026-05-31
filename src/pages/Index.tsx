@@ -351,6 +351,12 @@ const Index = () => {
             <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
               A keepsake letter or a heartfelt reminder call — both built to be unforgettable.
             </p>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="mt-6 inline-flex items-center gap-1.5 text-xs font-body text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Back to top
+            </button>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
