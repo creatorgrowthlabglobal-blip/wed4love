@@ -1,6 +1,12 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
+
+// Rate limits: max 3 sends per 10 min per email/IP, min 30s between sends.
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 3;
+const MIN_INTERVAL_MS = 30 * 1000;
 
 interface OtpRequest {
   email: string;
@@ -11,44 +17,18 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 
-// In-memory rate limiter: max 3 sends per key per 10 minutes, min 30s between sends.
-// Note: resets on cold start; for stronger guarantees, back this with a DB table.
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 3;
-const MIN_INTERVAL_MS = 30 * 1000;
-const rateMap = new Map<string, number[]>();
-
-function checkRate(key: string): { ok: boolean; retryAfter?: number } {
-  const now = Date.now();
-  const hits = (rateMap.get(key) || []).filter((t) => now - t < RATE_WINDOW_MS);
-  if (hits.length && now - hits[hits.length - 1] < MIN_INTERVAL_MS) {
-    return { ok: false, retryAfter: Math.ceil((MIN_INTERVAL_MS - (now - hits[hits.length - 1])) / 1000) };
-  }
-  if (hits.length >= RATE_MAX) {
-    return { ok: false, retryAfter: Math.ceil((RATE_WINDOW_MS - (now - hits[0])) / 1000) };
-  }
-  hits.push(now);
-  rateMap.set(key, hits);
-  return { ok: true };
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
-
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    if (!RESEND_API_KEY) {
-      return new Response(JSON.stringify({ error: 'RESEND_API_KEY not configured' }), {
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!LOVABLE_API_KEY || !RESEND_API_KEY || !SUPABASE_URL || !SERVICE_KEY) {
+      return new Response(JSON.stringify({ error: 'Server not configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -62,26 +42,48 @@ Deno.serve(async (req) => {
       });
     }
 
+    const email = body.email.trim().toLowerCase();
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
-    const emailKey = `e:${body.email.toLowerCase()}`;
-    const ipKey = `i:${ip}`;
-    for (const key of [emailKey, ipKey]) {
-      const r = checkRate(key);
-      if (!r.ok) {
+
+    const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
+    const sinceIso = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
+
+    // Fetch recent attempts for this email OR ip within the window.
+    const { data: recent, error: selErr } = await admin
+      .from('otp_attempts')
+      .select('email, ip, created_at')
+      .gte('created_at', sinceIso)
+      .or(`email.eq.${email},ip.eq.${ip}`);
+
+    if (selErr) {
+      console.error('otp_attempts select error:', selErr);
+    } else if (recent && recent.length) {
+      const now = Date.now();
+      const emailHits = recent.filter((r) => r.email === email);
+      const ipHits = recent.filter((r) => r.ip === ip);
+
+      const lastTs = recent.reduce(
+        (m, r) => Math.max(m, new Date(r.created_at).getTime()),
+        0,
+      );
+      if (now - lastTs < MIN_INTERVAL_MS) {
+        const retryAfter = Math.ceil((MIN_INTERVAL_MS - (now - lastTs)) / 1000);
         return new Response(
-          JSON.stringify({ error: 'Too many requests', retryAfter: r.retryAfter }),
-          {
-            status: 429,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-              'Retry-After': String(r.retryAfter ?? 60),
-            },
-          },
+          JSON.stringify({ error: 'Please wait before requesting another code', retryAfter }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': String(retryAfter) } },
+        );
+      }
+      if (emailHits.length >= RATE_MAX || ipHits.length >= RATE_MAX) {
+        const oldest = Math.min(
+          ...(emailHits.length >= RATE_MAX ? emailHits : ipHits).map((r) => new Date(r.created_at).getTime()),
+        );
+        const retryAfter = Math.ceil((RATE_WINDOW_MS - (now - oldest)) / 1000);
+        return new Response(
+          JSON.stringify({ error: 'Too many requests, try again later', retryAfter }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': String(retryAfter) } },
         );
       }
     }
-
 
     const html = `
       <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">
@@ -103,7 +105,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Wish4Love <noreply@wish4love.com>',
-        to: [body.email],
+        to: [email],
         subject: 'Your Wish4Love verification code',
         html,
       }),
@@ -117,6 +119,9 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Record the successful attempt (best-effort).
+    await admin.from('otp_attempts').insert({ email, ip });
 
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,
