@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      scheduled_calls: {
+        Row: {
+          attempts: number
+          audio_base64: string | null
+          audio_mime: string | null
+          call_id: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          mode: string
+          occasion: string | null
+          phone: string
+          recipient_name: string
+          scheduled_at: string
+          status: string
+          text_message: string | null
+          updated_at: string
+          user_email: string | null
+          voice: string | null
+        }
+        Insert: {
+          attempts?: number
+          audio_base64?: string | null
+          audio_mime?: string | null
+          call_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          mode: string
+          occasion?: string | null
+          phone: string
+          recipient_name: string
+          scheduled_at: string
+          status?: string
+          text_message?: string | null
+          updated_at?: string
+          user_email?: string | null
+          voice?: string | null
+        }
+        Update: {
+          attempts?: number
+          audio_base64?: string | null
+          audio_mime?: string | null
+          call_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          mode?: string
+          occasion?: string | null
+          phone?: string
+          recipient_name?: string
+          scheduled_at?: string
+          status?: string
+          text_message?: string | null
+          updated_at?: string
+          user_email?: string | null
+          voice?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
