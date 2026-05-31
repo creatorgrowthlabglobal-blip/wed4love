@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      letters: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+        }
+        Relationships: []
+      }
       otp_attempts: {
         Row: {
           created_at: string
