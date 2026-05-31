@@ -424,48 +424,81 @@ const ScheduleCall = () => {
             </div>
           </div>
 
-          {/* Date + time */}
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
-                Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
+          {/* When to send */}
+          <div>
+            <label className="font-body text-xs font-semibold text-foreground mb-2 block">
+              When to send
+            </label>
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => setSendMode("now")}
+                className={cn(
+                  "flex-1 py-2 rounded-xl font-body text-sm font-medium transition-all border",
+                  sendMode === "now"
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/30",
+                )}
+              >
+                Send now
+              </button>
+              <button
+                onClick={() => setSendMode("later")}
+                className={cn(
+                  "flex-1 py-2 rounded-xl font-body text-sm font-medium transition-all border",
+                  sendMode === "later"
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/30",
+                )}
+              >
+                Schedule for later
+              </button>
+            </div>
+
+            {sendMode === "later" && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
+                    Date
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !date && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
+                    Time
+                  </label>
+                  <Input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <label className="font-body text-xs font-semibold text-foreground mb-1.5 block">
-                Time
-              </label>
-              <Input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
-            </div>
+                </div>
+              </div>
+            )}
           </div>
+
 
           {/* Mode toggle */}
           <div>
