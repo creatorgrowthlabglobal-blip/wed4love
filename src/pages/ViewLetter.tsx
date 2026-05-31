@@ -159,7 +159,15 @@ const ViewLetter = () => {
   const template = letter.template || "photo";
 
   return (
-    <AnimatePresence mode="wait">
+    <>
+      <Link
+        to="/"
+        className="fixed top-4 left-4 z-[100] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-primary/20 shadow-md text-xs font-body text-foreground hover:bg-white hover:scale-[1.03] transition-all"
+        aria-label="Back to home"
+      >
+        ← Home
+      </Link>
+      <AnimatePresence mode="wait">
       {stage === "mailbox" && template === "purple" && (
         <FramedScene key="mailbox-purple">
           <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
