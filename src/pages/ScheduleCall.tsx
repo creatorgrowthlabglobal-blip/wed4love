@@ -45,8 +45,8 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
-const FREE_KEY = "wish4love_free_calls_remaining";
-const FREE_TOTAL = 2;
+const FREE_KEY = "wish4love_free_calls_remaining_v2";
+const FREE_TOTAL = 50;
 
 const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
