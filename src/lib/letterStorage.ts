@@ -97,7 +97,7 @@ export const getLetter = async (id: string): Promise<StoredLetter | null> => {
       return null;
     }
     if (data?.data) {
-      const letter = data.data as StoredLetter;
+      const letter = data.data as unknown as StoredLetter;
       // Cache locally for instant subsequent loads
       writeLocal(letter);
       return letter;
