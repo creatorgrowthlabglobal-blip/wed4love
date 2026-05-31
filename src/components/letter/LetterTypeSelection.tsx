@@ -84,6 +84,39 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                     </div>
                   </div>
                 </motion.button>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.35 }}
+                  className="mt-4"
+                >
+                  <Link to="/schedule-call" className="block group">
+                    <motion.div
+                      whileHover={{ x: 6, scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="p-5 sm:p-6 rounded-2xl transition-all duration-300 group-hover:shadow-glow"
+                      style={{ background: "#ffffff", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 24px -4px hsl(0 20% 20% / 0.06), 0 1px 3px hsl(0 20% 20% / 0.04)" }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="text-3xl sm:text-4xl flex-shrink-0">📞</span>
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/15 transition-all duration-300 flex-shrink-0">
+                          <PhoneCall className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <h3 className="font-display text-lg sm:text-xl font-bold text-foreground mb-0.5">
+                            Schedule a Call
+                          </h3>
+                          <p className="font-body text-xs text-primary/70">Voice reminders for special days</p>
+                          <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">
+                            Send a heartfelt voice call for birthdays, anniversaries, and more
+                          </p>
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                      </div>
+                    </motion.div>
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           )}
