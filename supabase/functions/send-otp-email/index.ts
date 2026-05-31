@@ -11,10 +11,32 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 
+// In-memory rate limiter: max 3 sends per key per 10 minutes, min 30s between sends.
+// Note: resets on cold start; for stronger guarantees, back this with a DB table.
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 3;
+const MIN_INTERVAL_MS = 30 * 1000;
+const rateMap = new Map<string, number[]>();
+
+function checkRate(key: string): { ok: boolean; retryAfter?: number } {
+  const now = Date.now();
+  const hits = (rateMap.get(key) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (hits.length && now - hits[hits.length - 1] < MIN_INTERVAL_MS) {
+    return { ok: false, retryAfter: Math.ceil((MIN_INTERVAL_MS - (now - hits[hits.length - 1])) / 1000) };
+  }
+  if (hits.length >= RATE_MAX) {
+    return { ok: false, retryAfter: Math.ceil((RATE_WINDOW_MS - (now - hits[0])) / 1000) };
+  }
+  hits.push(now);
+  rateMap.set(key, hits);
+  return { ok: true };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+
 
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -39,6 +61,27 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const emailKey = `e:${body.email.toLowerCase()}`;
+    const ipKey = `i:${ip}`;
+    for (const key of [emailKey, ipKey]) {
+      const r = checkRate(key);
+      if (!r.ok) {
+        return new Response(
+          JSON.stringify({ error: 'Too many requests', retryAfter: r.retryAfter }),
+          {
+            status: 429,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+              'Retry-After': String(r.retryAfter ?? 60),
+            },
+          },
+        );
+      }
+    }
+
 
     const html = `
       <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">

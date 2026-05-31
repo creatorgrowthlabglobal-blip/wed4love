@@ -353,7 +353,7 @@ const Index = () => {
             </p>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="mt-6 inline-flex items-center gap-1.5 text-xs font-body text-muted-foreground hover:text-primary transition-colors"
+              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-primary/20 shadow-md text-sm font-body font-semibold text-foreground hover:bg-primary hover:text-primary-foreground hover:shadow-lg hover:scale-[1.03] active:scale-[0.97] transition-all duration-300"
             >
               ← Back to top
             </button>
