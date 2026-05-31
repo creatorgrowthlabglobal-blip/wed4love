@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
 import { getPresetById } from "@/lib/musicPresets";
