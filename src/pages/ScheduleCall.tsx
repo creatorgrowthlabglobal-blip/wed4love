@@ -190,13 +190,20 @@ const ScheduleCall = () => {
       return;
     }
 
-    // Compose scheduled datetime from date + time (only used when sendMode === "later")
+    // Compose scheduled datetime from date + time, interpreted in the RECIPIENT's timezone
+    // (so "9:00 AM on June 5" means 9 AM where the call lands, regardless of sender's tz).
     let when: Date | undefined;
     let isFuture = false;
     if (sendMode === "later" && date) {
       const [hh, mm] = time.split(":").map((n) => parseInt(n, 10));
-      when = new Date(date);
-      when.setHours(hh || 0, mm || 0, 0, 0);
+      when = zonedWallTimeToUtc(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate(),
+        hh || 0,
+        mm || 0,
+        country.tz,
+      );
       isFuture = when.getTime() - Date.now() > 60 * 1000;
     }
 
