@@ -65,8 +65,10 @@ const ScheduleCall = () => {
 
   const [recording, setRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
+  const recordedBlobRef = useRef<Blob | null>(null);
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const [placing, setPlacing] = useState(false);
 
   const [freeLeft, setFreeLeft] = useState<number>(FREE_TOTAL);
   const [success, setSuccess] = useState(false);
