@@ -216,9 +216,13 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
   const seg1Shown = Math.max(0, visibleCount - textSeg0.length - 1); // -1 for the joining space
   const seg0Typing = !typingDone && phase === "open" && visibleCount <= textSeg0.length;
   const seg1Typing = !typingDone && phase === "open" && visibleCount > textSeg0.length;
-  const CURSOR: React.CSSProperties = {
-    display: "inline-block", width: 2, height: "1.1em",
-    background: TEXT_DARK, verticalAlign: "text-bottom", marginLeft: 1,
+  const CURSOR_WRAP: React.CSSProperties = {
+    display: "inline-block", width: 0, height: "1.1em",
+    verticalAlign: "text-bottom", position: "relative",
+  };
+  const CURSOR_BAR: React.CSSProperties = {
+    position: "absolute", left: 0, top: 0, width: 2, height: "1.1em",
+    background: TEXT_DARK,
     animation: "typewriter-cursor 0.7s step-end infinite",
   };
   const TEXT_STYLE: React.CSSProperties = {
@@ -749,7 +753,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             >
               <span style={TEXT_STYLE}>
                 {bodyText.slice(0, visibleCount)}
-                {!typingDone && phase === "open" && <span style={CURSOR} />}
+                {!typingDone && phase === "open" && <span style={CURSOR_WRAP}><span style={CURSOR_BAR} /></span>}
                 <span style={{ color: "transparent" }}>{bodyText.slice(visibleCount)}</span>
               </span>
             </div>
