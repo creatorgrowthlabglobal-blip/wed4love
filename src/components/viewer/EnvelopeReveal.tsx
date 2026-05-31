@@ -519,7 +519,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              padding: 0,
+              padding: "clamp(10px, 2.5vw, 24px)",
             }}
           >
           <motion.div
