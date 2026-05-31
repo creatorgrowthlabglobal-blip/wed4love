@@ -47,7 +47,7 @@ const CreateLetter = () => {
       customMusicData = await fileToBase64(customMusic);
     }
 
-    saveLetter({
+    await saveLetter({
       id: letterId,
       type: letterType || "love",
       senderName: details.senderName,

@@ -16,8 +16,8 @@ import { getCurrentUser } from "./lib/auth";
 
 // Seed a test letter for dev testing
 const TEST_ID = "demo-jungey";
-if (!getLetter(TEST_ID)) {
-  saveLetter({
+if (!getLetterLocal(TEST_ID)) {
+  saveLetterLocal({
     id: TEST_ID,
     type: "love",
     senderName: "Alex",
@@ -33,8 +33,8 @@ if (!getLetter(TEST_ID)) {
   });
 }
 const ENVELOPE_TEST_ID = "demo-envelope";
-if (!getLetter(ENVELOPE_TEST_ID)) {
-  saveLetter({
+if (!getLetterLocal(ENVELOPE_TEST_ID)) {
+  saveLetterLocal({
     id: ENVELOPE_TEST_ID,
     type: "love",
     senderName: "Alex",
