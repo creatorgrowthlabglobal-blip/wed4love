@@ -32,6 +32,18 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+
+const blobToBase64 = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1] || "");
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 
 const FREE_KEY = "wish4love_free_calls_remaining";
 const FREE_TOTAL = 2;
@@ -65,8 +77,10 @@ const ScheduleCall = () => {
 
   const [recording, setRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
+  const recordedBlobRef = useRef<Blob | null>(null);
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const [placing, setPlacing] = useState(false);
 
   const [freeLeft, setFreeLeft] = useState<number>(FREE_TOTAL);
   const [success, setSuccess] = useState(false);
@@ -89,6 +103,7 @@ const ScheduleCall = () => {
       mr.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data);
       mr.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        recordedBlobRef.current = blob;
         setRecordedUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach((t) => t.stop());
       };
@@ -116,13 +131,29 @@ const ScheduleCall = () => {
     });
   };
 
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
     if (!recipientName.trim() || !phone.trim() || !date) {
       toast({
         title: "Almost there",
         description: "Please add the recipient, phone, and date for the call.",
         variant: "destructive",
       });
+      return;
+    }
+    if (!/^\+[1-9]\d{6,14}$/.test(phone.trim())) {
+      toast({
+        title: "Phone format",
+        description: "Use E.164 format, e.g. +9779765987716",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (mode === "voice" && !recordedBlobRef.current) {
+      toast({ title: "Record a message first", variant: "destructive" });
+      return;
+    }
+    if (mode === "tts" && !ttsText.trim()) {
+      toast({ title: "Type a message first", variant: "destructive" });
       return;
     }
     if (freeLeft <= 0) {
@@ -133,10 +164,38 @@ const ScheduleCall = () => {
       });
       return;
     }
-    const next = freeLeft - 1;
-    localStorage.setItem(FREE_KEY, String(next));
-    setFreeLeft(next);
-    setSuccess(true);
+
+    setPlacing(true);
+    try {
+      const body: Record<string, unknown> = { number: phone.trim() };
+      if (mode === "voice" && recordedBlobRef.current) {
+        body.audioBase64 = await blobToBase64(recordedBlobRef.current);
+        body.audioMime = recordedBlobRef.current.type || "audio/webm";
+        body.audioName = "message.webm";
+      } else {
+        body.text = ttsText.trim();
+        body.voice = voice.toLowerCase().includes("female") ? "female" : "male";
+      }
+
+      const { data, error } = await supabase.functions.invoke("place-call", { body });
+      if (error) throw error;
+      if (data && typeof data === "object" && "error" in data && (data as { error: unknown }).error) {
+        throw new Error(String((data as { error: unknown }).error));
+      }
+
+      const next = freeLeft - 1;
+      localStorage.setItem(FREE_KEY, String(next));
+      setFreeLeft(next);
+      setSuccess(true);
+    } catch (err) {
+      toast({
+        title: "Couldn't place the call",
+        description: (err as Error).message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setPlacing(false);
+    }
   };
 
   if (success) {
@@ -431,10 +490,11 @@ const ScheduleCall = () => {
 
           <Button
             onClick={handleSchedule}
+            disabled={placing}
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
             <Phone className="w-4 h-4 mr-2" />
-            Schedule call
+            {placing ? "Placing call…" : "Place call now"}
           </Button>
         </motion.div>
 
