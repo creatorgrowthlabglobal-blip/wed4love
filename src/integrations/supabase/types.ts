@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      otp_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+          ip: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: number
+          ip: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: number
+          ip?: string
+        }
+        Relationships: []
+      }
       scheduled_calls: {
         Row: {
           attempts: number
