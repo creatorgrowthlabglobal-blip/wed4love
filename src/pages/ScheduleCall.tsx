@@ -91,6 +91,7 @@ const ScheduleCall = () => {
       mr.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data);
       mr.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        recordedBlobRef.current = blob;
         setRecordedUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach((t) => t.stop());
       };
