@@ -688,11 +688,11 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25, duration: 0.6 }}
                 style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                  alignItems: "flex-start",
-                  gap: "clamp(12px, 3vw, 28px)",
+                  display: "grid",
+                  gridTemplateColumns: displayPhotos.length >= 2 ? "1fr 1fr" : "1fr",
+                  justifyItems: "center",
+                  alignItems: "start",
+                  gap: "clamp(10px, 2.5vw, 24px)",
                   marginBottom: "1.5rem",
                   width: "100%",
                 }}
