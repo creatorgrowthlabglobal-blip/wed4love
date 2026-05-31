@@ -753,7 +753,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             >
               <span style={TEXT_STYLE}>
                 {bodyText.slice(0, visibleCount)}
-                {!typingDone && phase === "open" && <span style={CURSOR} />}
+                {!typingDone && phase === "open" && <span style={CURSOR_WRAP}><span style={CURSOR_BAR} /></span>}
                 <span style={{ color: "transparent" }}>{bodyText.slice(visibleCount)}</span>
               </span>
             </div>
