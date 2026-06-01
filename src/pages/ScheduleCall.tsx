@@ -366,6 +366,30 @@ const ScheduleCall = () => {
                     : "Buy a letter to unlock 2 free calls · or $1 per call"}
             </span>
           </div>
+
+          {!entLoading && credits <= 0 && (
+            <div className="mt-5 flex flex-col items-center gap-2">
+              <Button
+                size="lg"
+                className="rounded-full gap-2 px-6 shadow-romantic"
+                onClick={() => {
+                  const user = getCurrentUser();
+                  window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
+                    email: user?.email,
+                    redirectTo: `${window.location.origin}/payment-status?product=call`,
+                  });
+                }}
+              >
+                <Phone className="w-4 h-4" /> Buy call credit · $1
+              </Button>
+              <button
+                onClick={refreshEntitlement}
+                className="font-body text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+              >
+                Already paid? Re-check credits
+              </button>
+            </div>
+          )}
         </motion.div>
 
         <motion.div
