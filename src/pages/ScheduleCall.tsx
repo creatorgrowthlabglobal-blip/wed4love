@@ -37,7 +37,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRIES, buildE164, sanitizeLocalNumber, zonedWallTimeToUtc, tzOffsetLabel } from "@/lib/countries";
-import { WHOP_EXTRA_CALL_CHECKOUT, buildWhopCheckoutUrl, fetchEntitlement, consumeCallCredit } from "@/lib/whop";
+import { createWhopCheckout, fetchEntitlement, consumeCallCredit } from "@/lib/whop";
 import { getCurrentUser } from "@/lib/auth";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
@@ -340,11 +340,18 @@ const ScheduleCall = () => {
         );
       } catch {}
       setRedirectingToCheckout(true);
-      window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
-        email: user.email,
-        redirectTo: `${window.location.origin}/payment-status?product=call`,
-        metadata: { app_email: user.email },
-      });
+      try {
+        const { purchase_url } = await createWhopCheckout({
+          product: "call",
+          app_email: user.email,
+          redirect_url: `${window.location.origin}/payment-status?product=call`,
+        });
+        window.location.href = purchase_url;
+      } catch (e) {
+        console.error("[ScheduleCall] create-checkout failed", e);
+        setRedirectingToCheckout(false);
+        toast({ title: "Couldn't open checkout", description: "Please try again.", variant: "destructive" });
+      }
       return;
     }
 
@@ -525,11 +532,17 @@ const ScheduleCall = () => {
                     );
                   } catch {}
                   setRedirectingToCheckout(true);
-                  window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
-                    email: user?.email,
-                    redirectTo: `${window.location.origin}/payment-status?product=call`,
-                    metadata: { app_email: user?.email || "" },
-                  });
+                  try {
+                    const { purchase_url } = await createWhopCheckout({
+                      product: "call",
+                      app_email: user?.email || "",
+                      redirect_url: `${window.location.origin}/payment-status?product=call`,
+                    });
+                    window.location.href = purchase_url;
+                  } catch (e) {
+                    console.error("[ScheduleCall] create-checkout failed", e);
+                    setRedirectingToCheckout(false);
+                  }
                 }}
               >
                 <Phone className="w-4 h-4" /> Buy call credit · $1

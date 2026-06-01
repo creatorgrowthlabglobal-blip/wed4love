@@ -14,8 +14,7 @@ import PreviewPayment from "@/components/letter/PreviewPayment";
 import { fileToBase64, filesToBase64, saveLetter } from "@/lib/letterStorage";
 import { getCurrentUser } from "@/lib/auth";
 import {
-  WHOP_LETTER_CHECKOUT,
-  buildWhopCheckoutUrl,
+  createWhopCheckout,
   fetchEntitlement,
   hasActiveLetterAccess,
 } from "@/lib/whop";
@@ -97,8 +96,9 @@ const CreateLetter = () => {
       }
     }
 
-    // Otherwise → Whop checkout. Persist context so /payment-status can recover
-    // it even if Whop strips our redirect query params.
+    // Otherwise → create a Whop checkout configuration via our edge function
+    // so the webhook can match the payment by metadata.order_id back to the
+    // signed-in user's app email (even if they change email at Whop checkout).
     setRedirecting("checkout");
     try {
       sessionStorage.setItem(
@@ -107,17 +107,23 @@ const CreateLetter = () => {
       );
     } catch {}
     const redirectTo = `${window.location.origin}/payment-status?product=letter&letter_id=${letterId}`;
-    const checkoutUrl = buildWhopCheckoutUrl(WHOP_LETTER_CHECKOUT, {
-      email: user?.email,
-      redirectTo,
-      metadata: {
-        letter_id: letterId,
-        // app_email is the email the user is signed in with — webhook will
-        // grant entitlement to THIS email even if user changes it at Whop.
+    try {
+      const { purchase_url } = await createWhopCheckout({
+        product: "letter",
         app_email: user?.email || "",
-      },
-    });
-    window.location.href = checkoutUrl;
+        letter_id: letterId,
+        redirect_url: redirectTo,
+      });
+      window.location.href = purchase_url;
+    } catch (e) {
+      console.error("[CreateLetter] create-checkout failed", e);
+      toast({
+        title: "Couldn't open checkout",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+      setRedirecting(null);
+    }
   };
 
 
