@@ -460,7 +460,6 @@ const ScheduleCall = () => {
         variant: "destructive",
       });
     } finally {
-      setPlacing(false);
       release();
     }
   };
