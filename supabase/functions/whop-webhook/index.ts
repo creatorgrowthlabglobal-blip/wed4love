@@ -87,11 +87,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Idempotency: skip if we've already processed this event
+    // Idempotency: dedupe by the underlying resource (payment or membership),
+    // NOT just the webhook event_id. Whop sends multiple events per purchase
+    // (payment.succeeded + membership.went_valid + membership.completed), each
+    // with a different event_id — crediting on every one would multiply calls.
+    const resourceId: string =
+      (pick(data, ["id"]) as string | null) || eventId;
+    const dedupeKey = `${resourceId}:${planId}:${email}`;
+
     const { data: existing } = await supabase
-      .from("whop_events").select("event_id").eq("event_id", eventId).maybeSingle();
+      .from("whop_events").select("event_id").eq("event_id", dedupeKey).maybeSingle();
     if (existing) {
-      return new Response(JSON.stringify({ duplicate: true }), {
+      return new Response(JSON.stringify({ duplicate: true, dedupeKey }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -133,7 +140,7 @@ Deno.serve(async (req) => {
     }, { onConflict: "email" });
     if (upErr) throw upErr;
 
-    await supabase.from("whop_events").insert({ event_id: eventId, payload: body });
+    await supabase.from("whop_events").insert({ event_id: dedupeKey, payload: body });
 
     if (pendingOrder) {
       await supabase.from("pending_orders").update({
