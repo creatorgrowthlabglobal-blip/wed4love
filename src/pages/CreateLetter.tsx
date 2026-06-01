@@ -17,6 +17,8 @@ import {
   createWhopCheckout,
   fetchEntitlement,
   hasActiveLetterAccess,
+  openBlankCheckoutTab,
+  redirectToCheckout,
 } from "@/lib/whop";
 import { toast } from "@/hooks/use-toast";
 
