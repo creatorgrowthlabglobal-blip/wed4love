@@ -85,7 +85,7 @@ const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
   { id: "anniversary", label: "Anniversary", icon: Heart },
   { id: "just-because", label: "Just Because", icon: Gift },
-  { id: "custom", label: "Custom", icon: Bell },
+  { id: "confession", label: "Secret Confession", icon: Lock },
 ];
 
 const ttsVoices = [
