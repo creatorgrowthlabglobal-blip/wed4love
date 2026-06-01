@@ -787,7 +787,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                       boxShadow: "0 8px 16px rgba(60,40,80,0.22)",
                     }}
                   >
-                    <img src={src} alt="Memory" loading="lazy"
+                    <img src={src} alt="Memory" decoding="async"
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </motion.div>
                 ))}
