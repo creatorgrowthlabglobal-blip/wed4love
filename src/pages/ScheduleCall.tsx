@@ -15,6 +15,7 @@ import {
   Heart,
   Gift,
   Bell,
+  Lock,
   ChevronsUpDown,
 } from "lucide-react";
 import Header from "@/components/Header";
@@ -46,7 +47,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRIES, buildE164, sanitizeLocalNumber, zonedWallTimeToUtc, tzOffsetLabel } from "@/lib/countries";
-import { createWhopCheckout, fetchEntitlement, consumeCallCredit } from "@/lib/whop";
+import { createWhopCheckout, fetchEntitlement, consumeCallCredit, openBlankCheckoutTab, redirectToCheckout } from "@/lib/whop";
 import { getCurrentUser } from "@/lib/auth";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
@@ -84,7 +85,7 @@ const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
   { id: "anniversary", label: "Anniversary", icon: Heart },
   { id: "just-because", label: "Just Because", icon: Gift },
-  { id: "custom", label: "Custom", icon: Bell },
+  { id: "confession", label: "Secret Confession", icon: Lock },
 ];
 
 const ttsVoices = [
@@ -379,6 +380,11 @@ const ScheduleCall = () => {
       const ent = await fetchEntitlement(user.email);
       const availableCredits = Math.max(0, (ent?.paid_calls || 0) - (ent?.used_calls || 0));
       if (availableCredits <= 0) {
+        // Pre-open the checkout tab SYNCHRONOUSLY (still within the click's
+        // user-gesture). iOS Safari blocks `window.location.href = ...` set
+        // after an `await`, so we need the tab opened up-front. If popups are
+        // blocked we fall back to a top-level navigation.
+        const checkoutTab = openBlankCheckoutTab();
         await saveDraft();
         sessionStorage.setItem(AUTO_SUBMIT_KEY, "1");
         try {
@@ -397,18 +403,16 @@ const ScheduleCall = () => {
           if (!purchase_url || !/^https?:\/\//.test(purchase_url)) {
             throw new Error("Invalid checkout URL");
           }
-          // Only show the redirect message after we have a valid URL — avoids
-          // a confusing "sending you to checkout…" followed by a red error.
           toast({
             title: "Opening secure checkout",
             description: "Add an extra call for $1 — your message is saved.",
           });
-          window.location.href = purchase_url;
+          redirectToCheckout(checkoutTab, purchase_url);
         } catch (e) {
           console.error("[ScheduleCall] create-checkout failed", e);
           setRedirectingToCheckout(false);
-          // Roll back the auto-submit flag so we don't loop on next page load.
           sessionStorage.removeItem(AUTO_SUBMIT_KEY);
+          try { checkoutTab?.close(); } catch {}
           toast({ title: "Couldn't open checkout", description: "Please try again.", variant: "destructive" });
         }
         return;
@@ -574,6 +578,10 @@ const ScheduleCall = () => {
                 size="lg"
                 className="rounded-full gap-2 px-6 shadow-romantic"
                 onClick={async () => {
+                  // Pre-open tab synchronously inside the click to keep the
+                  // user-gesture token alive across the async checkout call
+                  // (mobile Safari otherwise blocks the post-await navigation).
+                  const checkoutTab = openBlankCheckoutTab();
                   setRedirectingToCheckout(true);
                   await new Promise<void>((r) =>
                     requestAnimationFrame(() => requestAnimationFrame(() => r()))
@@ -592,10 +600,11 @@ const ScheduleCall = () => {
                       app_email: user?.email || "",
                       redirect_url: `${window.location.origin}/payment-status?product=call`,
                     });
-                    window.location.href = purchase_url;
+                    redirectToCheckout(checkoutTab, purchase_url);
                   } catch (e) {
                     console.error("[ScheduleCall] create-checkout failed", e);
                     setRedirectingToCheckout(false);
+                    try { checkoutTab?.close(); } catch {}
                   }
                 }}
               >

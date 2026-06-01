@@ -17,6 +17,8 @@ import {
   createWhopCheckout,
   fetchEntitlement,
   hasActiveLetterAccess,
+  openBlankCheckoutTab,
+  redirectToCheckout,
 } from "@/lib/whop";
 import { toast } from "@/hooks/use-toast";
 
@@ -49,6 +51,11 @@ const CreateLetter = () => {
   };
 
   const handlePay = async () => {
+    // Pre-open the checkout tab SYNCHRONOUSLY (while the user-gesture token
+    // is still valid). iOS Safari and many mobile in-app browsers block
+    // `window.location.href = ...` set later after an `await`. Closed on
+    // failure below.
+    const checkoutTab = openBlankCheckoutTab();
     // Show overlay IMMEDIATELY. Force React to flush + browser to paint
     // BEFORE we start the heavy base64 encoding (which can lock the main
     // thread for several seconds on big photos/audio).
@@ -90,6 +97,7 @@ const CreateLetter = () => {
         const ent = await fetchEntitlement(user.email);
         if (hasActiveLetterAccess(ent)) {
           setRedirecting("create");
+          try { checkoutTab?.close(); } catch {}
           toast({
             title: "Welcome back 💌",
             description: "Your monthly access is active — creating your letter now.",
@@ -120,9 +128,10 @@ const CreateLetter = () => {
         letter_id: letterId,
         redirect_url: redirectTo,
       });
-      window.location.href = purchase_url;
+      redirectToCheckout(checkoutTab, purchase_url);
     } catch (e) {
       console.error("[CreateLetter] create-checkout failed", e);
+      try { checkoutTab?.close(); } catch {}
       toast({
         title: "Couldn't open checkout",
         description: "Please try again in a moment.",
