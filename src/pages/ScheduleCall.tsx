@@ -36,7 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRIES, buildE164, sanitizeLocalNumber, zonedWallTimeToUtc, tzOffsetLabel } from "@/lib/countries";
-import { WHOP_EXTRA_CALL_CHECKOUT, buildWhopCheckoutUrl } from "@/lib/whop";
+import { WHOP_EXTRA_CALL_CHECKOUT, buildWhopCheckoutUrl, fetchEntitlement, consumeCallCredit } from "@/lib/whop";
 import { getCurrentUser } from "@/lib/auth";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
@@ -50,7 +50,7 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
-const FREE_KEY = "wish4love_free_calls_remaining_v2";
+const FREE_KEY = "wish4love_free_calls_remaining_v2"; // legacy, no longer authoritative
 const FREE_TOTAL = 2;
 
 const occasions = [
@@ -94,24 +94,33 @@ const ScheduleCall = () => {
   const chunksRef = useRef<Blob[]>([]);
   const [placing, setPlacing] = useState(false);
 
-  const [freeLeft, setFreeLeft] = useState<number>(FREE_TOTAL);
+  const [credits, setCredits] = useState<number>(0);
+  const [hasLetterAccess, setHasLetterAccess] = useState<boolean>(false);
+  const [entLoading, setEntLoading] = useState<boolean>(true);
   const [success, setSuccess] = useState(false);
   const [successInfo, setSuccessInfo] = useState<{ scheduled: boolean; when?: Date } | null>(null);
+
+  const refreshEntitlement = async () => {
+    const user = getCurrentUser();
+    if (!user?.email) { setCredits(0); setHasLetterAccess(false); setEntLoading(false); return; }
+    const ent = await fetchEntitlement(user.email);
+    if (ent) {
+      setCredits(Math.max(0, (ent.paid_calls || 0) - (ent.used_calls || 0)));
+      setHasLetterAccess(Boolean(ent.has_letter_access));
+    } else {
+      setCredits(0);
+      setHasLetterAccess(false);
+    }
+    setEntLoading(false);
+  };
 
   const country = useMemo(
     () => COUNTRIES.find((c) => c.code === countryCode) ?? COUNTRIES[0],
     [countryCode],
   );
 
-  useEffect(() => {
-    const stored = localStorage.getItem(FREE_KEY);
-    if (stored === null) {
-      localStorage.setItem(FREE_KEY, String(FREE_TOTAL));
-      setFreeLeft(FREE_TOTAL);
-    } else {
-      setFreeLeft(Math.max(0, parseInt(stored, 10) || 0));
-    }
-  }, []);
+  useEffect(() => { refreshEntitlement(); }, []);
+
 
   const startRecording = async () => {
     try {
@@ -183,14 +192,25 @@ const ScheduleCall = () => {
       toast({ title: "Type a message first", variant: "destructive" });
       return;
     }
-    if (freeLeft <= 0) {
+    const user = getCurrentUser();
+    if (!user?.email) {
       toast({
-        title: "No free calls left",
+        title: "Please sign in",
+        description: "Sign in with the email you used at checkout to place a call.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Atomically deduct a paid credit on the server. If none available, send to $1 checkout.
+    const consumed = await consumeCallCredit(user.email);
+    if (!consumed) {
+      toast({
+        title: "No call credits left",
         description: "Redirecting you to add an extra call for $1…",
       });
-      const user = getCurrentUser();
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
-        email: user?.email,
+        email: user.email,
         redirectTo: `${window.location.origin}/payment-status?product=call`,
       });
       return;
@@ -239,9 +259,7 @@ const ScheduleCall = () => {
         throw new Error(String((data as { error: unknown }).error));
       }
 
-      const next = freeLeft - 1;
-      localStorage.setItem(FREE_KEY, String(next));
-      setFreeLeft(next);
+      await refreshEntitlement();
       setSuccessInfo({ scheduled: isFuture, when: isFuture ? when : undefined });
       setSuccess(true);
     } catch (err) {
@@ -279,7 +297,7 @@ const ScheduleCall = () => {
                 : `Ringing ${recipientName} now with your ${mode === "voice" ? "voice message" : "personalized message"}.`}
             </p>
             <p className="font-body text-xs text-muted-foreground mb-6">
-              {freeLeft} of {FREE_TOTAL} free calls remaining — then $1 per extra call
+              {credits} call credit{credits === 1 ? "" : "s"} remaining — extra calls are $1 each
             </p>
             <div className="flex flex-col gap-2">
               <Button
@@ -339,7 +357,13 @@ const ScheduleCall = () => {
           <div className="inline-flex items-center gap-2 mt-5 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="font-body text-xs font-semibold text-foreground">
-              {freeLeft} of {FREE_TOTAL} free reminder calls
+              {entLoading
+                ? "Checking your credits…"
+                : credits > 0
+                  ? `${credits} call credit${credits === 1 ? "" : "s"} available`
+                  : hasLetterAccess
+                    ? "No call credits left · $1 per extra call"
+                    : "Buy a letter to unlock 2 free calls · or $1 per call"}
             </span>
           </div>
         </motion.div>

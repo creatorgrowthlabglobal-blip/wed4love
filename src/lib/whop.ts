@@ -39,3 +39,16 @@ export async function fetchEntitlement(email: string): Promise<Entitlement | nul
     .maybeSingle();
   return (data as Entitlement) || null;
 }
+
+/** Atomically consume one paid call credit. Returns true if a credit was deducted. */
+export async function consumeCallCredit(email: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc("consume_call_credit", {
+    _email: email.toLowerCase().trim(),
+  });
+  if (error) {
+    console.error("[consumeCallCredit] error", error);
+    return false;
+  }
+  return Boolean(data);
+}
+
