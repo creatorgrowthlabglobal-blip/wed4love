@@ -214,16 +214,46 @@ const ScheduleCall = () => {
   }, [entLoading, credits]);
 
 
+  // iOS Safari does NOT support audio/webm in MediaRecorder — only audio/mp4.
+  // Pick the first mime the current device actually supports, falling back to
+  // the browser default if none of our candidates work.
+  const pickRecorderMime = (): string | undefined => {
+    if (typeof MediaRecorder === "undefined") return undefined;
+    const candidates = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/mp4;codecs=mp4a.40.2",
+      "audio/mp4",
+      "audio/aac",
+      "audio/ogg;codecs=opus",
+    ];
+    for (const c of candidates) {
+      try {
+        // @ts-ignore older lib defs may miss isTypeSupported
+        if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) return c;
+      } catch { /* noop */ }
+    }
+    return undefined;
+  };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
+      const mimeType = pickRecorderMime();
+      const mr = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       chunksRef.current = [];
       mr.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data);
       mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        // Use the recorder's actual mimeType (set by the browser) so the blob
+        // is playable. Hardcoding "audio/webm" breaks iOS where the data is mp4.
+        const actualMime = mr.mimeType || mimeType || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type: actualMime });
         recordedBlobRef.current = blob;
-        setRecordedUrl(URL.createObjectURL(blob));
+        // Revoke any previous object URL to avoid leaks on re-record.
+        setRecordedUrl((prev) => {
+          if (prev) { try { URL.revokeObjectURL(prev); } catch {} }
+          return URL.createObjectURL(blob);
+        });
         stream.getTracks().forEach((t) => t.stop());
       };
       mr.start();
