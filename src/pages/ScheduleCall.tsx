@@ -15,6 +15,7 @@ import {
   Heart,
   Gift,
   Bell,
+  Lock,
   ChevronsUpDown,
 } from "lucide-react";
 import Header from "@/components/Header";
