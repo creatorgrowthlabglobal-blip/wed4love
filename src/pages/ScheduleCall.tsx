@@ -49,7 +49,7 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
   });
 
 const FREE_KEY = "wish4love_free_calls_remaining_v2";
-const FREE_TOTAL = 50;
+const FREE_TOTAL = 2;
 
 const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
@@ -184,7 +184,7 @@ const ScheduleCall = () => {
     if (freeLeft <= 0) {
       toast({
         title: "No free calls left",
-        description: "Top up below to schedule more reminder calls.",
+        description: "Extra reminder calls are $1 each. Top-up coming soon.",
         variant: "destructive",
       });
       return;
@@ -273,7 +273,7 @@ const ScheduleCall = () => {
                 : `Ringing ${recipientName} now with your ${mode === "voice" ? "voice message" : "personalized message"}.`}
             </p>
             <p className="font-body text-xs text-muted-foreground mb-6">
-              {freeLeft} of {FREE_TOTAL} free calls remaining
+              {freeLeft} of {FREE_TOTAL} free calls remaining — then $1 per extra call
             </p>
             <div className="flex flex-col gap-2">
               <Button
@@ -333,7 +333,7 @@ const ScheduleCall = () => {
           <div className="inline-flex items-center gap-2 mt-5 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="font-body text-xs font-semibold text-foreground">
-              {freeLeft} of {FREE_TOTAL} free calls remaining
+              {freeLeft} of {FREE_TOTAL} free reminder calls — then $1 per extra call
             </span>
           </div>
         </motion.div>
