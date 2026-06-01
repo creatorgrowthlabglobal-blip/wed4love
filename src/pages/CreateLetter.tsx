@@ -179,6 +179,16 @@ const CreateLetter = () => {
           )}
         </AnimatePresence>
       </main>
+      {redirecting && (
+        <CheckoutOverlay
+          message={
+            redirecting === "create"
+              ? "Your monthly access is active — preparing your letter…"
+              : undefined
+          }
+        />
+      )}
+      </main>
     </div>
   );
 };
