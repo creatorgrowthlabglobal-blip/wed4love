@@ -225,19 +225,14 @@ const PaymentDebug = () => {
             {events.length > 0 ? (
               <div className="space-y-2">
                 {events.map((ev) => {
-                  const payload = ev.payload as Record<string, unknown>;
-                  const planName =
-                    (payload?.data as Record<string, unknown>)?.plan_name ||
-                    (payload?.data as Record<string, unknown>)?.plan?.name ||
-                    "";
-                  const userEmail =
-                    (payload?.data as Record<string, unknown>)?.user?.email ||
-                    (payload?.data as Record<string, unknown>)?.email ||
-                    "";
-                  const status =
-                    (payload?.data as Record<string, unknown>)?.status ||
-                    (payload?.data as Record<string, unknown>)?.payment?.status ||
-                    "";
+                  const p = ev.payload as Record<string, unknown>;
+                  const data = (p?.data || {}) as Record<string, unknown>;
+                  const planObj = (data?.plan || {}) as Record<string, unknown>;
+                  const userObj = (data?.user || {}) as Record<string, unknown>;
+                  const paymentObj = (data?.payment || {}) as Record<string, unknown>;
+                  const planName = String(data?.plan_name || planObj?.name || "");
+                  const userEmail = String(userObj?.email || data?.email || "");
+                  const status = String(data?.status || paymentObj?.status || "");
                   return (
                     <div
                       key={ev.event_id}
@@ -250,7 +245,7 @@ const PaymentDebug = () => {
                         <>
                           <span className="text-muted-foreground">·</span>
                           <span className="text-accent-foreground bg-accent/20 px-1.5 py-0.5 rounded">
-                            {String(planName)}
+                            {planName}
                           </span>
                         </>
                       )}
@@ -259,19 +254,19 @@ const PaymentDebug = () => {
                           <span className="text-muted-foreground">·</span>
                           <span
                             className={`px-1.5 py-0.5 rounded ${
-                              String(status) === "completed" || String(status) === "paid"
+                              status === "completed" || status === "paid"
                                 ? "bg-green-100 text-green-700"
                                 : "bg-yellow-100 text-yellow-700"
                             }`}
                           >
-                            {String(status)}
+                            {status}
                           </span>
                         </>
                       )}
                       {userEmail && (
                         <>
                           <span className="text-muted-foreground">·</span>
-                          <span className="text-foreground">{String(userEmail)}</span>
+                          <span className="text-foreground">{userEmail}</span>
                         </>
                       )}
                     </div>
