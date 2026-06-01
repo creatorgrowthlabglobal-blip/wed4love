@@ -36,6 +36,8 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRIES, buildE164, sanitizeLocalNumber, zonedWallTimeToUtc, tzOffsetLabel } from "@/lib/countries";
+import { WHOP_EXTRA_CALL_CHECKOUT, buildWhopCheckoutUrl } from "@/lib/whop";
+import { getCurrentUser } from "@/lib/auth";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -184,8 +186,12 @@ const ScheduleCall = () => {
     if (freeLeft <= 0) {
       toast({
         title: "No free calls left",
-        description: "Extra reminder calls are $1 each. Top-up coming soon.",
-        variant: "destructive",
+        description: "Redirecting you to add an extra call for $1…",
+      });
+      const user = getCurrentUser();
+      window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
+        email: user?.email,
+        redirectTo: `${window.location.origin}/schedule-call`,
       });
       return;
     }
