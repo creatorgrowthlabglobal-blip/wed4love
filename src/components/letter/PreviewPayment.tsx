@@ -45,11 +45,14 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
     }
   }, [showPreview, letterData.customMusic, letterData.images]);
 
+  const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
     const preset = getPresetById(letterData.selectedMusic);
-    const src = preset?.url || previewCustomMusicData;
-
-    if (!src) return;
+    let src = preset?.url || previewCustomMusicData;
+    if (!src) {
+      if (!randomMusicRef.current) randomMusicRef.current = getRandomPresetUrl();
+      src = randomMusicRef.current;
+    }
 
     if (!audioRef.current) {
       const audio = new Audio(src);
