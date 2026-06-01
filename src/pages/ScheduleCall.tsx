@@ -404,7 +404,6 @@ const ScheduleCall = () => {
         return;
       }
 
-      setPlacing(true);
       const e164 = buildE164(country.dial, localPhone);
       const body: Record<string, unknown> = {
         number: e164,
