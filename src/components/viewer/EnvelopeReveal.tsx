@@ -725,10 +725,10 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                         overflow: "hidden",
                         background: "rgba(255,255,255,0.35)",
                       }}>
-                        <img src={src} alt="Memory" loading="lazy"
+                        <img src={src} alt="Memory" decoding="async"
                           style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
                       </div>
-                      <img src={isRect ? silverFrameRect : silverFrameOval} alt="" aria-hidden loading="lazy"
+                      <img src={isRect ? silverFrameRect : silverFrameOval} alt="" aria-hidden
                         style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
                     </motion.div>
                   );
