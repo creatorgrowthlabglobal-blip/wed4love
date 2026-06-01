@@ -11,6 +11,7 @@ import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import ScheduleCall from "./pages/ScheduleCall";
+import PaymentStatus from "./pages/PaymentStatus";
 import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
@@ -75,6 +76,7 @@ const App = () => (
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
           <Route path="/schedule-call" element={<ProtectedRoute><ScheduleCall /></ProtectedRoute>} />
+          <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

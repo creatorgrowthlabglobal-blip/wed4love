@@ -191,7 +191,7 @@ const ScheduleCall = () => {
       const user = getCurrentUser();
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
         email: user?.email,
-        redirectTo: `${window.location.origin}/schedule-call`,
+        redirectTo: `${window.location.origin}/payment-status?product=call`,
       });
       return;
     }
