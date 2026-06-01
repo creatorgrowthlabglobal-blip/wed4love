@@ -105,6 +105,7 @@ const ScheduleCall = () => {
 
   const [recipientName, setRecipientName] = useState("");
   const [countryCode, setCountryCode] = useState("US");
+  const [countryOpen, setCountryOpen] = useState(false);
   const [localPhone, setLocalPhone] = useState("");
   const [occasion, setOccasion] = useState("birthday");
   const [sendMode, setSendMode] = useState<"now" | "later">("now");
