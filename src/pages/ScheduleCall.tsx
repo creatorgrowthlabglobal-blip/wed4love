@@ -282,6 +282,12 @@ const ScheduleCall = () => {
   };
 
   const handleSchedule = async () => {
+    // Hard guard against double-clicks: the `placing` state update is async,
+    // so a fast second click can slip through before the button disables.
+    if (placingRef.current) return;
+    placingRef.current = true;
+    // Released in the `finally` block below, or on any early return.
+    const release = () => { placingRef.current = false; };
     const cleanLocal = sanitizeLocalNumber(localPhone);
     if (!recipientName.trim() || !cleanLocal) {
       toast({
