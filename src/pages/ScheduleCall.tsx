@@ -436,12 +436,14 @@ const ScheduleCall = () => {
         throw new Error(String((data as { error: unknown }).error));
       }
 
-      // Call (or schedule) succeeded — NOW deduct one credit atomically.
-      const consumed = await consumeCallCredit(user.email);
-      if (!consumed) {
-        // Extremely unlikely (we just checked entitlement) — log but don't
-        // bounce the user to checkout, the call already went through.
-        console.warn("[ScheduleCall] call succeeded but credit deduction failed");
+      // For immediate calls, deduct the credit now. For scheduled calls, the
+      // cron worker (process-scheduled-calls) deducts the credit when it
+      // actually dispatches — so we DON'T deduct here, otherwise it double-charges.
+      if (!isFuture) {
+        const consumed = await consumeCallCredit(user.email);
+        if (!consumed) {
+          console.warn("[ScheduleCall] call succeeded but credit deduction failed");
+        }
       }
 
       await refreshEntitlement();
