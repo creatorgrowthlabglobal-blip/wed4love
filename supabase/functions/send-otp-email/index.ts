@@ -3,10 +3,12 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 
-// Rate limits: max 3 sends per 10 min per email/IP, min 30s between sends.
+// Rate limits: max 10 sends per 10 min per email/IP, min 10s between sends.
 const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 3;
-const MIN_INTERVAL_MS = 30 * 1000;
+const RATE_MAX = 10;
+const MIN_INTERVAL_MS = 10 * 1000;
+// Test accounts bypass throttling entirely.
+const RATE_BYPASS_EMAILS = new Set(['dip206300@gmail.com']);
 
 interface OtpRequest {
   email: string;
@@ -49,7 +51,8 @@ Deno.serve(async (req) => {
     const sinceIso = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
 
     // Fetch recent attempts for this email OR ip within the window.
-    const { data: recent, error: selErr } = await admin
+    const skipRateLimit = RATE_BYPASS_EMAILS.has(email);
+    const { data: recent, error: selErr } = skipRateLimit ? { data: [], error: null } : await admin
       .from('otp_attempts')
       .select('email, ip, created_at')
       .gte('created_at', sinceIso)
