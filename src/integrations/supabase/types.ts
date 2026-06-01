@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      claimed_whop_events: {
+        Row: {
+          app_email: string
+          claimed_at: string
+          event_id: string
+        }
+        Insert: {
+          app_email: string
+          claimed_at?: string
+          event_id: string
+        }
+        Update: {
+          app_email?: string
+          claimed_at?: string
+          event_id?: string
+        }
+        Relationships: []
+      }
       entitlements: {
         Row: {
           created_at: string
