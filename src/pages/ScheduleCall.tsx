@@ -523,6 +523,10 @@ const ScheduleCall = () => {
                 size="lg"
                 className="rounded-full gap-2 px-6 shadow-romantic"
                 onClick={async () => {
+                  setRedirectingToCheckout(true);
+                  await new Promise<void>((r) =>
+                    requestAnimationFrame(() => requestAnimationFrame(() => r()))
+                  );
                   const user = getCurrentUser();
                   await saveDraft();
                   try {
@@ -531,7 +535,6 @@ const ScheduleCall = () => {
                       JSON.stringify({ product: "call", email: user?.email || "", ts: Date.now() })
                     );
                   } catch {}
-                  setRedirectingToCheckout(true);
                   try {
                     const { purchase_url } = await createWhopCheckout({
                       product: "call",

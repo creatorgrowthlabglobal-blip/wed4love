@@ -49,8 +49,14 @@ const CreateLetter = () => {
   };
 
   const handlePay = async () => {
-    // Show overlay IMMEDIATELY — heavy work (base64 of photos/audio) happens after.
+    // Show overlay IMMEDIATELY. Force React to flush + browser to paint
+    // BEFORE we start the heavy base64 encoding (which can lock the main
+    // thread for several seconds on big photos/audio).
     setRedirecting("checkout");
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+
     const letterId = Math.random().toString(36).substring(2, 10);
     const user = getCurrentUser();
 
