@@ -636,27 +636,58 @@ const ScheduleCall = () => {
               Phone number
             </label>
             <div className="grid grid-cols-[170px_1fr] gap-2">
-              <Select value={countryCode} onValueChange={setCountryCode}>
-                <SelectTrigger>
-                  <SelectValue>
-                    {country.name} (+{country.dial})
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-72">
-                  {REGIONS.map((region) => (
-                    <SelectGroup key={region}>
-                      <SelectLabel>{region}</SelectLabel>
-                      {COUNTRIES.filter((c) => c.region === region)
-                        .sort((a, b) => a.name.localeCompare(b.name))
-                        .map((c) => (
-                          <SelectItem key={c.code} value={c.code}>
-                            {c.name} (+{c.dial})
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    role="combobox"
+                    aria-expanded={countryOpen}
+                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span className="truncate text-left">
+                      {country.name} (+{country.dial})
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-0" align="start">
+                  <Command
+                    filter={(value, search) => {
+                      // value is "name +dial code" — match on any substring.
+                      return value.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+                    }}
+                  >
+                    <CommandInput placeholder="Search country…" />
+                    <CommandList className="max-h-72">
+                      <CommandEmpty>No country found.</CommandEmpty>
+                      {REGIONS.map((region) => (
+                        <CommandGroup key={region} heading={region}>
+                          {COUNTRIES.filter((c) => c.region === region)
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map((c) => (
+                              <CommandItem
+                                key={c.code}
+                                value={`${c.name} +${c.dial} ${c.code}`}
+                                onSelect={() => {
+                                  setCountryCode(c.code);
+                                  setCountryOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    countryCode === c.code ? "opacity-100" : "opacity-0",
+                                  )}
+                                />
+                                {c.name} (+{c.dial})
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      ))}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <Input
                 value={localPhone}
                 onChange={(e) => setLocalPhone(e.target.value)}
