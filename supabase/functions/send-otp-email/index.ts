@@ -3,10 +3,12 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 
-// Rate limits: max 3 sends per 10 min per email/IP, min 30s between sends.
+// Rate limits: max 10 sends per 10 min per email/IP, min 10s between sends.
 const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 3;
-const MIN_INTERVAL_MS = 30 * 1000;
+const RATE_MAX = 10;
+const MIN_INTERVAL_MS = 10 * 1000;
+// Test accounts bypass throttling entirely.
+const RATE_BYPASS_EMAILS = new Set(['dip206300@gmail.com']);
 
 interface OtpRequest {
   email: string;
