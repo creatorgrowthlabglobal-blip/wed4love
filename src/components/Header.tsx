@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { getCurrentUser, signOut } from "@/lib/auth";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group z-10">
           <Heart className="w-5 h-5 text-primary fill-primary transition-transform duration-300 group-hover:scale-110" />
-          <span className="font-display text-lg font-bold text-foreground tracking-tight">
+          <span className="font-display text-lg font-bold text-foreground tracking-tight notranslate" translate="no">
             Wish4Love
           </span>
         </Link>
@@ -51,7 +52,8 @@ const Header = () => {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageSwitcher />
           {user ? (
             <button
               onClick={handleSignOut}
