@@ -297,7 +297,7 @@ const ScheduleCall = () => {
                 : `Ringing ${recipientName} now with your ${mode === "voice" ? "voice message" : "personalized message"}.`}
             </p>
             <p className="font-body text-xs text-muted-foreground mb-6">
-              {freeLeft} of {FREE_TOTAL} free calls remaining — then $1 per extra call
+              {credits} call credit{credits === 1 ? "" : "s"} remaining — extra calls are $1 each
             </p>
             <div className="flex flex-col gap-2">
               <Button
@@ -357,7 +357,13 @@ const ScheduleCall = () => {
           <div className="inline-flex items-center gap-2 mt-5 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="font-body text-xs font-semibold text-foreground">
-              {freeLeft} of {FREE_TOTAL} free reminder calls
+              {entLoading
+                ? "Checking your credits…"
+                : credits > 0
+                  ? `${credits} call credit${credits === 1 ? "" : "s"} available`
+                  : hasLetterAccess
+                    ? "No call credits left · $1 per extra call"
+                    : "Buy a letter to unlock 2 free calls · or $1 per call"}
             </span>
           </div>
         </motion.div>
