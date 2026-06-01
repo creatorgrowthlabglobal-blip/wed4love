@@ -49,7 +49,7 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
   });
 
 const FREE_KEY = "wish4love_free_calls_remaining_v2";
-const FREE_TOTAL = 50;
+const FREE_TOTAL = 2;
 
 const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
@@ -184,7 +184,7 @@ const ScheduleCall = () => {
     if (freeLeft <= 0) {
       toast({
         title: "No free calls left",
-        description: "Top up below to schedule more reminder calls.",
+        description: "Extra reminder calls are $1 each. Top-up coming soon.",
         variant: "destructive",
       });
       return;
@@ -273,7 +273,7 @@ const ScheduleCall = () => {
                 : `Ringing ${recipientName} now with your ${mode === "voice" ? "voice message" : "personalized message"}.`}
             </p>
             <p className="font-body text-xs text-muted-foreground mb-6">
-              {freeLeft} of {FREE_TOTAL} free calls remaining
+              {freeLeft} of {FREE_TOTAL} free calls remaining — then $1 per extra call
             </p>
             <div className="flex flex-col gap-2">
               <Button
@@ -333,7 +333,7 @@ const ScheduleCall = () => {
           <div className="inline-flex items-center gap-2 mt-5 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="font-body text-xs font-semibold text-foreground">
-              {freeLeft} of {FREE_TOTAL} free calls remaining
+              {freeLeft} of {FREE_TOTAL} free reminder calls — then $1 per extra call
             </span>
           </div>
         </motion.div>
@@ -629,25 +629,6 @@ const ScheduleCall = () => {
           </p>
         </motion.div>
 
-        {/* Top-ups */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-8"
-        >
-          <button
-            onClick={() => handleBuy("$1 extra reminder call")}
-            className="w-full bg-gradient-to-br from-primary/10 to-[hsl(340_90%_88%)] rounded-2xl p-5 border border-primary/20 text-left hover:border-primary/40 transition"
-          >
-            <p className="font-display text-lg font-bold">
-              $1 <span className="text-xs font-body text-muted-foreground">— per extra reminder call</span>
-            </p>
-            <p className="font-body text-xs text-muted-foreground">
-              Charged only after your 2 free calls (Grand Gesture plan)
-            </p>
-          </button>
-        </motion.div>
       </main>
     </div>
   );
