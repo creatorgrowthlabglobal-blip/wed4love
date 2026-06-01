@@ -297,8 +297,10 @@ const ScheduleCall = () => {
     if (!consumed) {
       toast({
         title: "No call credits left",
-        description: "Redirecting you to add an extra call for $1…",
+        description: "Saving your message and sending you to add an extra call for $1…",
       });
+      await saveDraft();
+      sessionStorage.setItem(AUTO_SUBMIT_KEY, "1");
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
         email: user.email,
         redirectTo: `${window.location.origin}/payment-status?product=call`,
