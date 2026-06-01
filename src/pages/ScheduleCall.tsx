@@ -407,6 +407,7 @@ const ScheduleCall = () => {
         number: e164,
         recipientName: recipientName.trim(),
         occasion,
+        userEmail: user.email,
       };
       if (isFuture && when) body.scheduledAt = when.toISOString();
 
