@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
     }, { onConflict: "email" });
     if (upErr) throw upErr;
 
-    await supabase.from("whop_events").insert({ event_id: eventId, payload: body });
+    await supabase.from("whop_events").insert({ event_id: dedupeKey, payload: body });
 
     if (pendingOrder) {
       await supabase.from("pending_orders").update({
