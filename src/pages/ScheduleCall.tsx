@@ -301,6 +301,12 @@ const ScheduleCall = () => {
       });
       await saveDraft();
       sessionStorage.setItem(AUTO_SUBMIT_KEY, "1");
+      try {
+        sessionStorage.setItem(
+          "wish4love_pending_payment_v1",
+          JSON.stringify({ product: "call", email: user.email, ts: Date.now() })
+        );
+      } catch {}
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
         email: user.email,
         redirectTo: `${window.location.origin}/payment-status?product=call`,
