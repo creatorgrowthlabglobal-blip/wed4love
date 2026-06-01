@@ -19,15 +19,70 @@ export interface StoredLetter {
   template?: "photo" | "purple"; // mailbox template choice
 }
 
-export const fileToBase64 = (file: File): Promise<string> =>
+const readAsDataURL = (file: Blob): Promise<string> =>
   new Promise((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result as string);
     reader.readAsDataURL(file);
   });
 
+/**
+ * Downscale + recompress an image so it fits comfortably inside the JSONB
+ * payload. Large phone photos (5-12MB) otherwise silently exceed the row
+ * limit and the memories never make it into the database.
+ */
+const compressImage = async (file: File, maxDim = 1600, quality = 0.82): Promise<string> => {
+  // Non-image files: just return as-is.
+  if (!file.type.startsWith("image/")) return readAsDataURL(file);
+  try {
+    const bitmap = await createImageBitmap(file).catch(() => null);
+    let width: number;
+    let height: number;
+    let source: CanvasImageSource;
+
+    if (bitmap) {
+      width = bitmap.width;
+      height = bitmap.height;
+      source = bitmap;
+    } else {
+      const dataUrl = await readAsDataURL(file);
+      const img = await new Promise<HTMLImageElement>((res, rej) => {
+        const i = new Image();
+        i.onload = () => res(i);
+        i.onerror = rej;
+        i.src = dataUrl;
+      });
+      width = img.naturalWidth;
+      height = img.naturalHeight;
+      source = img;
+    }
+
+    const scale = Math.min(1, maxDim / Math.max(width, height));
+    const w = Math.round(width * scale);
+    const h = Math.round(height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return readAsDataURL(file);
+    ctx.drawImage(source, 0, 0, w, h);
+    const blob: Blob | null = await new Promise((res) =>
+      canvas.toBlob(res, "image/jpeg", quality)
+    );
+    if (!blob) return readAsDataURL(file);
+    // If compression somehow made it bigger, keep original.
+    if (blob.size >= file.size) return readAsDataURL(file);
+    return readAsDataURL(blob);
+  } catch (e) {
+    console.warn("[letterStorage] image compress failed, using original", e);
+    return readAsDataURL(file);
+  }
+};
+
+export const fileToBase64 = (file: File): Promise<string> => compressImage(file);
+
 export const filesToBase64 = (files: File[]): Promise<string[]> =>
-  Promise.all(files.map(fileToBase64));
+  Promise.all(files.map((f) => compressImage(f)));
 
 const LOCAL_KEY = "wish4love_full_letters";
 const HISTORY_KEY = "wish4love_letters";
