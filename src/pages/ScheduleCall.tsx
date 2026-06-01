@@ -286,8 +286,11 @@ const ScheduleCall = () => {
     // so a fast second click can slip through before the button disables.
     if (placingRef.current) return;
     placingRef.current = true;
+    // Lock the button visually IMMEDIATELY on click — before any async work
+    // (entitlement fetch, checkout, etc.) so the user can't fire twice.
+    setPlacing(true);
     // Released in the `finally` block below, or on any early return.
-    const release = () => { placingRef.current = false; };
+    const release = () => { placingRef.current = false; setPlacing(false); };
     try {
       const cleanLocal = sanitizeLocalNumber(localPhone);
       if (!recipientName.trim() || !cleanLocal) {
