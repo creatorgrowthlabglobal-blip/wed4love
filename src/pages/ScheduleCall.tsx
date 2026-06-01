@@ -340,11 +340,18 @@ const ScheduleCall = () => {
         );
       } catch {}
       setRedirectingToCheckout(true);
-      window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
-        email: user.email,
-        redirectTo: `${window.location.origin}/payment-status?product=call`,
-        metadata: { app_email: user.email },
-      });
+      try {
+        const { purchase_url } = await createWhopCheckout({
+          product: "call",
+          app_email: user.email,
+          redirect_url: `${window.location.origin}/payment-status?product=call`,
+        });
+        window.location.href = purchase_url;
+      } catch (e) {
+        console.error("[ScheduleCall] create-checkout failed", e);
+        setRedirectingToCheckout(false);
+        toast({ title: "Couldn't open checkout", description: "Please try again.", variant: "destructive" });
+      }
       return;
     }
 
