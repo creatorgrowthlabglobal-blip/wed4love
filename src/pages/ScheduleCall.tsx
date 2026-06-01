@@ -377,9 +377,18 @@ const ScheduleCall = () => {
 
 
       if (mode === "voice" && recordedBlobRef.current) {
-        body.audioBase64 = await blobToBase64(recordedBlobRef.current);
-        body.audioMime = recordedBlobRef.current.type || "audio/webm";
-        body.audioName = "message.webm";
+        const blob = recordedBlobRef.current;
+        body.audioBase64 = await blobToBase64(blob);
+        const actualMime = blob.type || "audio/webm";
+        body.audioMime = actualMime;
+        // Match file extension to actual mime so the call provider accepts it
+        // (iOS records mp4/aac, desktop records webm/opus).
+        const ext = actualMime.includes("mp4") || actualMime.includes("aac")
+          ? "m4a"
+          : actualMime.includes("ogg")
+            ? "ogg"
+            : "webm";
+        body.audioName = `message.${ext}`;
       } else {
         body.text = ttsText.trim();
         body.voice = voice; // "female" | "male"
@@ -769,7 +778,14 @@ const ScheduleCall = () => {
                   {recordedUrl && !recording && (
                     <div className="mt-4 flex items-center justify-center gap-2">
                       <Play className="w-4 h-4 text-primary" />
-                      <audio src={recordedUrl} controls className="max-w-full" />
+                      <audio
+                        key={recordedUrl}
+                        src={recordedUrl}
+                        controls
+                        playsInline
+                        preload="metadata"
+                        className="max-w-full"
+                      />
                     </div>
                   )}
                   <p className="font-body text-xs text-muted-foreground mt-3">
