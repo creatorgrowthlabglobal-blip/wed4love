@@ -13,14 +13,35 @@ type Status = "checking" | "granted" | "pending" | "error";
 const POLL_INTERVAL_MS = 3000;
 const MAX_POLL_MS = 90_000;
 
+const PENDING_KEY = "wish4love_pending_payment_v1";
+
+type PendingPayment = { product?: string; letterId?: string; email?: string; ts?: number };
+
+const readPending = (): PendingPayment => {
+  try {
+    const raw = sessionStorage.getItem(PENDING_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as PendingPayment;
+    // expire after 30 min
+    if (parsed.ts && Date.now() - parsed.ts > 30 * 60 * 1000) {
+      sessionStorage.removeItem(PENDING_KEY);
+      return {};
+    }
+    return parsed || {};
+  } catch {
+    return {};
+  }
+};
+
 const PaymentStatus = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const letterId = params.get("letter_id");
-  const product = params.get("product") || "letter"; // "letter" | "call"
+  const pending = readPending();
+  const letterId = params.get("letter_id") || pending.letterId || "";
+  const product = params.get("product") || pending.product || "letter"; // "letter" | "call"
 
   const user = getCurrentUser();
-  const email = user?.email || params.get("email") || "";
+  const email = user?.email || params.get("email") || pending.email || "";
 
   const [status, setStatus] = useState<Status>("checking");
   const [elapsed, setElapsed] = useState(0);
@@ -67,6 +88,7 @@ const PaymentStatus = () => {
 
   useEffect(() => {
     if (status !== "granted") return;
+    try { sessionStorage.removeItem(PENDING_KEY); } catch {}
     const t = setTimeout(() => {
       if (product === "letter" && letterId) navigate(`/letter-ready/${letterId}`, { replace: true });
       else if (product === "call") navigate("/schedule-call", { replace: true });

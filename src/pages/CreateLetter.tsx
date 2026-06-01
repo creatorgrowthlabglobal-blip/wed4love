@@ -69,6 +69,14 @@ const CreateLetter = () => {
     });
 
     const user = getCurrentUser();
+    // Persist pending checkout context so /payment-status can recover it
+    // even if Whop strips our redirect query params.
+    try {
+      sessionStorage.setItem(
+        "wish4love_pending_payment_v1",
+        JSON.stringify({ product: "letter", letterId, email: user?.email || "", ts: Date.now() })
+      );
+    } catch {}
     const redirectTo = `${window.location.origin}/payment-status?product=letter&letter_id=${letterId}`;
     const checkoutUrl = buildWhopCheckoutUrl(WHOP_LETTER_CHECKOUT, {
       email: user?.email,
