@@ -28,13 +28,24 @@ export function buildWhopCheckoutUrl(
 }
 
 /**
- * Open a blank tab SYNCHRONOUSLY inside a click handler. iOS Safari and many
- * in-app browsers drop the user-gesture token after the first `await`, which
- * silently blocks a later `window.location.href = ...`. Pre-opening a tab
- * gives us a destination we can safely redirect once the checkout URL is
- * ready. Returns null if popups are blocked — callers should fall back.
+ * Detect mobile / in-app browsers where pre-opened popup tabs are unreliable.
+ * iOS Safari, Chrome iOS, Instagram/Facebook/TikTok in-app webviews all either
+ * block `window.open` after an `await` OR open a tab that can't be navigated
+ * later. On these we MUST use same-tab navigation.
+ */
+function isMobileOrInApp(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /Android|iPhone|iPad|iPod|Mobile|Instagram|FBAN|FBAV|FB_IAB|Line|TikTok|Snapchat/i.test(ua);
+}
+
+/**
+ * Open a blank tab SYNCHRONOUSLY inside a click handler — DESKTOP ONLY.
+ * On mobile we return null so the caller falls back to same-tab navigation,
+ * which is reliably allowed after `await` (unlike `window.open`).
  */
 export function openBlankCheckoutTab(): Window | null {
+  if (isMobileOrInApp()) return null;
   try {
     const w = window.open("about:blank", "_blank");
     if (w) {
@@ -54,11 +65,12 @@ export function openBlankCheckoutTab(): Window | null {
 export function redirectToCheckout(tab: Window | null, url: string) {
   if (tab && !tab.closed) {
     try {
-      tab.location.href = url;
+      tab.location.replace(url);
       return;
     } catch { /* fall through */ }
   }
-  window.location.href = url;
+  // Same-tab navigation — works reliably on mobile even after async work.
+  window.location.assign(url);
 }
 
 
