@@ -97,6 +97,7 @@ const CreateLetter = () => {
         const ent = await fetchEntitlement(user.email);
         if (hasActiveLetterAccess(ent)) {
           setRedirecting("create");
+          try { checkoutTab?.close(); } catch {}
           toast({
             title: "Welcome back 💌",
             description: "Your monthly access is active — creating your letter now.",
