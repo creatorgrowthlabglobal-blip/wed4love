@@ -48,45 +48,8 @@ Deno.serve(async (req) => {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
-    const sinceIso = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
-
-    // Fetch recent attempts for this email OR ip within the window.
-    const skipRateLimit = RATE_BYPASS_EMAILS.has(email);
-    const { data: recent, error: selErr } = skipRateLimit ? { data: [], error: null } : await admin
-      .from('otp_attempts')
-      .select('email, ip, created_at')
-      .gte('created_at', sinceIso)
-      .or(`email.eq.${email},ip.eq.${ip}`);
-
-    if (selErr) {
-      console.error('otp_attempts select error:', selErr);
-    } else if (recent && recent.length) {
-      const now = Date.now();
-      const emailHits = recent.filter((r) => r.email === email);
-      const ipHits = recent.filter((r) => r.ip === ip);
-
-      const lastTs = recent.reduce(
-        (m, r) => Math.max(m, new Date(r.created_at).getTime()),
-        0,
-      );
-      if (now - lastTs < MIN_INTERVAL_MS) {
-        const retryAfter = Math.ceil((MIN_INTERVAL_MS - (now - lastTs)) / 1000);
-        return new Response(
-          JSON.stringify({ error: 'Please wait before requesting another code', retryAfter }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': String(retryAfter) } },
-        );
-      }
-      if (emailHits.length >= RATE_MAX || ipHits.length >= RATE_MAX) {
-        const oldest = Math.min(
-          ...(emailHits.length >= RATE_MAX ? emailHits : ipHits).map((r) => new Date(r.created_at).getTime()),
-        );
-        const retryAfter = Math.ceil((RATE_WINDOW_MS - (now - oldest)) / 1000);
-        return new Response(
-          JSON.stringify({ error: 'Too many requests, try again later', retryAfter }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': String(retryAfter) } },
-        );
-      }
-    }
+    // No server-side throttle — we rely on a client-side button cooldown so
+    // legit users behind shared NATs / corporate proxies aren't blocked.
 
     const html = `
       <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">
