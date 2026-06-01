@@ -51,12 +51,30 @@ Deno.serve(async (req) => {
       });
     }
 
-    // PREFER the email the user typed in our app (passed as metadata.app_email)
-    // over the Whop account email, so the entitlement always matches what the
-    // app looks up — even if the user paid with a different email at Whop.
-    const email: string | null = (
-      pick(data, ["metadata", "app_email"], ["user_email"], ["email"], ["user", "email"], ["member", "email"], ["metadata", "email"])
-    )?.toString().trim().toLowerCase() || null;
+    // RESOLUTION ORDER for the entitlement email:
+    // 1) metadata.order_id → pending_orders.app_email  (most reliable — we
+    //    created the checkout via Whop's API with this metadata baked in)
+    // 2) metadata.app_email (URL-style fallback, often stripped by Whop)
+    // 3) Whop account email (user_email / user.email)
+    let email: string | null = null;
+    let pendingOrder: any = null;
+
+    const orderId: string | null =
+      (pick(data, ["metadata", "order_id"]) as string | null) || null;
+    if (orderId) {
+      const { data: po } = await supabase
+        .from("pending_orders").select("*").eq("id", orderId).maybeSingle();
+      if (po) {
+        pendingOrder = po;
+        email = (po.app_email || "").toLowerCase().trim() || null;
+      }
+    }
+
+    if (!email) {
+      email = (
+        pick(data, ["metadata", "app_email"], ["user_email"], ["email"], ["user", "email"], ["member", "email"], ["metadata", "email"])
+      )?.toString().trim().toLowerCase() || null;
+    }
 
     const planId: string | null = (
       pick(data, ["plan_id"], ["plan", "id"], ["product_id"], ["metadata", "plan_id"])
