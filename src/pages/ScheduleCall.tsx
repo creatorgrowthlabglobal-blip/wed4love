@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
+import CheckoutOverlay from "@/components/CheckoutOverlay";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -116,6 +117,7 @@ const ScheduleCall = () => {
   const [entLoading, setEntLoading] = useState<boolean>(true);
   const [success, setSuccess] = useState(false);
   const [successInfo, setSuccessInfo] = useState<{ scheduled: boolean; when?: Date } | null>(null);
+  const [redirectingToCheckout, setRedirectingToCheckout] = useState(false);
 
   const refreshEntitlement = async () => {
     const user = getCurrentUser();
@@ -307,9 +309,11 @@ const ScheduleCall = () => {
           JSON.stringify({ product: "call", email: user.email, ts: Date.now() })
         );
       } catch {}
+      setRedirectingToCheckout(true);
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
         email: user.email,
         redirectTo: `${window.location.origin}/payment-status?product=call`,
+        metadata: { app_email: user.email },
       });
       return;
     }
@@ -481,9 +485,11 @@ const ScheduleCall = () => {
                       JSON.stringify({ product: "call", email: user?.email || "", ts: Date.now() })
                     );
                   } catch {}
+                  setRedirectingToCheckout(true);
                   window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
                     email: user?.email,
                     redirectTo: `${window.location.origin}/payment-status?product=call`,
+                    metadata: { app_email: user?.email || "" },
                   });
                 }}
               >
