@@ -881,15 +881,20 @@ const ScheduleCall = () => {
 
           <Button
             onClick={handleSchedule}
-            disabled={placing}
+            disabled={placing || redirectingToCheckout}
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
-            <Phone className="w-4 h-4 mr-2" />
-            {placing
-              ? "Working…"
-              : sendMode === "now"
-                ? "Call now"
-                : "Schedule call"}
+            {placing ? (
+              <>
+                <span className="inline-block w-4 h-4 mr-2 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                {sendMode === "now" ? "Calling…" : "Scheduling…"}
+              </>
+            ) : (
+              <>
+                <Phone className="w-4 h-4 mr-2" />
+                {sendMode === "now" ? "Call now" : "Schedule call"}
+              </>
+            )}
           </Button>
           <p className="font-body text-[11px] text-muted-foreground text-center -mt-2">
             {sendMode === "now"
