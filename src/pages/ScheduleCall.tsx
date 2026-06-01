@@ -324,9 +324,13 @@ const ScheduleCall = () => {
       return;
     }
 
-    // Atomically deduct a paid credit on the server. If none available, send to $1 checkout.
-    const consumed = await consumeCallCredit(user.email);
-    if (!consumed) {
+    // Gate on entitlement WITHOUT deducting yet. We only deduct AFTER the call
+    // actually succeeds, so a failed place-call (network/edge error) never
+    // costs the user a credit — and they never get bounced to Whop after a
+    // successful call.
+    const ent = await fetchEntitlement(user.email);
+    const availableCredits = Math.max(0, (ent?.paid_calls || 0) - (ent?.used_calls || 0));
+    if (availableCredits <= 0) {
       toast({
         title: "No call credits left",
         description: "Saving your message and sending you to add an extra call for $1…",
@@ -405,6 +409,14 @@ const ScheduleCall = () => {
       if (error) throw error;
       if (data && typeof data === "object" && "error" in data && (data as { error: unknown }).error) {
         throw new Error(String((data as { error: unknown }).error));
+      }
+
+      // Call (or schedule) succeeded — NOW deduct one credit atomically.
+      const consumed = await consumeCallCredit(user.email);
+      if (!consumed) {
+        // Extremely unlikely (we just checked entitlement) — log but don't
+        // bounce the user to checkout, the call already went through.
+        console.warn("[ScheduleCall] call succeeded but credit deduction failed");
       }
 
       await refreshEntitlement();
