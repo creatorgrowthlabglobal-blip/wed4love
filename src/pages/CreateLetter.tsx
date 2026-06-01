@@ -128,9 +128,10 @@ const CreateLetter = () => {
         letter_id: letterId,
         redirect_url: redirectTo,
       });
-      window.location.href = purchase_url;
+      redirectToCheckout(checkoutTab, purchase_url);
     } catch (e) {
       console.error("[CreateLetter] create-checkout failed", e);
+      try { checkoutTab?.close(); } catch {}
       toast({
         title: "Couldn't open checkout",
         description: "Please try again in a moment.",
