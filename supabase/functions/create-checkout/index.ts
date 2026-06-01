@@ -87,8 +87,18 @@ Deno.serve(async (req) => {
       });
     }
     const data = JSON.parse(text);
+    // Prefill the buyer's email on Whop's checkout page. Whop accepts an
+    // `email` query param on the purchase_url; the user can still change it
+    // at checkout — our webhook matches via metadata.order_id, so payment
+    // confirmation is unaffected by whatever email they ultimately use.
+    let purchaseUrl: string = data.purchase_url;
+    try {
+      const u = new URL(purchaseUrl);
+      u.searchParams.set("email", email);
+      purchaseUrl = u.toString();
+    } catch (_) { /* leave as-is */ }
     return new Response(
-      JSON.stringify({ purchase_url: data.purchase_url, order_id: orderId }),
+      JSON.stringify({ purchase_url: purchaseUrl, order_id: orderId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
