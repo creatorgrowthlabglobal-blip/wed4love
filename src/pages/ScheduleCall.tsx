@@ -637,14 +637,14 @@ const ScheduleCall = () => {
           className="mt-8"
         >
           <button
-            onClick={() => handleBuy("$5 reminder pack (10 calls)")}
+            onClick={() => handleBuy("$1 extra reminder call")}
             className="w-full bg-gradient-to-br from-primary/10 to-[hsl(340_90%_88%)] rounded-2xl p-5 border border-primary/20 text-left hover:border-primary/40 transition"
           >
             <p className="font-display text-lg font-bold">
-              $5 <span className="text-xs font-body text-muted-foreground">— 10 extra reminder calls</span>
+              $1 <span className="text-xs font-body text-muted-foreground">— per extra reminder call</span>
             </p>
             <p className="font-body text-xs text-muted-foreground">
-              Top up when your free calls run out
+              Charged only after your 2 free calls (Grand Gesture plan)
             </p>
           </button>
         </motion.div>
