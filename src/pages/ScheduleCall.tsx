@@ -52,6 +52,23 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
 
 const FREE_KEY = "wish4love_free_calls_remaining_v2"; // legacy, no longer authoritative
 const FREE_TOTAL = 2;
+const DRAFT_KEY = "wish4love_call_draft_v1";
+const AUTO_SUBMIT_KEY = "wish4love_call_autosubmit_v1";
+
+type CallDraft = {
+  recipientName: string;
+  countryCode: string;
+  localPhone: string;
+  occasion: string;
+  sendMode: "now" | "later";
+  date?: string; // ISO
+  time: string;
+  mode: "voice" | "tts";
+  ttsText: string;
+  voice: "female" | "male";
+  audioBase64?: string;
+  audioMime?: string;
+};
 
 const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
@@ -120,6 +137,79 @@ const ScheduleCall = () => {
   );
 
   useEffect(() => { refreshEntitlement(); }, []);
+
+  // Restore any draft saved before a Whop redirect, so users land back exactly where they were.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as CallDraft;
+      setRecipientName(d.recipientName || "");
+      setCountryCode(d.countryCode || "US");
+      setLocalPhone(d.localPhone || "");
+      setOccasion(d.occasion || "birthday");
+      setSendMode(d.sendMode || "now");
+      if (d.date) setDate(new Date(d.date));
+      setTime(d.time || "09:00");
+      setMode(d.mode || "voice");
+      setTtsText(d.ttsText || "");
+      setVoice(d.voice || "female");
+      if (d.audioBase64 && d.audioMime) {
+        const bin = atob(d.audioBase64);
+        const arr = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+        const blob = new Blob([arr], { type: d.audioMime });
+        recordedBlobRef.current = blob;
+        setRecordedUrl(URL.createObjectURL(blob));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const saveDraft = async () => {
+    let audioBase64: string | undefined;
+    let audioMime: string | undefined;
+    if (recordedBlobRef.current) {
+      try {
+        audioBase64 = await blobToBase64(recordedBlobRef.current);
+        audioMime = recordedBlobRef.current.type || "audio/webm";
+      } catch { /* drop audio if too big */ }
+    }
+    const draft: CallDraft = {
+      recipientName,
+      countryCode,
+      localPhone,
+      occasion,
+      sendMode,
+      date: date?.toISOString(),
+      time,
+      mode,
+      ttsText,
+      voice,
+      audioBase64,
+      audioMime,
+    };
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // Likely quota exceeded from audio — retry without audio
+      const { audioBase64: _a, audioMime: _m, ...slim } = draft;
+      try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(slim)); } catch { /* ignore */ }
+    }
+  };
+
+  // After returning from Whop with credits, auto-submit if the user had clicked "Place call".
+  useEffect(() => {
+    if (entLoading) return;
+    if (credits <= 0) return;
+    if (sessionStorage.getItem(AUTO_SUBMIT_KEY) !== "1") return;
+    sessionStorage.removeItem(AUTO_SUBMIT_KEY);
+    // Small delay so restored state is committed
+    const t = setTimeout(() => { void handleSchedule(); }, 200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entLoading, credits]);
 
 
   const startRecording = async () => {
@@ -207,8 +297,10 @@ const ScheduleCall = () => {
     if (!consumed) {
       toast({
         title: "No call credits left",
-        description: "Redirecting you to add an extra call for $1…",
+        description: "Saving your message and sending you to add an extra call for $1…",
       });
+      await saveDraft();
+      sessionStorage.setItem(AUTO_SUBMIT_KEY, "1");
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
         email: user.email,
         redirectTo: `${window.location.origin}/payment-status?product=call`,
@@ -260,6 +352,8 @@ const ScheduleCall = () => {
       }
 
       await refreshEntitlement();
+      sessionStorage.removeItem(DRAFT_KEY);
+      sessionStorage.removeItem(AUTO_SUBMIT_KEY);
       setSuccessInfo({ scheduled: isFuture, when: isFuture ? when : undefined });
       setSuccess(true);
     } catch (err) {
@@ -372,8 +466,9 @@ const ScheduleCall = () => {
               <Button
                 size="lg"
                 className="rounded-full gap-2 px-6 shadow-romantic"
-                onClick={() => {
+                onClick={async () => {
                   const user = getCurrentUser();
+                  await saveDraft();
                   window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
                     email: user?.email,
                     redirectTo: `${window.location.origin}/payment-status?product=call`,
