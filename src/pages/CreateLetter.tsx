@@ -69,7 +69,7 @@ const CreateLetter = () => {
     });
 
     const user = getCurrentUser();
-    const redirectTo = `${window.location.origin}/letter-ready/${letterId}`;
+    const redirectTo = `${window.location.origin}/payment-status?product=letter&letter_id=${letterId}`;
     const checkoutUrl = buildWhopCheckoutUrl(WHOP_LETTER_CHECKOUT, {
       email: user?.email,
       redirectTo,
