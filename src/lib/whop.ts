@@ -28,6 +28,42 @@ export function buildWhopCheckoutUrl(
 }
 
 /**
+ * Open a blank tab SYNCHRONOUSLY inside a click handler. iOS Safari and many
+ * in-app browsers drop the user-gesture token after the first `await`, which
+ * silently blocks a later `window.location.href = ...`. Pre-opening a tab
+ * gives us a destination we can safely redirect once the checkout URL is
+ * ready. Returns null if popups are blocked — callers should fall back.
+ */
+export function openBlankCheckoutTab(): Window | null {
+  try {
+    const w = window.open("about:blank", "_blank");
+    if (w) {
+      try {
+        w.document.write(
+          "<title>Opening secure checkout…</title><meta name=viewport content='width=device-width,initial-scale=1'><style>body{font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#fff6f8;color:#333}</style><div>Opening secure checkout…</div>",
+        );
+      } catch { /* cross-origin write may fail — fine */ }
+    }
+    return w;
+  } catch {
+    return null;
+  }
+}
+
+/** Navigate `tab` to `url` if pre-opened; otherwise redirect current page. */
+export function redirectToCheckout(tab: Window | null, url: string) {
+  if (tab && !tab.closed) {
+    try {
+      tab.location.href = url;
+      return;
+    } catch { /* fall through */ }
+  }
+  window.location.href = url;
+}
+
+
+
+/**
  * Create a Whop checkout via our edge function. This server-side call uses
  * Whop's `checkout_configurations` API with metadata embedded, so the webhook
  * can reliably resolve the payment back to `app_email` even when the user
