@@ -797,6 +797,7 @@ const ScheduleCall = () => {
         </motion.div>
 
       </main>
+      {redirectingToCheckout && <CheckoutOverlay />}
     </div>
   );
 };
