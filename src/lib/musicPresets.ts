@@ -20,3 +20,8 @@ export const MUSIC_PRESETS: MusicPreset[] = [
 
 export const getPresetById = (id: string | null | undefined): MusicPreset | undefined =>
   MUSIC_PRESETS.find((m) => m.id === id);
+
+export const getRandomPresetUrl = (): string => {
+  const idx = Math.floor(Math.random() * MUSIC_PRESETS.length);
+  return MUSIC_PRESETS[idx].url;
+};

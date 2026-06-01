@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
-import { getPresetById } from "@/lib/musicPresets";
+import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
 
@@ -48,13 +48,16 @@ const ViewLetter = () => {
   }, [id]);
 
 
+  const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
     if (!letter) return;
     const preset = getPresetById(letter.selectedMusic);
-    const src = preset?.url || letter.customMusicData;
+    let src = preset?.url || letter.customMusicData;
     if (!src) {
-      console.warn("[ViewLetter] No music source", { selectedMusic: letter.selectedMusic, hasCustom: !!letter.customMusicData });
-      return;
+      // Fallback: play a random romantic preset so every letter feels alive,
+      // just like the post-purchase experience.
+      if (!randomMusicRef.current) randomMusicRef.current = getRandomPresetUrl();
+      src = randomMusicRef.current;
     }
     if (!audioRef.current) {
       const audio = new Audio(src);
