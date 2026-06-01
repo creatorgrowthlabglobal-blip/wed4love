@@ -36,7 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRIES, buildE164, sanitizeLocalNumber, zonedWallTimeToUtc, tzOffsetLabel } from "@/lib/countries";
-import { WHOP_EXTRA_CALL_CHECKOUT, buildWhopCheckoutUrl } from "@/lib/whop";
+import { WHOP_EXTRA_CALL_CHECKOUT, buildWhopCheckoutUrl, fetchEntitlement, consumeCallCredit } from "@/lib/whop";
 import { getCurrentUser } from "@/lib/auth";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
@@ -50,7 +50,7 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
-const FREE_KEY = "wish4love_free_calls_remaining_v2";
+const FREE_KEY = "wish4love_free_calls_remaining_v2"; // legacy, no longer authoritative
 const FREE_TOTAL = 2;
 
 const occasions = [
@@ -94,24 +94,33 @@ const ScheduleCall = () => {
   const chunksRef = useRef<Blob[]>([]);
   const [placing, setPlacing] = useState(false);
 
-  const [freeLeft, setFreeLeft] = useState<number>(FREE_TOTAL);
+  const [credits, setCredits] = useState<number>(0);
+  const [hasLetterAccess, setHasLetterAccess] = useState<boolean>(false);
+  const [entLoading, setEntLoading] = useState<boolean>(true);
   const [success, setSuccess] = useState(false);
   const [successInfo, setSuccessInfo] = useState<{ scheduled: boolean; when?: Date } | null>(null);
+
+  const refreshEntitlement = async () => {
+    const user = getCurrentUser();
+    if (!user?.email) { setCredits(0); setHasLetterAccess(false); setEntLoading(false); return; }
+    const ent = await fetchEntitlement(user.email);
+    if (ent) {
+      setCredits(Math.max(0, (ent.paid_calls || 0) - (ent.used_calls || 0)));
+      setHasLetterAccess(Boolean(ent.has_letter_access));
+    } else {
+      setCredits(0);
+      setHasLetterAccess(false);
+    }
+    setEntLoading(false);
+  };
 
   const country = useMemo(
     () => COUNTRIES.find((c) => c.code === countryCode) ?? COUNTRIES[0],
     [countryCode],
   );
 
-  useEffect(() => {
-    const stored = localStorage.getItem(FREE_KEY);
-    if (stored === null) {
-      localStorage.setItem(FREE_KEY, String(FREE_TOTAL));
-      setFreeLeft(FREE_TOTAL);
-    } else {
-      setFreeLeft(Math.max(0, parseInt(stored, 10) || 0));
-    }
-  }, []);
+  useEffect(() => { refreshEntitlement(); }, []);
+
 
   const startRecording = async () => {
     try {
