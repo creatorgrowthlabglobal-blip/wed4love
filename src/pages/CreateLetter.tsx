@@ -188,7 +188,6 @@ const CreateLetter = () => {
           }
         />
       )}
-      </main>
     </div>
   );
 };
