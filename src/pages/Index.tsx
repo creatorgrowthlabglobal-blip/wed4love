@@ -359,7 +359,7 @@ const Index = () => {
             </button>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
             {/* Letter card */}
             <motion.div
               initial={{ opacity: 0, y: 25 }}
@@ -379,7 +379,7 @@ const Index = () => {
               <p className="font-display text-lg font-bold text-foreground mb-1">The Grand Gesture</p>
               <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
               <p className="font-display text-5xl font-bold text-foreground mb-1">$4.99</p>
-              <p className="font-body text-xs text-muted-foreground mb-6">Includes 2 free reminder calls</p>
+              <p className="font-body text-xs text-muted-foreground mb-6">Includes 2 free reminder calls · then $1 per extra call</p>
 
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
                 {[
@@ -404,52 +404,6 @@ const Index = () => {
                 style={{ boxShadow: "0 8px 24px hsl(340 100% 76% / 0.3)" }}
               >
                 Create Your Letter
-              </Link>
-            </motion.div>
-
-            {/* Reminder Calls top-up card */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="rounded-3xl p-8 text-center relative overflow-hidden bg-gradient-to-br from-white to-[hsl(350_100%_97%)] border border-primary/20 flex flex-col"
-              style={{
-                boxShadow: "0 20px 60px hsl(340 60% 80% / 0.25), 0 4px 16px hsl(0 0% 0% / 0.04)",
-              }}
-            >
-              <div className="absolute top-4 right-4">
-                <span className="font-body text-xs font-semibold bg-primary/15 text-primary px-3 py-1 rounded-full">
-                  Top-up
-                </span>
-              </div>
-              <p className="font-display text-lg font-bold text-foreground mb-1">Extra Reminder Calls</p>
-              <p className="font-body text-sm text-muted-foreground mb-3">For when 2 isn't enough</p>
-              <p className="font-display text-5xl font-bold text-foreground mb-1">$5</p>
-              <p className="font-body text-xs text-muted-foreground mb-6">10 additional reminder calls</p>
-
-              <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
-                {[
-                  { icon: Phone, text: "10 scheduled reminder calls" },
-                  { icon: Mic, text: "Record your voice or use TTS" },
-                  { icon: CalendarClock, text: "Schedule for the perfect day" },
-                  { icon: Bell, text: "Birthday & anniversary reminders" },
-                ].map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
-                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-primary" />
-                    </div>
-                    {f.text}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                to="/schedule-call"
-                className="inline-flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-white border border-primary/30 text-foreground font-display text-base font-semibold shadow-md hover:shadow-lg hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.97]"
-              >
-                <Bell className="w-4 h-4 text-primary" />
-                Schedule a Call
               </Link>
             </motion.div>
           </div>
