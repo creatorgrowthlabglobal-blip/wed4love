@@ -135,6 +135,14 @@ Deno.serve(async (req) => {
 
     await supabase.from("whop_events").insert({ event_id: eventId, payload: body });
 
+    if (pendingOrder) {
+      await supabase.from("pending_orders").update({
+        status: "paid",
+        whop_event_id: eventId,
+        updated_at: new Date().toISOString(),
+      }).eq("id", pendingOrder.id);
+    }
+
     return new Response(JSON.stringify({ ok: true, email, planId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
