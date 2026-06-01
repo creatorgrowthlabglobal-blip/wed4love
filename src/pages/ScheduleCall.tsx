@@ -111,6 +111,7 @@ const ScheduleCall = () => {
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [placing, setPlacing] = useState(false);
+  const placingRef = useRef(false);
 
   const [credits, setCredits] = useState<number>(0);
   const [hasLetterAccess, setHasLetterAccess] = useState<boolean>(false);
