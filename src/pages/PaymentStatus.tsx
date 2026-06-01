@@ -88,6 +88,7 @@ const PaymentStatus = () => {
 
   useEffect(() => {
     if (status !== "granted") return;
+    try { sessionStorage.removeItem(PENDING_KEY); } catch {}
     const t = setTimeout(() => {
       if (product === "letter" && letterId) navigate(`/letter-ready/${letterId}`, { replace: true });
       else if (product === "call") navigate("/schedule-call", { replace: true });
