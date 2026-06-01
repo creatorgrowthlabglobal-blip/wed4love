@@ -11,6 +11,10 @@ import MediaUpload from "@/components/letter/MediaUpload";
 import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import { fileToBase64, filesToBase64, saveLetter } from "@/lib/letterStorage";
+import { getCurrentUser } from "@/lib/auth";
+import { WHOP_LETTER_CHECKOUT, buildWhopCheckoutUrl } from "@/lib/whop";
+
+
 
 const STEP_LABELS = ["Details", "Write", "Photos", "Music", "Preview"];
 
@@ -64,8 +68,17 @@ const CreateLetter = () => {
       template,
     });
 
-    navigate(`/letter-ready/${letterId}`);
+    const user = getCurrentUser();
+    const redirectTo = `${window.location.origin}/letter-ready/${letterId}`;
+    const checkoutUrl = buildWhopCheckoutUrl(WHOP_LETTER_CHECKOUT, {
+      email: user?.email,
+      redirectTo,
+      metadata: { letter_id: letterId },
+    });
+    window.location.href = checkoutUrl;
   };
+
+
 
   return (
     <div
