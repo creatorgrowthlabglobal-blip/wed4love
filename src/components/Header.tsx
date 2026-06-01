@@ -24,7 +24,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group z-10">
           <Heart className="w-5 h-5 text-primary fill-primary transition-transform duration-300 group-hover:scale-110" />
-          <span className="font-display text-lg font-bold text-foreground tracking-tight">
+          <span className="font-display text-lg font-bold text-foreground tracking-tight notranslate" translate="no">
             Wish4Love
           </span>
         </Link>
