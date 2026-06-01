@@ -101,6 +101,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_orders: {
+        Row: {
+          amount: number | null
+          app_email: string
+          created_at: string
+          id: string
+          letter_id: string | null
+          product: string
+          status: string
+          updated_at: string
+          whop_event_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          app_email: string
+          created_at?: string
+          id: string
+          letter_id?: string | null
+          product: string
+          status?: string
+          updated_at?: string
+          whop_event_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          app_email?: string
+          created_at?: string
+          id?: string
+          letter_id?: string | null
+          product?: string
+          status?: string
+          updated_at?: string
+          whop_event_id?: string | null
+        }
+        Relationships: []
+      }
       scheduled_calls: {
         Row: {
           attempts: number
