@@ -263,8 +263,6 @@ const ScheduleCall = () => {
       setSuccessInfo({ scheduled: isFuture, when: isFuture ? when : undefined });
       setSuccess(true);
     } catch (err) {
-      // Refund the credit we just consumed since the call failed to place.
-      try { await supabase.rpc("refund_call_credit_noop"); } catch {} // best-effort no-op
       toast({
         title: "Couldn't place the call",
         description: (err as Error).message || "Please try again.",
