@@ -578,6 +578,10 @@ const ScheduleCall = () => {
                 size="lg"
                 className="rounded-full gap-2 px-6 shadow-romantic"
                 onClick={async () => {
+                  // Pre-open tab synchronously inside the click to keep the
+                  // user-gesture token alive across the async checkout call
+                  // (mobile Safari otherwise blocks the post-await navigation).
+                  const checkoutTab = openBlankCheckoutTab();
                   setRedirectingToCheckout(true);
                   await new Promise<void>((r) =>
                     requestAnimationFrame(() => requestAnimationFrame(() => r()))
@@ -596,10 +600,11 @@ const ScheduleCall = () => {
                       app_email: user?.email || "",
                       redirect_url: `${window.location.origin}/payment-status?product=call`,
                     });
-                    window.location.href = purchase_url;
+                    redirectToCheckout(checkoutTab, purchase_url);
                   } catch (e) {
                     console.error("[ScheduleCall] create-checkout failed", e);
                     setRedirectingToCheckout(false);
+                    try { checkoutTab?.close(); } catch {}
                   }
                 }}
               >
