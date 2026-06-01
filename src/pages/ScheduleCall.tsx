@@ -111,6 +111,7 @@ const ScheduleCall = () => {
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [placing, setPlacing] = useState(false);
+  const placingRef = useRef(false);
 
   const [credits, setCredits] = useState<number>(0);
   const [hasLetterAccess, setHasLetterAccess] = useState<boolean>(false);
@@ -281,103 +282,126 @@ const ScheduleCall = () => {
   };
 
   const handleSchedule = async () => {
-    const cleanLocal = sanitizeLocalNumber(localPhone);
-    if (!recipientName.trim() || !cleanLocal) {
-      toast({
-        title: "Almost there",
-        description: "Please add the recipient name and phone number.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (sendMode === "later" && !date) {
-      toast({
-        title: "Pick a date",
-        description: "Choose when to ring — or switch to 'Send now'.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (cleanLocal.length < 6) {
-      toast({
-        title: "Phone too short",
-        description: "Enter a valid local phone number (we auto-strip leading 0 and spaces).",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (mode === "voice" && !recordedBlobRef.current) {
-      toast({ title: "Record a message first", variant: "destructive" });
-      return;
-    }
-    if (mode === "tts" && !ttsText.trim()) {
-      toast({ title: "Type a message first", variant: "destructive" });
-      return;
-    }
-    const user = getCurrentUser();
-    if (!user?.email) {
-      toast({
-        title: "Please sign in",
-        description: "Sign in with the email you used at checkout to place a call.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Gate on entitlement WITHOUT deducting yet. We only deduct AFTER the call
-    // actually succeeds, so a failed place-call (network/edge error) never
-    // costs the user a credit — and they never get bounced to Whop after a
-    // successful call.
-    const ent = await fetchEntitlement(user.email);
-    const availableCredits = Math.max(0, (ent?.paid_calls || 0) - (ent?.used_calls || 0));
-    if (availableCredits <= 0) {
-      toast({
-        title: "No call credits left",
-        description: "Saving your message and sending you to add an extra call for $1…",
-      });
-      await saveDraft();
-      sessionStorage.setItem(AUTO_SUBMIT_KEY, "1");
-      try {
-        sessionStorage.setItem(
-          "wish4love_pending_payment_v1",
-          JSON.stringify({ product: "call", email: user.email, ts: Date.now() })
-        );
-      } catch {}
-      setRedirectingToCheckout(true);
-      try {
-        const { purchase_url } = await createWhopCheckout({
-          product: "call",
-          app_email: user.email,
-          redirect_url: `${window.location.origin}/payment-status?product=call`,
-        });
-        window.location.href = purchase_url;
-      } catch (e) {
-        console.error("[ScheduleCall] create-checkout failed", e);
-        setRedirectingToCheckout(false);
-        toast({ title: "Couldn't open checkout", description: "Please try again.", variant: "destructive" });
-      }
-      return;
-    }
-
-    // Compose scheduled datetime from date + time, interpreted in the RECIPIENT's timezone
-    // (so "9:00 AM on June 5" means 9 AM where the call lands, regardless of sender's tz).
-    let when: Date | undefined;
-    let isFuture = false;
-    if (sendMode === "later" && date) {
-      const [hh, mm] = time.split(":").map((n) => parseInt(n, 10));
-      when = zonedWallTimeToUtc(
-        date.getFullYear(),
-        date.getMonth() + 1,
-        date.getDate(),
-        hh || 0,
-        mm || 0,
-        country.tz,
-      );
-      isFuture = when.getTime() - Date.now() > 60 * 1000;
-    }
-
-    setPlacing(true);
+    // Hard guard against double-clicks: the `placing` state update is async,
+    // so a fast second click can slip through before the button disables.
+    if (placingRef.current) return;
+    placingRef.current = true;
+    // Released in the `finally` block below, or on any early return.
+    const release = () => { placingRef.current = false; };
     try {
+      const cleanLocal = sanitizeLocalNumber(localPhone);
+      if (!recipientName.trim() || !cleanLocal) {
+        toast({
+          title: "Almost there",
+          description: "Please add the recipient name and phone number.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (sendMode === "later" && !date) {
+        toast({
+          title: "Pick a date",
+          description: "Choose when to ring — or switch to 'Send now'.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (cleanLocal.length < 6) {
+        toast({
+          title: "Phone too short",
+          description: "Enter a valid local phone number (we auto-strip leading 0 and spaces).",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (mode === "voice" && !recordedBlobRef.current) {
+        toast({ title: "Record a message first", variant: "destructive" });
+        return;
+      }
+      if (mode === "tts" && !ttsText.trim()) {
+        toast({ title: "Type a message first", variant: "destructive" });
+        return;
+      }
+      const user = getCurrentUser();
+      if (!user?.email) {
+        toast({
+          title: "Please sign in",
+          description: "Sign in with the email you used at checkout to place a call.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Compute scheduled datetime up front so we can validate "later" calls
+      // BEFORE doing anything else. If user picked "later" but the time is in
+      // the past or under a minute away, we refuse — otherwise place-call
+      // silently falls through to an immediate call.
+      let when: Date | undefined;
+      let isFuture = false;
+      if (sendMode === "later" && date) {
+        const [hh, mm] = time.split(":").map((n) => parseInt(n, 10));
+        when = zonedWallTimeToUtc(
+          date.getFullYear(),
+          date.getMonth() + 1,
+          date.getDate(),
+          hh || 0,
+          mm || 0,
+          country.tz,
+        );
+        isFuture = when.getTime() - Date.now() > 60 * 1000;
+        if (!isFuture) {
+          toast({
+            title: "Pick a future time",
+            description: "Scheduled calls must be at least a minute from now in the recipient's timezone.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Gate on entitlement WITHOUT deducting yet. We only deduct AFTER the call
+      // actually succeeds, so a failed place-call (network/edge error) never
+      // costs the user a credit — and they never get bounced to Whop after a
+      // successful call.
+      const ent = await fetchEntitlement(user.email);
+      const availableCredits = Math.max(0, (ent?.paid_calls || 0) - (ent?.used_calls || 0));
+      if (availableCredits <= 0) {
+        await saveDraft();
+        sessionStorage.setItem(AUTO_SUBMIT_KEY, "1");
+        try {
+          sessionStorage.setItem(
+            "wish4love_pending_payment_v1",
+            JSON.stringify({ product: "call", email: user.email, ts: Date.now() })
+          );
+        } catch {}
+        setRedirectingToCheckout(true);
+        try {
+          const { purchase_url } = await createWhopCheckout({
+            product: "call",
+            app_email: user.email,
+            redirect_url: `${window.location.origin}/payment-status?product=call`,
+          });
+          if (!purchase_url || !/^https?:\/\//.test(purchase_url)) {
+            throw new Error("Invalid checkout URL");
+          }
+          // Only show the redirect message after we have a valid URL — avoids
+          // a confusing "sending you to checkout…" followed by a red error.
+          toast({
+            title: "Opening secure checkout",
+            description: "Add an extra call for $1 — your message is saved.",
+          });
+          window.location.href = purchase_url;
+        } catch (e) {
+          console.error("[ScheduleCall] create-checkout failed", e);
+          setRedirectingToCheckout(false);
+          // Roll back the auto-submit flag so we don't loop on next page load.
+          sessionStorage.removeItem(AUTO_SUBMIT_KEY);
+          toast({ title: "Couldn't open checkout", description: "Please try again.", variant: "destructive" });
+        }
+        return;
+      }
+
+      setPlacing(true);
       const e164 = buildE164(country.dial, localPhone);
       const body: Record<string, unknown> = {
         number: e164,
@@ -432,6 +456,7 @@ const ScheduleCall = () => {
       });
     } finally {
       setPlacing(false);
+      release();
     }
   };
 
