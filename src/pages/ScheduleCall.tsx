@@ -15,6 +15,7 @@ import {
   Heart,
   Gift,
   Bell,
+  ChevronsUpDown,
 } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
