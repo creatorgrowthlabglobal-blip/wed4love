@@ -7,6 +7,7 @@ import FloatingHearts from "@/components/FloatingHearts";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
 import { fetchEntitlement } from "@/lib/whop";
+import { supabase } from "@/integrations/supabase/client";
 
 type Status = "checking" | "granted" | "pending" | "error";
 
