@@ -116,6 +116,14 @@ const PaymentStatus = () => {
 
   const retryNow = async () => {
     setStatus("checking");
+    const sinceMs = pending.ts ? pending.ts - 60_000 : Date.now() - 30 * 60_000;
+    try {
+      await supabase.functions.invoke("claim-payment", {
+        body: { app_email: manualEmail, since_ms: sinceMs, product },
+      });
+    } catch (e) {
+      console.warn("[PaymentStatus] manual claim failed", e);
+    }
     const ok = await checkOnce(manualEmail);
     setAttempts((a) => a + 1);
     setStatus(ok ? "granted" : "pending");
