@@ -29,6 +29,7 @@ export interface Entitlement {
   has_letter_access: boolean;
   paid_calls: number;
   used_calls: number;
+  letter_access_expires_at?: string | null;
 }
 
 export async function fetchEntitlement(email: string): Promise<Entitlement | null> {
@@ -38,6 +39,13 @@ export async function fetchEntitlement(email: string): Promise<Entitlement | nul
     .eq("email", email.toLowerCase().trim())
     .maybeSingle();
   return (data as Entitlement) || null;
+}
+
+/** Letter access is active if flagged AND (no expiry yet OR expiry in the future). */
+export function hasActiveLetterAccess(ent: Entitlement | null | undefined): boolean {
+  if (!ent || !ent.has_letter_access) return false;
+  if (!ent.letter_access_expires_at) return true; // legacy rows
+  return new Date(ent.letter_access_expires_at).getTime() > Date.now();
 }
 
 /** Atomically consume one paid call credit. Returns true if a credit was deducted. */

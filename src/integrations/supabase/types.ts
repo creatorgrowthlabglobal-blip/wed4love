@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           email: string
           has_letter_access: boolean
+          letter_access_expires_at: string | null
           paid_calls: number
           updated_at: string
           used_calls: number
@@ -27,6 +28,7 @@ export type Database = {
           created_at?: string
           email: string
           has_letter_access?: boolean
+          letter_access_expires_at?: string | null
           paid_calls?: number
           updated_at?: string
           used_calls?: number
@@ -35,6 +37,7 @@ export type Database = {
           created_at?: string
           email?: string
           has_letter_access?: boolean
+          letter_access_expires_at?: string | null
           paid_calls?: number
           updated_at?: string
           used_calls?: number

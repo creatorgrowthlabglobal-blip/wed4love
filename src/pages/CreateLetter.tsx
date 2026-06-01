@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
+import CheckoutOverlay from "@/components/CheckoutOverlay";
 import ProgressBar from "@/components/letter/ProgressBar";
 import LetterTypeSelection from "@/components/letter/LetterTypeSelection";
 import SenderReceiverDetails from "@/components/letter/SenderReceiverDetails";
@@ -12,7 +13,13 @@ import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import { fileToBase64, filesToBase64, saveLetter } from "@/lib/letterStorage";
 import { getCurrentUser } from "@/lib/auth";
-import { WHOP_LETTER_CHECKOUT, buildWhopCheckoutUrl } from "@/lib/whop";
+import {
+  WHOP_LETTER_CHECKOUT,
+  buildWhopCheckoutUrl,
+  fetchEntitlement,
+  hasActiveLetterAccess,
+} from "@/lib/whop";
+import { toast } from "@/hooks/use-toast";
 
 
 
@@ -34,6 +41,7 @@ const CreateLetter = () => {
   const [images, setImages] = useState<File[]>([]);
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [customMusic, setCustomMusic] = useState<File | null>(null);
+  const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
 
   const handleSelectType = (type: "love" | "birthday", tmpl: "photo" | "purple") => {
     setLetterType(type);
@@ -43,9 +51,10 @@ const CreateLetter = () => {
 
   const handlePay = async () => {
     const letterId = Math.random().toString(36).substring(2, 10);
+    const user = getCurrentUser();
 
+    // Save the letter first so it exists whether we pay or skip the paywall.
     const imgData = await filesToBase64(images);
-
     let customMusicData: string | null = null;
     if (customMusic) {
       customMusicData = await fileToBase64(customMusic);
@@ -63,14 +72,32 @@ const CreateLetter = () => {
       selectedMusic,
       customMusicData,
       quiz: [],
-      email: "",
+      email: user?.email || "",
       date: new Date().toLocaleDateString(),
       template,
     });
 
-    const user = getCurrentUser();
-    // Persist pending checkout context so /payment-status can recover it
-    // even if Whop strips our redirect query params.
+    // Returning user with active letter access → skip Whop, create immediately.
+    if (user?.email) {
+      try {
+        const ent = await fetchEntitlement(user.email);
+        if (hasActiveLetterAccess(ent)) {
+          setRedirecting("create");
+          toast({
+            title: "Welcome back 💌",
+            description: "Your monthly access is active — creating your letter now.",
+          });
+          setTimeout(() => navigate(`/letter-ready/${letterId}`, { replace: true }), 600);
+          return;
+        }
+      } catch (e) {
+        console.warn("[CreateLetter] entitlement check failed, falling through to paywall", e);
+      }
+    }
+
+    // Otherwise → Whop checkout. Persist context so /payment-status can recover
+    // it even if Whop strips our redirect query params.
+    setRedirecting("checkout");
     try {
       sessionStorage.setItem(
         "wish4love_pending_payment_v1",
@@ -81,7 +108,12 @@ const CreateLetter = () => {
     const checkoutUrl = buildWhopCheckoutUrl(WHOP_LETTER_CHECKOUT, {
       email: user?.email,
       redirectTo,
-      metadata: { letter_id: letterId },
+      metadata: {
+        letter_id: letterId,
+        // app_email is the email the user is signed in with — webhook will
+        // grant entitlement to THIS email even if user changes it at Whop.
+        app_email: user?.email || "",
+      },
     });
     window.location.href = checkoutUrl;
   };
@@ -147,6 +179,15 @@ const CreateLetter = () => {
           )}
         </AnimatePresence>
       </main>
+      {redirecting && (
+        <CheckoutOverlay
+          message={
+            redirecting === "create"
+              ? "Your monthly access is active — preparing your letter…"
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 };

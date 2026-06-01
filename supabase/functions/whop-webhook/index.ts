@@ -51,8 +51,11 @@ Deno.serve(async (req) => {
       });
     }
 
+    // PREFER the email the user typed in our app (passed as metadata.app_email)
+    // over the Whop account email, so the entitlement always matches what the
+    // app looks up — even if the user paid with a different email at Whop.
     const email: string | null = (
-      pick(data, ["user_email"], ["email"], ["user", "email"], ["member", "email"], ["metadata", "email"])
+      pick(data, ["metadata", "app_email"], ["user_email"], ["email"], ["user", "email"], ["member", "email"], ["metadata", "email"])
     )?.toString().trim().toLowerCase() || null;
 
     const planId: string | null = (
@@ -79,11 +82,23 @@ Deno.serve(async (req) => {
     const { data: cur } = await supabase
       .from("entitlements").select("*").eq("email", email).maybeSingle();
 
-    let row = cur || { email, has_letter_access: false, paid_calls: 0, used_calls: 0 };
+    let row: any = cur || {
+      email,
+      has_letter_access: false,
+      paid_calls: 0,
+      used_calls: 0,
+      letter_access_expires_at: null as string | null,
+    };
+
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
     if (planId === LETTER_PLAN) {
       row.has_letter_access = true;
       row.paid_calls = (row.paid_calls || 0) + 2; // 2 free calls included
+      // Extend access by 30 days from the later of (now, current expiry)
+      const current = row.letter_access_expires_at ? new Date(row.letter_access_expires_at).getTime() : 0;
+      const base = Math.max(current, Date.now());
+      row.letter_access_expires_at = new Date(base + THIRTY_DAYS_MS).toISOString();
     } else if (planId === EXTRA_CALL_PLAN) {
       row.paid_calls = (row.paid_calls || 0) + 1;
     } else {
@@ -95,6 +110,7 @@ Deno.serve(async (req) => {
       has_letter_access: row.has_letter_access,
       paid_calls: row.paid_calls,
       used_calls: row.used_calls,
+      letter_access_expires_at: row.letter_access_expires_at,
       updated_at: new Date().toISOString(),
     }, { onConflict: "email" });
     if (upErr) throw upErr;
