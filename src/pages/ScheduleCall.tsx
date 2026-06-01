@@ -629,25 +629,6 @@ const ScheduleCall = () => {
           </p>
         </motion.div>
 
-        {/* Top-ups */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-8"
-        >
-          <button
-            onClick={() => handleBuy("$1 extra reminder call")}
-            className="w-full bg-gradient-to-br from-primary/10 to-[hsl(340_90%_88%)] rounded-2xl p-5 border border-primary/20 text-left hover:border-primary/40 transition"
-          >
-            <p className="font-display text-lg font-bold">
-              $1 <span className="text-xs font-body text-muted-foreground">— per extra reminder call</span>
-            </p>
-            <p className="font-body text-xs text-muted-foreground">
-              Charged only after your 2 free calls (Grand Gesture plan)
-            </p>
-          </button>
-        </motion.div>
       </main>
     </div>
   );
