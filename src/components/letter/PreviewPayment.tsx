@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Heart, Lock, Play, X } from "lucide-react";
 import { fileToBase64, filesToBase64 } from "@/lib/letterStorage";
-import { getPresetById } from "@/lib/musicPresets";
+import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
