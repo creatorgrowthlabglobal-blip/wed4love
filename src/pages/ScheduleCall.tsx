@@ -333,7 +333,7 @@ const ScheduleCall = () => {
           <div className="inline-flex items-center gap-2 mt-5 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="font-body text-xs font-semibold text-foreground">
-              {freeLeft} of {FREE_TOTAL} free reminder calls — then $1 per extra call
+              {freeLeft} of {FREE_TOTAL} free reminder calls
             </span>
           </div>
         </motion.div>
