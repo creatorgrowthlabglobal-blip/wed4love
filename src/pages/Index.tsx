@@ -137,7 +137,7 @@ const Index = () => {
             transition={{ delay: 0.65, duration: 0.5 }}
             className="font-body text-sm text-muted-foreground mt-5"
           >
-            Letter <strong className="text-foreground">$4.99</strong> · includes 2 free reminder calls · <strong className="text-foreground">$5</strong> for 10 extra calls
+            Letter <strong className="text-foreground">$4.99</strong> · includes 2 free reminder calls · then <strong className="text-foreground">$1</strong> per extra call
           </motion.p>
 
           {/* Preview the experience button */}
