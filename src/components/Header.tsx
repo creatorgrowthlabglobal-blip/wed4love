@@ -43,7 +43,7 @@ const Header = () => {
             Reminders
           </Link>
           <Link
-            to="/view/demo-jungey"
+            to="/demo"
             className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
           >
             Demo
