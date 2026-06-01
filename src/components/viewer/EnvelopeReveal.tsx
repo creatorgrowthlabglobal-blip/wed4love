@@ -845,46 +845,6 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               </p>
             </motion.div>
 
-            {/* Extra photos — all uploaded photos beyond the first two, shown as a polaroid grid */}
-            {isUserLetter && userImages.length > 2 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1, duration: 0.6 }}
-                style={{ marginTop: "2.5rem" }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.5rem" }}>
-                  <span style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(160,120,70,0.5))" }} />
-                  <span style={{ fontSize: 18, color: "rgba(160,120,70,0.8)" }}>✦</span>
-                  <span style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, rgba(160,120,70,0.5))" }} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {userImages.slice(2).map((photo, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0.88 }}
-                      animate={{ opacity: 1, scale: 1, rotate: i % 2 === 0 ? 1.5 : -1.5 }}
-                      transition={{ delay: 1.2 + i * 0.08, duration: 0.5 }}
-                      style={{
-                        background: "#fff",
-                        padding: "8px 8px 28px",
-                        boxShadow: "0 6px 20px rgba(60,40,80,0.22)",
-                        borderRadius: "3px",
-                      }}
-                    >
-                      <div style={{ aspectRatio: "4 / 3", overflow: "hidden", borderRadius: "2px" }}>
-                        <img
-                          src={photo}
-                          alt=""
-                          loading="lazy"
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
 
           </motion.div>
           </motion.div>
