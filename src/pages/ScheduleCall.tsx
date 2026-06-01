@@ -466,8 +466,9 @@ const ScheduleCall = () => {
               <Button
                 size="lg"
                 className="rounded-full gap-2 px-6 shadow-romantic"
-                onClick={() => {
+                onClick={async () => {
                   const user = getCurrentUser();
+                  await saveDraft();
                   window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
                     email: user?.email,
                     redirectTo: `${window.location.origin}/payment-status?product=call`,
