@@ -352,6 +352,8 @@ const ScheduleCall = () => {
       }
 
       await refreshEntitlement();
+      sessionStorage.removeItem(DRAFT_KEY);
+      sessionStorage.removeItem(AUTO_SUBMIT_KEY);
       setSuccessInfo({ scheduled: isFuture, when: isFuture ? when : undefined });
       setSuccess(true);
     } catch (err) {
