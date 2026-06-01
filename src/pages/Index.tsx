@@ -79,7 +79,7 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="font-body text-xs tracking-[0.2em] uppercase text-primary font-semibold mb-4"
           >
-            For the ones who matter
+            For the ones who matter — and the things left unsaid
           </motion.p>
 
           {/* Main Heading */}
@@ -90,7 +90,7 @@ const Index = () => {
             className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.15] mb-5"
           >
             Memories they'll keep.{" "}
-            <span className="text-primary italic">Moments you won't miss.</span>
+            <span className="text-primary italic">Confessions you finally make.</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -100,8 +100,8 @@ const Index = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="font-body text-base sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed"
           >
-            Send a keepsake letter with photos & music, or schedule a voice reminder
-            call for their special day.
+            Send a keepsake letter with photos & music, schedule a voice reminder call,
+            or drop an anonymous confession — they'll never know it was you.
           </motion.p>
 
           {/* CTA Buttons */}
