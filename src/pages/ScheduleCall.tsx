@@ -407,6 +407,7 @@ const ScheduleCall = () => {
         number: e164,
         recipientName: recipientName.trim(),
         occasion,
+        userEmail: user.email,
       };
       if (isFuture && when) body.scheduledAt = when.toISOString();
 
@@ -435,12 +436,14 @@ const ScheduleCall = () => {
         throw new Error(String((data as { error: unknown }).error));
       }
 
-      // Call (or schedule) succeeded — NOW deduct one credit atomically.
-      const consumed = await consumeCallCredit(user.email);
-      if (!consumed) {
-        // Extremely unlikely (we just checked entitlement) — log but don't
-        // bounce the user to checkout, the call already went through.
-        console.warn("[ScheduleCall] call succeeded but credit deduction failed");
+      // For immediate calls, deduct the credit now. For scheduled calls, the
+      // cron worker (process-scheduled-calls) deducts the credit when it
+      // actually dispatches — so we DON'T deduct here, otherwise it double-charges.
+      if (!isFuture) {
+        const consumed = await consumeCallCredit(user.email);
+        if (!consumed) {
+          console.warn("[ScheduleCall] call succeeded but credit deduction failed");
+        }
       }
 
       await refreshEntitlement();
@@ -878,15 +881,20 @@ const ScheduleCall = () => {
 
           <Button
             onClick={handleSchedule}
-            disabled={placing}
+            disabled={placing || redirectingToCheckout}
             className="w-full rounded-full py-6 text-base font-display font-semibold"
           >
-            <Phone className="w-4 h-4 mr-2" />
-            {placing
-              ? "Working…"
-              : sendMode === "now"
-                ? "Call now"
-                : "Schedule call"}
+            {placing ? (
+              <>
+                <span className="inline-block w-4 h-4 mr-2 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                {sendMode === "now" ? "Calling…" : "Scheduling…"}
+              </>
+            ) : (
+              <>
+                <Phone className="w-4 h-4 mr-2" />
+                {sendMode === "now" ? "Call now" : "Schedule call"}
+              </>
+            )}
           </Button>
           <p className="font-body text-[11px] text-muted-foreground text-center -mt-2">
             {sendMode === "now"

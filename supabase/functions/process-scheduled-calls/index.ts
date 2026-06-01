@@ -90,6 +90,23 @@ Deno.serve(async (req) => {
         })
         .eq('id', row.id);
 
+      // Deduct one paid call credit now that the call actually went out.
+      // Scheduled calls deliberately do NOT deduct at scheduling time, so the
+      // user isn't charged for calls that never dispatch.
+      if (row.user_email) {
+        const { data: consumed, error: consumeErr } = await admin.rpc(
+          'consume_call_credit',
+          { _email: row.user_email },
+        );
+        if (consumeErr) {
+          console.error('consume_call_credit error', row.id, consumeErr);
+        } else if (!consumed) {
+          console.warn('scheduled call dispatched without available credit', row.id, row.user_email);
+        }
+      } else {
+        console.warn('scheduled call dispatched without user_email — credit not deducted', row.id);
+      }
+
       results.push({ id: row.id, status: 'completed', call_id: parsed.call_id });
     } catch (err) {
       await admin
