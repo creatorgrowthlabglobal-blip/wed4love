@@ -281,12 +281,12 @@ const Index = () => {
               Reminder Calls
             </p>
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
-              Never miss a{" "}
-              <span className="text-primary italic">special day</span> again
+              Say it out loud —{" "}
+              <span className="text-primary italic">named or anonymous</span>
             </h2>
             <p className="font-body text-sm text-muted-foreground mt-3 max-w-md mx-auto">
-              Record your voice or type a message — we'll call your loved one at the perfect moment.
-              Birthdays, anniversaries, "just because" days.
+              Record your voice or type a message — we'll call your loved one for birthdays,
+              anniversaries, or deliver a secret confession they'll never trace back.
             </p>
           </motion.div>
 
