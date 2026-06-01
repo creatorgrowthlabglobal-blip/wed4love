@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import ScheduleCall from "./pages/ScheduleCall";
 import PaymentStatus from "./pages/PaymentStatus";
+import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
 import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
