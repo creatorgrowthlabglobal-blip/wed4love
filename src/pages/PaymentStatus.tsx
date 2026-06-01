@@ -7,6 +7,7 @@ import FloatingHearts from "@/components/FloatingHearts";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
 import { fetchEntitlement } from "@/lib/whop";
+import { supabase } from "@/integrations/supabase/client";
 
 type Status = "checking" | "granted" | "pending" | "error";
 
@@ -64,9 +65,25 @@ const PaymentStatus = () => {
     }
     let cancelled = false;
     const started = Date.now();
+    // We claim payments made since slightly before the user clicked Pay.
+    const sinceMs = pending.ts ? pending.ts - 60_000 : Date.now() - 30 * 60_000;
+    let claimAttempted = false;
 
     const poll = async () => {
-      const ok = await checkOnce(email);
+      let ok = await checkOnce(email);
+      // After 2nd failed poll, try to claim a recent Whop payment that may
+      // have been made under a different email at Whop checkout.
+      if (!ok && !claimAttempted && attempts >= 1) {
+        claimAttempted = true;
+        try {
+          await supabase.functions.invoke("claim-payment", {
+            body: { app_email: email, since_ms: sinceMs, product },
+          });
+        } catch (e) {
+          console.warn("[PaymentStatus] claim-payment failed", e);
+        }
+        ok = await checkOnce(email);
+      }
       if (cancelled) return;
       setAttempts((a) => a + 1);
       setElapsed(Date.now() - started);
@@ -99,6 +116,14 @@ const PaymentStatus = () => {
 
   const retryNow = async () => {
     setStatus("checking");
+    const sinceMs = pending.ts ? pending.ts - 60_000 : Date.now() - 30 * 60_000;
+    try {
+      await supabase.functions.invoke("claim-payment", {
+        body: { app_email: manualEmail, since_ms: sinceMs, product },
+      });
+    } catch (e) {
+      console.warn("[PaymentStatus] manual claim failed", e);
+    }
     const ok = await checkOnce(manualEmail);
     setAttempts((a) => a + 1);
     setStatus(ok ? "granted" : "pending");

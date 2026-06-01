@@ -50,6 +50,8 @@ const CreateLetter = () => {
   };
 
   const handlePay = async () => {
+    // Show overlay IMMEDIATELY — heavy work (base64 of photos/audio) happens after.
+    setRedirecting("checkout");
     const letterId = Math.random().toString(36).substring(2, 10);
     const user = getCurrentUser();
 
