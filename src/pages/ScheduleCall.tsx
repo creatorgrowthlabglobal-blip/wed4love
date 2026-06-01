@@ -52,6 +52,23 @@ const blobToBase64 = (blob: Blob): Promise<string> =>
 
 const FREE_KEY = "wish4love_free_calls_remaining_v2"; // legacy, no longer authoritative
 const FREE_TOTAL = 2;
+const DRAFT_KEY = "wish4love_call_draft_v1";
+const AUTO_SUBMIT_KEY = "wish4love_call_autosubmit_v1";
+
+type CallDraft = {
+  recipientName: string;
+  countryCode: string;
+  localPhone: string;
+  occasion: string;
+  sendMode: "now" | "later";
+  date?: string; // ISO
+  time: string;
+  mode: "voice" | "tts";
+  ttsText: string;
+  voice: "female" | "male";
+  audioBase64?: string;
+  audioMime?: string;
+};
 
 const occasions = [
   { id: "birthday", label: "Birthday", icon: Cake },
