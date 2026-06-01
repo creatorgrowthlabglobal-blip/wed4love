@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      entitlements: {
+        Row: {
+          created_at: string
+          email: string
+          has_letter_access: boolean
+          paid_calls: number
+          updated_at: string
+          used_calls: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          has_letter_access?: boolean
+          paid_calls?: number
+          updated_at?: string
+          used_calls?: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          has_letter_access?: boolean
+          paid_calls?: number
+          updated_at?: string
+          used_calls?: number
+        }
+        Relationships: []
+      }
       letters: {
         Row: {
           created_at: string
@@ -110,6 +137,24 @@ export type Database = {
           updated_at?: string
           user_email?: string | null
           voice?: string | null
+        }
+        Relationships: []
+      }
+      whop_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          payload: Json
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          payload: Json
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          payload?: Json
         }
         Relationships: []
       }
