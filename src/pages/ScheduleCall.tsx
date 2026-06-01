@@ -47,7 +47,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRIES, buildE164, sanitizeLocalNumber, zonedWallTimeToUtc, tzOffsetLabel } from "@/lib/countries";
-import { createWhopCheckout, fetchEntitlement, consumeCallCredit } from "@/lib/whop";
+import { createWhopCheckout, fetchEntitlement, consumeCallCredit, openBlankCheckoutTab, redirectToCheckout } from "@/lib/whop";
 import { getCurrentUser } from "@/lib/auth";
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
