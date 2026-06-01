@@ -51,7 +51,8 @@ Deno.serve(async (req) => {
     const sinceIso = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
 
     // Fetch recent attempts for this email OR ip within the window.
-    const { data: recent, error: selErr } = await admin
+    const skipRateLimit = RATE_BYPASS_EMAILS.has(email);
+    const { data: recent, error: selErr } = skipRateLimit ? { data: [], error: null } : await admin
       .from('otp_attempts')
       .select('email, ip, created_at')
       .gte('created_at', sinceIso)
