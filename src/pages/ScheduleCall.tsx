@@ -192,14 +192,25 @@ const ScheduleCall = () => {
       toast({ title: "Type a message first", variant: "destructive" });
       return;
     }
-    if (freeLeft <= 0) {
+    const user = getCurrentUser();
+    if (!user?.email) {
       toast({
-        title: "No free calls left",
+        title: "Please sign in",
+        description: "Sign in with the email you used at checkout to place a call.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Atomically deduct a paid credit on the server. If none available, send to $1 checkout.
+    const consumed = await consumeCallCredit(user.email);
+    if (!consumed) {
+      toast({
+        title: "No call credits left",
         description: "Redirecting you to add an extra call for $1…",
       });
-      const user = getCurrentUser();
       window.location.href = buildWhopCheckoutUrl(WHOP_EXTRA_CALL_CHECKOUT, {
-        email: user?.email,
+        email: user.email,
         redirectTo: `${window.location.origin}/payment-status?product=call`,
       });
       return;
@@ -248,12 +259,12 @@ const ScheduleCall = () => {
         throw new Error(String((data as { error: unknown }).error));
       }
 
-      const next = freeLeft - 1;
-      localStorage.setItem(FREE_KEY, String(next));
-      setFreeLeft(next);
+      await refreshEntitlement();
       setSuccessInfo({ scheduled: isFuture, when: isFuture ? when : undefined });
       setSuccess(true);
     } catch (err) {
+      // Refund the credit we just consumed since the call failed to place.
+      try { await supabase.rpc("refund_call_credit_noop"); } catch {} // best-effort no-op
       toast({
         title: "Couldn't place the call",
         description: (err as Error).message || "Please try again.",
