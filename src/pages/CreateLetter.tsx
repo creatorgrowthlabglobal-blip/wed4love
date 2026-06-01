@@ -14,8 +14,7 @@ import PreviewPayment from "@/components/letter/PreviewPayment";
 import { fileToBase64, filesToBase64, saveLetter } from "@/lib/letterStorage";
 import { getCurrentUser } from "@/lib/auth";
 import {
-  WHOP_LETTER_CHECKOUT,
-  buildWhopCheckoutUrl,
+  createWhopCheckout,
   fetchEntitlement,
   hasActiveLetterAccess,
 } from "@/lib/whop";
