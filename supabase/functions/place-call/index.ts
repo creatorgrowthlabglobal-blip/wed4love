@@ -15,7 +15,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    const payload = await req.json();
+    let payload: any;
+    try {
+      payload = await req.json();
+    } catch (e) {
+      console.error('place-call: failed to read body', e);
+      return new Response(
+        JSON.stringify({ error: 'Recording is too large to upload. Please record a shorter message (under ~30 seconds) and try again.' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
     const {
       number,
       text,
