@@ -14,6 +14,10 @@ import ScheduleCall from "./pages/ScheduleCall";
 import PaymentStatus from "./pages/PaymentStatus";
 import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Refund from "./pages/Refund";
+import Contact from "./pages/Contact";
 import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
