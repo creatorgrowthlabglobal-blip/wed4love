@@ -85,6 +85,10 @@ const App = () => (
           <Route path="/schedule-call" element={<ProtectedRoute><ScheduleCall /></ProtectedRoute>} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="/payment-debug" element={<PaymentDebug />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund" element={<Refund />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
