@@ -14,6 +14,10 @@ import ScheduleCall from "./pages/ScheduleCall";
 import PaymentStatus from "./pages/PaymentStatus";
 import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Refund from "./pages/Refund";
+import Contact from "./pages/Contact";
 import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
@@ -81,6 +85,10 @@ const App = () => (
           <Route path="/schedule-call" element={<ProtectedRoute><ScheduleCall /></ProtectedRoute>} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="/payment-debug" element={<PaymentDebug />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund" element={<Refund />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

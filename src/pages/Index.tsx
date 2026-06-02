@@ -8,6 +8,7 @@ import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import FramedScene from "@/components/viewer/FramedScene";
+import Footer from "@/components/Footer";
 
 
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
@@ -540,6 +541,7 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <Footer />
     </div>
   );
 };
