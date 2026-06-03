@@ -104,12 +104,14 @@ export interface Entitlement {
 }
 
 export async function fetchEntitlement(email: string): Promise<Entitlement | null> {
-  const { data } = await supabase
-    .from("entitlements")
-    .select("*")
-    .eq("email", email.toLowerCase().trim())
-    .maybeSingle();
-  return (data as Entitlement) || null;
+  const { data, error } = await supabase.functions.invoke("get-entitlement", {
+    body: { email: email.toLowerCase().trim() },
+  });
+  if (error) {
+    console.error("[fetchEntitlement] error", error);
+    return null;
+  }
+  return (data?.entitlement as Entitlement) || null;
 }
 
 /** Letter access is active if flagged AND (no expiry yet OR expiry in the future). */
@@ -121,13 +123,13 @@ export function hasActiveLetterAccess(ent: Entitlement | null | undefined): bool
 
 /** Atomically consume one paid call credit. Returns true if a credit was deducted. */
 export async function consumeCallCredit(email: string): Promise<boolean> {
-  const { data, error } = await supabase.rpc("consume_call_credit", {
-    _email: email.toLowerCase().trim(),
+  const { data, error } = await supabase.functions.invoke("consume-call-credit", {
+    body: { email: email.toLowerCase().trim() },
   });
   if (error) {
     console.error("[consumeCallCredit] error", error);
     return false;
   }
-  return Boolean(data);
+  return Boolean(data?.consumed);
 }
 
