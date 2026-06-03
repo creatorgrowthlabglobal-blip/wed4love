@@ -57,14 +57,14 @@ const Header = () => {
           {user ? (
             <button
               onClick={handleSignOut}
-              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 hidden sm:block"
+              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
             >
               Sign out
             </button>
           ) : (
             <Link
               to="/auth"
-              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 hidden sm:block"
+              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
             >
               Sign in
             </Link>
