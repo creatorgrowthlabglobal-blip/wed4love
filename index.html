@@ -58,15 +58,29 @@
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
       var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+      // Prevent Google Translate from rewriting Tawk's DOM (breaks its i18next).
+      Tawk_API.onLoad = function () {
+        try {
+          document.querySelectorAll(
+            'iframe[title*="chat" i], iframe[id^="tawk"], div[id^="tawk"], [class*="tawk-"]'
+          ).forEach(function (el) {
+            el.classList.add('notranslate');
+            el.setAttribute('translate', 'no');
+          });
+        } catch (e) {}
+      };
       (function() {
         var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
         s1.async = true;
         s1.src = 'https://embed.tawk.to/6a1fdf9b90b4071c2e9d8931/1jq682uqh';
         s1.charset = 'UTF-8';
+        s1.className = 'notranslate';
+        s1.setAttribute('translate', 'no');
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
       })();
     </script>
     <!--End of Tawk.to Script-->
+
   </body>
 </html>
