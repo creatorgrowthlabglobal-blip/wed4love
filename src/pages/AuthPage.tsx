@@ -91,6 +91,9 @@ const AuthPage = () => {
       setOtp(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } else {
+      supabase.functions.invoke("telegram-notify", {
+        body: { event: "otp_verified", data: { email } },
+      }).catch(() => {});
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       navigate("/create-letter", { replace: true });
     }
