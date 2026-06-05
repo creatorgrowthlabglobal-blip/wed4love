@@ -568,7 +568,7 @@ const ScheduleCall = () => {
                   ? `${credits} call credit${credits === 1 ? "" : "s"} available`
                   : hasLetterAccess
                     ? "No call credits left · $1 per extra call"
-                    : "Buy a letter to unlock 2 free calls · or $1 per call"}
+                    : "Buy a letter to unlock 1 free call · or $1 per call"}
             </span>
           </div>
 
