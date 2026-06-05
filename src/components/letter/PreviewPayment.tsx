@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Heart, Lock, Play, X } from "lucide-react";
+import { Eye, Heart, Lock, Play, X, CreditCard, MessageCircle } from "lucide-react";
 import { fileToBase64, filesToBase64 } from "@/lib/letterStorage";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 
