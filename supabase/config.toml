@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.consume-call-credit]
 verify_jwt = false
+
+[functions.telegram-notify]
+verify_jwt = false
