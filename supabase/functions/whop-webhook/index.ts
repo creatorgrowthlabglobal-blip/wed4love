@@ -5,6 +5,25 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-whop-signature",
 };
 
+function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
+  if (!token || !chatId) return;
+  const lines = [`🔔 <b>${event}</b>`];
+  for (const [k, v] of Object.entries(data)) {
+    if (v == null || v === '') continue;
+    lines.push(`<b>${k}:</b> ${String(v).slice(0, 400)}`);
+  }
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
+  }).catch(() => {});
+}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-whop-signature",
+};
+
 const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
