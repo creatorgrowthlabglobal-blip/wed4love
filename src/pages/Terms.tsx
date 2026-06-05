@@ -51,7 +51,7 @@ const Terms = () => {
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">8. Limitation of Liability</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">9. Limitation of Liability</h2>
             <p>To the maximum extent permitted by law, Wish4Love shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service.</p>
           </div>
 
