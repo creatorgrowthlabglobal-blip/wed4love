@@ -124,7 +124,6 @@ const CreateLetter = () => {
     const ent = await entitlementPromise;
     if (hasActiveLetterAccess(ent)) {
       setRedirecting("create");
-      try { checkoutTab?.close(); } catch {}
       toast({
         title: "Welcome back 💌",
         description: "Your monthly access is active — creating your letter now.",
@@ -138,7 +137,6 @@ const CreateLetter = () => {
     // running in the background; payment-status will read it on return.
     const checkout = await checkoutPromise;
     if (!checkout?.purchase_url) {
-      try { checkoutTab?.close(); } catch {}
       toast({
         title: "Couldn't open checkout",
         description: "Please try again in a moment.",
@@ -150,7 +148,10 @@ const CreateLetter = () => {
     // Make sure the letter is persisted before we navigate away — otherwise
     // a fast Whop response could redirect before localStorage is written.
     await savePromise.catch((e) => console.error("[CreateLetter] save failed", e));
-    redirectToCheckout(checkoutTab, checkout.purchase_url);
+    // Same-tab navigation is the most reliable across desktop + mobile +
+    // in-app browsers. Avoids popup blockers that bite when the click
+    // originated from a modal button (state update breaks the gesture chain).
+    window.location.assign(checkout.purchase_url);
   };
 
 
