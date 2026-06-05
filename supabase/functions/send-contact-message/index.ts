@@ -98,6 +98,8 @@ Deno.serve(async (req) => {
       )
     }
 
+    notifyTelegram('contact_message', { name, email, subject, message: message.slice(0, 300) });
+
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
