@@ -65,6 +65,7 @@ Deno.serve(async (req) => {
       data?.valid === true;
 
     if (!isSuccess) {
+      notifyTelegram('payment_failed', { action, status: data?.status, plan: data?.plan_id, email: data?.user_email });
       return new Response(JSON.stringify({ ignored: true, action }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
