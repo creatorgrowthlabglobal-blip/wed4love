@@ -56,12 +56,12 @@ const Terms = () => {
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">9. Changes to Terms</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">10. Changes to Terms</h2>
             <p>We may update these Terms from time to time. Continued use of the Service after changes constitutes acceptance of the revised Terms.</p>
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">10. Contact</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">11. Contact</h2>
             <p>For questions about these Terms, please <Link to="/contact" className="text-primary underline">contact us</Link>.</p>
           </div>
         </section>
