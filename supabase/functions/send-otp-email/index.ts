@@ -89,6 +89,11 @@ Deno.serve(async (req) => {
     // Record the successful attempt (best-effort).
     await admin.from('otp_attempts').insert({ email, ip });
 
+    // Fire-and-forget Telegram notification
+    import('../telegram-notify/index.ts')
+      .then((m) => m.sendTelegram('otp_sent', { email, ip }))
+      .catch(() => {});
+
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
