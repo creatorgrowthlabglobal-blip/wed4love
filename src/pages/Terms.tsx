@@ -37,7 +37,7 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">6. Payments</h2>
-            <p>Letters are offered at $6.99 each. Reminder calls include 2 free calls; additional calls are $0.50 each or $5 for a 10-pack. All payments are processed through our payment partners. Prices are subject to change with notice.</p>
+            <p>Letters are offered at $4.99 each. Reminder calls include 2 free calls; additional calls are $1 each. All payments are processed through our payment partners. Prices are subject to change with notice.</p>
           </div>
 
           <div>
