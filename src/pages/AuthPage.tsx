@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, Mail, ArrowLeft } from "lucide-react";
 import FloatingHearts from "@/components/FloatingHearts";
 import { isValidEmail, sendOTP, verifyOTP } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuthPage = () => {
   const navigate = useNavigate();
