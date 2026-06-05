@@ -49,11 +49,6 @@ const CreateLetter = () => {
   };
 
   const handlePay = async () => {
-    // Pre-open the checkout tab SYNCHRONOUSLY (while the user-gesture token
-    // is still valid). iOS Safari and many mobile in-app browsers block
-    // `window.location.href = ...` set later after an `await`. Closed on
-    // failure below.
-    const checkoutTab = openBlankCheckoutTab();
     // Show overlay IMMEDIATELY. Force React to flush + browser to paint
     // BEFORE we start the heavy base64 encoding (which can lock the main
     // thread for several seconds on big photos/audio).
