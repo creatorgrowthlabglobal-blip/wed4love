@@ -20,9 +20,7 @@ function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
     body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
   }).catch(() => {});
 }
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-whop-signature",
-};
+
 
 const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
