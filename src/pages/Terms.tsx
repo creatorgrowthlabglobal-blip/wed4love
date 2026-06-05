@@ -41,22 +41,27 @@ const Terms = () => {
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">7. Disclaimers</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">7. Refunds</h2>
+            <p>All purchases are final. Due to the digital and personalized nature of our letters, we do not offer refunds once a letter has been created and sent. If you experience a technical issue that prevents delivery, please <Link to="/contact" className="text-primary underline">contact us</Link> within 7 days and we will resolve it or issue a credit at our discretion. Reminder call credits are non-refundable but do not expire.</p>
+          </div>
+
+          <div>
+            <h2 className="font-display text-2xl font-semibold mb-3">8. Disclaimers</h2>
             <p>The Service is provided "as is" without warranties of any kind. We do not guarantee uninterrupted availability or error-free operation. Reminder calls depend on third-party telephony providers and may occasionally be delayed or fail.</p>
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">8. Limitation of Liability</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">9. Limitation of Liability</h2>
             <p>To the maximum extent permitted by law, Wish4Love shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service.</p>
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">9. Changes to Terms</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">10. Changes to Terms</h2>
             <p>We may update these Terms from time to time. Continued use of the Service after changes constitutes acceptance of the revised Terms.</p>
           </div>
 
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">10. Contact</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">11. Contact</h2>
             <p>For questions about these Terms, please <Link to="/contact" className="text-primary underline">contact us</Link>.</p>
           </div>
         </section>
