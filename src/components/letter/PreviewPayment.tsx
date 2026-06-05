@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Heart, Lock, Play, X } from "lucide-react";
+import { Eye, Heart, Lock, Play, X, CreditCard, MessageCircle } from "lucide-react";
 import { fileToBase64, filesToBase64 } from "@/lib/letterStorage";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 
@@ -28,10 +28,25 @@ type PreviewStage = "mailbox" | "envelope";
 
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
+  const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [previewCustomMusicData, setPreviewCustomMusicData] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const WHATSAPP_URL = "https://wa.me/9779702238084?text=" + encodeURIComponent(
+    "Hi! I'd like to pay for my Wish4Love letter ($3.99) via GCash / Bank Transfer (Philippines). Please guide me through the payment."
+  );
+
+  const handleWhatsApp = () => {
+    setShowPaymentChoice(false);
+    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const handleWhop = () => {
+    setShowPaymentChoice(false);
+    onPay();
+  };
 
   useEffect(() => {
     if (showPreview) {
@@ -191,7 +206,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={onPay}
+              onClick={() => setShowPaymentChoice(true)}
               className="btn-glow w-full sm:w-auto px-14 py-4 bg-primary text-primary-foreground font-heading text-lg font-bold rounded-2xl shadow-romantic transition-all duration-400 hover:shadow-glow"
             >
               💳 Pay and Create
@@ -202,6 +217,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             </p>
           </div>
         </motion.div>
+
+
 
         <div className="mt-6 flex justify-start">
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}
@@ -260,6 +277,82 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
               </FramedScene>
             )}
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Payment method choice modal */}
+      <AnimatePresence>
+        {showPaymentChoice && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[120] flex items-center justify-center px-4 bg-background/70 backdrop-blur-md"
+            onClick={() => setShowPaymentChoice(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md letter-paper rounded-3xl p-6 sm:p-8 shadow-romantic border border-primary/15"
+            >
+              <button
+                onClick={() => setShowPaymentChoice(false)}
+                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-secondary/70 hover:bg-secondary flex items-center justify-center text-foreground/70"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <Heart className="w-5 h-5 text-primary fill-primary/30" />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-foreground mb-1">Choose payment method</h3>
+                <p className="font-body text-sm text-muted-foreground">$3.99 · one-time payment</p>
+              </div>
+
+              <div className="space-y-3">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleWhop}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary text-primary-foreground shadow-card text-left transition-all"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-heading text-base font-bold">Card / Cash App</p>
+                    <p className="font-body text-xs opacity-90">Secure checkout via Whop · Instant delivery</p>
+                  </div>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleWhatsApp}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-secondary border border-border/60 text-foreground text-left transition-all hover:shadow-card"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#25D366]/15 flex items-center justify-center shrink-0">
+                    <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-heading text-base font-bold">GCash / Bank Transfer 🇵🇭</p>
+                    <p className="font-body text-xs text-muted-foreground">For Philippines clients · Chat with us on WhatsApp</p>
+                  </div>
+                </motion.button>
+              </div>
+
+              <p className="mt-5 font-body text-xs text-center text-muted-foreground flex items-center justify-center gap-1.5">
+                <Lock className="w-3 h-3" />
+                Your details are kept private
+              </p>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
