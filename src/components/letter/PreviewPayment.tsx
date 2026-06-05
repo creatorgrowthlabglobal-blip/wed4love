@@ -28,10 +28,25 @@ type PreviewStage = "mailbox" | "envelope";
 
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
+  const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [previewCustomMusicData, setPreviewCustomMusicData] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const WHATSAPP_URL = "https://wa.me/9779702238084?text=" + encodeURIComponent(
+    "Hi! I'd like to pay for my Wish4Love letter ($3.99) via GCash / Bank Transfer (Philippines). Please guide me through the payment."
+  );
+
+  const handleWhatsApp = () => {
+    setShowPaymentChoice(false);
+    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const handleWhop = () => {
+    setShowPaymentChoice(false);
+    onPay();
+  };
 
   useEffect(() => {
     if (showPreview) {
