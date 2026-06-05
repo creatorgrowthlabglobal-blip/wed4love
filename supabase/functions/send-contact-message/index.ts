@@ -3,6 +3,22 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
 const TO_EMAIL = 'engineer1@wish4love.com'
 
+function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
+  if (!token || !chatId) return;
+  const lines = [`🔔 <b>${event}</b>`];
+  for (const [k, v] of Object.entries(data)) {
+    if (v == null || v === '') continue;
+    lines.push(`<b>${k}:</b> ${String(v).slice(0, 400)}`);
+  }
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
+  }).catch(() => {});
+}
+
 interface ContactBody {
   name?: string
   email?: string

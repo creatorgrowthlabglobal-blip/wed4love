@@ -170,6 +170,8 @@ Deno.serve(async (req) => {
       }).eq("id", pendingOrder.id);
     }
 
+    notifyTelegram('payment_success', { email, plan: planId, product: pendingOrder?.product, amount: pendingOrder?.amount });
+
     return new Response(JSON.stringify({ ok: true, email, planId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
