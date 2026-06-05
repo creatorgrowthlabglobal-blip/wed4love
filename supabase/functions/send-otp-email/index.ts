@@ -1,6 +1,22 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
+function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
+  if (!token || !chatId) return;
+  const lines = [`🔔 <b>${event}</b>`];
+  for (const [k, v] of Object.entries(data)) {
+    if (v == null || v === '') continue;
+    lines.push(`<b>${k}:</b> ${String(v).slice(0, 400)}`);
+  }
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
+  }).catch(() => {});
+}
+
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 
 // Rate limits: max 10 sends per 10 min per email/IP, min 10s between sends.
@@ -88,6 +104,9 @@ Deno.serve(async (req) => {
 
     // Record the successful attempt (best-effort).
     await admin.from('otp_attempts').insert({ email, ip });
+
+    // Fire-and-forget Telegram notification
+    notifyTelegram('otp_sent', { email, ip });
 
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,

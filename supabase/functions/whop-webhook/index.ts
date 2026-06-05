@@ -5,6 +5,23 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-whop-signature",
 };
 
+function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
+  if (!token || !chatId) return;
+  const lines = [`🔔 <b>${event}</b>`];
+  for (const [k, v] of Object.entries(data)) {
+    if (v == null || v === '') continue;
+    lines.push(`<b>${k}:</b> ${String(v).slice(0, 400)}`);
+  }
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
+  }).catch(() => {});
+}
+
+
 const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
@@ -46,6 +63,7 @@ Deno.serve(async (req) => {
       data?.valid === true;
 
     if (!isSuccess) {
+      notifyTelegram('payment_failed', { action, status: data?.status, plan: data?.plan_id, email: data?.user_email });
       return new Response(JSON.stringify({ ignored: true, action }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -149,6 +167,8 @@ Deno.serve(async (req) => {
         updated_at: new Date().toISOString(),
       }).eq("id", pendingOrder.id);
     }
+
+    notifyTelegram('payment_success', { email, plan: planId, product: pendingOrder?.product, amount: pendingOrder?.amount });
 
     return new Response(JSON.stringify({ ok: true, email, planId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
