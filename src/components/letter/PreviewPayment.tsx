@@ -2,6 +2,7 @@ import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Heart, Lock, Play, X, CreditCard, MessageCircle } from "lucide-react";
 import { fileToBase64, filesToBase64 } from "@/lib/letterStorage";
+import { supabase } from "@/integrations/supabase/client";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -40,11 +41,31 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
 
   const handleWhatsApp = () => {
     setShowPaymentChoice(false);
+    supabase.functions.invoke("telegram-notify", {
+      body: {
+        event: "whatsapp_click",
+        data: {
+          sender: letterData.senderName,
+          receiver: letterData.receiverName,
+          type: letterData.letterType,
+        },
+      },
+    }).catch(() => {});
     window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
   };
 
   const handleWhop = () => {
     setShowPaymentChoice(false);
+    supabase.functions.invoke("telegram-notify", {
+      body: {
+        event: "checkout_started",
+        data: {
+          method: "whop",
+          sender: letterData.senderName,
+          receiver: letterData.receiverName,
+        },
+      },
+    }).catch(() => {});
     onPay();
   };
 
