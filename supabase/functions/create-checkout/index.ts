@@ -75,6 +75,13 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify(body),
     });
+    const [insertRes, r] = await Promise.all([insertPromise, whopPromise]);
+    if (insertRes.error) {
+      console.error("[create-checkout] insert pending error", insertRes.error);
+      return new Response(JSON.stringify({ error: insertRes.error.message }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const text = await r.text();
     if (!r.ok) {
       console.error("[create-checkout] whop error", r.status, text);
