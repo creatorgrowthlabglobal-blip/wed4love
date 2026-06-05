@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, Mail, ArrowLeft } from "lucide-react";
 import FloatingHearts from "@/components/FloatingHearts";
 import { isValidEmail, sendOTP, verifyOTP } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -90,6 +91,9 @@ const AuthPage = () => {
       setOtp(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } else {
+      supabase.functions.invoke("telegram-notify", {
+        body: { event: "otp_verified", data: { email } },
+      }).catch(() => {});
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       navigate("/create-letter", { replace: true });
     }
