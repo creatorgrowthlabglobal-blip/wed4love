@@ -129,6 +129,21 @@ export const saveLetter = async (letter: StoredLetter): Promise<void> => {
   } catch (e) {
     console.warn("[letterStorage] remote save threw:", e);
   }
+  // Fire-and-forget Telegram notification
+  try {
+    supabase.functions.invoke("telegram-notify", {
+      body: {
+        event: "letter_created",
+        data: {
+          id: letter.id,
+          type: (letter as any).type,
+          sender: (letter as any).senderName,
+          receiver: (letter as any).receiverName,
+          email: (letter as any).email || (letter as any).senderEmail,
+        },
+      },
+    }).catch(() => {});
+  } catch {}
 };
 
 /** Local-only save — used for demo seeds. */
