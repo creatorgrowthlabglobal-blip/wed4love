@@ -184,7 +184,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 animate-gentle-glow">
               <Heart className="w-6 h-6 text-primary fill-primary/30" />
             </div>
-            <p className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-1">$4.99</p>
+            <p className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-1">$3.99</p>
             <p className="font-body text-base text-muted-foreground mb-6">
               One-time payment · Your letter lives forever
             </p>

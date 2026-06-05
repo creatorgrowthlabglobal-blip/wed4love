@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
 
     if (planId === LETTER_PLAN) {
       row.has_letter_access = true;
-      row.paid_calls = (row.paid_calls || 0) + 2; // 2 free calls included
+      row.paid_calls = (row.paid_calls || 0) + 1; // 1 free call included with each letter
       // Extend access by 30 days from the later of (now, current expiry)
       const current = row.letter_access_expires_at ? new Date(row.letter_access_expires_at).getTime() : 0;
       const base = Math.max(current, Date.now());
