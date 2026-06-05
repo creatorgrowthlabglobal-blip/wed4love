@@ -66,71 +66,85 @@ const CreateLetter = () => {
 
     const letterId = Math.random().toString(36).substring(2, 10);
     const user = getCurrentUser();
+    const email = user?.email || "";
 
-    // Save the letter first so it exists whether we pay or skip the paywall.
-    const imgData = await filesToBase64(images);
-    let customMusicData: string | null = null;
-    if (customMusic) {
-      customMusicData = await fileToBase64(customMusic);
-    }
+    // PARALLELIZE the three slow things that used to run serially:
+    //  1) entitlement check (network, ~300-800ms)
+    //  2) Whop checkout creation (network, ~600-1500ms)
+    //  3) base64 encode + saveLetter (CPU + localStorage, can be seconds)
+    // The old flow waited for #3, then #1, then #2 — total = sum.
+    // New flow = max(of all three), so checkout opens as soon as Whop responds.
 
-    await saveLetter({
-      id: letterId,
-      type: letterType || "love",
-      senderName: details.senderName,
-      receiverName: details.receiverName,
-      letterText,
-      images: imgData,
-      videos: [],
-      audios: [],
-      selectedMusic,
-      customMusicData,
-      quiz: [],
-      email: user?.email || "",
-      date: new Date().toLocaleDateString(),
-      template,
-    });
+    const redirectTo = `${window.location.origin}/payment-status?product=letter&letter_id=${letterId}`;
 
-    // Returning user with active letter access → skip Whop, create immediately.
-    if (user?.email) {
-      try {
-        const ent = await fetchEntitlement(user.email);
-        if (hasActiveLetterAccess(ent)) {
-          setRedirecting("create");
-          try { checkoutTab?.close(); } catch {}
-          toast({
-            title: "Welcome back 💌",
-            description: "Your monthly access is active — creating your letter now.",
-          });
-          setTimeout(() => navigate(`/letter-ready/${letterId}`, { replace: true }), 600);
-          return;
-        }
-      } catch (e) {
-        console.warn("[CreateLetter] entitlement check failed, falling through to paywall", e);
-      }
-    }
-
-    // Otherwise → create a Whop checkout configuration via our edge function
-    // so the webhook can match the payment by metadata.order_id back to the
-    // signed-in user's app email (even if they change email at Whop checkout).
-    setRedirecting("checkout");
     try {
       sessionStorage.setItem(
         "wish4love_pending_payment_v1",
-        JSON.stringify({ product: "letter", letterId, email: user?.email || "", ts: Date.now() })
+        JSON.stringify({ product: "letter", letterId, email, ts: Date.now() })
       );
     } catch {}
-    const redirectTo = `${window.location.origin}/payment-status?product=letter&letter_id=${letterId}`;
-    try {
-      const { purchase_url } = await createWhopCheckout({
-        product: "letter",
-        app_email: user?.email || "",
-        letter_id: letterId,
-        redirect_url: redirectTo,
-      });
-      redirectToCheckout(checkoutTab, purchase_url);
-    } catch (e) {
+
+    const entitlementPromise = email
+      ? fetchEntitlement(email).catch((e) => {
+          console.warn("[CreateLetter] entitlement check failed", e);
+          return null;
+        })
+      : Promise.resolve(null);
+
+    const checkoutPromise = createWhopCheckout({
+      product: "letter",
+      app_email: email,
+      letter_id: letterId,
+      redirect_url: redirectTo,
+    }).catch((e) => {
       console.error("[CreateLetter] create-checkout failed", e);
+      return null;
+    });
+
+    // Kick off file encoding + save in parallel. We MUST await it before
+    // navigating to /letter-ready (entitled user path), but for the paywall
+    // path the letter just needs to exist by the time the user returns from
+    // Whop — so we let it complete in the background while they're paying.
+    const savePromise = (async () => {
+      const imgData = await filesToBase64(images);
+      let customMusicData: string | null = null;
+      if (customMusic) customMusicData = await fileToBase64(customMusic);
+      await saveLetter({
+        id: letterId,
+        type: letterType || "love",
+        senderName: details.senderName,
+        receiverName: details.receiverName,
+        letterText,
+        images: imgData,
+        videos: [],
+        audios: [],
+        selectedMusic,
+        customMusicData,
+        quiz: [],
+        email,
+        date: new Date().toLocaleDateString(),
+        template,
+      });
+    })();
+
+    // Returning user with active access → wait for save, skip Whop.
+    const ent = await entitlementPromise;
+    if (hasActiveLetterAccess(ent)) {
+      setRedirecting("create");
+      try { checkoutTab?.close(); } catch {}
+      toast({
+        title: "Welcome back 💌",
+        description: "Your monthly access is active — creating your letter now.",
+      });
+      await savePromise.catch((e) => console.error("[CreateLetter] save failed", e));
+      setTimeout(() => navigate(`/letter-ready/${letterId}`, { replace: true }), 600);
+      return;
+    }
+
+    // Paywall path → redirect as soon as Whop URL is ready. saveLetter keeps
+    // running in the background; payment-status will read it on return.
+    const checkout = await checkoutPromise;
+    if (!checkout?.purchase_url) {
       try { checkoutTab?.close(); } catch {}
       toast({
         title: "Couldn't open checkout",
@@ -138,8 +152,14 @@ const CreateLetter = () => {
         variant: "destructive",
       });
       setRedirecting(null);
+      return;
     }
+    // Make sure the letter is persisted before we navigate away — otherwise
+    // a fast Whop response could redirect before localStorage is written.
+    await savePromise.catch((e) => console.error("[CreateLetter] save failed", e));
+    redirectToCheckout(checkoutTab, checkout.purchase_url);
   };
+
 
 
 

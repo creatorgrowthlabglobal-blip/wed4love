@@ -44,22 +44,6 @@ Deno.serve(async (req) => {
 
     const orderId = crypto.randomUUID();
 
-    // Record pending order BEFORE creating the checkout so the webhook can
-    // always resolve back to the right app user.
-    const { error: insErr } = await supabase.from("pending_orders").insert({
-      id: orderId,
-      product,
-      app_email: email,
-      letter_id: letter_id || null,
-      status: "pending",
-    });
-    if (insErr) {
-      console.error("[create-checkout] insert pending error", insErr);
-      return new Response(JSON.stringify({ error: insErr.message }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const body: Record<string, unknown> = {
       plan_id: planId,
       metadata: {
@@ -71,7 +55,19 @@ Deno.serve(async (req) => {
     };
     if (redirect_url) body.redirect_url = redirect_url;
 
-    const r = await fetch("https://api.whop.com/api/v1/checkout_configurations", {
+    // Fire the pending_orders insert and the Whop API call IN PARALLEL.
+    // The DB insert (~50-150ms) used to block the Whop call (~600-1500ms)
+    // unnecessarily — they don't depend on each other. We still await both
+    // before responding so the webhook always finds the pending row.
+    const insertPromise = supabase.from("pending_orders").insert({
+      id: orderId,
+      product,
+      app_email: email,
+      letter_id: letter_id || null,
+      status: "pending",
+    });
+
+    const whopPromise = fetch("https://api.whop.com/api/v1/checkout_configurations", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${WHOP_API_KEY}`,
@@ -79,6 +75,13 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify(body),
     });
+    const [insertRes, r] = await Promise.all([insertPromise, whopPromise]);
+    if (insertRes.error) {
+      console.error("[create-checkout] insert pending error", insertRes.error);
+      return new Response(JSON.stringify({ error: insertRes.error.message }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const text = await r.text();
     if (!r.ok) {
       console.error("[create-checkout] whop error", r.status, text);
