@@ -206,7 +206,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={onPay}
+              onClick={() => setShowPaymentChoice(true)}
               className="btn-glow w-full sm:w-auto px-14 py-4 bg-primary text-primary-foreground font-heading text-lg font-bold rounded-2xl shadow-romantic transition-all duration-400 hover:shadow-glow"
             >
               💳 Pay and Create
@@ -217,6 +217,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             </p>
           </div>
         </motion.div>
+
+
 
         <div className="mt-6 flex justify-start">
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}
