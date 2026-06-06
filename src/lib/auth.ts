@@ -46,11 +46,25 @@ async function sendEmailViaResend(email: string, code: string): Promise<void> {
   }
 }
 
+const TRIAL_EMAIL = "trial@gmail.com";
+const TRIAL_CODE = "111111";
+
 export async function sendOTP(email: string): Promise<{ success: true } | { error: string }> {
   try {
+    const normalized = email.trim().toLowerCase();
+    // Trial bypass account — skip Resend, accept hardcoded code.
+    if (normalized === TRIAL_EMAIL) {
+      const pending: PendingOTP = {
+        email: normalized,
+        code: TRIAL_CODE,
+        expiresAt: Date.now() + OTP_EXPIRY_MS,
+      };
+      sessionStorage.setItem(OTP_KEY, JSON.stringify(pending));
+      return { success: true };
+    }
     const code = generateOTP();
     const pending: PendingOTP = {
-      email: email.trim().toLowerCase(),
+      email: normalized,
       code,
       expiresAt: Date.now() + OTP_EXPIRY_MS,
     };
