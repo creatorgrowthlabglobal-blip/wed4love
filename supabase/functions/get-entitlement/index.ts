@@ -39,7 +39,26 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ entitlement: data ?? null }), {
+    let entitlement = data ?? null;
+
+    // Trial account: 3 free letters, no call credits, no payment required.
+    if (normalized === "trial@gmail.com") {
+      const { count } = await supabase
+        .from("letters")
+        .select("id", { count: "exact", head: true })
+        .eq("data->>email", "trial@gmail.com");
+      const used = count ?? 0;
+      const allowed = used < 3;
+      entitlement = {
+        email: normalized,
+        has_letter_access: allowed,
+        paid_calls: 0,
+        used_calls: 0,
+        letter_access_expires_at: allowed ? new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString() : null,
+      } as typeof entitlement;
+    }
+
+    return new Response(JSON.stringify({ entitlement }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
