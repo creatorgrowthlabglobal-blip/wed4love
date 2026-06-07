@@ -43,26 +43,28 @@ const CreateLetter = () => {
   const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
   const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
 
-  const handleGCashPay = async (): Promise<string> => {
+  const handleGCashPay = (): string => {
     const letterId = Math.random().toString(36).substring(2, 10);
     const user = getCurrentUser();
     const email = user?.email || "";
-    const imgData = await filesToBase64(images);
-    await saveLetter({
-      id: letterId,
-      type: letterType || "love",
-      senderName: details.senderName,
-      receiverName: details.receiverName,
-      letterText,
-      images: imgData,
-      videos: [],
-      audios: [],
-      selectedMusic,
-      quiz: [],
-      email,
-      date: new Date().toLocaleDateString(),
-      template,
-    });
+    // Save in background — don't block modal opening
+    filesToBase64(images).then((imgData) =>
+      saveLetter({
+        id: letterId,
+        type: letterType || "love",
+        senderName: details.senderName,
+        receiverName: details.receiverName,
+        letterText,
+        images: imgData,
+        videos: [],
+        audios: [],
+        selectedMusic,
+        quiz: [],
+        email,
+        date: new Date().toLocaleDateString(),
+        template,
+      })
+    ).catch((e) => console.error("[CreateLetter] gcash save failed", e));
     return letterId;
   };
 
@@ -240,8 +242,8 @@ const CreateLetter = () => {
               template={template}
               onTemplateChange={setTemplate}
               onPay={handlePay}
-              onGCashPay={async () => {
-                const id = await handleGCashPay();
+              onGCashPay={() => {
+                const id = handleGCashPay();
                 setGcashLetterId(id);
               }}
               onBack={() => setStep(4)}

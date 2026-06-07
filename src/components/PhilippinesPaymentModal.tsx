@@ -92,7 +92,7 @@ const PhilippinesPaymentModal = ({
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ type: "spring", duration: 0.5 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md letter-paper rounded-3xl p-6 sm:p-8 shadow-romantic border border-primary/15 max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-md letter-paper rounded-3xl p-4 sm:p-6 shadow-romantic border border-primary/15 max-h-[90vh] overflow-y-auto"
       >
         {step !== "success" && (
           <button
@@ -109,58 +109,34 @@ const PhilippinesPaymentModal = ({
           {/* ── Step 1: QR code ─────────────────────────────────────── */}
           {step === "qr" && (
             <motion.div key="qr" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <div className="text-center mb-5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 mb-3">
-                  <span className="text-green-600 text-xs font-semibold">🇵🇭 Philippines Payment</span>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-foreground mb-1">Scan to Pay</h3>
-                <p className="font-body text-sm text-muted-foreground">Pay via GCash, bank transfer, or any payment app</p>
+              <div className="text-center mb-2">
+                <h3 className="font-display text-xl font-bold text-foreground">Scan to Pay 🇵🇭</h3>
+                <p className="font-body text-xs text-muted-foreground">GCash, bank transfer, or any QR payment app</p>
               </div>
 
-              {/* QR code image */}
-              <div className="flex justify-center mb-5">
-                <div className="p-3 rounded-2xl border-2 border-primary/20 bg-white shadow-card">
+              {/* QR + amount stacked tight */}
+              <div className="flex flex-col items-center mb-3">
+                <div className="p-2 rounded-2xl border-2 border-primary/20 bg-white shadow-card">
                   <img
                     src="/gcash-qr.png"
-                    alt="GCash QR Code"
-                    className="w-64 h-64 object-contain"
+                    alt="Payment QR Code"
+                    className="w-52 h-52 object-contain"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).style.display = "none";
                       (e.currentTarget.nextElementSibling as HTMLElement)!.style.display = "flex";
                     }}
                   />
-                  {/* Fallback placeholder shown if image missing */}
-                  <div
-                    className="w-52 h-52 hidden items-center justify-center text-center text-muted-foreground text-xs p-4 rounded-xl bg-secondary/50"
-                  >
-                    QR code image coming soon.<br />Replace <code>public/gcash-qr.png</code>
+                  <div className="w-52 h-52 hidden items-center justify-center text-center text-muted-foreground text-xs p-4 rounded-xl bg-secondary/50">
+                    QR code coming soon
                   </div>
                 </div>
+                <p className="font-display text-4xl font-bold text-foreground mt-2">₱248</p>
+                <p className="font-body text-xs text-muted-foreground">One-time · Letter lives forever</p>
               </div>
 
-              {/* Amount */}
-              <div className="text-center mb-6">
-                <p className="font-display text-5xl font-bold text-foreground">₱248</p>
-                <p className="font-body text-sm text-muted-foreground mt-1">One-time · Your letter lives forever</p>
-              </div>
-
-              {/* Step list */}
-              <ol className="space-y-2 mb-6">
-                {[
-                  "Open your payment app (GCash, bank app, or any QR-supported app)",
-                  "Scan the QR code above",
-                  "Pay exactly ₱248",
-                  "Take a screenshot of your payment receipt",
-                  "Come back here and tap the button below",
-                ].map((s, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm font-body text-muted-foreground">
-                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                      {i + 1}
-                    </span>
-                    {s}
-                  </li>
-                ))}
-              </ol>
+              <p className="text-center font-body text-xs text-muted-foreground mb-3">
+                Scan the QR, pay ₱248, screenshot your receipt, then tap below.
+              </p>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}

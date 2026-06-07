@@ -21,7 +21,7 @@ interface PreviewPaymentProps {
   template: "photo" | "purple";
   onTemplateChange: (t: "photo" | "purple") => void;
   onPay: () => void;
-  onGCashPay: () => Promise<void>;
+  onGCashPay: () => void;
   onBack: () => void;
 }
 
@@ -34,9 +34,9 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleGCash = async () => {
+  const handleGCash = () => {
     setShowPaymentChoice(false);
-    await onGCashPay();
+    onGCashPay();
   };
 
   const handleWhop = () => {
