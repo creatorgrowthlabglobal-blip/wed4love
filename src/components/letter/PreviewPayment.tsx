@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Heart, Lock, Play, X, CreditCard, MessageCircle } from "lucide-react";
+import { Eye, Heart, Lock, Play, X, CreditCard, QrCode } from "lucide-react";
 import { filesToBase64 } from "@/lib/letterStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
@@ -21,35 +21,22 @@ interface PreviewPaymentProps {
   template: "photo" | "purple";
   onTemplateChange: (t: "photo" | "purple") => void;
   onPay: () => void;
+  onGCashPay: () => Promise<void>;
   onBack: () => void;
 }
 
 type PreviewStage = "mailbox" | "envelope";
 
-const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
+const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
   const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const WHATSAPP_URL = "https://wa.me/9779702238084?text=" + encodeURIComponent(
-    "Hi! I'd like to pay for my Wish4Love letter ($3.99) via GCash / Bank Transfer (Philippines). Please guide me through the payment."
-  );
-
-  const handleWhatsApp = () => {
+  const handleGCash = async () => {
     setShowPaymentChoice(false);
-    supabase.functions.invoke("telegram-notify", {
-      body: {
-        event: "whatsapp_click",
-        data: {
-          sender: letterData.senderName,
-          receiver: letterData.receiverName,
-          type: letterData.letterType,
-        },
-      },
-    }).catch(() => {});
-    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+    await onGCashPay();
   };
 
   const handleWhop = () => {
@@ -349,15 +336,15 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={handleWhatsApp}
+                  onClick={handleGCash}
                   className="w-full flex items-center gap-4 p-4 rounded-2xl bg-secondary border border-border/60 text-foreground text-left transition-all hover:shadow-card"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-[#25D366]/15 flex items-center justify-center shrink-0">
-                    <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                  <div className="w-11 h-11 rounded-xl bg-green-500/15 flex items-center justify-center shrink-0">
+                    <QrCode className="w-5 h-5 text-green-600" />
                   </div>
                   <div className="flex-1">
                     <p className="font-heading text-base font-bold">GCash / Bank Transfer 🇵🇭</p>
-                    <p className="font-body text-xs text-muted-foreground">For Philippines clients · Chat with us on WhatsApp</p>
+                    <p className="font-body text-xs text-muted-foreground">For Philippines clients · GCash, bank, or any QR app · ₱248</p>
                   </div>
                 </motion.button>
               </div>
