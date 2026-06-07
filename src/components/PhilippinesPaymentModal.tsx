@@ -130,12 +130,12 @@ const PhilippinesPaymentModal = ({
                     QR code coming soon
                   </div>
                 </div>
-                <p className="font-display text-4xl font-bold text-foreground mt-2">₱248</p>
+                <p className="font-display text-4xl font-bold text-foreground mt-2">₱149</p>
                 <p className="font-body text-xs text-muted-foreground">One-time · Letter lives forever</p>
               </div>
 
               <p className="text-center font-body text-xs text-muted-foreground mb-3">
-                Scan the QR, pay ₱248, screenshot your receipt, then tap below.
+                Scan the QR, pay ₱149, screenshot your receipt, then tap below.
               </p>
 
               <motion.button

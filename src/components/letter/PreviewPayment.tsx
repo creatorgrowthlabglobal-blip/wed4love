@@ -344,7 +344,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
                   </div>
                   <div className="flex-1">
                     <p className="font-heading text-base font-bold">GCash / Bank Transfer 🇵🇭</p>
-                    <p className="font-body text-xs text-muted-foreground">For Philippines clients · GCash, bank, or any QR app · ₱248</p>
+                    <p className="font-body text-xs text-muted-foreground">For Philippines clients · GCash, bank, or any QR app · ₱149</p>
                   </div>
                 </motion.button>
               </div>

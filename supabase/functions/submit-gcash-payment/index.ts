@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
       `<b>To:</b> ${receiver_name}\n` +
       `<b>Type:</b> ${letter_type ?? 'love'}\n` +
       `<b>Email:</b> ${email}\n` +
-      `<b>Amount:</b> ₱248\n` +
+      `<b>Amount:</b> ₱149\n` +
       `<b>Letter ID:</b> ${letter_id}\n\n` +
       `✅ Verify proof → send the link below to <b>${email}</b>`;
 
