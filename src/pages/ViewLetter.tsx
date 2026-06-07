@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
+import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
 
@@ -24,37 +25,82 @@ const ViewLetter = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     if (id) {
-      const found = getLetter(id);
-      if (found) {
-        setLetter(found);
-        // Purple template skips the mailbox and lands directly on the envelope
-        if ((found.template || "photo") === "purple") {
-          setStage("envelope");
+      getLetter(id).then((found) => {
+        if (cancelled) return;
+        if (found) {
+          setLetter(found);
+          if ((found.template || "photo") === "purple") {
+            setStage("envelope");
+          }
+        } else {
+          setNotFound(true);
         }
-      } else {
-        setNotFound(true);
-      }
+      });
     }
-    // Preload mailbox frames immediately on route mount so the recipient
-    // sees the image instantly, not a top-to-bottom progressive load.
     [mailboxClosed, mailboxOpen].forEach((src) => {
       const img = new Image();
       img.decoding = "async";
       img.src = src;
     });
+    return () => { cancelled = true; };
   }, [id]);
 
 
+  const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
-    if (letter?.customMusicData && !audioRef.current) {
-      const audio = new Audio(letter.customMusicData);
+    if (!letter) return;
+    const preset = getPresetById(letter.selectedMusic);
+    let src = preset?.url || letter.customMusicData;
+    if (!src) {
+      // Fallback: play a random romantic preset so every letter feels alive,
+      // just like the post-purchase experience.
+      if (!randomMusicRef.current) randomMusicRef.current = getRandomPresetUrl();
+      src = randomMusicRef.current;
+    }
+    if (!audioRef.current) {
+      const audio = new Audio(src);
       audio.loop = true;
       audio.volume = 0.3;
-      audio.play().catch(() => {});
       audioRef.current = audio;
     }
+    const audio = audioRef.current;
+    if (!audio.paused) return;
+    audio.play().then(() => {
+      console.log("[ViewLetter] Music started:", src);
+    }).catch((e) => {
+      console.warn("[ViewLetter] Music play blocked, will retry on next interaction:", e);
+    });
   };
+
+  // Start music on the first user interaction anywhere on the page.
+  // Keep retrying on each interaction until play() actually succeeds,
+  // in case the first attempt was blocked by autoplay policy.
+  useEffect(() => {
+    if (!letter) return;
+    const handler = () => {
+      startMusic();
+      if (audioRef.current && !audioRef.current.paused) {
+        window.removeEventListener("pointerdown", handler, true);
+        window.removeEventListener("touchstart", handler, true);
+        window.removeEventListener("click", handler, true);
+        window.removeEventListener("keydown", handler, true);
+      }
+    };
+    window.addEventListener("pointerdown", handler, true);
+    window.addEventListener("touchstart", handler, true);
+    window.addEventListener("click", handler, true);
+    window.addEventListener("keydown", handler, true);
+    return () => {
+      window.removeEventListener("pointerdown", handler, true);
+      window.removeEventListener("touchstart", handler, true);
+      window.removeEventListener("click", handler, true);
+      window.removeEventListener("keydown", handler, true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [letter]);
+
 
   if (notFound) {
     return (
@@ -117,7 +163,8 @@ const ViewLetter = () => {
   const template = letter.template || "photo";
 
   return (
-    <AnimatePresence mode="wait">
+    <>
+      <AnimatePresence mode="wait">
       {stage === "mailbox" && template === "purple" && (
         <FramedScene key="mailbox-purple">
           <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
@@ -171,6 +218,7 @@ const ViewLetter = () => {
         />
       )}
     </AnimatePresence>
+    </>
   );
 };
 

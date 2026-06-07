@@ -8,7 +8,10 @@ import FloatingHearts from "@/components/FloatingHearts";
 
 const LetterReady = () => {
   const { id } = useParams();
-  const letterLink = `${window.location.origin}/view/${id}`;
+  // Always generate shareable links on the production domain so recipients
+  // get a branded wish4love.com URL regardless of where the letter was made.
+  const PUBLIC_BASE_URL = "https://wish4love.com";
+  const letterLink = `${PUBLIC_BASE_URL}/view/${id}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -27,6 +30,40 @@ const LetterReady = () => {
       });
     } else {
       handleCopy();
+    }
+  };
+
+  const handleDownloadQR = async () => {
+    try {
+      const res = await fetch(qrCodeUrl, { mode: "cors" });
+      const blob = await res.blob();
+      const fileName = `wish4love-letter-${id}.png`;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      // On mobile, prefer the native share sheet so users can save to Photos/Gallery.
+      if (isMobile && typeof navigator.canShare === "function") {
+        const file = new File([blob], fileName, { type: blob.type || "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: "Wish4Love QR Code" });
+            return;
+          } catch (err: any) {
+            if (err?.name === "AbortError") return;
+          }
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success("QR code downloaded 💌");
+    } catch {
+      toast.error("Couldn't download QR. Try again.");
     }
   };
 
@@ -106,16 +143,15 @@ const LetterReady = () => {
               {copied ? "Copied! 💌" : "Copy Link"}
             </motion.button>
 
-            <motion.a
+            <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              href={qrCodeUrl}
-              download={`letter-${id}-qr.png`}
+              onClick={handleDownloadQR}
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-secondary text-secondary-foreground font-heading text-base font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card"
             >
               <Download className="w-4 h-4" />
               Download QR
-            </motion.a>
+            </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.03 }}

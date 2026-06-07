@@ -216,9 +216,13 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
   const seg1Shown = Math.max(0, visibleCount - textSeg0.length - 1); // -1 for the joining space
   const seg0Typing = !typingDone && phase === "open" && visibleCount <= textSeg0.length;
   const seg1Typing = !typingDone && phase === "open" && visibleCount > textSeg0.length;
-  const CURSOR: React.CSSProperties = {
-    display: "inline-block", width: 2, height: "1.1em",
-    background: TEXT_DARK, verticalAlign: "text-bottom", marginLeft: 1,
+  const CURSOR_WRAP: React.CSSProperties = {
+    display: "inline-block", width: 0, height: "1.1em",
+    verticalAlign: "text-bottom", position: "relative",
+  };
+  const CURSOR_BAR: React.CSSProperties = {
+    position: "absolute", left: 0, top: 0, width: 2, height: "1.1em",
+    background: TEXT_DARK,
     animation: "typewriter-cursor 0.7s step-end infinite",
   };
   const TEXT_STYLE: React.CSSProperties = {
@@ -461,16 +465,18 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "center",
-                    overflow: "hidden",
+                    overflow: "visible",
                   }}
                 >
-                  <div style={{ padding: "14px 16px 0", textAlign: "center" }}>
+                  <div style={{ padding: "14px 22px 0 18px", textAlign: "center", overflow: "visible" }}>
                     <span style={{
                       fontFamily: "'Caveat', 'Dancing Script', cursive",
                       fontSize: "clamp(16px, 4.5vw, 21px)",
                       color: TEXT_DARK,
                       opacity: 0.75,
                       letterSpacing: "0.03em",
+                      paddingRight: "8px",
+                      display: "inline-block",
                     }}>
                       For my special person
                     </span>
@@ -517,7 +523,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              padding: 0,
+              padding: "clamp(10px, 2.5vw, 24px)",
             }}
           >
           <motion.div
@@ -529,7 +535,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
             style={{
               width: "100%",
               maxWidth: "560px",
-              minHeight: "100vh",
+              minHeight: "calc(100vh - 20px)",
               flexShrink: 0,
               background: "radial-gradient(ellipse at 50% 0%, #FBF3E6 0%, #F4E8D2 60%, #ECDCC0 100%)",
               padding: "clamp(2.5rem, 7vw, 4.5rem) clamp(1.5rem, 5vw, 3rem) clamp(6rem, 12vw, 8rem)",
@@ -679,7 +685,58 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               </div>
             </motion.div>
 
-            {/* Greeting — always full width */}
+            {/* Top photo row — first 2 photos sit at the top of the paper */}
+            {displayPhotos.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25, duration: 0.6 }}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: displayPhotos.length >= 2 ? "1fr 1fr" : "1fr",
+                  justifyItems: "center",
+                  alignItems: "start",
+                  gap: "clamp(10px, 2.5vw, 24px)",
+                  marginBottom: "1.5rem",
+                  width: "100%",
+                }}
+              >
+                {displayPhotos.slice(0, 2).map((src, i) => {
+                  const isRect = i === 0;
+                  return (
+                    <motion.div
+                      key={`top-${i}`}
+                      initial={{ opacity: 0, scale: 0.92, rotate: 0 }}
+                      animate={{ opacity: 1, scale: 1, rotate: i === 0 ? -3 : 3 }}
+                      transition={{ delay: 0.35 + i * 0.1, duration: 0.7 }}
+                      style={{
+                        width: "100%",
+                        maxWidth: "240px",
+                        aspectRatio: "4 / 5",
+                        position: "relative",
+                        filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))",
+                      }}
+                    >
+                      <div style={{
+                        position: "absolute",
+                        ...(isRect
+                          ? { top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%", borderRadius: "3px" }
+                          : { top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%", borderRadius: "999px", clipPath: "ellipse(50% 50% at 50% 50%)" }),
+                        overflow: "hidden",
+                        background: "rgba(255,255,255,0.35)",
+                      }}>
+                        <img src={src} alt="Memory" decoding="async"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                      </div>
+                      <img src={isRect ? silverFrameRect : silverFrameOval} alt="" aria-hidden
+                        style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+
+            {/* Greeting */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -689,80 +746,54 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               My Dearest,
             </motion.p>
 
-            {/* Letter body — CSS float layout; images shrink on mobile so text wraps beside them */}
+            {/* Letter body — full text flowing below the top photos */}
             <div
               className="break-words [word-break:break-word] [overflow-wrap:anywhere]"
-              style={{ overflow: "hidden", position: "relative", zIndex: 2 }}
+              style={{ position: "relative", zIndex: 2 }}
             >
-
-              {/* Image 1 — floats right; smaller on mobile, larger on desktop */}
-              {displayPhotos[0] && (
-                <div
-                  className="float-right w-1/3 min-w-[120px] max-w-[150px] md:w-[42%] md:max-w-none ml-3 mb-2 clear-right md:ml-6 md:mb-4"
-                  style={{ aspectRatio: "4 / 5", position: "relative" }}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 5 }}
-                    transition={{ delay: 0.4, duration: 0.7 }}
-                    style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
-                  >
-                    <div style={{
-                      position: "absolute",
-                      top: "25%", left: "23.5%", right: "23.5%", bottom: "17.5%",
-                      overflow: "hidden", borderRadius: "3px", background: "rgba(255,255,255,0.35)",
-                    }}>
-                      <img src={displayPhotos[0]} alt="Memory" loading="lazy"
-                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-                    </div>
-                    <img src={silverFrameRect} alt="" aria-hidden loading="lazy"
-                      style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
-                  </motion.div>
-                </div>
-              )}
-
               <span style={TEXT_STYLE}>
-                {textSeg0.slice(0, seg0Shown)}
-                {seg0Typing && <span style={CURSOR} />}
-                <span style={{ color: "transparent" }}>{textSeg0.slice(seg0Shown)}</span>
+                {bodyText.slice(0, visibleCount)}
+                {!typingDone && phase === "open" && <span style={CURSOR_WRAP}><span style={CURSOR_BAR} /></span>}
+                <span style={{ color: "transparent" }}>{bodyText.slice(visibleCount)}</span>
               </span>
-
-              {/* Image 2 — floats left; smaller on mobile, larger on desktop */}
-              {displayPhotos[1] && (
-                <div
-                  className="float-left w-1/3 min-w-[120px] max-w-[150px] md:w-[42%] md:max-w-none mr-3 mb-2 clear-left md:mr-6 md:mb-4"
-                  style={{ aspectRatio: "4 / 5", position: "relative" }}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1, rotate: -4 }}
-                    transition={{ delay: 0.48, duration: 0.7 }}
-                    style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 10px 18px rgba(60,40,80,0.30))" }}
-                  >
-                    <div style={{
-                      position: "absolute",
-                      top: "20.5%", left: "21.75%", right: "21.75%", bottom: "19.75%",
-                      overflow: "hidden", borderRadius: "999px",
-                      clipPath: "ellipse(50% 50% at 50% 50%)", background: "rgba(255,255,255,0.35)",
-                    }}>
-                      <img src={displayPhotos[1]} alt="Memory" loading="lazy"
-                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-                    </div>
-                    <img src={silverFrameOval} alt="" aria-hidden loading="lazy"
-                      style={{ position: "relative", width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
-                  </motion.div>
-                </div>
-              )}
-
-              {displayPhotos[1] && (
-                <span style={TEXT_STYLE}>
-                  {" "}
-                  {textSeg1.slice(0, seg1Shown)}
-                  {seg1Typing && <span style={CURSOR} />}
-                  <span style={{ color: "transparent" }}>{textSeg1.slice(seg1Shown)}</span>
-                </span>
-              )}
             </div>
+
+            {/* Extra photos (3rd onward) — grid below the letter body */}
+            {displayPhotos.length > 2 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                style={{
+                  marginTop: "2rem",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                  gap: "clamp(10px, 2.5vw, 18px)",
+                  width: "100%",
+                }}
+              >
+                {displayPhotos.slice(2).map((src, i) => (
+                  <motion.div
+                    key={`extra-${i}`}
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={{ opacity: 1, scale: 1, rotate: i % 2 === 0 ? -2 : 2 }}
+                    transition={{ delay: 0.7 + i * 0.08, duration: 0.55 }}
+                    style={{
+                      aspectRatio: "1 / 1",
+                      overflow: "hidden",
+                      borderRadius: "4px",
+                      background: "#FFF",
+                      padding: "8px 8px 28px",
+                      boxShadow: "0 8px 16px rgba(60,40,80,0.22)",
+                    }}
+                  >
+                    <img src={src} alt="Memory" decoding="async"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+
 
             {/* Skip button — visible only while typewriter is in progress */}
             {!typingDone && phase === "open" && (
@@ -814,46 +845,6 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               </p>
             </motion.div>
 
-            {/* Extra photos — all uploaded photos beyond the first two, shown as a polaroid grid */}
-            {isUserLetter && userImages.length > 2 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1, duration: 0.6 }}
-                style={{ marginTop: "2.5rem" }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.5rem" }}>
-                  <span style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(160,120,70,0.5))" }} />
-                  <span style={{ fontSize: 18, color: "rgba(160,120,70,0.8)" }}>✦</span>
-                  <span style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, rgba(160,120,70,0.5))" }} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {userImages.slice(2).map((photo, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0.88 }}
-                      animate={{ opacity: 1, scale: 1, rotate: i % 2 === 0 ? 1.5 : -1.5 }}
-                      transition={{ delay: 1.2 + i * 0.08, duration: 0.5 }}
-                      style={{
-                        background: "#fff",
-                        padding: "8px 8px 28px",
-                        boxShadow: "0 6px 20px rgba(60,40,80,0.22)",
-                        borderRadius: "3px",
-                      }}
-                    >
-                      <div style={{ aspectRatio: "4 / 3", overflow: "hidden", borderRadius: "2px" }}>
-                        <img
-                          src={photo}
-                          alt=""
-                          loading="lazy"
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
 
           </motion.div>
           </motion.div>

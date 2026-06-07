@@ -10,13 +10,21 @@ import LetterHistory from "./pages/LetterHistory";
 import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
-import { saveLetter, getLetter } from "./lib/letterStorage";
+import ScheduleCall from "./pages/ScheduleCall";
+import PaymentStatus from "./pages/PaymentStatus";
+import PaymentDebug from "./pages/PaymentDebug";
+import Demo from "./pages/Demo";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Refund from "./pages/Refund";
+import Contact from "./pages/Contact";
+import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
 // Seed a test letter for dev testing
 const TEST_ID = "demo-jungey";
-if (!getLetter(TEST_ID)) {
-  saveLetter({
+if (!getLetterLocal(TEST_ID)) {
+  saveLetterLocal({
     id: TEST_ID,
     type: "love",
     senderName: "Alex",
@@ -32,8 +40,8 @@ if (!getLetter(TEST_ID)) {
   });
 }
 const ENVELOPE_TEST_ID = "demo-envelope";
-if (!getLetter(ENVELOPE_TEST_ID)) {
-  saveLetter({
+if (!getLetterLocal(ENVELOPE_TEST_ID)) {
+  saveLetterLocal({
     id: ENVELOPE_TEST_ID,
     type: "love",
     senderName: "Alex",
@@ -73,6 +81,14 @@ const App = () => (
           <Route path="/letter-ready/:id" element={<ProtectedRoute><LetterReady /></ProtectedRoute>} />
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
+          <Route path="/demo" element={<Demo />} />
+          <Route path="/schedule-call" element={<ProtectedRoute><ScheduleCall /></ProtectedRoute>} />
+          <Route path="/payment-status" element={<PaymentStatus />} />
+          <Route path="/payment-debug" element={<PaymentDebug />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund" element={<Refund />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

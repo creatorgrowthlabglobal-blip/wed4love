@@ -1,7 +1,9 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Heart, Lock, Play, X } from "lucide-react";
+import { Eye, Heart, Lock, Play, X, CreditCard, MessageCircle } from "lucide-react";
 import { filesToBase64 } from "@/lib/letterStorage";
+import { supabase } from "@/integrations/supabase/client";
+import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
@@ -26,21 +28,124 @@ type PreviewStage = "mailbox" | "envelope";
 
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
+  const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const WHATSAPP_URL = "https://wa.me/9779702238084?text=" + encodeURIComponent(
+    "Hi! I'd like to pay for my Wish4Love letter ($3.99) via GCash / Bank Transfer (Philippines). Please guide me through the payment."
+  );
+
+  const handleWhatsApp = () => {
+    setShowPaymentChoice(false);
+    supabase.functions.invoke("telegram-notify", {
+      body: {
+        event: "whatsapp_click",
+        data: {
+          sender: letterData.senderName,
+          receiver: letterData.receiverName,
+          type: letterData.letterType,
+        },
+      },
+    }).catch(() => {});
+    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const handleWhop = () => {
+    setShowPaymentChoice(false);
+    supabase.functions.invoke("telegram-notify", {
+      body: {
+        event: "checkout_started",
+        data: {
+          method: "whop",
+          sender: letterData.senderName,
+          receiver: letterData.receiverName,
+        },
+      },
+    }).catch(() => {});
+    onPay();
+  };
 
   useEffect(() => {
     if (showPreview) {
-      filesToBase64(letterData.images).then(setPreviewImages);
+      filesToBase64(letterData.images).then((images) => {
+        setPreviewImages(images);
+      });
     }
   }, [showPreview, letterData.images]);
+
+  const randomMusicRef = useRef<string | null>(null);
+  const startMusic = () => {
+    const preset = getPresetById(letterData.selectedMusic);
+    let src = preset?.url;
+    if (!src) {
+      if (!randomMusicRef.current) randomMusicRef.current = getRandomPresetUrl();
+      src = randomMusicRef.current;
+    }
+
+    if (!audioRef.current) {
+      const audio = new Audio(src);
+      audio.loop = true;
+      audio.volume = 0.3;
+      audioRef.current = audio;
+    }
+
+    const audio = audioRef.current;
+    if (!audio.paused) return;
+
+    audio.play().catch(() => {
+      // Will retry on the next user interaction.
+    });
+  };
+
+  useEffect(() => {
+    if (!showPreview) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+      return;
+    }
+
+    const handler = () => {
+      startMusic();
+
+      if (audioRef.current && !audioRef.current.paused) {
+        window.removeEventListener("pointerdown", handler, true);
+        window.removeEventListener("touchstart", handler, true);
+        window.removeEventListener("click", handler, true);
+        window.removeEventListener("keydown", handler, true);
+      }
+    };
+
+    window.addEventListener("pointerdown", handler, true);
+    window.addEventListener("touchstart", handler, true);
+    window.addEventListener("click", handler, true);
+    window.addEventListener("keydown", handler, true);
+
+    return () => {
+      window.removeEventListener("pointerdown", handler, true);
+      window.removeEventListener("touchstart", handler, true);
+      window.removeEventListener("click", handler, true);
+      window.removeEventListener("keydown", handler, true);
+    };
+  }, [showPreview, letterData.selectedMusic]);
 
   const openPreview = () => {
     // Photo template starts at the mailbox; purple skips straight to the envelope
     setPreviewStage(template === "purple" ? "envelope" : "mailbox");
     setShowPreview(true);
   };
-  const closePreview = () => setShowPreview(false);
+  const closePreview = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setShowPreview(false);
+  };
   const advancePreview = () => {
     if (previewStage === "mailbox") setPreviewStage("envelope");
     else closePreview();
@@ -53,7 +158,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.6 }}
-        className="max-w-2xl mx-auto"
+        className="max-w-2xl mx-auto mt-20 sm:mt-24"
       >
         <div className="text-center mb-8">
           <motion.div
@@ -109,14 +214,14 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 animate-gentle-glow">
               <Heart className="w-6 h-6 text-primary fill-primary/30" />
             </div>
-            <p className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-1">$4.99</p>
+            <p className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-1">$3.99</p>
             <p className="font-body text-base text-muted-foreground mb-6">
               One-time payment · Your letter lives forever
             </p>
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={onPay}
+              onClick={() => setShowPaymentChoice(true)}
               className="btn-glow w-full sm:w-auto px-14 py-4 bg-primary text-primary-foreground font-heading text-lg font-bold rounded-2xl shadow-romantic transition-all duration-400 hover:shadow-glow"
             >
               💳 Pay and Create
@@ -127,6 +232,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
             </p>
           </div>
         </motion.div>
+
+
 
         <div className="mt-6 flex justify-start">
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}
@@ -139,16 +246,16 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
       {/* Full-screen cinematic preview overlay */}
       <AnimatePresence>
         {showPreview && (
-          <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 100 }}>
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(37, 31, 40, 0.72)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)" }}
+              className="fixed top-4 left-4 z-[110] inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-sm font-semibold text-white"
+              style={{ background: "rgba(37, 31, 40, 0.78)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.2)" }}
             >
-              <X className="w-5 h-5 text-white" />
+              ← Go back
             </motion.button>
 
             {/* Template 1 — full-screen mailbox, no decorative frame */}
@@ -160,9 +267,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
                 style={{
-                  position: "fixed",
+                  position: "absolute",
                   inset: 0,
-                  zIndex: 50,
                   background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
                 }}
               >
@@ -180,11 +286,88 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onBack 
                   senderName={letterData.senderName}
                   letterText={letterData.letterText}
                   images={previewImages}
+                  onLetterOpen={startMusic}
                   onContinue={closePreview}
                 />
               </FramedScene>
             )}
-          </>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Payment method choice modal */}
+      <AnimatePresence>
+        {showPaymentChoice && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[120] flex items-center justify-center px-4 bg-background/70 backdrop-blur-md"
+            onClick={() => setShowPaymentChoice(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md letter-paper rounded-3xl p-6 sm:p-8 shadow-romantic border border-primary/15"
+            >
+              <button
+                onClick={() => setShowPaymentChoice(false)}
+                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-secondary/70 hover:bg-secondary flex items-center justify-center text-foreground/70"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <Heart className="w-5 h-5 text-primary fill-primary/30" />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-foreground mb-1">Choose payment method</h3>
+                <p className="font-body text-sm text-muted-foreground">$3.99 · one-time payment</p>
+              </div>
+
+              <div className="space-y-3">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleWhop}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary text-primary-foreground shadow-card text-left transition-all"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-heading text-base font-bold">Card / Cash App</p>
+                    <p className="font-body text-xs opacity-90">Secure checkout via Whop · Instant delivery</p>
+                  </div>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleWhatsApp}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-secondary border border-border/60 text-foreground text-left transition-all hover:shadow-card"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#25D366]/15 flex items-center justify-center shrink-0">
+                    <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-heading text-base font-bold">GCash / Bank Transfer 🇵🇭</p>
+                    <p className="font-body text-xs text-muted-foreground">For Philippines clients · Chat with us on WhatsApp</p>
+                  </div>
+                </motion.button>
+              </div>
+
+              <p className="mt-5 font-body text-xs text-center text-muted-foreground flex items-center justify-center gap-1.5">
+                <Lock className="w-3 h-3" />
+                Your details are kept private
+              </p>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
