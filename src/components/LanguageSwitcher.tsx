@@ -26,6 +26,7 @@ const LANGUAGES: Lang[] = [
   { code: "fr", label: "Français", flag: "🇫🇷" },
   { code: "it", label: "Italiano", flag: "🇮🇹" },
   { code: "tl", label: "Filipino", flag: "🇵🇭" },
+  { code: "id", label: "Bahasa Indonesia", flag: "🇮🇩" },
   { code: "ar", label: "العربية", flag: "🇸🇦", rtl: true },
 ];
 
