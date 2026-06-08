@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, Instagram } from "lucide-react";
+
+const INSTAGRAM_URL = "https://instagram.com/wish4love_official";
 
 const Footer = () => {
   return (
