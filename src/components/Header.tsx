@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
+import { Heart, Instagram } from "lucide-react";
 import { getCurrentUser, signOut } from "@/lib/auth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
