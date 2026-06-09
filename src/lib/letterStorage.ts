@@ -96,23 +96,28 @@ const readLocal = (): StoredLetter[] => {
 };
 
 const writeLocal = (letter: StoredLetter) => {
-  const letters = readLocal().filter((l) => l.id !== letter.id);
-  letters.push(letter);
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(letters));
+  // Safari Private Browsing can throw on any localStorage write (SecurityError
+  // or QuotaExceededError). Swallow everything — local cache is best-effort.
+  try {
+    const letters = readLocal().filter((l) => l.id !== letter.id);
+    letters.push(letter);
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(letters)); } catch {}
 
-  const history = (() => {
-    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }
-    catch { return []; }
-  })();
-  if (!history.some((h: any) => h.id === letter.id)) {
-    history.push({
-      id: letter.id,
-      receiverName: letter.receiverName || "Someone Special",
-      date: letter.date,
-      type: letter.type,
-    });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-  }
+    const history = (() => {
+      try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }
+      catch { return []; }
+    })();
+    if (!history.some((h: any) => h.id === letter.id)) {
+      history.push({
+        id: letter.id,
+        receiverName: letter.receiverName || "Someone Special",
+        date: letter.date,
+        type: letter.type,
+      });
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch {}
+    }
+  } catch {}
+
 };
 
 /**
