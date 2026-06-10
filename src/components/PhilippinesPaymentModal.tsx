@@ -251,7 +251,7 @@ const PhilippinesPaymentModal = ({
               </p>
               <p className="font-heading text-base font-semibold text-primary mb-4">{email}</p>
               <p className="font-body text-xs text-muted-foreground mb-6 max-w-xs mx-auto">
-                This usually takes a few minutes. Check your inbox and spam folder.
+                Your letter will arrive in your Gmail inbox within <span className="font-semibold text-foreground">6 hours</span> after we verify your GCash payment. Please check your inbox and spam folder.
               </p>
               <motion.button
                 whileHover={{ scale: 1.02 }}
