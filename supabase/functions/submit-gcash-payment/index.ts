@@ -9,11 +9,13 @@ const PAY_BOT_TOKEN = Deno.env.get('TELEGRAM_PAYMENTS_BOT_TOKEN');
 const PAY_CHAT_ID   = Deno.env.get('TELEGRAM_PAYMENTS_CHAT_ID');
 
 async function sendTelegramPhoto(
+  token: string | undefined,
+  chatId: string | undefined,
   photoBase64: string,
   mime: string,
   caption: string,
 ) {
-  if (!BOT_TOKEN || !CHAT_ID) {
+  if (!token || !chatId) {
     console.warn('[submit-gcash-payment] Telegram not configured');
     return;
   }
@@ -23,12 +25,12 @@ async function sendTelegramPhoto(
   for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
 
   const form = new FormData();
-  form.append('chat_id', CHAT_ID);
+  form.append('chat_id', chatId);
   form.append('caption', caption);
   form.append('parse_mode', 'HTML');
   form.append('photo', new Blob([bytes], { type: mime }), 'proof.jpg');
 
-  const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
     method: 'POST',
     body: form,
   });
@@ -36,6 +38,15 @@ async function sendTelegramPhoto(
     const err = await res.text();
     console.error('[submit-gcash-payment] sendPhoto failed', res.status, err);
   }
+}
+
+async function sendTelegramMessage(token: string | undefined, chatId: string | undefined, text: string) {
+  if (!token || !chatId) return;
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: false }),
+  });
 }
 
 async function sendTelegramMessage(text: string) {
