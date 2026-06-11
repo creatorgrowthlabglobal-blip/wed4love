@@ -41,6 +41,9 @@ const Footer = () => {
             <Link to="/refund" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
               Refund Policy
             </Link>
+            <Link to="/articles" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Articles
+            </Link>
             <Link to="/contact" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </Link>
