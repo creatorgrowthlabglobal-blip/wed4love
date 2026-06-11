@@ -22,7 +22,8 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
 
   const openPreview = (template: "photo" | "purple") => {
     setPreviewTemplate(template);
-    setPreviewStage("mailbox");
+    // Template 2 (purple) skips the mailbox and opens straight to the envelope
+    setPreviewStage(template === "purple" ? "envelope" : "mailbox");
   };
 
   const closePreview = () => setPreviewTemplate(null);
