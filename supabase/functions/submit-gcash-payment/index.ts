@@ -49,14 +49,6 @@ async function sendTelegramMessage(token: string | undefined, chatId: string | u
   });
 }
 
-async function sendTelegramMessage(text: string) {
-  if (!BOT_TOKEN || !CHAT_ID) return;
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'HTML', disable_web_page_preview: false }),
-  });
-}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
