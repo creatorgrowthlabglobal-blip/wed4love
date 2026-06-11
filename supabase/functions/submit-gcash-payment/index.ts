@@ -86,10 +86,13 @@ Deno.serve(async (req) => {
     const letterLink =
       `💌 <b>Letter link to send:</b>\n${letter_url}`;
 
-    // Send proof photo with details as caption
-    await sendTelegramPhoto(proof_base64, proof_mime ?? 'image/jpeg', caption);
-    // Send letter link as a separate message so it's easy to copy
-    await sendTelegramMessage(letterLink);
+    // Send to main bot (existing — all notifications)
+    await sendTelegramPhoto(BOT_TOKEN, CHAT_ID, proof_base64, proof_mime ?? 'image/jpeg', caption);
+    await sendTelegramMessage(BOT_TOKEN, CHAT_ID, letterLink);
+
+    // Send to payments-only bot (new — payments only)
+    await sendTelegramPhoto(PAY_BOT_TOKEN, PAY_CHAT_ID, proof_base64, proof_mime ?? 'image/jpeg', caption);
+    await sendTelegramMessage(PAY_BOT_TOKEN, PAY_CHAT_ID, letterLink);
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
