@@ -6,19 +6,34 @@ const corsHeaders = {
 };
 
 function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
-  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
   const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
-  if (!token || !chatId) return;
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const payChatId = Deno.env.get('TELEGRAM_PAYMENTS_CHAT_ID');
+  const payToken = Deno.env.get('TELEGRAM_PAYMENTS_BOT_TOKEN');
+
   const lines = [`🔔 <b>${event}</b>`];
   for (const [k, v] of Object.entries(data)) {
     if (v == null || v === '') continue;
     lines.push(`<b>${k}:</b> ${String(v).slice(0, 400)}`);
   }
-  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
-  }).catch(() => {});
+  const text = lines.join('\n');
+  const body = (cid: string) => JSON.stringify({ chat_id: cid, text, parse_mode: 'HTML', disable_web_page_preview: true });
+
+  if (token && chatId) {
+    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body(chatId),
+    }).catch(() => {});
+  }
+  // Payments-only bot — only forward payment events
+  if (payToken && payChatId && /^payment_/.test(event)) {
+    fetch(`https://api.telegram.org/bot${payToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body(payChatId),
+    }).catch(() => {});
+  }
 }
 
 
