@@ -5,6 +5,8 @@ const corsHeaders = {
 
 const BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN');
 const CHAT_ID   = Deno.env.get('TELEGRAM_CHAT_ID');
+const PAY_BOT_TOKEN = Deno.env.get('TELEGRAM_PAYMENTS_BOT_TOKEN');
+const PAY_CHAT_ID   = Deno.env.get('TELEGRAM_PAYMENTS_CHAT_ID');
 
 async function sendTelegramPhoto(
   photoBase64: string,
