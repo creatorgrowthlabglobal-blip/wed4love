@@ -21,13 +21,7 @@ const corsHeaders = {
 };
 
 const PAY_BOT_TOKEN = Deno.env.get('TELEGRAM_PAYMENTS_BOT_TOKEN');
-
-async function deriveSecret(token: string): Promise<string> {
-  const data = new TextEncoder().encode(`ph-payment-webhook:${token}`);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-}
+const WEBHOOK_SECRET = Deno.env.get('TELEGRAM_PAYMENTS_WEBHOOK_SECRET');
 
 function safeEqual(a: string | null, b: string): boolean {
   if (!a || a.length !== b.length) return false;
@@ -106,9 +100,8 @@ Deno.serve(async (req) => {
     return new Response('bot not configured', { status: 500 });
   }
 
-  const expected = await deriveSecret(PAY_BOT_TOKEN);
   const provided = req.headers.get('X-Telegram-Bot-Api-Secret-Token');
-  if (!safeEqual(provided, expected)) {
+  if (WEBHOOK_SECRET && !safeEqual(provided, WEBHOOK_SECRET)) {
     return new Response('unauthorized', { status: 401 });
   }
 
