@@ -138,7 +138,7 @@ const Index = () => {
             transition={{ delay: 0.65, duration: 0.5 }}
             className="font-body text-sm text-muted-foreground mt-5"
           >
-            Letter <strong className="text-foreground">$3.99</strong> · includes 1 free reminder call · then <strong className="text-foreground">$1</strong> per extra call
+            Letter <strong className="text-foreground">$4.99</strong> · includes 1 free reminder call · then <strong className="text-foreground">$1</strong> per extra call
           </motion.p>
 
           {/* Preview the experience button */}
@@ -379,7 +379,7 @@ const Index = () => {
               </div>
               <p className="font-display text-lg font-bold text-foreground mb-1">The Grand Gesture</p>
               <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
-              <p className="font-display text-5xl font-bold text-foreground mb-1">$3.99</p>
+              <p className="font-display text-5xl font-bold text-foreground mb-1">$4.99</p>
               <p className="font-body text-xs text-muted-foreground mb-6">Includes 1 free reminder call · then $1 per extra call</p>
 
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
