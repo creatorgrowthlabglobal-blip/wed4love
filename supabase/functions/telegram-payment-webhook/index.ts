@@ -23,6 +23,15 @@ const corsHeaders = {
 const PAY_BOT_TOKEN = Deno.env.get('TELEGRAM_PAYMENTS_BOT_TOKEN');
 const WEBHOOK_SECRET = Deno.env.get('TELEGRAM_PAYMENTS_WEBHOOK_SECRET');
 
+async function deriveTelegramWebhookSecret(token: string): Promise<string> {
+  const data = new TextEncoder().encode(`telegram-payment-webhook:${token}`);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
 function safeEqual(a: string | null, b: string): boolean {
   if (!a || a.length !== b.length) return false;
   let diff = 0;
@@ -105,7 +114,13 @@ Deno.serve(async (req) => {
   }
 
   const provided = req.headers.get('X-Telegram-Bot-Api-Secret-Token');
-  if (WEBHOOK_SECRET && !safeEqual(provided, WEBHOOK_SECRET)) {
+  const derivedSecret = await deriveTelegramWebhookSecret(PAY_BOT_TOKEN);
+  const isAuthorized =
+    (WEBHOOK_SECRET && safeEqual(provided, WEBHOOK_SECRET)) ||
+    safeEqual(provided, derivedSecret);
+
+  if (!isAuthorized) {
+    console.warn('[telegram-payment-webhook] unauthorized callback');
     return new Response('unauthorized', { status: 401 });
   }
 
