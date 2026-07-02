@@ -31,13 +31,17 @@ function safeEqual(a: string | null, b: string): boolean {
 }
 
 async function tg(method: string, body: unknown) {
-  if (!PAY_BOT_TOKEN) return;
+  if (!PAY_BOT_TOKEN) return false;
   const res = await fetch(`https://api.telegram.org/bot${PAY_BOT_TOKEN}/${method}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) console.error('[telegram-payment-webhook] tg', method, res.status, await res.text());
+  if (!res.ok) {
+    console.error('[telegram-payment-webhook] tg', method, res.status, await res.text());
+    return false;
+  }
+  return true;
 }
 
 async function sendLetterEmail(toEmail: string, letterUrl: string, receiverName: string | null, senderName: string | null) {
@@ -79,7 +83,7 @@ async function sendLetterEmail(toEmail: string, letterUrl: string, receiverName:
       'X-Connection-Api-Key': resendKey,
     },
     body: JSON.stringify({
-      from: 'Wish4Love <onboarding@resend.dev>',
+      from: 'Wish4Love <mail@updates.wish4love.com>',
       to: [toEmail],
       subject: '💌 Your Wish4Love letter is ready',
       html,
@@ -134,6 +138,10 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } });
   }
 
+  // Telegram inline buttons show a loading spinner until answerCallbackQuery is sent.
+  // Acknowledge immediately before slower database/email work so the button never hangs.
+  await ack(action === 'approve' ? 'Approving payment…' : 'Rejecting payment…');
+
   const { data: order, error: fetchErr } = await supabase
     .from('ph_payment_orders')
     .select('*')
@@ -141,14 +149,18 @@ Deno.serve(async (req) => {
     .maybeSingle();
 
   if (fetchErr || !order) {
-    await ack('Order not found');
+    if (chatId) {
+      await tg('sendMessage', { chat_id: chatId, text: `⚠️ Order not found: ${orderId}` });
+    }
     return new Response(JSON.stringify({ ok: false, error: 'order_not_found' }), {
       status: 200, headers: { 'Content-Type': 'application/json' },
     });
   }
 
   if (order.status === 'paid' || order.status === 'rejected') {
-    await ack(`Already ${order.status}`);
+    if (chatId) {
+      await tg('sendMessage', { chat_id: chatId, text: `Already ${order.status}: ${orderId}` });
+    }
     return new Response(JSON.stringify({ ok: true, already: order.status }), {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -159,7 +171,6 @@ Deno.serve(async (req) => {
       .update({ status: 'rejected', rejected_at: new Date().toISOString() })
       .eq('order_id', orderId);
 
-    await ack('Rejected');
     if (chatId && messageId) {
       await tg('editMessageCaption', {
         chat_id: chatId, message_id: messageId,
@@ -182,8 +193,6 @@ Deno.serve(async (req) => {
       email_sent_at: emailed ? new Date().toISOString() : null,
     })
     .eq('order_id', orderId);
-
-  await ack(emailed ? 'Approved & emailed ✅' : 'Approved, but email failed');
 
   if (chatId && messageId) {
     await tg('editMessageCaption', {
