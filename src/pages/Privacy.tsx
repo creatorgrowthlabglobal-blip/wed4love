@@ -12,12 +12,12 @@ const Privacy = () => {
         <section className="space-y-8 font-body text-foreground/85 leading-relaxed">
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">1. Information We Collect</h2>
-            <p>We collect information you provide directly, such as your name, email address, the letters and media you create, and the contact details of recipients you wish to send reminders to. We also collect basic usage data (device type, browser, pages visited) to improve the Service.</p>
+            <p>We collect information you provide directly, such as your name, email address, and the letters and media you create. We also collect basic usage data (device type, browser, pages visited) to improve the Service.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">2. How We Use Your Information</h2>
-            <p>We use your information to (a) deliver and personalize the Service, (b) send your letters and reminder calls, (c) process payments, (d) respond to support requests, and (e) comply with legal obligations.</p>
+            <p>We use your information to (a) deliver and personalize the Service, (b) send your letters, (c) process payments, (d) respond to support requests, and (e) comply with legal obligations.</p>
           </div>
 
           <div>
