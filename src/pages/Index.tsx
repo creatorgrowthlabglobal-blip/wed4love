@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenLine, Heart, Sparkles, Star, Music, Bell, PartyPopper, Link as LinkIcon, MessageSquare, Check, Mail, Mailbox, X, Phone, Mic, CalendarClock } from "lucide-react";
+import { PenLine, Heart, Sparkles, Music, Bell, Link as LinkIcon, Check, Mail, Mailbox, X } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";

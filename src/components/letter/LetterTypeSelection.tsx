@@ -1,7 +1,7 @@
 import { useState, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Play, X, ArrowRight, PhoneCall } from "lucide-react";
+import { Heart, Play, X, ArrowRight } from "lucide-react";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
