@@ -11,7 +11,7 @@ const Refund = () => {
 
         <section className="space-y-8 font-body text-foreground/85 leading-relaxed">
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">1. Digital Letters ($3.99)</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">1. Digital Letters ($4.99)</h2>
             <p>Because each letter is a custom-built digital keepsake delivered immediately upon payment, all sales are generally final. However, if you experience a technical issue that prevents your letter from being delivered or viewed by the recipient, you are eligible for a full refund.</p>
           </div>
 

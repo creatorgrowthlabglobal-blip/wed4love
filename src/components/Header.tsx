@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
+import { Heart, Instagram } from "lucide-react";
 import { getCurrentUser, signOut } from "@/lib/auth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -53,6 +53,16 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
+          <a
+            href="https://instagram.com/wish4love_official"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow @wish4love_official on Instagram for 30% off"
+            title="Follow @wish4love_official — DM us for 30% off"
+            className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+          >
+            <Instagram className="w-4 h-4" />
+          </a>
           <LanguageSwitcher />
           {user ? (
             <button

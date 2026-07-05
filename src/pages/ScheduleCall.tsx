@@ -17,6 +17,7 @@ import {
   Bell,
   Lock,
   ChevronsUpDown,
+  History,
 } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
@@ -519,6 +520,12 @@ const ScheduleCall = () => {
                 Schedule another
               </Button>
               <Link
+                to="/call-history"
+                className="inline-flex items-center justify-center gap-1.5 font-body text-sm text-primary hover:text-primary/80"
+              >
+                <History className="w-3.5 h-3.5" /> View call history
+              </Link>
+              <Link
                 to="/"
                 className="font-body text-sm text-muted-foreground hover:text-foreground"
               >
@@ -537,12 +544,20 @@ const ScheduleCall = () => {
       <FloatingHearts count={5} />
 
       <main className="container mx-auto px-4 pt-28 pb-20 max-w-2xl">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+          <Link
+            to="/call-history"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <History className="w-4 h-4" /> Call History
+          </Link>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,104 +1,118 @@
+import { supabase } from "@/integrations/supabase/client";
+
 export interface AuthUser {
   id: string;
   email: string;
 }
 
 const SESSION_KEY = "w4l_session";
-const OTP_KEY = "w4l_pending_otp";
-const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
-
-interface PendingOTP {
-  email: string;
-  code: string;
-  expiresAt: number;
-}
 
 export function getCurrentUser(): AuthUser | null {
   try {
-    const session = localStorage.getItem(SESSION_KEY);
-    return session ? JSON.parse(session) : null;
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
-export function signOut() {
-  localStorage.removeItem(SESSION_KEY);
+function persist(user: AuthUser | null) {
+  if (user) localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+  else localStorage.removeItem(SESSION_KEY);
 }
 
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 
-import { supabase } from "@/integrations/supabase/client";
-
-function generateOTP(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
-
-async function sendEmailViaResend(email: string, code: string): Promise<void> {
-  const { error } = await supabase.functions.invoke("send-otp-email", {
-    body: { email: email.trim(), code },
-  });
-  if (error) {
-    console.error("[Wish4Love OTP] send failed:", error);
-    throw new Error("Email send failed");
-  }
+export async function signOut() {
+  await supabase.auth.signOut();
+  persist(null);
 }
 
 const TRIAL_EMAIL = "trial@gmail.com";
-const TRIAL_CODE = "111111";
+const TRIAL_PASSWORD = "trial111111";
 
-export async function sendOTP(email: string): Promise<{ success: true } | { error: string }> {
-  try {
-    const normalized = email.trim().toLowerCase();
-    // Trial bypass account — skip Resend, accept hardcoded code.
-    if (normalized === TRIAL_EMAIL) {
-      const pending: PendingOTP = {
-        email: normalized,
-        code: TRIAL_CODE,
-        expiresAt: Date.now() + OTP_EXPIRY_MS,
-      };
-      sessionStorage.setItem(OTP_KEY, JSON.stringify(pending));
-      return { success: true };
-    }
-    const code = generateOTP();
-    const pending: PendingOTP = {
+export async function signUp(
+  email: string,
+  password: string
+): Promise<{ user: AuthUser } | { error: string }> {
+  const normalized = email.trim().toLowerCase();
+  if (!isValidEmail(normalized)) return { error: "Please enter a valid email address." };
+  if (password.length < 6) return { error: "Password must be at least 6 characters." };
+
+  const { data, error } = await supabase.auth.signUp({
+    email: normalized,
+    password,
+    options: { emailRedirectTo: `${window.location.origin}/create-letter` },
+  });
+  if (error) return { error: error.message };
+  if (!data.user) return { error: "Sign up failed. Please try again." };
+
+  const user: AuthUser = { id: data.user.id, email: normalized };
+  persist(user);
+  return { user };
+}
+
+export async function signIn(
+  email: string,
+  password: string
+): Promise<{ user: AuthUser } | { error: string; noAccount?: boolean }> {
+  const normalized = email.trim().toLowerCase();
+  if (!isValidEmail(normalized)) return { error: "Please enter a valid email address." };
+  if (!password) return { error: "Please enter your password." };
+
+  // Trial account: auto-create on first sign-in with the fixed password.
+  if (normalized === TRIAL_EMAIL && password === TRIAL_PASSWORD) {
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: normalized,
-      code,
-      expiresAt: Date.now() + OTP_EXPIRY_MS,
-    };
-    sessionStorage.setItem(OTP_KEY, JSON.stringify(pending));
-    await sendEmailViaResend(email.trim(), code);
-    return { success: true };
-  } catch {
-    return { error: "Failed to send code. Please try again." };
-  }
-}
-
-export function verifyOTP(email: string, code: string): { user: AuthUser } | { error: string } {
-  try {
-    const raw = sessionStorage.getItem(OTP_KEY);
-    if (!raw) return { error: "No code found. Please request a new one." };
-
-    const pending: PendingOTP = JSON.parse(raw);
-
-    if (pending.email !== email.trim().toLowerCase()) {
-      return { error: "Email mismatch. Please request a new code." };
+      password,
+    });
+    if (error) {
+      // Try to create it.
+      const res = await supabase.auth.signUp({ email: normalized, password });
+      if (res.error) return { error: res.error.message };
+      const user: AuthUser = { id: res.data.user!.id, email: normalized };
+      persist(user);
+      return { user };
     }
-    if (Date.now() > pending.expiresAt) {
-      sessionStorage.removeItem(OTP_KEY);
-      return { error: "Code expired. Please request a new one." };
-    }
-    if (pending.code !== code.trim()) {
-      return { error: "Invalid code. Please try again." };
-    }
-
-    sessionStorage.removeItem(OTP_KEY);
-    const user: AuthUser = { id: btoa(pending.email), email: pending.email };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    const user: AuthUser = { id: data.user!.id, email: normalized };
+    persist(user);
     return { user };
-  } catch {
-    return { error: "Verification failed. Please try again." };
   }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: normalized,
+    password,
+  });
+  if (error) {
+    // Supabase returns the same message for wrong password and missing user.
+    // Flag it so the UI can suggest signing up.
+    const msg = error.message.toLowerCase();
+    const looksLikeMissing = msg.includes("invalid") || msg.includes("credentials");
+    return { error: error.message, noAccount: looksLikeMissing };
+  }
+  if (!data.user) return { error: "Sign in failed. Please try again." };
+
+  const user: AuthUser = { id: data.user.id, email: normalized };
+  persist(user);
+  return { user };
 }
+
+// Keep localStorage mirror in sync with Supabase session.
+supabase.auth.getSession().then(({ data }) => {
+  if (data.session?.user?.email) {
+    persist({ id: data.session.user.id, email: data.session.user.email });
+  } else {
+    // Don't clear here on first load — getSession may resolve after components mount;
+    // rely on onAuthStateChange below for sign-out events.
+  }
+});
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session?.user?.email) {
+    persist({ id: session.user.id, email: session.user.email });
+  } else if (event === "SIGNED_OUT") {
+    persist(null);
+  }
+});
