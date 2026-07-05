@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
         'X-Connection-Api-Key': RESEND_API_KEY,
       },
       body: JSON.stringify({
-        from: 'Wish4Love Contact <onboarding@resend.dev>',
+        from: 'Wish4Love Contact <mail@updates.wish4love.com>',
         to: [TO_EMAIL],
         reply_to: email,
         subject: `[Wish4Love] ${subject}`,

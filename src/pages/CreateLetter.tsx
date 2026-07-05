@@ -11,7 +11,8 @@ import LetterWriting from "@/components/letter/LetterWriting";
 import MediaUpload from "@/components/letter/MediaUpload";
 import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
-import { fileToBase64, filesToBase64, saveLetter } from "@/lib/letterStorage";
+import PhilippinesPaymentModal from "@/components/PhilippinesPaymentModal";
+import { filesToBase64, saveLetter } from "@/lib/letterStorage";
 import { getCurrentUser } from "@/lib/auth";
 import {
   createWhopCheckout,
@@ -39,8 +40,33 @@ const CreateLetter = () => {
   const [letterText, setLetterText] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
-  const [customMusic, setCustomMusic] = useState<File | null>(null);
   const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
+  const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
+
+  const handleGCashPay = (): string => {
+    const letterId = Math.random().toString(36).substring(2, 10);
+    const user = getCurrentUser();
+    const email = user?.email || "";
+    // Save in background — don't block modal opening
+    filesToBase64(images).then((imgData) =>
+      saveLetter({
+        id: letterId,
+        type: letterType || "love",
+        senderName: details.senderName,
+        receiverName: details.receiverName,
+        letterText,
+        images: imgData,
+        videos: [],
+        audios: [],
+        selectedMusic,
+        quiz: [],
+        email,
+        date: new Date().toLocaleDateString(),
+        template,
+      })
+    ).catch((e) => console.error("[CreateLetter] gcash save failed", e));
+    return letterId;
+  };
 
   const handleSelectType = (type: "love" | "birthday", tmpl: "photo" | "purple") => {
     setLetterType(type);
@@ -100,9 +126,7 @@ const CreateLetter = () => {
     // Whop — so we let it complete in the background while they're paying.
     const savePromise = (async () => {
       const imgData = await filesToBase64(images);
-      let customMusicData: string | null = null;
-      if (customMusic) customMusicData = await fileToBase64(customMusic);
-      await saveLetter({
+      return await saveLetter({
         id: letterId,
         type: letterType || "love",
         senderName: details.senderName,
@@ -112,7 +136,6 @@ const CreateLetter = () => {
         videos: [],
         audios: [],
         selectedMusic,
-        customMusicData,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -128,7 +151,18 @@ const CreateLetter = () => {
         title: "Welcome back 💌",
         description: "Your monthly access is active — creating your letter now.",
       });
-      await savePromise.catch((e) => console.error("[CreateLetter] save failed", e));
+      const saveResult = await savePromise.catch((e) => {
+        console.error("[CreateLetter] save failed", e);
+        return { remoteSaved: false, error: String(e) } as const;
+      });
+      if (!saveResult?.remoteSaved) {
+        toast({
+          title: "Heads up — link may not work for recipients",
+          description:
+            "We saved your letter locally, but couldn't sync it to our servers (the photos or music file may be too large). Try again with smaller files so the shareable link works for whoever you send it to.",
+          variant: "destructive",
+        });
+      }
       setTimeout(() => navigate(`/letter-ready/${letterId}`, { replace: true }), 600);
       return;
     }
@@ -189,9 +223,7 @@ const CreateLetter = () => {
             <MusicSelection
               key="music"
               selectedMusic={selectedMusic}
-              customMusic={customMusic}
               onSelectMusic={setSelectedMusic}
-              onCustomMusic={setCustomMusic}
               onNext={() => setStep(5)}
               onBack={() => setStep(3)}
             />
@@ -205,12 +237,15 @@ const CreateLetter = () => {
                 letterText,
                 images,
                 selectedMusic,
-                customMusic,
                 letterType,
               }}
               template={template}
               onTemplateChange={setTemplate}
               onPay={handlePay}
+              onGCashPay={() => {
+                const id = handleGCashPay();
+                setGcashLetterId(id);
+              }}
               onBack={() => setStep(4)}
             />
           )}
@@ -225,6 +260,19 @@ const CreateLetter = () => {
           }
         />
       )}
+
+      <AnimatePresence>
+        {gcashLetterId && (
+          <PhilippinesPaymentModal
+            letterId={gcashLetterId}
+            senderName={details.senderName}
+            receiverName={details.receiverName}
+            letterType={letterType}
+            letterUrl={`${window.location.origin}/view/${gcashLetterId}`}
+            onClose={() => setGcashLetterId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

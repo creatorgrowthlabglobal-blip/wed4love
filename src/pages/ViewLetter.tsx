@@ -27,18 +27,25 @@ const ViewLetter = () => {
   useEffect(() => {
     let cancelled = false;
     if (id) {
-      getLetter(id).then((found) => {
-        if (cancelled) return;
-        if (found) {
-          setLetter(found);
-          if ((found.template || "photo") === "purple") {
-            setStage("envelope");
+      getLetter(id)
+        .then((found) => {
+          if (cancelled) return;
+          if (found) {
+            setLetter(found);
+            if ((found.template || "photo") === "purple") {
+              setStage("envelope");
+            }
+          } else {
+            setNotFound(true);
           }
-        } else {
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("[ViewLetter] getLetter threw:", err);
           setNotFound(true);
-        }
-      });
+        });
     }
+
     [mailboxClosed, mailboxOpen].forEach((src) => {
       const img = new Image();
       img.decoding = "async";

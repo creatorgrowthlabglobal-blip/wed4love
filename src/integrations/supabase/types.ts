@@ -137,6 +137,63 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_payment_orders: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          created_at: string
+          email: string
+          email_sent_at: string | null
+          letter_id: string
+          letter_type: string | null
+          letter_url: string
+          order_id: string
+          receiver_name: string | null
+          rejected_at: string | null
+          sender_name: string | null
+          status: string
+          telegram_chat_id: string | null
+          telegram_message_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          approved_at?: string | null
+          created_at?: string
+          email: string
+          email_sent_at?: string | null
+          letter_id: string
+          letter_type?: string | null
+          letter_url: string
+          order_id: string
+          receiver_name?: string | null
+          rejected_at?: string | null
+          sender_name?: string | null
+          status?: string
+          telegram_chat_id?: string | null
+          telegram_message_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          created_at?: string
+          email?: string
+          email_sent_at?: string | null
+          letter_id?: string
+          letter_type?: string | null
+          letter_url?: string
+          order_id?: string
+          receiver_name?: string | null
+          rejected_at?: string | null
+          sender_name?: string | null
+          status?: string
+          telegram_chat_id?: string | null
+          telegram_message_id?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       scheduled_calls: {
         Row: {
           attempts: number

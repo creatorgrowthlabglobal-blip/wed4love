@@ -10,6 +10,8 @@ import LetterHistory from "./pages/LetterHistory";
 import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import ScheduleCall from "./pages/ScheduleCall";
+import CallHistory from "./pages/CallHistory";
 import PaymentStatus from "./pages/PaymentStatus";
 import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
@@ -17,6 +19,12 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
 import Contact from "./pages/Contact";
+import ArticlesIndex from "./pages/articles/ArticlesIndex";
+import HandwrittenLetters from "./pages/articles/HandwrittenLetters";
+import AnniversaryLetter from "./pages/articles/AnniversaryLetter";
+import JustBecauseNotes from "./pages/articles/JustBecauseNotes";
+import WritersBlock from "./pages/articles/WritersBlock";
+import PersonalizeDigital from "./pages/articles/PersonalizeDigital";
 import { saveLetterLocal, getLetterLocal } from "./lib/letterStorage";
 import { getCurrentUser } from "./lib/auth";
 
@@ -81,12 +89,20 @@ const App = () => (
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
           <Route path="/demo" element={<Demo />} />
+          <Route path="/schedule-call" element={<ProtectedRoute><ScheduleCall /></ProtectedRoute>} />
+          <Route path="/call-history" element={<ProtectedRoute><CallHistory /></ProtectedRoute>} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="/payment-debug" element={<PaymentDebug />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/articles" element={<ArticlesIndex />} />
+          <Route path="/articles/handwritten-letters-digital-age" element={<HandwrittenLetters />} />
+          <Route path="/articles/how-to-write-an-anniversary-letter" element={<AnniversaryLetter />} />
+          <Route path="/articles/just-because-notes-intimacy" element={<JustBecauseNotes />} />
+          <Route path="/articles/overcoming-writers-block-emotions" element={<WritersBlock />} />
+          <Route path="/articles/personalize-digital-messages" element={<PersonalizeDigital />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

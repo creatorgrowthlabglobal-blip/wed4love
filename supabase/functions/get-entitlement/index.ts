@@ -42,7 +42,8 @@ Deno.serve(async (req) => {
     let entitlement = data ?? null;
 
     // Trial account: 3 free letters, no call credits, no payment required.
-    if (normalized === "trial@gmail.com") {
+    // If a database entitlement already exists (e.g. bonus access granted), respect it.
+    if (normalized === "trial@gmail.com" && !(entitlement && entitlement.has_letter_access)) {
       const { count } = await supabase
         .from("letters")
         .select("id", { count: "exact", head: true })

@@ -39,7 +39,7 @@ const PaymentStatus = () => {
   const [params] = useSearchParams();
   const pending = readPending();
   const letterId = params.get("letter_id") || pending.letterId || "";
-  const product = params.get("product") || pending.product || "letter";
+  const product = params.get("product") || pending.product || "letter"; // "letter" | "call"
 
   const user = getCurrentUser();
   const email = user?.email || params.get("email") || pending.email || "";
@@ -53,7 +53,8 @@ const PaymentStatus = () => {
     if (!e) return false;
     const ent = await fetchEntitlement(e);
     if (!ent) return false;
-    if (ent.has_letter_access) return true;
+    if (product === "letter" && ent.has_letter_access) return true;
+    if (product === "call" && ent.paid_calls > ent.used_calls) return true;
     return false;
   };
 
@@ -106,7 +107,8 @@ const PaymentStatus = () => {
     if (status !== "granted") return;
     try { sessionStorage.removeItem(PENDING_KEY); } catch {}
     const t = setTimeout(() => {
-      if (letterId) navigate(`/letter-ready/${letterId}`, { replace: true });
+      if (product === "letter" && letterId) navigate(`/letter-ready/${letterId}`, { replace: true });
+      else if (product === "call") navigate("/schedule-call", { replace: true });
       else navigate("/letter-history", { replace: true });
     }, 1400);
     return () => clearTimeout(t);
