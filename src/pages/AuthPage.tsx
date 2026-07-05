@@ -1,70 +1,129 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Sparkles, Mail, ArrowLeft, Lock } from "lucide-react";
+import { Heart, Sparkles, Mail, ArrowLeft } from "lucide-react";
 import FloatingHearts from "@/components/FloatingHearts";
-import { isValidEmail, signIn, signUp } from "@/lib/auth";
+import { isValidEmail, sendOTP, verifyOTP } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-
-type Mode = "signup" | "signin";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/";
 
-  const [mode, setMode] = useState<Mode>("signin");
+  const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [showSignupCTA, setShowSignupCTA] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otpError, setOtpError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Resend cooldown countdown
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  // ── Email step ────────────────────────────────────────────────────────────
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setShowSignupCTA(false);
+    setEmailError("");
     if (!isValidEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (mode === "signup" && password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setEmailError("Please enter a valid email address.");
       return;
     }
     setLoading(true);
-    const result =
-      mode === "signup"
-        ? await signUp(email, password)
-        : await signIn(email, password);
+    const result = await sendOTP(email);
     setLoading(false);
     if ("error" in result) {
-      setError(result.error);
-      if ("noAccount" in result && result.noAccount) {
-        setShowSignupCTA(true);
-      }
-      return;
+      setEmailError(result.error);
+    } else {
+      setOtp(["", "", "", "", "", ""]);
+      setOtpError("");
+      setResendCooldown(30);
+      setStep("otp");
     }
-    supabase.functions
-      .invoke("telegram-notify", {
-        body: { event: mode === "signup" ? "user_signed_up" : "user_signed_in", data: { email } },
-      })
-      .catch(() => {});
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    navigate(from || "/create-letter", { replace: true });
   };
 
+  // ── OTP step ──────────────────────────────────────────────────────────────
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const next = [...otp];
+    next[index] = value.slice(-1);
+    setOtp(next);
+    setOtpError("");
+    if (value && index < 5) otpRefs.current[index + 1]?.focus();
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const next = [...otp];
+    digits.split("").forEach((d, i) => { if (i < 6) next[i] = d; });
+    setOtp(next);
+    otpRefs.current[Math.min(digits.length, 5)]?.focus();
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setOtpError("");
+    const code = otp.join("");
+    if (code.length < 6) {
+      setOtpError("Please enter the full 6-digit code.");
+      return;
+    }
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 300));
+    const result = verifyOTP(email, code);
+    setLoading(false);
+    if ("error" in result) {
+      setOtpError(result.error);
+      setOtp(["", "", "", "", "", ""]);
+      otpRefs.current[0]?.focus();
+    } else {
+      supabase.functions.invoke("telegram-notify", {
+        body: { event: "otp_verified", data: { email } },
+      }).catch(() => {});
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      navigate("/create-letter", { replace: true });
+    }
+  };
+
+  const handleResend = async () => {
+    if (resendCooldown > 0) return;
+    setLoading(true);
+    const result = await sendOTP(email);
+    setLoading(false);
+    if ("error" in result) {
+      setOtpError(result.error);
+    } else {
+      setOtp(["", "", "", "", "", ""]);
+      setOtpError("");
+      setResendCooldown(30);
+      otpRefs.current[0]?.focus();
+    }
+  };
+
+  // ── Shared UI ─────────────────────────────────────────────────────────────
   const inputClass =
     "w-full px-4 py-3 rounded-xl bg-input border border-border font-body text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all";
 
   return (
     <div className="min-h-screen bg-background relative flex items-center justify-center px-4 py-12">
+      {/* Background — same gradient as hero */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(350_100%_96%)] to-background pointer-events-none" />
+
+      {/* Sparkles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[
           { left: "8%", top: "22%", size: 12, delay: 0 },
@@ -88,25 +147,30 @@ const AuthPage = () => {
       <FloatingHearts count={5} />
 
       <div className="relative z-10 w-full max-w-md">
+        {/* Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="relative bg-white/80 backdrop-blur-xl rounded-3xl border border-primary/10 p-8 pt-10"
           style={{
-            boxShadow:
-              "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
+            boxShadow: "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
           }}
         >
+          {/* Back button — top-left corner */}
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (step === "otp") { setStep("email"); setOtpError(""); }
+              else navigate(-1);
+            }}
             className="absolute top-4 left-4 inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back
           </button>
 
+          {/* Branding — inside card */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -123,191 +187,160 @@ const AuthPage = () => {
             </p>
           </motion.div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 p-1 bg-muted/50 rounded-full mb-6">
-            {(["signup", "signin"] as Mode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => {
-                  setMode(m);
-                  setError("");
-                  setShowSignupCTA(false);
-                }}
-                className={`flex-1 py-2 rounded-full font-body text-sm font-semibold transition-all ${
-                  mode === m
-                    ? "bg-white text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {m === "signin" ? "Sign in" : "Sign up"}
-              </button>
-            ))}
-          </div>
-
           <AnimatePresence mode="wait">
-            <motion.form
-              key={mode}
-              initial={{ opacity: 0, x: mode === "signup" ? 16 : -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: mode === "signup" ? -16 : 16 }}
-              transition={{ duration: 0.2 }}
-              onSubmit={handleSubmit}
-              className="space-y-5"
-            >
-              <div>
-                <h2 className="font-display text-xl font-bold text-foreground">
-                  {mode === "signup" ? "Create your account" : "Welcome back"}
-                </h2>
-                <p className="font-body text-sm text-muted-foreground mt-1">
-                  {mode === "signup"
-                    ? "Sign up with your email to start creating letters."
-                    : "Sign in with your email and password."}
-                </p>
-              </div>
-
-              <div>
-                <label className="font-body text-sm font-medium text-foreground mb-1.5 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-primary" />
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                  placeholder="your@email.com"
-                  required
-                  autoComplete="email"
-                  autoFocus
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="font-body text-sm font-medium text-foreground mb-1.5 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-primary" />
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); setShowSignupCTA(false); }}
-                  placeholder="At least 6 characters"
-                  required
-                  minLength={6}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  className={inputClass}
-                />
-              </div>
-
-              <AnimatePresence>
-                {mode === "signup" && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <label className="font-body text-sm font-medium text-foreground mb-1.5 flex items-center gap-1.5">
-                      <Lock className="w-3.5 h-3.5 text-primary" />
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => { setConfirmPassword(e.target.value); setError(""); }}
-                      placeholder="Re-enter your password"
-                      required={mode === "signup"}
-                      minLength={6}
-                      autoComplete="new-password"
-                      className={inputClass}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence>
-                {error && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="font-body text-sm text-destructive"
-                  >
-                    {error}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence>
-                {showSignupCTA && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="rounded-xl bg-primary/5 border border-primary/10 p-4 text-center"
-                  >
-                    <p className="font-body text-sm text-foreground mb-2">
-                      No account found with this email.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMode("signup");
-                        setError("");
-                        setShowSignupCTA(false);
-                      }}
-                      className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold hover:bg-primary/90 transition-colors"
-                    >
-                      Create an account
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
-                style={{
-                  boxShadow:
-                    "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
-                }}
+            {/* ── Step 1: Email ─────────────────────────────────────────── */}
+            {step === "email" && (
+              <motion.form
+                key="email"
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleEmailSubmit}
+                className="space-y-5"
               >
-                <Heart className="w-4 h-4 fill-current" />
-                {loading
-                  ? mode === "signup" ? "Creating account…" : "Signing in…"
-                  : mode === "signup" ? "Create account" : "Sign in"}
-              </button>
+                <div>
+                  <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 mb-4">
+                    <Mail className="w-5 h-5 text-primary" />
+                  </div>
+                  <h2 className="font-display text-xl font-bold text-foreground">
+                    Enter your email
+                  </h2>
+                  <p className="font-body text-sm text-muted-foreground mt-1">
+                    We'll send you a 6-digit code to verify your identity
+                  </p>
+                </div>
 
-              <p className="font-body text-sm text-muted-foreground text-center">
-                {mode === "signup" ? (
-                  <>
-                    Already have an account?{" "}
-                    <button
-                      type="button"
-                      onClick={() => { setMode("signin"); setError(""); }}
-                      className="font-semibold text-primary hover:text-primary/80 transition-colors"
+                <div>
+                  <label className="font-body text-sm font-medium text-foreground block mb-1.5">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
+                    placeholder="your@email.com"
+                    required
+                    autoComplete="email"
+                    autoFocus
+                    className={`${inputClass} ${emailError ? "border-destructive/50 focus:border-destructive focus:ring-destructive/20" : ""}`}
+                  />
+                  <AnimatePresence>
+                    {emailError && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="font-body text-sm text-destructive mt-1.5"
+                      >
+                        {emailError}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
+                  style={{
+                    boxShadow: "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
+                  }}
+                >
+                  {loading ? "Sending code…" : "Send Code"}
+                </button>
+              </motion.form>
+            )}
+
+            {/* ── Step 2: OTP ───────────────────────────────────────────── */}
+            {step === "otp" && (
+              <motion.form
+                key="otp"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 16 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleOtpSubmit}
+                className="space-y-6"
+              >
+                <div>
+                  <h2 className="font-display text-xl font-bold text-foreground">
+                    Check your email 💕
+                  </h2>
+                  <p className="font-body text-sm text-muted-foreground mt-1">
+                    We sent a 6-digit code to{" "}
+                    <span className="font-semibold text-foreground">{email}</span>
+                  </p>
+                </div>
+
+
+                {/* OTP boxes */}
+                <div className="flex gap-2 sm:gap-3 justify-center">
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => { otpRefs.current[i] = el; }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      autoFocus={i === 0}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      onPaste={i === 0 ? handleOtpPaste : undefined}
+                      className={`w-11 h-14 sm:w-12 sm:h-14 text-center text-xl font-bold font-display text-foreground rounded-xl bg-input border-2 focus:outline-none focus:ring-2 transition-all ${
+                        otpError
+                          ? "border-destructive/50 focus:border-destructive focus:ring-destructive/20"
+                          : digit
+                          ? "border-primary/60 focus:border-primary focus:ring-primary/20"
+                          : "border-border focus:border-primary focus:ring-primary/20"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <AnimatePresence>
+                  {otpError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="font-body text-sm text-destructive text-center"
                     >
-                      Sign in
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    New to Wish4Love?{" "}
-                    <button
-                      type="button"
-                      onClick={() => { setMode("signup"); setError(""); }}
-                      className="font-semibold text-primary hover:text-primary/80 transition-colors"
-                    >
-                      Create an account
-                    </button>
-                  </>
-                )}
-              </p>
-            </motion.form>
+                      {otpError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                <button
+                  type="submit"
+                  disabled={loading || otp.join("").length < 6}
+                  className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                  style={{
+                    boxShadow: "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
+                  }}
+                >
+                  <Heart className="w-4 h-4 fill-current" />
+                  {loading ? "Verifying…" : "Verify & Continue"}
+                </button>
+
+                {/* Resend */}
+                <p className="font-body text-sm text-muted-foreground text-center">
+                  Didn't receive it?{" "}
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendCooldown > 0 || loading}
+                    className="font-semibold text-primary hover:text-primary/80 transition-colors disabled:text-muted-foreground disabled:cursor-not-allowed"
+                  >
+                    {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+                  </button>
+                </p>
+              </motion.form>
+            )}
           </AnimatePresence>
         </motion.div>
+
       </div>
     </div>
   );

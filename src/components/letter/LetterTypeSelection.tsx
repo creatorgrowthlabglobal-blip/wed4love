@@ -1,7 +1,7 @@
 import { useState, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Play, X, ArrowRight, PhoneCall } from "lucide-react";
+import { Heart, Play, X, ArrowRight } from "lucide-react";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -22,8 +22,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
 
   const openPreview = (template: "photo" | "purple") => {
     setPreviewTemplate(template);
-    // Template 2 (purple) skips the mailbox and opens straight to the envelope
-    setPreviewStage(template === "purple" ? "envelope" : "mailbox");
+    setPreviewStage("mailbox");
   };
 
   const closePreview = () => setPreviewTemplate(null);
@@ -86,38 +85,6 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   </div>
                 </motion.button>
 
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.35 }}
-                  className="mt-4"
-                >
-                  <Link to="/schedule-call" className="block group">
-                    <motion.div
-                      whileHover={{ x: 6, scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="p-5 sm:p-6 rounded-2xl transition-all duration-300 group-hover:shadow-glow"
-                      style={{ background: "#ffffff", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 24px -4px hsl(0 20% 20% / 0.06), 0 1px 3px hsl(0 20% 20% / 0.04)" }}
-                    >
-                      <div className="flex items-center gap-4">
-                        <span className="text-3xl sm:text-4xl flex-shrink-0">📞</span>
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/15 transition-all duration-300 flex-shrink-0">
-                          <PhoneCall className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0 text-left">
-                          <h3 className="font-display text-lg sm:text-xl font-bold text-foreground mb-0.5">
-                            Schedule a Call
-                          </h3>
-                          <p className="font-body text-xs text-primary/70">Voice reminders for special days</p>
-                          <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">
-                            Send a heartfelt voice call for birthdays, anniversaries, and more
-                          </p>
-                        </div>
-                        <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-                      </div>
-                    </motion.div>
-                  </Link>
-                </motion.div>
               </div>
             </motion.div>
           )}
@@ -179,26 +146,17 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   className="rounded-2xl overflow-hidden border-2 border-border/50 bg-background hover:border-primary/40 transition-all duration-300"
                 >
                   <div
-                    className="aspect-[4/3] relative overflow-hidden flex items-center justify-center"
+                    className="aspect-[4/3] relative overflow-hidden"
                     style={{ background: "linear-gradient(180deg,#F2EFE8,#E8DEFF)" }}
                   >
-                    {/* Static envelope thumbnail — Template 2 opens straight to the envelope */}
-                    <svg viewBox="0 0 200 140" className="w-[68%] h-auto drop-shadow-[0_10px_24px_rgba(80,40,120,0.25)]">
-                      <defs>
-                        <linearGradient id="envBody2" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#FFF0F4" />
-                          <stop offset="100%" stopColor="#F5D2E4" />
-                        </linearGradient>
-                        <linearGradient id="envFlap2" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#F5C9DA" />
-                          <stop offset="100%" stopColor="#EAB8CE" />
-                        </linearGradient>
-                      </defs>
-                      <rect x="10" y="30" width="180" height="100" rx="6" fill="url(#envBody2)" stroke="#D9A8C2" strokeWidth="1" />
-                      <polygon points="10,30 100,95 190,30" fill="url(#envFlap2)" stroke="#D9A8C2" strokeWidth="1" />
-                      <circle cx="100" cy="95" r="14" fill="#8B1A40" />
-                      <path d="M100 102 C 92 96, 90 91, 92 87 C 94 84, 97 84, 100 87 C 103 84, 106 84, 108 87 C 110 91, 108 96, 100 102 Z" fill="#F8D8E8" />
-                    </svg>
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{ transform: "scale(0.78) translateY(12%)", transformOrigin: "center top" }}
+                    >
+                      <Suspense fallback={null}>
+                        <PurpleMailbox className="w-full h-full" hideCaption />
+                      </Suspense>
+                    </div>
                   </div>
                   <div className="p-3 sm:p-4">
                     <p className="font-display text-sm sm:text-base font-bold text-foreground">Template 2</p>

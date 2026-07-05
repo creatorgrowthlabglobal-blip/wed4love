@@ -6,7 +6,6 @@ export interface MusicPreset {
 }
 
 export const MUSIC_PRESETS: MusicPreset[] = [
-  { id: "be-with-you", title: "Be with you", artist: "The Ridleys", url: "/music/be-with-you.mp3" },
   { id: "ivy", title: "Ivy", artist: "Frank Ocean", url: "/music/ivy.mp3" },
   { id: "birds-of-a-feather", title: "Birds of a Feather", artist: "Billie Eilish", url: "/music/birds-of-a-feather.mp3" },
   { id: "my-love-mine-all-mine", title: "My Love Mine All Mine", artist: "Mitski", url: "/music/my-love-mine-all-mine.mp3" },

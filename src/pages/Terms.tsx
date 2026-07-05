@@ -17,7 +17,7 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">2. The Service</h2>
-            <p>Wish4Love allows you to create personalized digital love letters with photos, music, and messages, as well as schedule voice reminder calls for special occasions. The Service is intended for personal, non-commercial use only.</p>
+            <p>Wish4Love allows you to create personalized digital love letters with photos, music, and messages. The Service is intended for personal, non-commercial use only.</p>
           </div>
 
           <div>
@@ -37,17 +37,17 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">6. Payments</h2>
-            <p>Letters are offered at $4.99 each. Each letter includes 1 free reminder call; additional calls are $1 each. All payments are processed through our payment partners. Prices are subject to change with notice.</p>
+            <p>Letters are offered at $4.99 each. All payments are processed through our payment partners. Prices are subject to change with notice.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">7. Refunds</h2>
-            <p>All purchases are final. Due to the digital and personalized nature of our letters, we do not offer refunds once a letter has been created and sent. If you experience a technical issue that prevents delivery, please <Link to="/contact" className="text-primary underline">contact us</Link> within 7 days and we will resolve it or issue a credit at our discretion. Reminder call credits are non-refundable but do not expire.</p>
+            <p>All purchases are final. Due to the digital and personalized nature of our letters, we do not offer refunds once a letter has been created and sent. If you experience a technical issue that prevents delivery, please <Link to="/contact" className="text-primary underline">contact us</Link> within 7 days and we will resolve it or issue a credit at our discretion.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">8. Disclaimers</h2>
-            <p>The Service is provided "as is" without warranties of any kind. We do not guarantee uninterrupted availability or error-free operation. Reminder calls depend on third-party telephony providers and may occasionally be delayed or fail.</p>
+            <p>The Service is provided "as is" without warranties of any kind. We do not guarantee uninterrupted availability or error-free operation.</p>
           </div>
 
           <div>
