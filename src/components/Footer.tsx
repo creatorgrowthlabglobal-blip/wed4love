@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="mb-8 rounded-2xl border border-primary/15 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 px-5 py-4 text-center">
           <p className="font-body text-sm text-foreground">
-            <span className="font-display font-semibold">Get 30% off</span> letters & reminder calls — follow{" "}
+            <span className="font-display font-semibold">Get 30% off</span> your letter — follow{" "}
             <a
               href={INSTAGRAM_URL}
               target="_blank"

@@ -38,12 +38,6 @@ const Header = () => {
             Pricing
           </a>
           <Link
-            to="/schedule-call"
-            className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-          >
-            Reminders
-          </Link>
-          <Link
             to="/demo"
             className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
           >
