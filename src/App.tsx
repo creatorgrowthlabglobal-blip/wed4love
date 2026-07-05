@@ -10,8 +10,6 @@ import LetterHistory from "./pages/LetterHistory";
 import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
-import ScheduleCall from "./pages/ScheduleCall";
-import CallHistory from "./pages/CallHistory";
 import PaymentStatus from "./pages/PaymentStatus";
 import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
@@ -89,8 +87,6 @@ const App = () => (
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
           <Route path="/demo" element={<Demo />} />
-          <Route path="/schedule-call" element={<ProtectedRoute><ScheduleCall /></ProtectedRoute>} />
-          <Route path="/call-history" element={<ProtectedRoute><CallHistory /></ProtectedRoute>} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="/payment-debug" element={<PaymentDebug />} />
           <Route path="/terms" element={<Terms />} />
