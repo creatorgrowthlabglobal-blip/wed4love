@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 // `createWhopCheckout()` below which creates an API checkout configuration
 // with metadata baked in so the webhook can match by order_id.
 export const WHOP_LETTER_CHECKOUT = "https://whop.com/checkout/plan_5Krc5hUT3FZGa";
-export const WHOP_EXTRA_CALL_CHECKOUT = "https://whop.com/checkout/plan_cVyzHy6DwWOtK";
 
 /**
  * Build a Whop checkout URL with the buyer's email prefilled and an optional
@@ -82,7 +81,7 @@ export function redirectToCheckout(tab: Window | null, url: string) {
  * uses a different email at Whop checkout. Returns `{ purchase_url, order_id }`.
  */
 export async function createWhopCheckout(opts: {
-  product: "letter" | "call";
+  product: "letter";
   app_email: string;
   letter_id?: string;
   redirect_url?: string;
@@ -98,8 +97,6 @@ export async function createWhopCheckout(opts: {
 export interface Entitlement {
   email: string;
   has_letter_access: boolean;
-  paid_calls: number;
-  used_calls: number;
   letter_access_expires_at?: string | null;
 }
 
@@ -119,17 +116,5 @@ export function hasActiveLetterAccess(ent: Entitlement | null | undefined): bool
   if (!ent || !ent.has_letter_access) return false;
   if (!ent.letter_access_expires_at) return true; // legacy rows
   return new Date(ent.letter_access_expires_at).getTime() > Date.now();
-}
-
-/** Atomically consume one paid call credit. Returns true if a credit was deducted. */
-export async function consumeCallCredit(email: string): Promise<boolean> {
-  const { data, error } = await supabase.functions.invoke("consume-call-credit", {
-    body: { email: email.toLowerCase().trim() },
-  });
-  if (error) {
-    console.error("[consumeCallCredit] error", error);
-    return false;
-  }
-  return Boolean(data?.consumed);
 }
 

@@ -8,8 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchEntitlement, type Entitlement } from "@/lib/whop";
 
 const PENDING_KEY = "wish4love_pending_payment_v1";
-const AUTO_SUBMIT_KEY = "wish4love_call_autosubmit_v1";
-const DRAFT_KEY = "wish4love_call_draft_v1";
 
 interface WhopEvent {
   event_id: string;
@@ -20,8 +18,6 @@ interface WhopEvent {
 const PaymentDebug = () => {
   const [events, setEvents] = useState<WhopEvent[]>([]);
   const [pending, setPending] = useState<string>("");
-  const [autoSubmit, setAutoSubmit] = useState<string>("");
-  const [draft, setDraft] = useState<string>("");
   const [email, setEmail] = useState("");
   const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,12 +35,8 @@ const PaymentDebug = () => {
   const loadStorage = () => {
     try {
       setPending(sessionStorage.getItem(PENDING_KEY) || "(none)");
-      setAutoSubmit(sessionStorage.getItem(AUTO_SUBMIT_KEY) || "(none)");
-      setDraft(sessionStorage.getItem(DRAFT_KEY) || "(none)");
     } catch {
       setPending("(read error)");
-      setAutoSubmit("(read error)");
-      setDraft("(read error)");
     }
   };
 
@@ -59,8 +51,6 @@ const PaymentDebug = () => {
   const clearPending = () => {
     try {
       sessionStorage.removeItem(PENDING_KEY);
-      sessionStorage.removeItem(AUTO_SUBMIT_KEY);
-      sessionStorage.removeItem(DRAFT_KEY);
       loadStorage();
     } catch {}
   };
@@ -113,14 +103,6 @@ const PaymentDebug = () => {
                 <span className="text-muted-foreground">pending_key:</span>
                 <pre className="mt-1 text-foreground whitespace-pre-wrap break-all">{pending}</pre>
               </div>
-              <div className="p-2 rounded-lg bg-muted/50 border border-border">
-                <span className="text-muted-foreground">auto_submit:</span>
-                <pre className="mt-1 text-foreground whitespace-pre-wrap break-all">{autoSubmit}</pre>
-              </div>
-              <div className="p-2 rounded-lg bg-muted/50 border border-border">
-                <span className="text-muted-foreground">call_draft:</span>
-                <pre className="mt-1 text-foreground whitespace-pre-wrap break-all">{draft}</pre>
-              </div>
             </div>
           </motion.div>
 
@@ -155,16 +137,6 @@ const PaymentDebug = () => {
                 <div className="p-2 rounded-lg bg-muted/50 border border-border">
                   <span className="text-muted-foreground">letter_access:</span>{" "}
                   {entitlement.has_letter_access ? "✅ yes" : "❌ no"}
-                </div>
-                <div className="p-2 rounded-lg bg-muted/50 border border-border">
-                  <span className="text-muted-foreground">paid_calls:</span> {entitlement.paid_calls}
-                </div>
-                <div className="p-2 rounded-lg bg-muted/50 border border-border">
-                  <span className="text-muted-foreground">used_calls:</span> {entitlement.used_calls}
-                </div>
-                <div className="p-2 rounded-lg bg-muted/50 border border-border col-span-2">
-                  <span className="text-muted-foreground">available_calls:</span>{" "}
-                  {Math.max(0, entitlement.paid_calls - entitlement.used_calls)}
                 </div>
               </div>
             )}
