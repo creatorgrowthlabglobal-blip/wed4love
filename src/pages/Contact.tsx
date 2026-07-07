@@ -39,7 +39,7 @@ const Contact = () => {
       console.error(err);
       toast({
         title: "Failed to send",
-        description: err?.message || "Please try again or email engineer1@wish4love.com directly.",
+        description: err?.message || "Please try again or email updates@wish4love.com directly.",
         variant: "destructive",
       });
     } finally {
@@ -149,7 +149,7 @@ const Contact = () => {
             </button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
-              Or email us directly at <span className="text-primary">engineer1@wish4love.com</span>
+              Or email us directly at <span className="text-primary">updates@wish4love.com</span>
             </p>
           </form>
         )}

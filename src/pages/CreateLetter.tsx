@@ -28,7 +28,7 @@ const STEP_LABELS = ["Details", "Write", "Photos", "Music", "Preview"];
 const CreateLetter = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [letterType, setLetterType] = useState<"love" | "birthday" | null>(null);
+  const [letterType, setLetterType] = useState<"love" | "birthday">("love");
   const [template, setTemplate] = useState<"photo" | "purple">("photo");
   const [details, setDetails] = useState({
     senderName: "",

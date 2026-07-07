@@ -194,28 +194,56 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className="relative letter-paper rounded-3xl p-6 sm:p-8 text-center shadow-card border border-primary/10 overflow-hidden"
+          className="relative rounded-3xl overflow-hidden"
+          style={{ boxShadow: "0 20px 60px hsl(340 60% 70% / 0.2), 0 4px 16px hsl(340 60% 70% / 0.1)" }}
         >
-          <div className="absolute inset-0 gradient-romantic opacity-20" />
-          <div className="relative z-10">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 animate-gentle-glow">
-              <Heart className="w-6 h-6 text-primary fill-primary/30" />
+          {/* Sale ribbon */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-center gap-2 bg-red-500 py-2 z-10">
+            <span className="text-white font-body text-xs font-bold tracking-widest uppercase">July Special Sale — 30% Off</span>
+          </div>
+
+          <div className="bg-white pt-12 pb-8 px-6 sm:px-8">
+            {/* Price */}
+            <div className="text-center mb-6">
+              <p className="font-body text-sm text-muted-foreground line-through mb-0.5">Regular price $7.13</p>
+              <div className="flex items-end justify-center gap-2">
+                <p className="font-display text-5xl sm:text-6xl font-bold text-foreground">$4.99</p>
+                <span className="font-body text-sm text-muted-foreground mb-2">USD</span>
+              </div>
+              <p className="font-body text-sm text-muted-foreground mt-1">One-time · No subscription · Yours forever</p>
             </div>
-            <p className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-1">$4.99</p>
-            <p className="font-body text-base text-muted-foreground mb-6">
-              One-time payment · Your letter lives forever
-            </p>
+
+            {/* What's included */}
+            <div className="space-y-2.5 mb-7">
+              {[
+                "💌  Beautiful letter with photos & music",
+                "📬  Vintage mailbox reveal experience",
+                "🔗  Shareable link they can open anytime",
+                "♾️   Your letter lives forever — never expires",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10">
+                  <p className="font-body text-sm text-foreground">{item}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setShowPaymentChoice(true)}
-              className="btn-glow w-full sm:w-auto px-14 py-4 bg-primary text-primary-foreground font-heading text-lg font-bold rounded-2xl shadow-romantic transition-all duration-400 hover:shadow-glow"
+              className="w-full py-4 rounded-2xl font-heading text-lg font-bold text-primary-foreground transition-all duration-300"
+              style={{
+                background: "linear-gradient(135deg, hsl(var(--primary)), hsl(340 90% 58%))",
+                boxShadow: "0 8px 24px hsl(340 80% 60% / 0.35)",
+              }}
             >
-              💳 Pay and Create
+              Send This Letter — $4.99
             </motion.button>
-            <p className="mt-3 font-body text-sm text-muted-foreground flex items-center justify-center gap-1.5">
+
+            <p className="mt-4 font-body text-xs text-muted-foreground flex items-center justify-center gap-1.5">
               <Lock className="w-3 h-3" />
-              Secure payment · Instant delivery
+              Secure checkout · Instant access after payment
             </p>
           </div>
         </motion.div>
@@ -314,7 +342,11 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
                   <Heart className="w-5 h-5 text-primary fill-primary/30" />
                 </div>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-1">Choose payment method</h3>
-                <p className="font-body text-sm text-muted-foreground">$4.99 · one-time payment</p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="font-body text-sm text-muted-foreground line-through">$7.13</span>
+                  <span className="font-display text-xl font-bold text-foreground">$4.99</span>
+                  <span className="px-2 py-0.5 rounded-full bg-red-500 text-white font-body text-xs font-bold">30% OFF</span>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -328,8 +360,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-heading text-base font-bold">Card / Cash App</p>
-                    <p className="font-body text-xs opacity-90">Secure checkout via Whop · Instant delivery</p>
+                    <p className="font-heading text-base font-bold">Credit / Debit Card</p>
+                    <p className="font-body text-xs opacity-90">Visa · Mastercard · Amex · Apple Pay · Google Pay</p>
                   </div>
                 </motion.button>
 

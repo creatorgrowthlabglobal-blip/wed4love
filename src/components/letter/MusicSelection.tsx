@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Music, Play, Pause, Check } from "lucide-react";
+import { Music, Play, Pause, Check, Instagram } from "lucide-react";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 
 interface MusicSelectionProps {
@@ -101,7 +101,28 @@ const MusicSelection = ({
         </div>
       </div>
 
-      <div className="mt-8 flex justify-between">
+      {/* Request a Music */}
+      <a
+        href="https://instagram.com/wish4love_official"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 p-4 rounded-2xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors group"
+      >
+        <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+          <Instagram className="w-5 h-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-display text-sm font-bold text-foreground">Request a Custom Song</p>
+          <p className="font-body text-xs text-muted-foreground">
+            Don't see your song? DM us on Instagram and we'll add it for you.
+          </p>
+        </div>
+        <span className="font-body text-xs font-semibold text-primary group-hover:underline notranslate shrink-0" translate="no">
+          @wish4love_official
+        </span>
+      </a>
+
+      <div className="mt-6 flex justify-between">
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}
           className="px-8 py-3.5 bg-secondary text-secondary-foreground font-heading text-base font-semibold rounded-xl border border-border/50 transition-all duration-300 hover:shadow-card">
           ← Go Back

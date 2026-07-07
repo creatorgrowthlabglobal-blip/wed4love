@@ -193,7 +193,7 @@ const PaymentStatus = () => {
                 </Button>
               </div>
               <p className="font-body text-xs text-muted-foreground">
-                Still no luck? Email <a className="underline" href="mailto:support@wish4love.com">support@wish4love.com</a> with your Whop receipt and we'll grant access manually.
+                Still no luck? Email <a className="underline" href="mailto:updates@wish4love.com">updates@wish4love.com</a> with your Whop receipt and we'll grant access manually.
               </p>
             </>
           )}

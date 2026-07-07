@@ -52,7 +52,7 @@ const Privacy = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">9. Contact</h2>
-            <p>For privacy questions, email us at engineer1@wish4love.com or use our <Link to="/contact" className="text-primary underline">contact form</Link>.</p>
+            <p>For privacy questions, email us at updates@wish4love.com or use our <Link to="/contact" className="text-primary underline">contact form</Link>.</p>
           </div>
         </section>
       </main>

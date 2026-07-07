@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { PenLine, Heart, Sparkles, Music, Bell, Link as LinkIcon, Check, Mail, Mailbox, X } from "lucide-react";
 import Header from "@/components/Header";
+import TestimonialsMarquee from "@/components/TestimonialsMarquee";
 import FloatingHearts from "@/components/FloatingHearts";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
@@ -176,7 +177,11 @@ const Index = () => {
             smile 😉
           </motion.div>
         </div>
+
       </section>
+
+      {/* Scrolling testimonials */}
+      <TestimonialsMarquee className="-mt-32 pb-10" />
 
       {/* How It Works */}
       <section className="py-20 sm:py-28 px-4 sm:px-6 bg-background">
