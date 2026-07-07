@@ -161,7 +161,7 @@ const Index = () => {
       </section>
 
       {/* Scrolling testimonials */}
-      <TestimonialsMarquee className="-mt-32 pb-10" />
+      <TestimonialsMarquee className="mt-4 sm:-mt-32 pb-10" />
 
       {/* How It Works */}
       <section className="py-20 sm:py-28 px-4 sm:px-6 bg-background">
