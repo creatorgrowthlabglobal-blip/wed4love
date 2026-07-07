@@ -155,26 +155,6 @@ const Index = () => {
               </span>
             </button>
 
-            <motion.p
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              className="font-body text-xs text-muted-foreground mt-4 text-center"
-            >
-              Tap to see what they'll receive ✨
-            </motion.p>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.7 }}
-            className="mt-8 font-body text-sm text-muted-foreground"
-          >
-            <span className="font-semibold text-foreground">3,247+</span> letters
-            sent •{" "}
-            <span className="font-semibold text-foreground">99.7%</span> made them
-            smile 😉
           </motion.div>
         </div>
 
