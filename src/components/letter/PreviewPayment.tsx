@@ -206,27 +206,27 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
             <span className="text-white font-body text-xs font-bold tracking-widest uppercase">July Special Sale — 30% Off</span>
           </div>
 
-          <div className="bg-white pt-12 pb-8 px-6 sm:px-8">
+          <div className="bg-white pt-10 sm:pt-12 pb-6 sm:pb-8 px-5 sm:px-8">
             {/* Price */}
-            <div className="text-center mb-6">
-              <p className="font-body text-sm text-muted-foreground line-through mb-0.5">Regular price $7.13</p>
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="font-body text-xs sm:text-sm text-muted-foreground line-through mb-0.5">Regular price $7.13</p>
               <div className="flex items-end justify-center gap-2">
-                <p className="font-display text-5xl sm:text-6xl font-bold text-foreground">$4.99</p>
-                <span className="font-body text-sm text-muted-foreground mb-2">USD</span>
+                <p className="font-display text-4xl sm:text-6xl font-bold text-foreground">$4.99</p>
+                <span className="font-body text-sm text-muted-foreground mb-1.5 sm:mb-2">USD</span>
               </div>
-              <p className="font-body text-sm text-muted-foreground mt-1">One-time · No subscription · Yours forever</p>
+              <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1">One-time · No subscription · Yours forever</p>
             </div>
 
             {/* What's included */}
-            <div className="space-y-2.5 mb-7">
+            <div className="space-y-1.5 sm:space-y-2.5 mb-4 sm:mb-7">
               {[
                 "💌  Beautiful letter with photos & music",
                 "📬  Vintage mailbox reveal experience",
                 "🔗  Shareable link they can open anytime",
                 "♾️   Your letter lives forever — never expires",
               ].map((item) => (
-                <div key={item} className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10">
-                  <p className="font-body text-sm text-foreground">{item}</p>
+                <div key={item} className="flex items-center gap-3 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-primary/5 border border-primary/10">
+                  <p className="font-body text-xs sm:text-sm text-foreground">{item}</p>
                 </div>
               ))}
             </div>
