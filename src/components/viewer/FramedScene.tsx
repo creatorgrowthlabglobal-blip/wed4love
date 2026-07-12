@@ -6,6 +6,8 @@ interface FramedSceneProps {
   /** When true, renders only the decorative frame border as an overlay
    *  (transparent center) — use on top of an existing full-screen scene. */
   overlay?: boolean;
+  /** Override the default z-index (50 normal, 200 overlay). */
+  zIndex?: number;
 }
 
 /**
@@ -17,7 +19,7 @@ interface FramedSceneProps {
  *  - default: soft pink background + frame + inner safe area for children
  *  - overlay: just the frame artwork on top of an existing scene
  */
-export default function FramedScene({ children, overlay = false }: FramedSceneProps) {
+export default function FramedScene({ children, overlay = false, zIndex: zIndexProp }: FramedSceneProps) {
   const [loaded, setLoaded] = useState(false);
 
   const handleLoad = useCallback(() => setLoaded(true), []);
@@ -41,7 +43,7 @@ export default function FramedScene({ children, overlay = false }: FramedScenePr
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: overlay ? 200 : 50,
+        zIndex: zIndexProp ?? (overlay ? 200 : 50),
         pointerEvents: overlay ? "none" : "auto",
         background: overlay
           ? "transparent"

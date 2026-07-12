@@ -12,6 +12,16 @@ interface Balloon {
   popped: boolean;
 }
 
+interface BdayConfetti {
+  id: number;
+  x: number;
+  color: string;
+  rotate: number;
+  duration: number;
+  delay: number;
+  size: number;
+}
+
 interface BalloonGameProps {
   onComplete: () => void;
 }
@@ -25,14 +35,22 @@ const COLORS = [
   "linear-gradient(180deg, #a0d8ef 0%, #70b0d0 100%)",
 ];
 
+const CONFETTI_COLORS = ["#ff8fab", "#f7c873", "#a0d8ef", "#e0bbe4", "#ffb347", "#90ee90", "#ff6b6b", "#ffd700"];
+
 const BalloonGame = ({ onComplete }: BalloonGameProps) => {
   const [balloons, setBalloons] = useState<Balloon[]>([]);
   const [score, setScore] = useState(0);
   const [confetti, setConfetti] = useState<{ id: number; x: number; y: number; color: string }[]>([]);
+  const [phase, setPhase] = useState<"game" | "countdown" | "birthday">("game");
+  const [countdownNum, setCountdownNum] = useState(5);
+  const [bdayConfetti, setBdayConfetti] = useState<BdayConfetti[]>([]);
   const target = 12;
   const nextId = useRef(0);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
 
   const spawnBalloon = useCallback(() => {
+    if (phaseRef.current !== "game") return;
     const b: Balloon = {
       id: nextId.current++,
       x: 10 + Math.random() * 80,
@@ -52,6 +70,7 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      if (phaseRef.current !== "game") return;
       setBalloons((prev) => prev
         .map((b) => ({ ...b, y: b.popped ? b.y : b.y - b.speed * 0.5 }))
         .filter((b) => b.y > -20 || b.popped)
@@ -61,18 +80,42 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
   }, []);
 
   useEffect(() => {
-    if (score >= target) {
-      setTimeout(onComplete, 1500);
+    if (score >= target && phase === "game") {
+      setPhase("countdown");
+      setBalloons([]);
+      let n = 5;
+      setCountdownNum(n);
+      const interval = setInterval(() => {
+        n--;
+        if (n === 0) {
+          clearInterval(interval);
+          // Generate birthday confetti
+          const pieces: BdayConfetti[] = Array.from({ length: 60 }, (_, i) => ({
+            id: i,
+            x: Math.random() * 100,
+            color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+            rotate: Math.random() * 720 - 360,
+            duration: 2 + Math.random() * 2,
+            delay: Math.random() * 1.5,
+            size: 8 + Math.random() * 8,
+          }));
+          setBdayConfetti(pieces);
+          setPhase("birthday");
+          setTimeout(onComplete, 4000);
+        } else {
+          setCountdownNum(n);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
     }
-  }, [score, onComplete]);
+  }, [score, phase, onComplete]);
 
   const popBalloon = (b: Balloon) => {
-    if (b.popped) return;
+    if (b.popped || phase !== "game") return;
     sounds.balloonPop();
     setBalloons((prev) => prev.map((bal) => bal.id === b.id ? { ...bal, popped: true } : bal));
     setScore((s) => s + 1);
 
-    // Add confetti
     const newConfetti = Array.from({ length: 6 }, (_, i) => ({
       id: Date.now() + i,
       x: b.x,
@@ -94,7 +137,7 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
       style={{ background: "linear-gradient(180deg, #e8f4ff 0%, #ffeef2 50%, #fff3e8 100%)" }}
     >
       {/* Header */}
-      <div className="relative z-10 pt-8 px-6 text-center">
+      <div className="relative z-20 pt-8 px-6 text-center">
         <p className="font-heading text-xs uppercase tracking-widest mb-1" style={{ color: "hsl(340 50% 60%)" }}>
           🎂 Birthday Surprise
         </p>
@@ -122,7 +165,7 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
       </div>
 
       {/* Balloons */}
-      {balloons.map((b) => (
+      {phase === "game" && balloons.map((b) => (
         <AnimatePresence key={b.id}>
           {!b.popped ? (
             <motion.div
@@ -144,13 +187,11 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
                 background: b.color,
                 boxShadow: "inset -5px -5px 15px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.1)",
               }}>
-                {/* Shine */}
                 <div className="absolute top-2 left-3 w-3 h-4 rounded-full" style={{
                   background: "rgba(255,255,255,0.4)",
                   transform: "rotate(-30deg)",
                 }} />
               </div>
-              {/* String */}
               <div className="absolute bottom-0 left-1/2 w-px h-6" style={{
                 background: "rgba(180,140,160,0.5)",
                 transform: "translateX(-50%)",
@@ -160,7 +201,7 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
         </AnimatePresence>
       ))}
 
-      {/* Confetti */}
+      {/* Pop confetti */}
       {confetti.map((c) => (
         <motion.div
           key={c.id}
@@ -178,25 +219,116 @@ const BalloonGame = ({ onComplete }: BalloonGameProps) => {
         />
       ))}
 
-      {/* Complete message */}
-      {score >= target && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="absolute inset-0 flex items-center justify-center z-20"
-          style={{ background: "rgba(255,255,255,0.8)" }}
-        >
-          <div className="text-center">
-            <p className="text-5xl mb-4">🎉</p>
-            <p className="font-display text-3xl font-bold" style={{ color: "#4B2E2E" }}>
-              Amazing!
-            </p>
-            <p className="font-body text-base mt-2" style={{ color: "#8a6060" }}>
-              Let's continue to your gift...
-            </p>
-          </div>
-        </motion.div>
-      )}
+      {/* Countdown overlay */}
+      <AnimatePresence>
+        {phase === "countdown" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center"
+            style={{ background: "rgba(255, 235, 245, 0.92)" }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={countdownNum}
+                initial={{ scale: 2.5, opacity: 0, y: -20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.3, opacity: 0, y: 20 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="font-display font-bold select-none"
+                style={{ fontSize: "10rem", lineHeight: 1, color: "#e05080", textShadow: "0 4px 24px rgba(224,80,128,0.3)" }}
+              >
+                {countdownNum}
+              </motion.p>
+            </AnimatePresence>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="font-heading text-sm uppercase tracking-widest mt-4"
+              style={{ color: "hsl(340 50% 60%)" }}
+            >
+              Get ready...
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Happy Birthday overlay */}
+      <AnimatePresence>
+        {phase === "birthday" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-30 flex items-center justify-center overflow-hidden"
+            style={{ background: "linear-gradient(180deg, #ffe0ec 0%, #fff8e1 50%, #e8f4ff 100%)" }}
+          >
+            {/* Falling confetti */}
+            {bdayConfetti.map((c) => (
+              <motion.div
+                key={c.id}
+                initial={{ y: "-5vh", x: `${c.x}vw`, opacity: 1, rotate: 0 }}
+                animate={{ y: "110vh", opacity: 0.9, rotate: c.rotate }}
+                transition={{ duration: c.duration, delay: c.delay, ease: "linear" }}
+                className="absolute rounded-sm"
+                style={{
+                  background: c.color,
+                  width: c.size,
+                  height: c.size * 0.6,
+                  top: 0,
+                  left: 0,
+                }}
+              />
+            ))}
+
+            {/* Poppers */}
+            {["🎉", "🎊"].map((emoji, i) => (
+              <motion.span
+                key={i}
+                initial={{ scale: 0, rotate: i === 0 ? -30 : 30, opacity: 0 }}
+                animate={{ scale: [0, 1.4, 1], rotate: 0, opacity: 1 }}
+                transition={{ delay: 0.2 + i * 0.15, duration: 0.5, type: "spring" }}
+                className="absolute text-6xl select-none"
+                style={{ left: i === 0 ? "8%" : "auto", right: i === 1 ? "8%" : "auto", top: "30%" }}
+              >
+                {emoji}
+              </motion.span>
+            ))}
+
+            <div className="relative z-10 text-center px-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+                style={{ fontSize: "3.5rem", lineHeight: 1 }}
+              >
+                🎂
+              </motion.div>
+
+              <motion.h1
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.35, type: "spring", stiffness: 150 }}
+                className="font-display font-bold mt-3"
+                style={{ fontSize: "2.6rem", color: "#4B2E2E", textShadow: "0 2px 12px rgba(224,80,128,0.2)" }}
+              >
+                Happy Birthday!
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="font-body mt-3 text-lg"
+                style={{ color: "#8a6060" }}
+              >
+                🎈 Your surprise is ready! 🎈
+              </motion.p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

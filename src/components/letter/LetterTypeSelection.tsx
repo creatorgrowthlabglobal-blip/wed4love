@@ -5,14 +5,17 @@ import { Heart, Play, X, ArrowRight, Sparkles as SparklesIcon } from "lucide-rea
 import TestimonialsMarquee from "@/components/TestimonialsMarquee";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
+import BirthdayMailbox from "@/components/viewer/BirthdayMailbox";
+import BirthdayBalloons from "@/components/viewer/BirthdayBalloons";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import FramedScene from "@/components/viewer/FramedScene";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import type { LetterTemplate } from "@/lib/letterStorage";
+import birthdayMailboxClosed from "@/assets/birthday-mailbox-closed.png";
 
 type SubPhase = "type" | "template";
-type PreviewStage = "mailbox" | "envelope";
+type PreviewStage = "mailbox" | "birthday-balloons" | "envelope";
 
 interface LetterTypeSelectionProps {
   onSelect: (type: "love" | "birthday", template: LetterTemplate) => void;
@@ -25,16 +28,21 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
 
   const openPreview = (template: LetterTemplate) => {
     setPreviewTemplate(template);
-    // Purple and the 3D paper template each have their own self-contained
-    // reveal — they skip the separate "mailbox" stage entirely.
-    setPreviewStage(template === "photo" ? "mailbox" : "envelope");
+    setPreviewStage(template === "purple" || template === "paper3d" ? "envelope" : "mailbox");
   };
 
   const closePreview = () => setPreviewTemplate(null);
 
   const advancePreview = () => {
-    if (previewStage === "mailbox") setPreviewStage("envelope");
-    else closePreview();
+    if (previewStage === "mailbox" && previewTemplate === "birthday") {
+      setPreviewStage("birthday-balloons");
+    } else if (previewStage === "mailbox") {
+      setPreviewStage("envelope");
+    } else if (previewStage === "birthday-balloons") {
+      return;
+    } else {
+      closePreview();
+    }
   };
 
   return (
@@ -215,6 +223,40 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                     </div>
                   </div>
                 </motion.div>
+
+                {/* Template 3 — Birthday Mailbox */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="rounded-2xl overflow-hidden border-2 border-amber-200/60 bg-background hover:border-amber-400/60 transition-all duration-300"
+                >
+                  <div
+                    className="aspect-[4/3] bg-cover bg-center"
+                    style={{ backgroundImage: `url(${birthdayMailboxClosed})` }}
+                  />
+                  <div className="p-3 sm:p-4">
+                    <p className="font-display text-sm sm:text-base font-bold text-foreground">Birthday Mailbox</p>
+                    <p className="font-display text-xs sm:text-sm font-semibold mb-3" style={{ color: "#D4802A" }}>Birthday Exclusive</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openPreview("birthday")}
+                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-amber-100 font-body text-xs font-semibold hover:bg-amber-200 transition-colors"
+                        style={{ color: "#D4802A" }}
+                      >
+                        <Play className="w-3 h-3" />
+                        Preview
+                      </button>
+                      <button
+                        onClick={() => onSelect("birthday", "birthday")}
+                        className="flex-1 px-2 py-2 rounded-xl font-body text-xs font-semibold hover:opacity-90 transition-opacity text-white"
+                        style={{ background: "#D4802A" }}
+                      >
+                        Select
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
 
               <TestimonialsMarquee className="mt-8" />
@@ -232,7 +274,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
+              className="fixed top-4 right-4 z-[120] w-10 h-10 rounded-full flex items-center justify-center"
               style={{ background: "rgba(37, 31, 40, 0.72)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)" }}
               aria-label="Close preview"
             >
@@ -242,7 +284,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
             {previewStage === "mailbox" && previewTemplate === "purple" && (
               <div
                 key="prev-mailbox-purple"
-                className="fixed inset-0 z-50 flex items-center justify-center"
+                className="fixed inset-0 z-[100] flex items-center justify-center"
                 style={{ background: "#F2EFE8" }}
               >
                 <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
@@ -252,7 +294,26 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 </div>
               </div>
             )}
-            {previewStage === "mailbox" && previewTemplate !== "purple" && (
+            {previewStage === "mailbox" && previewTemplate === "birthday" && (
+              <motion.div
+                key="prev-mailbox-birthday"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 100,
+                  background: "radial-gradient(ellipse at 50% 35%, #FFF9E6 0%, #FFF0B3 55%, #FFE082 100%)",
+                }}
+              >
+                <Suspense fallback={null}>
+                  <BirthdayMailbox className="w-full h-full" onContinue={advancePreview} />
+                </Suspense>
+              </motion.div>
+            )}
+            {previewStage === "mailbox" && previewTemplate !== "purple" && previewTemplate !== "birthday" && (
               <motion.div
                 key="prev-mailbox-photo"
                 initial={{ opacity: 0 }}
@@ -262,7 +323,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 style={{
                   position: "fixed",
                   inset: 0,
-                  zIndex: 50,
+                  zIndex: 100,
                   background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
                 }}
               >
@@ -270,6 +331,15 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   <RealisticMailbox className="w-full h-full" onContinue={advancePreview} />
                 </Suspense>
               </motion.div>
+            )}
+
+            {previewStage === "birthday-balloons" && (
+              <BirthdayBalloons
+                onComplete={advancePreview}
+                letterText="Wishing you a day filled with joy, laughter, and all the things that make you smile. You deserve every bit of happiness this world has to offer. Here's to you on your special day! 🎂"
+                senderName="From the heart"
+                receiverName="You"
+              />
             )}
 
             {previewStage === "envelope" && previewTemplate === "paper3d" && (
@@ -282,7 +352,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
             )}
 
             {previewStage === "envelope" && previewTemplate !== "paper3d" && (
-              <FramedScene>
+              <FramedScene zIndex={100}>
                 <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
               </FramedScene>
             )}

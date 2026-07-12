@@ -17,10 +17,12 @@ import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import LockedCountdown from "@/components/viewer/LockedCountdown";
+import BirthdayMailbox from "@/components/viewer/BirthdayMailbox";
+import BirthdayBalloons from "@/components/viewer/BirthdayBalloons";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
-type Stage = "mailbox" | "envelope" | "quiz" | "balloons" | "video" | "folder";
+type Stage = "mailbox" | "birthday-balloons" | "envelope" | "quiz" | "balloons" | "video" | "folder";
 
 const ViewLetter = () => {
   const { id } = useParams();
@@ -76,9 +78,8 @@ const ViewLetter = () => {
             if (found.unlockAt && new Date(found.unlockAt).getTime() > Date.now()) {
               setLocked(true);
             }
-            // Purple and the 3D paper template are self-contained reveals —
-            // they skip the separate "mailbox" stage entirely.
-            if ((found.template || "photo") !== "photo") {
+            const t = found.template || "photo";
+            if (t === "purple" || t === "paper3d") {
               setStage("envelope");
             }
           } else {
@@ -210,14 +211,21 @@ const ViewLetter = () => {
 
   const getNextStage = (current: Stage): Stage | null => {
     const hasQuiz = letter.quiz && letter.quiz.length > 0;
-    const isBirthday = letter.type === "birthday";
     const hasMedia = letter.videos.length > 0 || letter.audios.length > 0;
+    const isBirthdayTemplate = (letter.template || "photo") === "birthday";
 
-    const flow: Stage[] = ["mailbox", "envelope"];
-    if (hasQuiz) flow.push("quiz");
-    if (isBirthday) flow.push("balloons");
-    if (hasMedia) flow.push("video");
-    flow.push("folder");
+    let flow: Stage[];
+    if (isBirthdayTemplate) {
+      flow = ["mailbox", "birthday-balloons"];
+      if (hasQuiz) flow.push("quiz");
+      if (hasMedia) flow.push("video");
+      flow.push("folder");
+    } else {
+      flow = ["mailbox", "envelope"];
+      if (hasQuiz) flow.push("quiz");
+      if (hasMedia) flow.push("video");
+      flow.push("folder");
+    }
 
     const idx = flow.indexOf(current);
     return idx < flow.length - 1 ? flow[idx + 1] : null;
@@ -238,7 +246,24 @@ const ViewLetter = () => {
           <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
         </FramedScene>
       )}
-      {stage === "mailbox" && template === "photo" && (
+      {stage === "mailbox" && template === "birthday" && (
+        <motion.div
+          key="mailbox-birthday"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            background: "radial-gradient(ellipse at 50% 35%, #FFF9E6 0%, #FFF0B3 55%, #FFE082 100%)",
+          }}
+        >
+          <BirthdayMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
+        </motion.div>
+      )}
+      {stage === "mailbox" && template !== "purple" && template !== "birthday" && (
         <motion.div
           key="mailbox-photo"
           initial={{ opacity: 0 }}
@@ -281,6 +306,16 @@ const ViewLetter = () => {
             onContinue={advance}
           />
         </FramedScene>
+      )}
+      {stage === "birthday-balloons" && (
+        <BirthdayBalloons
+          key="birthday-balloons"
+          onComplete={advance}
+          letterText={letter.letterText}
+          images={letter.images}
+          senderName={letter.senderName}
+          receiverName={letter.receiverName}
+        />
       )}
       {stage === "quiz" && (
         <QuizExperience key="quiz" questions={letter.quiz} onComplete={advance} />

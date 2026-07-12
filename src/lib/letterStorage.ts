@@ -2,7 +2,7 @@ import { QuizQuestion } from "@/components/letter/QuizCreation";
 import { supabase } from "@/integrations/supabase/client";
 
 /** "paper3d" is the premium realistic-paper-unfold template. */
-export type LetterTemplate = "photo" | "purple" | "paper3d";
+export type LetterTemplate = "photo" | "purple" | "paper3d" | "birthday";
 
 export interface StoredLetter {
   id: string;

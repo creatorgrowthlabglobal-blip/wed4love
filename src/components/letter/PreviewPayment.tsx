@@ -16,6 +16,8 @@ import SignupGate from "@/components/letter/SignupGate";
 import VoiceRecorder from "@/components/letter/VoiceRecorder";
 import UnlockDatePicker from "@/components/letter/UnlockDatePicker";
 import type { LetterTemplate } from "@/lib/letterStorage";
+import BirthdayMailbox from "@/components/viewer/BirthdayMailbox";
+import BirthdayBalloons from "@/components/viewer/BirthdayBalloons";
 
 interface PreviewPaymentProps {
   letterData: {
@@ -38,7 +40,7 @@ interface PreviewPaymentProps {
   onBack: () => void;
 }
 
-type PreviewStage = "mailbox" | "envelope";
+type PreviewStage = "mailbox" | "birthday-balloons" | "envelope";
 
 const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onVoiceChange, unlockAt, onUnlockAtChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
@@ -161,8 +163,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
   }, [showPreview, letterData.selectedMusic]);
 
   const openPreview = () => {
-    // Photo template starts at the mailbox; purple/paper3d skip straight to their own reveal
-    setPreviewStage(template === "photo" ? "mailbox" : "envelope");
+    setPreviewStage(template === "photo" || template === "birthday" ? "mailbox" : "envelope");
     setShowPreview(true);
   };
   const closePreview = () => {
@@ -175,8 +176,15 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
     setShowPreview(false);
   };
   const advancePreview = () => {
-    if (previewStage === "mailbox") setPreviewStage("envelope");
-    else closePreview();
+    if (previewStage === "mailbox" && template === "birthday") {
+      setPreviewStage("birthday-balloons");
+    } else if (previewStage === "mailbox") {
+      setPreviewStage("envelope");
+    } else if (previewStage === "birthday-balloons") {
+      return;
+    } else {
+      closePreview();
+    }
   };
 
   return (
@@ -336,8 +344,28 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
               ← Go back
             </motion.button>
 
+            {/* Birthday mailbox */}
+            {previewStage === "mailbox" && template === "birthday" && (
+              <motion.div
+                key="prev-mailbox-birthday"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "radial-gradient(ellipse at 50% 35%, #FFF9E6 0%, #FFF0B3 55%, #FFE082 100%)",
+                }}
+              >
+                <Suspense fallback={null}>
+                  <BirthdayMailbox className="w-full h-full" onContinue={advancePreview} />
+                </Suspense>
+              </motion.div>
+            )}
+
             {/* Template 1 — full-screen mailbox, no decorative frame */}
-            {previewStage === "mailbox" && (
+            {previewStage === "mailbox" && template !== "birthday" && (
               <motion.div
                 key="prev-mailbox"
                 initial={{ opacity: 0 }}
@@ -356,8 +384,19 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
               </motion.div>
             )}
 
-            {/* Envelope stage — purple template */}
-            {previewStage === "envelope" && template === "purple" && (
+            {/* Birthday balloon stage */}
+            {previewStage === "birthday-balloons" && (
+              <BirthdayBalloons
+                onComplete={advancePreview}
+                letterText={letterData.letterText}
+                images={previewImages}
+                senderName={letterData.senderName}
+                receiverName={letterData.receiverName}
+              />
+            )}
+
+            {/* Envelope stage — purple/photo template */}
+            {previewStage === "envelope" && template !== "paper3d" && (
               <FramedScene key="prev-envelope">
                 <EnvelopeReveal
                   receiverName={letterData.receiverName}
