@@ -1,6 +1,43 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { sounds } from "@/lib/sounds";
 import frameImg from "@/assets/letter-frame.webp";
+
+type Hue = "gold" | "rose" | "sky" | "lavender" | "coral" | "mint";
+type ParticleShape = "circle" | "star" | "heart";
+
+interface Particle {
+  id: number;
+  bx: number;
+  by: number;
+  angle: number;
+  color: string;
+  shape: ParticleShape;
+  size: number;
+}
+
+interface Shockwave {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+}
+
+interface Flash {
+  id: number;
+  color: string;
+}
+
+interface BdayConfetti {
+  id: number;
+  x: number;
+  color: string;
+  rotate: number;
+  duration: number;
+  delay: number;
+  size: number;
+  round: boolean;
+}
 
 interface Props {
   onComplete: () => void;
@@ -10,91 +47,119 @@ interface Props {
   receiverName?: string;
 }
 
-type Hue = "gold" | "rose" | "sky" | "lavender" | "coral" | "mint";
-
-const PALETTE: Record<Hue, { top: string; bottom: string; shine: string; particle: string; string: string }> = {
-  gold:     { top: "#FFE566", bottom: "#D97706", shine: "#FFFDE7", particle: "#FCD34D", string: "#B45309" },
-  rose:     { top: "#FB7185", bottom: "#9F1239", shine: "#FFE4E6", particle: "#F43F5E", string: "#881337" },
-  sky:      { top: "#7DD3FC", bottom: "#1E40AF", shine: "#E0F2FE", particle: "#38BDF8", string: "#1D4ED8" },
-  lavender: { top: "#D8B4FE", bottom: "#6D28D9", shine: "#F3E8FF", particle: "#C084FC", string: "#5B21B6" },
-  coral:    { top: "#FDBA74", bottom: "#C2410C", shine: "#FFF7ED", particle: "#FB923C", string: "#9A3412" },
-  mint:     { top: "#6EE7B7", bottom: "#065F46", shine: "#ECFDF5", particle: "#34D399", string: "#047857" },
+const PALETTE: Record<Hue, { top: string; bottom: string; shine: string; particle: string; string: string; glow: string }> = {
+  gold:     { top: "#FFE566", bottom: "#D97706", shine: "#FFFDE7", particle: "#FCD34D", string: "#B45309",  glow: "rgba(255,229,102,0.55)" },
+  rose:     { top: "#FB7185", bottom: "#9F1239", shine: "#FFE4E6", particle: "#F43F5E", string: "#881337",  glow: "rgba(251,113,133,0.55)" },
+  sky:      { top: "#7DD3FC", bottom: "#1E40AF", shine: "#E0F2FE", particle: "#38BDF8", string: "#1D4ED8",  glow: "rgba(125,211,252,0.55)" },
+  lavender: { top: "#D8B4FE", bottom: "#6D28D9", shine: "#F3E8FF", particle: "#C084FC", string: "#5B21B6",  glow: "rgba(216,180,254,0.55)" },
+  coral:    { top: "#FDBA74", bottom: "#C2410C", shine: "#FFF7ED", particle: "#FB923C", string: "#9A3412",  glow: "rgba(253,186,116,0.55)" },
+  mint:     { top: "#6EE7B7", bottom: "#065F46", shine: "#ECFDF5", particle: "#34D399", string: "#047857",  glow: "rgba(110,231,183,0.55)" },
 };
 
 const BALLOONS: {
   id: number; x: number; y: number; hue: Hue;
   bobDuration: number; bobDelay: number; enterDelay: number; rotate: number;
 }[] = [
-  { id: 0, x: 14, y: 34, hue: "gold",     bobDuration: 2.8, bobDelay: 0.0, enterDelay: 0.0,  rotate: -6  },
-  { id: 1, x: 50, y: 28, hue: "rose",     bobDuration: 3.2, bobDelay: 0.5, enterDelay: 0.18, rotate: 3   },
-  { id: 2, x: 82, y: 36, hue: "sky",      bobDuration: 2.6, bobDelay: 1.0, enterDelay: 0.36, rotate: -4  },
-  { id: 3, x: 26, y: 62, hue: "lavender", bobDuration: 3.0, bobDelay: 0.3, enterDelay: 0.54, rotate: 7   },
-  { id: 4, x: 61, y: 55, hue: "coral",    bobDuration: 2.9, bobDelay: 0.8, enterDelay: 0.72, rotate: -3  },
-  { id: 5, x: 84, y: 70, hue: "mint",     bobDuration: 3.5, bobDelay: 0.2, enterDelay: 0.9,  rotate: 5   },
+  { id: 0, x: 14, y: 33, hue: "gold",     bobDuration: 2.8, bobDelay: 0.0, enterDelay: 0.0,  rotate: -6 },
+  { id: 1, x: 50, y: 30, hue: "rose",     bobDuration: 3.2, bobDelay: 0.5, enterDelay: 0.16, rotate:  3 },
+  { id: 2, x: 82, y: 35, hue: "sky",      bobDuration: 2.6, bobDelay: 1.0, enterDelay: 0.32, rotate: -4 },
+  { id: 3, x: 25, y: 62, hue: "lavender", bobDuration: 3.0, bobDelay: 0.3, enterDelay: 0.48, rotate:  7 },
+  { id: 4, x: 61, y: 57, hue: "coral",    bobDuration: 2.9, bobDelay: 0.8, enterDelay: 0.64, rotate: -3 },
+  { id: 5, x: 83, y: 70, hue: "mint",     bobDuration: 3.5, bobDelay: 0.2, enterDelay: 0.8,  rotate:  5 },
 ];
 
-const SIZE = 92;
-
-// Deterministic star positions (avoids random on re-render)
-const STARS = Array.from({ length: 50 }, (_, i) => ({
+// Deterministic — no Math.random at render time
+const STARS = Array.from({ length: 90 }, (_, i) => ({
   id: i,
   x: (i * 41.3 + 7) % 100,
   y: (i * 27.9 + 13) % 100,
-  r: 0.8 + (i % 3) * 0.6,
-  opacity: 0.15 + (i % 6) * 0.1,
+  r: 0.5 + (i % 4) * 0.45,
+  opacity: 0.25 + (i % 6) * 0.1,
   blinkDelay: (i % 9) * 0.4,
+  blinkDuration: 1.4 + (i % 7) * 0.45,
+  color: ["#FDE68A","#FCA5A5","#C4B5FD","#86EFAC","#7DD3FC","#FDA4AF","#FBBF24","#A78BFA"][i % 8],
 }));
 
-// Bokeh circles behind balloons
 const BOKEH = [
-  { x: 12, y: 40, r: 80,  color: "#FFE56640" },
-  { x: 50, y: 10, r: 60,  color: "#FB718550" },
-  { x: 82, y: 35, r: 70,  color: "#C084FC35" },
-  { x: 30, y: 70, r: 90,  color: "#F9A8D430" },
-  { x: 65, y: 65, r: 65,  color: "#FDBA7440" },
-  { x: 88, y: 75, r: 55,  color: "#86EFAC35" },
+  { x: 8,  y: 18, r: 130, color: "rgba(255,229,102,0.18)" },
+  { x: 52, y: 8,  r: 90,  color: "rgba(251,113,133,0.22)" },
+  { x: 88, y: 28, r: 100, color: "rgba(192,132,252,0.18)" },
+  { x: 18, y: 68, r: 110, color: "rgba(249,168,212,0.20)" },
+  { x: 65, y: 62, r: 80,  color: "rgba(253,186,116,0.20)" },
+  { x: 92, y: 78, r: 70,  color: "rgba(134,239,172,0.18)" },
+  { x: 42, y: 42, r: 120, color: "rgba(251,113,133,0.12)" },
 ];
 
-interface Particle {
-  id: number;
-  bx: number;  // balloon x % (viewport)
-  by: number;  // balloon y %
-  angle: number;
-  color: string;
-}
+// Rising background sparkles
+const FLOAT_DECOS = Array.from({ length: 18 }, (_, i) => ({
+  id: i,
+  x: (i * 13.7 + 5) % 88 + 6,
+  delay: (i * 0.65) % 7,
+  duration: 7 + (i % 6) * 1.8,
+  char: ["✦","♥","✦","★","✦","♥","✦","⋆","♥","★","✦","♥","✦","★","✦","⋆","♥","★"][i],
+  size: 9 + (i % 4) * 4,
+  opacity: 0.08 + (i % 4) * 0.06,
+}));
 
-const CONFETTI_COLORS = ["#ff8fab", "#f7c873", "#a0d8ef", "#e0bbe4", "#ffb347", "#90ee90", "#ff6b6b", "#ffd700"];
+const CONFETTI_COLORS = [
+  "#ff8fab","#f7c873","#a0d8ef","#e0bbe4","#ffb347",
+  "#90ee90","#ff6b6b","#ffd700","#C084FC","#34D399",
+];
 
-interface BdayConfetti {
-  id: number; x: number; color: string; rotate: number; duration: number; delay: number; size: number;
-}
+const POP_COLORS = [
+  "#FFE566","#FB7185","#7DD3FC","#D8B4FE","#FDBA74","#6EE7B7",
+  "#FCD34D","#F43F5E","#38BDF8","#C084FC","#FB923C","#34D399",
+  "#ffffff","#FFD6E7","#E0F2FE",
+];
+
+const STAR_CLIP =
+  "polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)";
 
 const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiverName }: Props) => {
   const [popped, setPopped] = useState<Set<number>>(new Set());
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [shockwaves, setShockwaves] = useState<Shockwave[]>([]);
+  const [flashes, setFlashes] = useState<Flash[]>([]);
   const [phase, setPhase] = useState<"game" | "countdown" | "birthday">("game");
   const [countdownNum, setCountdownNum] = useState(5);
   const [bdayConfetti, setBdayConfetti] = useState<BdayConfetti[]>([]);
-  const nextPId = useRef(0);
-
+  const nextId = useRef(0);
   const total = BALLOONS.length;
 
   const handlePop = (b: typeof BALLOONS[0]) => {
     if (popped.has(b.id) || phase !== "game") return;
 
-    const color = PALETTE[b.hue].particle;
-    const burst: Particle[] = Array.from({ length: 10 }, (_, i) => ({
-      id: nextPId.current++,
+    try { sounds.balloonPop(); } catch {}
+    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(60);
+
+    const pal = PALETTE[b.hue];
+
+    // 28 particles — circles, stars, hearts evenly spread
+    const burst: Particle[] = Array.from({ length: 28 }, (_, i) => ({
+      id: nextId.current++,
       bx: b.x,
       by: b.y,
-      angle: i * 36,
-      color,
+      angle: (i / 28) * 360 + (Math.random() * 12 - 6),
+      color: POP_COLORS[i % POP_COLORS.length],
+      shape: (["circle", "star", "heart"] as ParticleShape[])[i % 3],
+      size: 7 + (i % 5) * 3,
     }));
     setParticles(prev => [...prev, ...burst]);
+
+    // Shockwave ring
+    const sw: Shockwave = { id: nextId.current++, x: b.x, y: b.y, color: pal.particle };
+    setShockwaves(prev => [...prev, sw]);
+
+    // Full-screen flash
+    const fl: Flash = { id: nextId.current++, color: pal.glow };
+    setFlashes(prev => [...prev, fl]);
+
     setTimeout(() => {
       const ids = new Set(burst.map(p => p.id));
       setParticles(prev => prev.filter(p => !ids.has(p.id)));
-    }, 1000);
+    }, 1300);
+    setTimeout(() => setShockwaves(prev => prev.filter(s => s.id !== sw.id)), 700);
+    setTimeout(() => setFlashes(prev => prev.filter(f => f.id !== fl.id)), 280);
 
     const next = new Set(popped);
     next.add(b.id);
@@ -104,22 +169,23 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
       setPhase("countdown");
       let n = 5;
       setCountdownNum(n);
-      const interval = setInterval(() => {
+      const iv = setInterval(() => {
         n--;
         if (n === 0) {
-          clearInterval(interval);
-          const pieces: BdayConfetti[] = Array.from({ length: 60 }, (_, i) => ({
+          clearInterval(iv);
+          const pieces: BdayConfetti[] = Array.from({ length: 90 }, (_, i) => ({
             id: i,
             x: Math.random() * 100,
             color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
             rotate: Math.random() * 720 - 360,
-            duration: 2 + Math.random() * 2,
-            delay: Math.random() * 1.5,
-            size: 8 + Math.random() * 8,
+            duration: 2.5 + Math.random() * 2.5,
+            delay: Math.random() * 2,
+            size: 6 + Math.random() * 10,
+            round: Math.random() > 0.5,
           }));
           setBdayConfetti(pieces);
           setPhase("birthday");
-          setTimeout(onComplete, 4000);
+          setTimeout(onComplete, 4500);
         } else {
           setCountdownNum(n);
         }
@@ -139,84 +205,136 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
         inset: 0,
         zIndex: 100,
         overflow: "hidden",
-        background: "linear-gradient(160deg, #FDF1F5 0%, #F6D6E4 45%, #F0C4D8 100%)",
+        background: "linear-gradient(155deg, #160530 0%, #3B1264 28%, #6B1F7A 52%, #B83870 76%, #F07090 100%)",
       }}
     >
-      {/* Soft confetti dots */}
-      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
-        {STARS.map((s, i) => (
-          <motion.circle
-            key={s.id}
-            cx={`${s.x}%`} cy={`${s.y}%`}
-            r={s.r + 0.5}
-            fill={["#F9A8D4","#FDE68A","#C4B5FD","#86EFAC","#FDA4AF","#7DD3FC"][i % 6]}
-            animate={{ opacity: [s.opacity * 0.5, s.opacity * 1.4, s.opacity * 0.5] }}
-            transition={{ repeat: Infinity, duration: 2.5 + s.blinkDelay, ease: "easeInOut", delay: s.blinkDelay }}
-          />
-        ))}
-      </svg>
-
-      {/* Bokeh glows */}
-      {BOKEH.map((b, i) => (
-        <div
+      {/* Animated bokeh orbs */}
+      {BOKEH.map((bk, i) => (
+        <motion.div
           key={i}
+          animate={{ y: [0, -24, 0], scale: [1, 1.18, 1] }}
+          transition={{ repeat: Infinity, duration: 7 + i * 1.2, ease: "easeInOut", delay: i * 0.9 }}
           style={{
             position: "absolute",
-            left: `${b.x}%`,
-            top: `${b.y}%`,
-            width: b.r * 2,
-            height: b.r * 2,
+            left: `${bk.x}%`,
+            top: `${bk.y}%`,
+            width: bk.r * 2,
+            height: bk.r * 2,
             borderRadius: "50%",
-            background: b.color,
+            background: bk.color,
             transform: "translate(-50%, -50%)",
-            filter: "blur(40px)",
+            filter: "blur(55px)",
             pointerEvents: "none",
           }}
         />
       ))}
 
-      {/* Header */}
-      <div style={{ position: "relative", zIndex: 30, textAlign: "center", paddingTop: "clamp(20px, 5vh, 40px)" }}>
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+      {/* Twinkling star field */}
+      <svg
+        aria-hidden
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}
+      >
+        {STARS.map(s => (
+          <motion.circle
+            key={s.id}
+            cx={`${s.x}%`}
+            cy={`${s.y}%`}
+            r={s.r}
+            fill={s.color}
+            animate={{ opacity: [s.opacity * 0.25, s.opacity * 1.6, s.opacity * 0.25], r: [s.r, s.r * 1.35, s.r] }}
+            transition={{ repeat: Infinity, duration: s.blinkDuration, ease: "easeInOut", delay: s.blinkDelay }}
+          />
+        ))}
+      </svg>
+
+      {/* Floating rising sparkles */}
+      {FLOAT_DECOS.map(d => (
+        <motion.span
+          key={d.id}
+          initial={{ y: "108vh", opacity: 0 }}
+          animate={{ y: "-8vh", opacity: [0, d.opacity, d.opacity, 0] }}
+          transition={{
+            repeat: Infinity,
+            duration: d.duration,
+            delay: d.delay,
+            ease: "linear",
+            opacity: { times: [0, 0.12, 0.88, 1], ease: "linear" },
+          }}
           style={{
-            fontFamily: "'Pinyon Script', cursive",
-            fontSize: "clamp(28px, 5vw, 42px)",
-            color: "#C0396A",
-            textShadow: "0 2px 12px rgba(192,57,106,0.2)",
-            marginBottom: 4,
+            position: "absolute",
+            left: `${d.x}%`,
+            color: "white",
+            fontSize: d.size,
+            pointerEvents: "none",
+            zIndex: 2,
+            lineHeight: 1,
           }}
         >
-          Pop the Balloons!
-        </motion.p>
+          {d.char}
+        </motion.span>
+      ))}
 
-        {/* Progress dots */}
+      {/* ── Header ── */}
+      <div style={{ position: "relative", zIndex: 30, textAlign: "center", paddingTop: "clamp(14px,3.5vh,34px)" }}>
+        <motion.div
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          <p style={{
+            fontFamily: "'Pinyon Script', cursive",
+            fontSize: "clamp(26px, 6.5vw, 50px)",
+            color: "#FFE4EC",
+            textShadow: "0 0 24px rgba(255,160,190,0.7), 0 2px 8px rgba(0,0,0,0.4)",
+            margin: 0,
+            lineHeight: 1.1,
+          }}>
+            Pop the Balloons!
+          </p>
+          <p style={{
+            margin: "4px 0 0",
+            fontFamily: "sans-serif",
+            fontSize: "clamp(9px, 2.2vw, 12px)",
+            color: "rgba(255,220,235,0.65)",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+          }}>
+            ✦ tap each one ✦
+          </p>
+        </motion.div>
+
+        {/* Coloured progress dots */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          style={{ display: "flex", justifyContent: "center", gap: 10, marginTop: 8 }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "clamp(7px,2.2vw,14px)",
+            marginTop: "clamp(8px,2vh,14px)",
+          }}
         >
-          {BALLOONS.map(b => (
-            <motion.div
-              key={b.id}
-              animate={{
-                background: popped.has(b.id)
-                  ? PALETTE[b.hue].particle
-                  : "rgba(255,255,255,0.2)",
-                scale: popped.has(b.id) ? [1, 1.4, 1] : 1,
-              }}
-              transition={{ duration: 0.35 }}
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                border: "1.5px solid rgba(255,255,255,0.25)",
-              }}
-            />
-          ))}
+          {BALLOONS.map(b => {
+            const pal = PALETTE[b.hue];
+            return (
+              <motion.div
+                key={b.id}
+                animate={{
+                  background: popped.has(b.id) ? pal.particle : "rgba(255,255,255,0.14)",
+                  scale: popped.has(b.id) ? [1, 1.7, 1] : 1,
+                  boxShadow: popped.has(b.id) ? `0 0 10px 2px ${pal.particle}` : "none",
+                }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  width: "clamp(9px,2.8vw,14px)",
+                  height: "clamp(9px,2.8vw,14px)",
+                  borderRadius: "50%",
+                  border: "1.5px solid rgba(255,255,255,0.22)",
+                }}
+              />
+            );
+          })}
         </motion.div>
 
         <motion.p
@@ -224,35 +342,35 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
           style={{
-            marginTop: 10,
+            marginTop: "clamp(4px,1vh,8px)",
             fontFamily: "sans-serif",
-            fontSize: "clamp(12px, 3.5vw, 14px)",
-            color: "rgba(120,60,80,0.6)",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
+            fontSize: "clamp(10px, 2.5vw, 13px)",
+            color: "rgba(255,190,215,0.6)",
           }}
         >
-          {popped.size} of {total} popped
+          {popped.size} of {total} popped ✨
         </motion.p>
       </div>
 
-      {/* Balloons */}
-      {BALLOONS.map(b => {
+      {/* ── Balloons ── */}
+      {phase === "game" && BALLOONS.map(b => {
         const pal = PALETTE[b.hue];
         const isPopped = popped.has(b.id);
-        const gradId = `grad-${b.id}`;
-        const shineId = `shine-${b.id}`;
+        const gId = `grad-${b.id}`;
+        const sId = `shine-${b.id}`;
+        const sdId = `sdw-${b.id}`;
 
         return (
           <AnimatePresence key={b.id}>
             {!isPopped && (
               <motion.div
-                initial={{ y: "110vh", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ scale: 1.6, opacity: 0 }}
+                initial={{ y: "115vh", opacity: 0, scale: 0.7 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ scale: 2.4, opacity: 0, filter: "blur(10px)" }}
                 transition={{
-                  y: { type: "spring", stiffness: 55, damping: 14, delay: b.enterDelay },
-                  opacity: { duration: 0.25, delay: b.enterDelay },
+                  y: { type: "spring", stiffness: 48, damping: 11, delay: b.enterDelay },
+                  opacity: { duration: 0.28, delay: b.enterDelay },
+                  scale: { type: "spring", stiffness: 80, delay: b.enterDelay },
                   exit: { duration: 0.2 },
                 }}
                 style={{
@@ -263,74 +381,100 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   cursor: "pointer",
                   zIndex: 20,
                   userSelect: "none",
+                  WebkitUserSelect: "none",
+                  touchAction: "manipulation",
                 }}
                 onClick={() => handlePop(b)}
               >
-                {/* Bob wrapper */}
+                {/* Glow halo */}
                 <motion.div
-                  animate={{ y: [0, -14, 0] }}
+                  animate={{ scale: [1, 1.25, 1], opacity: [0.45, 0.75, 0.45] }}
+                  transition={{ repeat: Infinity, duration: b.bobDuration, ease: "easeInOut", delay: b.bobDelay }}
+                  style={{
+                    position: "absolute",
+                    inset: "-18px",
+                    borderRadius: "50%",
+                    background: pal.glow,
+                    filter: "blur(22px)",
+                    pointerEvents: "none",
+                  }}
+                />
+
+                {/* Bob + sway wrapper */}
+                <motion.div
+                  animate={{
+                    y: [0, -20, 0],
+                    rotate: [b.rotate - 1.5, b.rotate + 1.5, b.rotate - 1.5],
+                  }}
                   transition={{
                     repeat: Infinity,
                     duration: b.bobDuration,
                     ease: "easeInOut",
-                    delay: b.bobDelay + b.enterDelay + 0.8,
+                    delay: b.bobDelay + b.enterDelay + 0.5,
                   }}
                 >
                   <motion.div
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.92 }}
-                    style={{ rotate: b.rotate }}
+                    whileHover={{ scale: 1.13 }}
+                    whileTap={{ scale: 0.82 }}
                   >
-                    <svg
-                      width={SIZE}
-                      height={SIZE * 1.45}
-                      viewBox="0 0 92 133"
-                      style={{ overflow: "visible", display: "block" }}
-                    >
-                      <defs>
-                        <radialGradient id={gradId} cx="38%" cy="35%" r="62%">
-                          <stop offset="0%" stopColor={pal.shine} stopOpacity="0.9" />
-                          <stop offset="40%" stopColor={pal.top} />
-                          <stop offset="100%" stopColor={pal.bottom} />
-                        </radialGradient>
-                        <radialGradient id={shineId} cx="30%" cy="28%" r="40%">
-                          <stop offset="0%" stopColor="white" stopOpacity="0.55" />
-                          <stop offset="100%" stopColor="white" stopOpacity="0" />
-                        </radialGradient>
-                        <filter id={`shadow-${b.id}`} x="-20%" y="-20%" width="140%" height="140%">
-                          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor={pal.bottom} floodOpacity="0.5" />
-                        </filter>
-                      </defs>
+                    {/* Responsive container — SVG fills it */}
+                    <div style={{
+                      width: "clamp(70px, 18vmin, 108px)",
+                      height: "clamp(100px, 26vmin, 157px)",
+                    }}>
+                      <svg
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 92 133"
+                        style={{ overflow: "visible", display: "block" }}
+                      >
+                        <defs>
+                          <radialGradient id={gId} cx="37%" cy="31%" r="64%">
+                            <stop offset="0%"   stopColor={pal.shine}  stopOpacity="0.95" />
+                            <stop offset="32%"  stopColor={pal.top} />
+                            <stop offset="100%" stopColor={pal.bottom} />
+                          </radialGradient>
+                          <radialGradient id={sId} cx="28%" cy="24%" r="36%">
+                            <stop offset="0%"   stopColor="white" stopOpacity="0.72" />
+                            <stop offset="100%" stopColor="white" stopOpacity="0" />
+                          </radialGradient>
+                          <filter id={sdId} x="-30%" y="-20%" width="160%" height="160%">
+                            <feDropShadow dx="0" dy="7" stdDeviation="9" floodColor={pal.bottom} floodOpacity="0.65" />
+                          </filter>
+                        </defs>
 
-                      {/* Balloon body */}
-                      <ellipse
-                        cx="46" cy="48" rx="42" ry="46"
-                        fill={`url(#${gradId})`}
-                        filter={`url(#shadow-${b.id})`}
-                      />
-                      {/* Shine */}
-                      <ellipse
-                        cx="34" cy="28" rx="18" ry="22"
-                        fill={`url(#${shineId})`}
-                      />
-                      {/* Knot */}
-                      <path
-                        d="M42,93 Q46,102 50,93"
-                        fill="none"
-                        stroke={pal.bottom}
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      {/* String */}
-                      <path
-                        d={`M46,103 Q${46 + (b.rotate > 0 ? 6 : -6)},118 46,133`}
-                        fill="none"
-                        stroke={pal.string}
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        opacity="0.7"
-                      />
-                    </svg>
+                        {/* Balloon body */}
+                        <ellipse cx="46" cy="48" rx="42" ry="46" fill={`url(#${gId})`} filter={`url(#${sdId})`} />
+
+                        {/* Primary specular shine */}
+                        <ellipse cx="33" cy="26" rx="15" ry="19" fill={`url(#${sId})`} />
+
+                        {/* Secondary small shine */}
+                        <ellipse cx="59" cy="38" rx="5" ry="7" fill="white" opacity="0.22" />
+
+                        {/* Bottom tonal shadow */}
+                        <ellipse cx="46" cy="82" rx="17" ry="7" fill={pal.bottom} opacity="0.22" />
+
+                        {/* Knot */}
+                        <path
+                          d="M42,93 Q46,104 50,93"
+                          fill="none"
+                          stroke={pal.bottom}
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                        />
+
+                        {/* String */}
+                        <path
+                          d={`M46,104 Q${46 + (b.rotate > 0 ? 8 : -8)},119 ${46 + (b.rotate > 0 ? 3 : -3)},133`}
+                          fill="none"
+                          stroke={pal.string}
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          opacity="0.85"
+                        />
+                      </svg>
+                    </div>
                   </motion.div>
                 </motion.div>
               </motion.div>
@@ -339,38 +483,84 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
         );
       })}
 
-      {/* Particle bursts */}
-      {particles.map(p => (
+      {/* ── Pop particles ── */}
+      {particles.map(p => {
+        const spread = 18; // percent of viewport
+        const tx = p.bx + Math.cos((p.angle * Math.PI) / 180) * spread;
+        const ty = p.by + Math.sin((p.angle * Math.PI) / 180) * spread * 1.25;
+        return (
+          <motion.div
+            key={p.id}
+            initial={{ left: `${p.bx}%`, top: `${p.by}%`, scale: 1.1, opacity: 1, rotate: 0 }}
+            animate={{
+              left: `${tx}%`,
+              top: `${ty}%`,
+              scale: 0,
+              opacity: 0,
+              rotate: p.shape === "star" ? 200 : p.shape === "heart" ? -120 : 30,
+            }}
+            transition={{ duration: 0.85 + Math.random() * 0.35, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              width: p.size,
+              height: p.size,
+              borderRadius: p.shape === "circle" ? "50%" : p.shape === "heart" ? "50% 50% 50% 0" : "2px",
+              clipPath: p.shape === "star" ? STAR_CLIP : "none",
+              background: p.color,
+              transform: "translate(-50%, -50%)",
+              pointerEvents: "none",
+              zIndex: 35,
+              boxShadow: `0 0 8px ${p.color}`,
+            }}
+          />
+        );
+      })}
+
+      {/* ── Shockwave rings ── */}
+      {shockwaves.map(sw => (
         <motion.div
-          key={p.id}
+          key={sw.id}
           initial={{
-            left: `${p.bx}%`,
-            top: `${p.by}%`,
-            scale: 1,
-            opacity: 1,
+            left: `${sw.x}%`,
+            top: `${sw.y}%`,
+            width: 16,
+            height: 16,
+            opacity: 0.9,
           }}
-          animate={{
-            left: `${p.bx + Math.cos((p.angle * Math.PI) / 180) * 12}%`,
-            top: `${p.by + Math.sin((p.angle * Math.PI) / 180) * 14}%`,
-            scale: 0,
-            opacity: 0,
-          }}
-          transition={{ duration: 0.75, ease: "easeOut" }}
+          animate={{ width: 220, height: 220, opacity: 0 }}
+          transition={{ duration: 0.65, ease: "easeOut" }}
           style={{
             position: "absolute",
-            width: 10,
-            height: 10,
-            borderRadius: "50%",
-            background: p.color,
             transform: "translate(-50%, -50%)",
+            borderRadius: "50%",
+            border: `3px solid ${sw.color}`,
+            boxShadow: `0 0 16px ${sw.color}, inset 0 0 10px ${sw.color}40`,
             pointerEvents: "none",
-            zIndex: 30,
-            boxShadow: `0 0 6px ${p.color}`,
+            zIndex: 34,
           }}
         />
       ))}
 
-      {/* Countdown overlay */}
+      {/* ── Screen flash ── */}
+      <AnimatePresence>
+        {flashes.map(f => (
+          <motion.div
+            key={f.id}
+            initial={{ opacity: 0.38 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.26 }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: f.color,
+              pointerEvents: "none",
+              zIndex: 36,
+            }}
+          />
+        ))}
+      </AnimatePresence>
+
+      {/* ── Countdown overlay ── */}
       <AnimatePresence>
         {phase === "countdown" && (
           <motion.div
@@ -380,47 +570,68 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
             style={{
               position: "absolute", inset: 0, zIndex: 40,
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              background: "rgba(253, 235, 243, 0.92)",
+              background: "radial-gradient(ellipse at 50% 50%, rgba(90,20,120,0.96) 0%, rgba(18,5,44,0.99) 100%)",
             }}
           >
+            {/* Radiating ring pulses */}
+            {[0, 1, 2].map(i => (
+              <motion.div
+                key={i}
+                animate={{ scale: [0.4, 2.8], opacity: [0.6, 0] }}
+                transition={{ repeat: Infinity, duration: 1.6, delay: i * 0.53, ease: "easeOut" }}
+                style={{
+                  position: "absolute",
+                  width: 140, height: 140,
+                  borderRadius: "50%",
+                  border: "2px solid rgba(240,112,144,0.55)",
+                  pointerEvents: "none",
+                }}
+              />
+            ))}
+
             <AnimatePresence mode="wait">
               <motion.p
                 key={countdownNum}
-                initial={{ scale: 2.5, opacity: 0, y: -20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.3, opacity: 0, y: 20 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
+                initial={{ scale: 3, opacity: 0, rotate: -12 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                exit={{ scale: 0.15, opacity: 0, rotate: 12 }}
+                transition={{ duration: 0.38, ease: "backOut" }}
                 style={{
                   fontFamily: "'Pinyon Script', cursive",
-                  fontSize: "clamp(100px, 20vw, 160px)",
+                  fontSize: "clamp(96px, 22vw, 172px)",
                   lineHeight: 1,
-                  color: "#C0396A",
-                  textShadow: "0 4px 24px rgba(192,57,106,0.3)",
+                  margin: 0,
+                  background: "linear-gradient(135deg, #FFE566 0%, #FB7185 50%, #C084FC 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  filter: "drop-shadow(0 0 22px rgba(240,112,144,0.55))",
                   userSelect: "none",
                 }}
               >
                 {countdownNum}
               </motion.p>
             </AnimatePresence>
+
             <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 1.1 }}
               style={{
-                marginTop: 16,
+                marginTop: 18,
                 fontFamily: "sans-serif",
-                fontSize: "clamp(11px, 2vw, 14px)",
-                color: "rgba(120,60,80,0.6)",
-                letterSpacing: "0.12em",
+                fontSize: "clamp(10px, 2.8vw, 14px)",
+                color: "rgba(255,200,220,0.9)",
+                letterSpacing: "0.22em",
                 textTransform: "uppercase",
               }}
             >
-              Get ready...
+              ✦ Get ready ✦
             </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Happy Birthday overlay */}
+      {/* ── Happy Birthday reveal ── */}
       <AnimatePresence>
         {phase === "birthday" && (
           <motion.div
@@ -432,22 +643,26 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
               background: "#FFF9F2",
             }}
           >
-            {/* Falling confetti layer */}
+            {/* Falling confetti */}
             {bdayConfetti.map(c => (
               <motion.div
                 key={c.id}
                 initial={{ y: "-5vh", x: `${c.x}vw`, opacity: 1, rotate: 0 }}
-                animate={{ y: "110vh", opacity: 0.85, rotate: c.rotate }}
+                animate={{ y: "110vh", opacity: 0.88, rotate: c.rotate }}
                 transition={{ duration: c.duration, delay: c.delay, ease: "linear" }}
                 style={{
                   position: "absolute", top: 0, left: 0,
-                  background: c.color, width: c.size, height: c.size * 0.6,
-                  borderRadius: 2, pointerEvents: "none", zIndex: 1,
+                  background: c.color,
+                  width: c.size,
+                  height: c.round ? c.size : c.size * 0.55,
+                  borderRadius: c.round ? "50%" : 2,
+                  pointerEvents: "none",
+                  zIndex: 1,
                 }}
               />
             ))}
 
-            {/* Floral frame border — same asset as template 1 & 2 */}
+            {/* Floral frame border */}
             <div
               aria-hidden
               style={{
@@ -461,11 +676,15 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
               }}
             />
 
-            {/* Scrollable card content — padded to sit inside the frame */}
-            <div style={{ position: "relative", zIndex: 2, height: "100%", overflowY: "auto", background: "rgba(255,249,242,0.97)" }}>
+            {/* Scrollable letter card */}
+            <div style={{
+              position: "relative", zIndex: 2,
+              height: "100%", overflowY: "auto",
+              background: "rgba(255,249,242,0.97)",
+            }}>
               <div style={{
-                minHeight: "100%", display: "flex", flexDirection: "column",
-                alignItems: "center",
+                minHeight: "100%",
+                display: "flex", flexDirection: "column", alignItems: "center",
                 padding: "clamp(76px,17vmin,220px) clamp(72px,16vmin,215px) clamp(76px,17vmin,220px)",
                 gap: 28,
               }}>
@@ -478,7 +697,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   style={{ textAlign: "center" }}
                 >
                   <motion.div
-                    animate={{ scale: [1, 1.12, 1] }}
+                    animate={{ scale: [1, 1.13, 1] }}
                     transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
                     style={{ fontSize: "clamp(44px, 10vw, 68px)", lineHeight: 1, marginBottom: 6 }}
                   >
@@ -503,20 +722,23 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   </p>
                 </motion.div>
 
-                {/* 3 Polaroid photos */}
+                {/* Polaroid photos */}
                 <motion.div
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.32 }}
                   style={{
-                    display: "flex", gap: "clamp(8px,3vw,16px)",
-                    justifyContent: "center", width: "100%", maxWidth: 380,
+                    display: "flex",
+                    gap: "clamp(8px,3vw,16px)",
+                    justifyContent: "center",
+                    width: "100%",
+                    maxWidth: 380,
                   }}
                 >
                   {[
-                    { rot: -6,  emoji: "🎈", bg: "linear-gradient(135deg,#FFB3C6,#FF8FAB)" },
-                    { rot:  4,  emoji: "🎁", bg: "linear-gradient(135deg,#F7C873,#FBD38D)" },
-                    { rot: -3,  emoji: "🎊", bg: "linear-gradient(135deg,#C4B5FD,#A78BFA)" },
+                    { rot: -6, emoji: "🎈", bg: "linear-gradient(135deg,#FFB3C6,#FF8FAB)" },
+                    { rot:  4, emoji: "🎁", bg: "linear-gradient(135deg,#F7C873,#FBD38D)" },
+                    { rot: -3, emoji: "🎊", bg: "linear-gradient(135deg,#C4B5FD,#A78BFA)" },
                   ].map((slot, i) => (
                     <motion.div
                       key={i}
@@ -617,7 +839,6 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                 >
                   🎈🎉🎊🎁🎂
                 </motion.p>
-
               </div>
             </div>
           </motion.div>
