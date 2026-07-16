@@ -640,9 +640,34 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
             exit={{ opacity: 0 }}
             style={{
               position: "absolute", inset: 0, zIndex: 40, overflow: "hidden",
-              background: "#FFF9F2",
+              background: "linear-gradient(165deg, #FFFBEE 0%, #FFF6D6 35%, #FFF1E8 65%, #FFF8F2 100%)",
             }}
           >
+            {/* Ambient gold & rose bokeh */}
+            {([
+              { x: 8,  y: 12, r: 200, c: "rgba(255,210,80,0.15)"  },
+              { x: 88, y: 8,  r: 160, c: "rgba(255,150,170,0.14)" },
+              { x: 50, y: 48, r: 240, c: "rgba(255,225,130,0.09)" },
+              { x: 10, y: 82, r: 140, c: "rgba(255,170,190,0.13)" },
+              { x: 92, y: 80, r: 150, c: "rgba(255,210,80,0.11)"  },
+            ] as { x: number; y: number; r: number; c: string }[]).map((bk, i) => (
+              <motion.div
+                key={i}
+                animate={{ y: [0, -22, 0], scale: [1, 1.14, 1] }}
+                transition={{ repeat: Infinity, duration: 7 + i * 1.4, ease: "easeInOut", delay: i * 0.7 }}
+                style={{
+                  position: "absolute",
+                  left: `${bk.x}%`, top: `${bk.y}%`,
+                  width: bk.r * 2, height: bk.r * 2,
+                  borderRadius: "50%",
+                  background: bk.c,
+                  transform: "translate(-50%, -50%)",
+                  filter: "blur(65px)",
+                  pointerEvents: "none",
+                }}
+              />
+            ))}
+
             {/* Falling confetti */}
             {bdayConfetti.map(c => (
               <motion.div
@@ -662,107 +687,98 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
               />
             ))}
 
-            {/* Floral frame border */}
-            <div
-              aria-hidden
-              style={{
-                position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10,
-                borderStyle: "solid", borderColor: "transparent",
-                borderWidth: "clamp(68px, 15.5vmin, 210px)",
-                borderImageSource: `url(${frameImg})`,
-                borderImageSlice: 260,
-                borderImageRepeat: "stretch",
-                borderImageWidth: 1,
-              }}
-            />
-
-            {/* Scrollable letter card */}
-            <div style={{
-              position: "relative", zIndex: 2,
-              height: "100%", overflowY: "auto",
-              background: "rgba(255,249,242,0.97)",
-            }}>
+            {/* Scrollable letter */}
+            <div style={{ position: "relative", zIndex: 2, height: "100%", overflowY: "auto" }}>
               <div style={{
                 minHeight: "100%",
                 display: "flex", flexDirection: "column", alignItems: "center",
-                padding: "clamp(76px,17vmin,220px) clamp(72px,16vmin,215px) clamp(76px,17vmin,220px)",
-                gap: 28,
+                padding: "clamp(32px,6vmin,60px) clamp(20px,5vw,40px) clamp(40px,8vmin,70px)",
+                gap: 30,
               }}>
 
-                {/* Heading */}
+                {/* ── Heading ── */}
                 <motion.div
-                  initial={{ y: -24, opacity: 0 }}
+                  initial={{ y: -28, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1, type: "spring", stiffness: 160 }}
+                  transition={{ delay: 0.1, type: "spring", stiffness: 130, damping: 14 }}
                   style={{ textAlign: "center" }}
                 >
                   <motion.div
-                    animate={{ scale: [1, 1.13, 1] }}
-                    transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-                    style={{ fontSize: "clamp(44px, 10vw, 68px)", lineHeight: 1, marginBottom: 6 }}
+                    animate={{ scale: [1, 1.16, 1] }}
+                    transition={{ repeat: Infinity, duration: 2.3, ease: "easeInOut" }}
+                    style={{
+                      fontSize: "clamp(50px, 12vw, 76px)",
+                      lineHeight: 1, marginBottom: 10,
+                      filter: "drop-shadow(0 4px 16px rgba(220,140,40,0.35))",
+                      display: "inline-block",
+                    }}
                   >
                     🎂
                   </motion.div>
+
+                  {/* Gold shimmer "Happy Birthday" */}
                   <p style={{
                     fontFamily: "'Pinyon Script', cursive",
-                    fontSize: "clamp(38px, 9vw, 58px)",
-                    color: "#C0396A",
-                    textShadow: "0 2px 14px rgba(192,57,106,0.22)",
+                    fontSize: "clamp(40px, 10vw, 66px)",
+                    background: "linear-gradient(135deg, #B8751A 0%, #D4A843 28%, #F5D882 50%, #D4A843 72%, #B8751A 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                    filter: "drop-shadow(0 2px 10px rgba(200,137,42,0.28))",
                     lineHeight: 1.1, margin: 0,
                   }}>
                     Happy Birthday
                   </p>
+
                   <p style={{
                     fontFamily: "'Pinyon Script', cursive",
-                    fontSize: "clamp(28px, 6vw, 42px)",
-                    color: "#D4507A",
+                    fontSize: "clamp(28px, 6.5vw, 44px)",
+                    color: "#C0396A",
                     lineHeight: 1.2, margin: "2px 0 0",
+                    textShadow: "0 2px 10px rgba(192,57,106,0.18)",
                   }}>
                     {receiverName || "Beautiful"}! 🎉
                   </p>
+
+                  {/* Gold ornament rule */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginTop: 16 }}>
+                    <div style={{ height: 1, width: 44, background: "linear-gradient(90deg, transparent, rgba(200,150,40,0.55))" }} />
+                    <span style={{ color: "#C8952A", fontSize: 13, letterSpacing: 4 }}>✦</span>
+                    <div style={{ height: 1, width: 44, background: "linear-gradient(90deg, rgba(200,150,40,0.55), transparent)" }} />
+                  </div>
                 </motion.div>
 
-                {/* Polaroid photos */}
+                {/* ── Polaroids ── */}
                 <motion.div
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 26 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.32 }}
-                  style={{
-                    display: "flex",
-                    gap: "clamp(8px,3vw,16px)",
-                    justifyContent: "center",
-                    width: "100%",
-                    maxWidth: 380,
-                  }}
+                  transition={{ delay: 0.34 }}
+                  style={{ display: "flex", gap: "clamp(8px,3vw,18px)", justifyContent: "center", width: "100%", maxWidth: 390 }}
                 >
                   {[
-                    { rot: -6, emoji: "🎈", bg: "linear-gradient(135deg,#FFB3C6,#FF8FAB)" },
-                    { rot:  4, emoji: "🎁", bg: "linear-gradient(135deg,#F7C873,#FBD38D)" },
+                    { rot: -7, emoji: "🎈", bg: "linear-gradient(135deg,#FFB3C6,#FF8FAB)" },
+                    { rot:  5, emoji: "🎁", bg: "linear-gradient(135deg,#F7C873,#FBD38D)" },
                     { rot: -3, emoji: "🎊", bg: "linear-gradient(135deg,#C4B5FD,#A78BFA)" },
                   ].map((slot, i) => (
                     <motion.div
                       key={i}
-                      initial={{ scale: 0, rotate: slot.rot * 2.5, opacity: 0 }}
+                      initial={{ scale: 0, rotate: slot.rot * 3, opacity: 0 }}
                       animate={{ scale: 1, rotate: slot.rot, opacity: 1 }}
-                      transition={{ type: "spring", stiffness: 200, delay: 0.48 + i * 0.14 }}
+                      transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 + i * 0.15 }}
                       style={{
-                        flex: "1 1 0", maxWidth: 115,
+                        flex: "1 1 0", maxWidth: 118,
                         background: "#fff",
-                        padding: "7px 7px 26px",
-                        boxShadow: "0 6px 28px rgba(0,0,0,0.13), 0 2px 6px rgba(0,0,0,0.07)",
+                        padding: "7px 7px 28px",
+                        boxShadow: "0 12px 40px rgba(0,0,0,0.14), 0 3px 10px rgba(0,0,0,0.07)",
                         borderRadius: 3,
+                        border: "1px solid rgba(0,0,0,0.05)",
                       }}
                     >
                       {images?.[i] ? (
-                        <img
-                          src={images[i]}
-                          style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }}
-                          alt=""
-                        />
+                        <img src={images[i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
                       ) : (
                         <div style={{
-                          width: "100%", aspectRatio: "1",
-                          background: slot.bg,
+                          width: "100%", aspectRatio: "1", background: slot.bg,
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontSize: "clamp(22px,5vw,32px)",
                         }}>
@@ -773,47 +789,74 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   ))}
                 </motion.div>
 
-                {/* Letter text */}
+                {/* ── Letter text ── */}
                 {letterText && (
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 22 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.9 }}
+                    transition={{ delay: 0.95 }}
                     style={{ width: "100%", maxWidth: 380 }}
                   >
-                    <div style={{ textAlign: "center", marginBottom: 14, fontSize: "1.1rem", letterSpacing: "0.35em", opacity: 0.7 }}>
-                      🌸 ✨ 🌸
+                    {/* Top ornamental divider */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(190,130,40,0.35))" }} />
+                      <span style={{ color: "#C8952A", fontSize: 11, letterSpacing: "0.35em" }}>✦ ✦ ✦</span>
+                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(190,130,40,0.35), transparent)" }} />
                     </div>
-                    <p style={{
-                      fontFamily: "Georgia, 'Times New Roman', serif",
-                      fontSize: "clamp(13px, 3.5vw, 15px)",
-                      color: "#5C3A3A",
-                      lineHeight: 1.85,
-                      whiteSpace: "pre-wrap",
-                      fontStyle: "italic",
-                      textAlign: "center",
-                      margin: 0,
+
+                    {/* Elegant letter card */}
+                    <div style={{
+                      background: "rgba(255,253,245,0.88)",
+                      border: "1px solid rgba(200,150,40,0.18)",
+                      borderRadius: 14,
+                      padding: "clamp(18px, 4.5vw, 26px)",
+                      boxShadow: "0 6px 32px rgba(180,120,40,0.07), inset 0 1px 0 rgba(255,255,255,0.9)",
+                      backdropFilter: "blur(6px)",
+                      position: "relative",
                     }}>
-                      {letterText}
-                    </p>
-                    <div style={{ textAlign: "center", marginTop: 14, fontSize: "1.1rem", letterSpacing: "0.35em", opacity: 0.7 }}>
-                      🌸 ✨ 🌸
+                      {/* Corner accents */}
+                      {[["top-0 left-0","border-t border-l"],["top-0 right-0","border-t border-r"],
+                        ["bottom-0 left-0","border-b border-l"],["bottom-0 right-0","border-b border-r"]].map(([pos, border], ci) => (
+                        <div key={ci} className={`absolute ${pos} w-4 h-4 ${border} rounded-sm`}
+                          style={{ borderColor: "rgba(200,150,40,0.28)", margin: 6 }} />
+                      ))}
+
+                      <p style={{
+                        fontFamily: "Georgia, 'Times New Roman', serif",
+                        fontSize: "clamp(13px, 3.5vw, 15px)",
+                        color: "#4A3018",
+                        lineHeight: 2,
+                        whiteSpace: "pre-wrap",
+                        fontStyle: "italic",
+                        textAlign: "center",
+                        margin: 0,
+                        letterSpacing: "0.01em",
+                      }}>
+                        {letterText}
+                      </p>
+                    </div>
+
+                    {/* Bottom ornamental divider */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 18 }}>
+                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(190,130,40,0.35))" }} />
+                      <span style={{ color: "#C8952A", fontSize: 11, letterSpacing: "0.35em" }}>✦ ✦ ✦</span>
+                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(190,130,40,0.35), transparent)" }} />
                     </div>
                   </motion.div>
                 )}
 
-                {/* Signature */}
+                {/* ── Signature ── */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: letterText ? 1.1 : 0.75 }}
+                  transition={{ delay: letterText ? 1.15 : 0.8 }}
                   style={{ textAlign: "center" }}
                 >
                   <p style={{
                     fontFamily: "sans-serif",
-                    fontSize: "clamp(11px, 3vw, 13px)",
-                    color: "rgba(120,60,80,0.55)",
-                    letterSpacing: "0.1em",
+                    fontSize: "clamp(9px, 2.2vw, 11px)",
+                    color: "rgba(100,55,30,0.48)",
+                    letterSpacing: "0.22em",
                     textTransform: "uppercase",
                     margin: "0 0 4px",
                   }}>
@@ -821,24 +864,36 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   </p>
                   <p style={{
                     fontFamily: "'Pinyon Script', cursive",
-                    fontSize: "clamp(30px, 7vw, 44px)",
-                    color: "#C0396A",
+                    fontSize: "clamp(32px, 8vw, 50px)",
+                    background: "linear-gradient(135deg, #B8751A 0%, #D4A843 50%, #B8751A 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                     margin: 0,
                     lineHeight: 1.2,
+                    filter: "drop-shadow(0 1px 6px rgba(180,120,20,0.2))",
                   }}>
-                    {senderName || "Someone Special"} 💕
+                    {senderName || "Someone Special"}
                   </p>
                 </motion.div>
 
-                {/* Decorative footer */}
-                <motion.p
+                {/* ── Closing ornament ── */}
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.3 }}
-                  style={{ fontSize: "clamp(18px,4vw,24px)", letterSpacing: "0.4em", margin: 0 }}
+                  transition={{ delay: 1.4 }}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}
                 >
-                  🎈🎉🎊🎁🎂
-                </motion.p>
+                  <div style={{ display: "flex", gap: 14, fontSize: "clamp(18px,4vw,22px)" }}>
+                    <span>💕</span><span>🎂</span><span>🎉</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 36, height: 1, background: "linear-gradient(90deg, transparent, rgba(200,150,40,0.4))" }} />
+                    <span style={{ color: "#D4A843", fontSize: 12 }}>✦</span>
+                    <div style={{ width: 36, height: 1, background: "linear-gradient(90deg, rgba(200,150,40,0.4), transparent)" }} />
+                  </div>
+                </motion.div>
+
               </div>
             </div>
           </motion.div>
