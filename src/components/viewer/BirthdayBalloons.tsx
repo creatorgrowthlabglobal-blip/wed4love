@@ -81,13 +81,13 @@ const STARS = Array.from({ length: 90 }, (_, i) => ({
 }));
 
 const BOKEH = [
-  { x: 8,  y: 18, r: 130, color: "rgba(255,229,102,0.18)" },
-  { x: 52, y: 8,  r: 90,  color: "rgba(251,113,133,0.22)" },
-  { x: 88, y: 28, r: 100, color: "rgba(192,132,252,0.18)" },
-  { x: 18, y: 68, r: 110, color: "rgba(249,168,212,0.20)" },
-  { x: 65, y: 62, r: 80,  color: "rgba(253,186,116,0.20)" },
-  { x: 92, y: 78, r: 70,  color: "rgba(134,239,172,0.18)" },
-  { x: 42, y: 42, r: 120, color: "rgba(251,113,133,0.12)" },
+  { x: 8,  y: 18, r: 130, color: "rgba(255,210,80,0.22)"  },
+  { x: 52, y: 8,  r: 90,  color: "rgba(255,150,170,0.20)" },
+  { x: 88, y: 28, r: 100, color: "rgba(192,132,252,0.15)" },
+  { x: 18, y: 68, r: 110, color: "rgba(255,170,190,0.18)" },
+  { x: 65, y: 62, r: 80,  color: "rgba(255,210,80,0.17)"  },
+  { x: 92, y: 78, r: 70,  color: "rgba(253,186,116,0.22)" },
+  { x: 42, y: 42, r: 120, color: "rgba(255,150,170,0.14)" },
 ];
 
 // Rising background sparkles
@@ -203,9 +203,9 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 100,
+        zIndex: 200,
         overflow: "hidden",
-        background: "linear-gradient(155deg, #160530 0%, #3B1264 28%, #6B1F7A 52%, #B83870 76%, #F07090 100%)",
+        background: "linear-gradient(165deg, #FFFBEE 0%, #FFF6D6 35%, #FFF1E8 65%, #FFF8F2 100%)",
       }}
     >
       {/* Animated bokeh orbs */}
@@ -229,10 +229,10 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
         />
       ))}
 
-      {/* Twinkling star field */}
+      {/* Twinkling star field — hidden on light background */}
       <svg
         aria-hidden
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1, display: "none" }}
       >
         {STARS.map(s => (
           <motion.circle
@@ -263,7 +263,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
           style={{
             position: "absolute",
             left: `${d.x}%`,
-            color: "white",
+            color: "#C8952A",
             fontSize: d.size,
             pointerEvents: "none",
             zIndex: 2,
@@ -275,7 +275,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
       ))}
 
       {/* ── Header ── */}
-      <div style={{ position: "relative", zIndex: 30, textAlign: "center", paddingTop: "clamp(14px,3.5vh,34px)" }}>
+      <div style={{ position: "relative", zIndex: 30, textAlign: "center", paddingTop: "clamp(14px,3.5vh,34px)", display: phase === "game" ? undefined : "none" }}>
         <motion.div
           initial={{ opacity: 0, y: -18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -284,8 +284,8 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
           <p style={{
             fontFamily: "'Pinyon Script', cursive",
             fontSize: "clamp(26px, 6.5vw, 50px)",
-            color: "#FFE4EC",
-            textShadow: "0 0 24px rgba(255,160,190,0.7), 0 2px 8px rgba(0,0,0,0.4)",
+            color: "#8B2252",
+            textShadow: "0 2px 12px rgba(184,48,106,0.18)",
             margin: 0,
             lineHeight: 1.1,
           }}>
@@ -295,7 +295,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
             margin: "4px 0 0",
             fontFamily: "sans-serif",
             fontSize: "clamp(9px, 2.2vw, 12px)",
-            color: "rgba(255,220,235,0.65)",
+            color: "rgba(139,34,82,0.55)",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
           }}>
@@ -321,7 +321,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
               <motion.div
                 key={b.id}
                 animate={{
-                  background: popped.has(b.id) ? pal.particle : "rgba(255,255,255,0.14)",
+                  background: popped.has(b.id) ? pal.particle : "rgba(139,34,82,0.10)",
                   scale: popped.has(b.id) ? [1, 1.7, 1] : 1,
                   boxShadow: popped.has(b.id) ? `0 0 10px 2px ${pal.particle}` : "none",
                 }}
@@ -330,7 +330,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   width: "clamp(9px,2.8vw,14px)",
                   height: "clamp(9px,2.8vw,14px)",
                   borderRadius: "50%",
-                  border: "1.5px solid rgba(255,255,255,0.22)",
+                  border: "1.5px solid rgba(139,34,82,0.22)",
                 }}
               />
             );
@@ -345,7 +345,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
             marginTop: "clamp(4px,1vh,8px)",
             fontFamily: "sans-serif",
             fontSize: "clamp(10px, 2.5vw, 13px)",
-            color: "rgba(255,190,215,0.6)",
+            color: "rgba(139,34,82,0.50)",
           }}
         >
           {popped.size} of {total} popped ✨
@@ -570,62 +570,155 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
             style={{
               position: "absolute", inset: 0, zIndex: 40,
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              background: "radial-gradient(ellipse at 50% 50%, rgba(90,20,120,0.96) 0%, rgba(18,5,44,0.99) 100%)",
+              background: "linear-gradient(165deg, #FFFBEE 0%, #FFF6D6 35%, #FFF1E8 65%, #FFF8F2 100%)",
             }}
           >
-            {/* Radiating ring pulses */}
+            {/* Central warm glow — gold outer, rose inner */}
+            <div style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>
+              <motion.div
+                animate={{ scale: [1, 1.28, 1], opacity: [0.55, 0.85, 0.55] }}
+                transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
+                style={{
+                  position: "absolute",
+                  width: 420, height: 420,
+                  borderRadius: "50%",
+                  background: "radial-gradient(ellipse, rgba(200,149,42,0.18) 0%, transparent 68%)",
+                  transform: "translate(-50%, -50%)",
+                  filter: "blur(28px)",
+                }}
+              />
+              <motion.div
+                animate={{ scale: [1, 1.18, 1], opacity: [0.45, 0.75, 0.45] }}
+                transition={{ repeat: Infinity, duration: 1.9, ease: "easeInOut", delay: 0.35 }}
+                style={{
+                  position: "absolute",
+                  width: 210, height: 210,
+                  borderRadius: "50%",
+                  background: "radial-gradient(ellipse, rgba(200,48,90,0.16) 0%, transparent 70%)",
+                  transform: "translate(-50%, -50%)",
+                  filter: "blur(18px)",
+                }}
+              />
+            </div>
+
+            {/* Gold radiating rings */}
             {[0, 1, 2].map(i => (
               <motion.div
                 key={i}
-                animate={{ scale: [0.4, 2.8], opacity: [0.6, 0] }}
-                transition={{ repeat: Infinity, duration: 1.6, delay: i * 0.53, ease: "easeOut" }}
+                animate={{ scale: [0.28, 2.7], opacity: [0.7, 0] }}
+                transition={{ repeat: Infinity, duration: 1.9, delay: i * 0.63, ease: "easeOut" }}
                 style={{
                   position: "absolute",
-                  width: 140, height: 140,
+                  width: 148, height: 148,
                   borderRadius: "50%",
-                  border: "2px solid rgba(240,112,144,0.55)",
+                  border: "1.5px solid rgba(200,149,42,0.55)",
+                  boxShadow: "0 0 14px rgba(200,149,42,0.20), inset 0 0 8px rgba(200,149,42,0.10)",
                   pointerEvents: "none",
                 }}
               />
             ))}
 
+            {/* Orbiting sparkles — deterministic circle */}
+            {([
+              { angle: 0,   dist: 118, char: "✦", size: 18, color: "#C8952A", dur: 1.6, dy: -14 },
+              { angle: 45,  dist:  98, char: "♥", size: 13, color: "#E05070", dur: 1.4, dy: -10 },
+              { angle: 90,  dist: 122, char: "★", size: 16, color: "#9333EA", dur: 1.8, dy: -16 },
+              { angle: 135, dist:  96, char: "✦", size: 12, color: "#D97706", dur: 1.5, dy: -11 },
+              { angle: 180, dist: 115, char: "⋆", size: 20, color: "#059669", dur: 1.7, dy: -15 },
+              { angle: 225, dist:  98, char: "♥", size: 13, color: "#0284C7", dur: 1.6, dy: -12 },
+              { angle: 270, dist: 112, char: "✦", size: 17, color: "#C8952A", dur: 1.9, dy: -14 },
+              { angle: 315, dist:  94, char: "★", size: 14, color: "#E05070", dur: 1.5, dy: -10 },
+            ] as { angle: number; dist: number; char: string; size: number; color: string; dur: number; dy: number }[]).map((sp, i) => {
+              const rad = (sp.angle * Math.PI) / 180;
+              const sx = Math.cos(rad) * sp.dist;
+              const sy = Math.sin(rad) * sp.dist;
+              return (
+                <motion.span
+                  key={i}
+                  animate={{ y: [sy, sy + sp.dy, sy], opacity: [0.45, 1, 0.45], scale: [0.88, 1.28, 0.88] }}
+                  transition={{ repeat: Infinity, duration: sp.dur, delay: i * 0.19, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute",
+                    left: `calc(50% + ${sx}px)`,
+                    top: `calc(50% + ${sy}px)`,
+                    transform: "translate(-50%, -50%)",
+                    fontSize: sp.size,
+                    color: sp.color,
+                    textShadow: `0 0 10px ${sp.color}`,
+                    pointerEvents: "none",
+                    lineHeight: 1,
+                    zIndex: 1,
+                  }}
+                >
+                  {sp.char}
+                </motion.span>
+              );
+            })}
+
+            {/* "Get Ready..." heading */}
+            <motion.p
+              initial={{ opacity: 0, y: -18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18, duration: 0.5 }}
+              style={{
+                fontFamily: "'Pinyon Script', cursive",
+                fontSize: "clamp(24px, 5.5vw, 38px)",
+                color: "#C8952A",
+                textShadow: "0 2px 12px rgba(200,149,42,0.22)",
+                margin: 0,
+                lineHeight: 1.2,
+                letterSpacing: "0.02em",
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              Get Ready...
+            </motion.p>
+
+            {/* Countdown number */}
             <AnimatePresence mode="wait">
               <motion.p
                 key={countdownNum}
                 initial={{ scale: 3, opacity: 0, rotate: -12 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                exit={{ scale: 0.15, opacity: 0, rotate: 12 }}
+                exit={{ scale: 0.1, opacity: 0, rotate: 12 }}
                 transition={{ duration: 0.38, ease: "backOut" }}
                 style={{
                   fontFamily: "'Pinyon Script', cursive",
-                  fontSize: "clamp(96px, 22vw, 172px)",
-                  lineHeight: 1,
+                  fontSize: "clamp(110px, 26vw, 190px)",
+                  lineHeight: 1.3,
                   margin: 0,
-                  background: "linear-gradient(135deg, #FFE566 0%, #FB7185 50%, #C084FC 100%)",
+                  padding: "0.1em 0.2em",
+                  background: "linear-gradient(135deg, #C8952A 0%, #E06040 38%, #C8305A 68%, #7C3ACA 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(240,112,144,0.55))",
+                  filter: "drop-shadow(0 2px 12px rgba(200,149,42,0.30)) drop-shadow(0 4px 24px rgba(200,48,90,0.22))",
                   userSelect: "none",
+                  position: "relative",
+                  zIndex: 2,
                 }}
               >
                 {countdownNum}
               </motion.p>
             </AnimatePresence>
 
+            {/* Subtitle */}
             <motion.p
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ repeat: Infinity, duration: 1.1 }}
+              animate={{ opacity: [0.4, 0.85, 0.4] }}
+              transition={{ repeat: Infinity, duration: 1.7 }}
               style={{
-                marginTop: 18,
+                marginTop: "clamp(4px,1.2vh,12px)",
                 fontFamily: "sans-serif",
-                fontSize: "clamp(10px, 2.8vw, 14px)",
-                color: "rgba(255,200,220,0.9)",
-                letterSpacing: "0.22em",
+                fontSize: "clamp(8px, 2vw, 11px)",
+                color: "rgba(139,34,82,0.60)",
+                letterSpacing: "0.28em",
                 textTransform: "uppercase",
+                position: "relative",
+                zIndex: 2,
               }}
             >
-              ✦ Get ready ✦
+              ✦ your birthday letter awaits ✦
             </motion.p>
           </motion.div>
         )}
@@ -687,106 +780,247 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
               />
             ))}
 
+            {/* ── Wall: top bunting pennants (non-scrolling) ── */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0,
+              height: "clamp(44px,8vh,58px)",
+              zIndex: 10, pointerEvents: "none", overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", top: 10, left: 0, right: 0, height: 2,
+                background: "linear-gradient(90deg, transparent, rgba(140,90,20,0.45) 5%, rgba(140,90,20,0.45) 95%, transparent)",
+              }} />
+              <div style={{
+                display: "flex", justifyContent: "center", alignItems: "flex-start",
+                paddingTop: 11, gap: 2, overflow: "hidden",
+              }}>
+                {Array.from({ length: 24 }, (_, i) => {
+                  const c = ["#FFD54F","#FF8A80","#80D8FF","#CE93D8","#A5D6A7","#FFCC80"][i % 6];
+                  return (
+                    <div key={i} style={{
+                      width: 0, height: 0,
+                      borderLeft: "clamp(11px,2.8vw,17px) solid transparent",
+                      borderRight: "clamp(11px,2.8vw,17px) solid transparent",
+                      borderTop: `clamp(20px,5vw,32px) solid ${c}`,
+                      flexShrink: 0,
+                      opacity: 0.88,
+                      filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.10))",
+                    }} />
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Scrollable letter */}
             <div style={{ position: "relative", zIndex: 2, height: "100%", overflowY: "auto" }}>
               <div style={{
                 minHeight: "100%",
                 display: "flex", flexDirection: "column", alignItems: "center",
-                padding: "clamp(32px,6vmin,60px) clamp(20px,5vw,40px) clamp(40px,8vmin,70px)",
+                paddingTop: "calc(env(safe-area-inset-top, 0px) + clamp(58px,10vh,78px))",
+                paddingLeft: "clamp(20px,5vw,40px)",
+                paddingRight: "clamp(20px,5vw,40px)",
+                paddingBottom: "clamp(40px,8vmin,70px)",
                 gap: 30,
               }}>
 
-                {/* ── Heading ── */}
-                <motion.div
-                  initial={{ y: -28, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1, type: "spring", stiffness: 130, damping: 14 }}
-                  style={{ textAlign: "center" }}
-                >
-                  <motion.div
-                    animate={{ scale: [1, 1.16, 1] }}
-                    transition={{ repeat: Infinity, duration: 2.3, ease: "easeInOut" }}
-                    style={{
-                      fontSize: "clamp(50px, 12vw, 76px)",
-                      lineHeight: 1, marginBottom: 10,
-                      filter: "drop-shadow(0 4px 16px rgba(220,140,40,0.35))",
-                      display: "inline-block",
-                    }}
-                  >
-                    🎂
-                  </motion.div>
+                {/* ── Wall Banner Heading ── */}
+                <div style={{ width: "100%", position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(14px,3vh,22px)" }}>
 
-                  {/* Gold shimmer "Happy Birthday" */}
-                  <p style={{
-                    fontFamily: "'Pinyon Script', cursive",
-                    fontSize: "clamp(40px, 10vw, 66px)",
-                    background: "linear-gradient(135deg, #B8751A 0%, #D4A843 28%, #F5D882 50%, #D4A843 72%, #B8751A 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    filter: "drop-shadow(0 2px 10px rgba(200,137,42,0.28))",
-                    lineHeight: 1.1, margin: 0,
-                  }}>
-                    Happy Birthday
-                  </p>
+                  {/* Banner rows — catenary string + hanging letter boxes */}
+                  {(() => {
+                    const SAG = 20, CTOP = 5, TH = 12;
+                    const svgH = CTOP + SAG + TH;
 
-                  <p style={{
-                    fontFamily: "'Pinyon Script', cursive",
-                    fontSize: "clamp(28px, 6.5vw, 44px)",
-                    color: "#C0396A",
-                    lineHeight: 1.2, margin: "2px 0 0",
-                    textShadow: "0 2px 10px rgba(192,57,106,0.18)",
-                  }}>
-                    {receiverName || "Beautiful"}! 🎉
-                  </p>
+                    const catY = (x: number, w: number) =>
+                      CTOP + SAG * 4 * (x / w) * (1 - x / w);
+
+                    const renderRow = (
+                      chars: string[],
+                      pal: { bg: string; bd: string; tx: string }[],
+                      lw: number, lh: number, gp: number,
+                      rots: number[], fs: string, delay: number,
+                    ) => {
+                      const n = chars.length;
+                      const totalW = n * lw + (n - 1) * gp;
+                      const xs = chars.map((_, i) => i * (lw + gp) + lw / 2);
+                      return (
+                        <div style={{ position: "relative", width: "100%", display: "flex", justifyContent: "center" }}>
+                          {/* Curved catenary + individual threads */}
+                          <svg
+                            viewBox={`0 0 ${totalW} ${svgH}`}
+                            style={{
+                              position: "absolute", top: 0,
+                              left: "50%", transform: "translateX(-50%)",
+                              width: totalW, maxWidth: "100%", height: svgH,
+                              overflow: "visible", pointerEvents: "none",
+                            }}
+                          >
+                            {/* Main catenary curve — gravity sag */}
+                            <path
+                              d={`M 0 ${CTOP} Q ${totalW / 2} ${CTOP + SAG} ${totalW} ${CTOP}`}
+                              fill="none"
+                              stroke="rgba(100,58,8,0.55)"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                            />
+                            {/* Per-letter hanging thread */}
+                            {xs.map((x, i) => {
+                              const y1 = catY(x, totalW);
+                              return (
+                                <line key={i}
+                                  x1={x} y1={y1} x2={x} y2={y1 + TH}
+                                  stroke="rgba(100,58,8,0.4)" strokeWidth="0.8"
+                                />
+                              );
+                            })}
+                          </svg>
+                          {/* Letter boxes — positioned by catenary height */}
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: `${gp}px` }}>
+                            {chars.map((ch, i) => {
+                              const lp = pal[i % pal.length];
+                              const mt = catY(xs[i], totalW) + TH;
+                              return (
+                                <motion.div
+                                  key={i}
+                                  initial={{ y: -30, opacity: 0 }}
+                                  animate={{ y: 0, opacity: 1, rotate: rots[i] ?? 0 }}
+                                  transition={{ delay: delay + i * 0.07, type: "spring", stiffness: 300, damping: 18 }}
+                                  style={{
+                                    marginTop: mt,
+                                    width: lw, height: lh, flexShrink: 0,
+                                    background: lp.bg, border: `2px solid ${lp.bd}`,
+                                    borderRadius: Math.round(lw * 0.14),
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontFamily: "'Arial Black', Impact, sans-serif",
+                                    fontWeight: 900, fontSize: fs, color: lp.tx,
+                                    boxShadow: "0 4px 14px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)",
+                                    position: "relative", userSelect: "none",
+                                  }}
+                                >
+                                  {/* String-hole dot at top */}
+                                  <div style={{
+                                    position: "absolute", top: -3, left: "50%",
+                                    transform: "translateX(-50%)",
+                                    width: 4, height: 4, borderRadius: "50%",
+                                    background: lp.bd, opacity: 0.65,
+                                  }} />
+                                  {ch}
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <>
+                        {renderRow(
+                          ["H","A","P","P","Y"],
+                          [
+                            { bg: "#FFD54F", bd: "#E5A800", tx: "#5A3500" },
+                            { bg: "#FF8A80", bd: "#C62828", tx: "#5C0000" },
+                            { bg: "#80D8FF", bd: "#0277BD", tx: "#01375A" },
+                            { bg: "#CE93D8", bd: "#7B1FA2", tx: "#2A0042" },
+                            { bg: "#A5D6A7", bd: "#2E7D32", tx: "#0A2E0C" },
+                          ],
+                          38, 44, 5, [-2, 1.5, -1.5, 2, -1], "22px", 0.15,
+                        )}
+                        {renderRow(
+                          ["B","I","R","T","H","D","A","Y"],
+                          [
+                            { bg: "#A5D6A7", bd: "#2E7D32", tx: "#0A2E0C" },
+                            { bg: "#FFD54F", bd: "#E5A800", tx: "#5A3500" },
+                            { bg: "#FF8A80", bd: "#C62828", tx: "#5C0000" },
+                            { bg: "#80D8FF", bd: "#0277BD", tx: "#01375A" },
+                            { bg: "#CE93D8", bd: "#7B1FA2", tx: "#2A0042" },
+                            { bg: "#FFCC80", bd: "#E65100", tx: "#5A1A00" },
+                            { bg: "#FFD54F", bd: "#E5A800", tx: "#5A3500" },
+                            { bg: "#FF8A80", bd: "#C62828", tx: "#5C0000" },
+                          ],
+                          30, 36, 4, [1.5, -2, 1, -1.5, 2, -1, 1.5, -2], "18px", 0.52,
+                        )}
+                      </>
+                    );
+                  })()}
 
                   {/* Gold ornament rule */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginTop: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
                     <div style={{ height: 1, width: 44, background: "linear-gradient(90deg, transparent, rgba(200,150,40,0.55))" }} />
                     <span style={{ color: "#C8952A", fontSize: 13, letterSpacing: 4 }}>✦</span>
                     <div style={{ height: 1, width: 44, background: "linear-gradient(90deg, rgba(200,150,40,0.55), transparent)" }} />
                   </div>
-                </motion.div>
 
-                {/* ── Polaroids ── */}
+                </div>
+
+                {/* ── Polaroids — adapts to photo count ── */}
                 <motion.div
                   initial={{ opacity: 0, y: 26 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.34 }}
-                  style={{ display: "flex", gap: "clamp(8px,3vw,18px)", justifyContent: "center", width: "100%", maxWidth: 390 }}
+                  style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: 390 }}
                 >
-                  {[
-                    { rot: -7, emoji: "🎈", bg: "linear-gradient(135deg,#FFB3C6,#FF8FAB)" },
-                    { rot:  5, emoji: "🎁", bg: "linear-gradient(135deg,#F7C873,#FBD38D)" },
-                    { rot: -3, emoji: "🎊", bg: "linear-gradient(135deg,#C4B5FD,#A78BFA)" },
-                  ].map((slot, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ scale: 0, rotate: slot.rot * 3, opacity: 0 }}
-                      animate={{ scale: 1, rotate: slot.rot, opacity: 1 }}
-                      transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 + i * 0.15 }}
-                      style={{
-                        flex: "1 1 0", maxWidth: 118,
-                        background: "#fff",
-                        padding: "7px 7px 28px",
-                        boxShadow: "0 12px 40px rgba(0,0,0,0.14), 0 3px 10px rgba(0,0,0,0.07)",
-                        borderRadius: 3,
-                        border: "1px solid rgba(0,0,0,0.05)",
-                      }}
-                    >
-                      {images?.[i] ? (
-                        <img src={images[i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
-                      ) : (
-                        <div style={{
-                          width: "100%", aspectRatio: "1", background: slot.bg,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: "clamp(22px,5vw,32px)",
-                        }}>
-                          {slot.emoji}
+                  {(() => {
+                    const photoCount = images?.filter(Boolean).length ?? 0;
+                    const polaroidStyle = (rot: number): React.CSSProperties => ({
+                      background: "#fff",
+                      padding: "7px 7px 28px",
+                      boxShadow: "0 12px 40px rgba(0,0,0,0.14), 0 3px 10px rgba(0,0,0,0.07)",
+                      borderRadius: 3,
+                      border: "1px solid rgba(0,0,0,0.05)",
+                    });
+
+                    if (photoCount === 0) {
+                      return null;
+                    }
+
+                    if (photoCount === 1) {
+                      return (
+                        <motion.div
+                          initial={{ scale: 0, rotate: -5, opacity: 0 }}
+                          animate={{ scale: 1, rotate: -2, opacity: 1 }}
+                          transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 }}
+                          style={{ ...polaroidStyle(-2), maxWidth: 210 }}
+                        >
+                          <img src={images![0]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
+                        </motion.div>
+                      );
+                    }
+
+                    if (photoCount === 2) {
+                      return (
+                        <div style={{ display: "flex", gap: "clamp(10px,3vw,20px)", justifyContent: "center", width: "100%" }}>
+                          {([-6, 5] as const).map((rot, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ scale: 0, rotate: rot * 3, opacity: 0 }}
+                              animate={{ scale: 1, rotate: rot, opacity: 1 }}
+                              transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 + i * 0.15 }}
+                              style={{ ...polaroidStyle(rot), flex: "1 1 0", maxWidth: 160 }}
+                            >
+                              <img src={images![i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
+                            </motion.div>
+                          ))}
                         </div>
-                      )}
-                    </motion.div>
-                  ))}
+                      );
+                    }
+
+                    return (
+                      <div style={{ display: "flex", gap: "clamp(8px,3vw,18px)", justifyContent: "center", width: "100%" }}>
+                        {([-7, 5, -3] as const).map((rot, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ scale: 0, rotate: rot * 3, opacity: 0 }}
+                            animate={{ scale: 1, rotate: rot, opacity: 1 }}
+                            transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 + i * 0.15 }}
+                            style={{ ...polaroidStyle(rot), flex: "1 1 0", maxWidth: 118 }}
+                          >
+                            <img src={images![i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
+                          </motion.div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </motion.div>
 
                 {/* ── Letter text ── */}
@@ -797,50 +1031,65 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                     transition={{ delay: 0.95 }}
                     style={{ width: "100%", maxWidth: 380 }}
                   >
-                    {/* Top ornamental divider */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(190,130,40,0.35))" }} />
-                      <span style={{ color: "#C8952A", fontSize: 11, letterSpacing: "0.35em" }}>✦ ✦ ✦</span>
-                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(190,130,40,0.35), transparent)" }} />
-                    </div>
-
-                    {/* Elegant letter card */}
-                    <div style={{
-                      background: "rgba(255,253,245,0.88)",
-                      border: "1px solid rgba(200,150,40,0.18)",
-                      borderRadius: 14,
-                      padding: "clamp(18px, 4.5vw, 26px)",
-                      boxShadow: "0 6px 32px rgba(180,120,40,0.07), inset 0 1px 0 rgba(255,255,255,0.9)",
-                      backdropFilter: "blur(6px)",
-                      position: "relative",
-                    }}>
-                      {/* Corner accents */}
-                      {[["top-0 left-0","border-t border-l"],["top-0 right-0","border-t border-r"],
-                        ["bottom-0 left-0","border-b border-l"],["bottom-0 right-0","border-b border-r"]].map(([pos, border], ci) => (
-                        <div key={ci} className={`absolute ${pos} w-4 h-4 ${border} rounded-sm`}
-                          style={{ borderColor: "rgba(200,150,40,0.28)", margin: 6 }} />
-                      ))}
-
-                      <p style={{
-                        fontFamily: "Georgia, 'Times New Roman', serif",
-                        fontSize: "clamp(13px, 3.5vw, 15px)",
-                        color: "#4A3018",
-                        lineHeight: 2,
-                        whiteSpace: "pre-wrap",
-                        fontStyle: "italic",
-                        textAlign: "center",
-                        margin: 0,
-                        letterSpacing: "0.01em",
+                    {/* Vintage paper letter */}
+                    <div style={{ position: "relative", transform: "rotate(-0.6deg)" }}>
+                      {/* Paper base — warm parchment with aged tones */}
+                      <div style={{
+                        position: "relative",
+                        background: "linear-gradient(160deg, #f9eed3 0%, #f3e4b9 30%, #f8eccc 60%, #faf2dc 100%)",
+                        borderRadius: 2,
+                        padding: "clamp(22px,5.5vw,32px) clamp(18px,4.5vw,28px)",
+                        boxShadow:
+                          "0 1px 2px rgba(0,0,0,0.05), " +
+                          "0 6px 24px rgba(100,60,10,0.18), " +
+                          "0 18px 48px rgba(80,45,5,0.10), " +
+                          "inset 0 0 80px rgba(150,90,20,0.05)",
+                        overflow: "hidden",
                       }}>
-                        {letterText}
-                      </p>
-                    </div>
+                        {/* Faint horizontal ruled lines */}
+                        <div style={{
+                          position: "absolute", inset: 0, pointerEvents: "none",
+                          backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(140,90,20,0.07) 27px, rgba(140,90,20,0.07) 28px)",
+                        }} />
+                        {/* Aged corner darkening */}
+                        <div style={{
+                          position: "absolute", inset: 0, pointerEvents: "none",
+                          background:
+                            "radial-gradient(ellipse at 0% 0%,   rgba(110,65,10,0.09) 0%, transparent 45%), " +
+                            "radial-gradient(ellipse at 100% 0%,  rgba(110,65,10,0.08) 0%, transparent 40%), " +
+                            "radial-gradient(ellipse at 0% 100%,  rgba(110,65,10,0.08) 0%, transparent 40%), " +
+                            "radial-gradient(ellipse at 100% 100%,rgba(110,65,10,0.09) 0%, transparent 45%)",
+                        }} />
+                        {/* Subtle centre fade to lighten mid-paper */}
+                        <div style={{
+                          position: "absolute", inset: 0, pointerEvents: "none",
+                          background: "radial-gradient(ellipse at 50% 45%, rgba(255,248,220,0.28) 0%, transparent 70%)",
+                        }} />
 
-                    {/* Bottom ornamental divider */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 18 }}>
-                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(190,130,40,0.35))" }} />
-                      <span style={{ color: "#C8952A", fontSize: 11, letterSpacing: "0.35em" }}>✦ ✦ ✦</span>
-                      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(190,130,40,0.35), transparent)" }} />
+                        {/* Letter text */}
+                        <p style={{
+                          position: "relative", zIndex: 1,
+                          fontFamily: "Georgia, 'Times New Roman', serif",
+                          fontSize: "clamp(13px,3.5vw,15px)",
+                          color: "#3a1e0c",
+                          lineHeight: 2.1,
+                          whiteSpace: "pre-wrap",
+                          fontStyle: "italic",
+                          textAlign: "center",
+                          margin: 0,
+                          letterSpacing: "0.015em",
+                        }}>
+                          {letterText}
+                        </p>
+                      </div>
+                      {/* Drop shadow beneath paper edge */}
+                      <div style={{
+                        position: "absolute", bottom: -6, left: "4%", right: "4%", height: 8,
+                        background: "rgba(80,45,5,0.12)",
+                        filter: "blur(6px)",
+                        borderRadius: "0 0 4px 4px",
+                        pointerEvents: "none",
+                      }} />
                     </div>
                   </motion.div>
                 )}
@@ -884,9 +1133,6 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                   transition={{ delay: 1.4 }}
                   style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}
                 >
-                  <div style={{ display: "flex", gap: 14, fontSize: "clamp(18px,4vw,22px)" }}>
-                    <span>💕</span><span>🎂</span><span>🎉</span>
-                  </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 36, height: 1, background: "linear-gradient(90deg, transparent, rgba(200,150,40,0.4))" }} />
                     <span style={{ color: "#D4A843", fontSize: 12 }}>✦</span>
