@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Music, Play, Pause, Check, Instagram, Youtube, X } from "lucide-react";
+import { Music, Play, Pause, Check, Youtube, X, Search, Loader2 } from "lucide-react";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
-import { extractYouTubeId } from "@/lib/youtube";
+import { extractYouTubeId, searchYouTubeMusic, YouTubeSearchResult } from "@/lib/youtube";
 import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 
 interface MusicSelectionProps {
@@ -27,6 +27,11 @@ const MusicSelection = ({
   const [youtubeError, setYoutubeError] = useState("");
   const [ytPreviewing, setYtPreviewing] = useState(false);
   const ytPreview = useYouTubeAudio(youtubeVideoId, 0.4);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<YouTubeSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [searched, setSearched] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -65,6 +70,30 @@ const MusicSelection = ({
     onSelectMusic(id);
   };
 
+  const handleSearch = async () => {
+    const q = searchQuery.trim();
+    if (!q) return;
+    setSearching(true);
+    setSearchError("");
+    try {
+      const results = await searchYouTubeMusic(q);
+      setSearchResults(results);
+      if (results.length === 0) setSearchError("No results — try a different search, or paste a YouTube link directly.");
+    } catch {
+      setSearchError("Search isn't working right now. Try pasting a YouTube link instead.");
+    } finally {
+      setSearching(false);
+      setSearched(true);
+    }
+  };
+
+  const selectSearchResult = (result: YouTubeSearchResult) => {
+    onYoutubeVideoIdChange(result.videoId);
+    setSearchResults([]);
+    setSearchQuery("");
+    setSearched(false);
+  };
+
   const toggleYtPreview = () => {
     audioRef.current?.pause();
     setPreviewing(null);
@@ -93,6 +122,10 @@ const MusicSelection = ({
     onYoutubeVideoIdChange(null);
     setYoutubeInput("");
     setYoutubeError("");
+    setSearchQuery("");
+    setSearchResults([]);
+    setSearchError("");
+    setSearched(false);
   };
 
   return (
@@ -156,11 +189,11 @@ const MusicSelection = ({
         </div>
       </div>
 
-      {/* Custom YouTube link */}
+      {/* Add your own song — search or paste a link */}
       <div className="letter-paper rounded-2xl p-5 sm:p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
           <Youtube className="w-5 h-5 text-elegant-gold" />
-          <span className="font-heading text-base font-semibold">Or paste any YouTube link</span>
+          <span className="font-heading text-base font-semibold">Add Your Own Song</span>
         </div>
 
         {youtubeVideoId ? (
@@ -188,6 +221,68 @@ const MusicSelection = ({
           </div>
         ) : (
           <div>
+            {/* Search */}
+            <div className="flex gap-2 mb-1.5">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setSearchError(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
+                placeholder="Search for a song or artist..."
+                className="flex-1 px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-foreground font-body text-sm outline-none focus:border-primary/50 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={handleSearch}
+                disabled={searching || !searchQuery.trim()}
+                className="px-4 py-2.5 rounded-xl bg-primary/10 text-primary font-body text-sm font-semibold hover:bg-primary/20 transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                Search
+              </button>
+            </div>
+
+            {searchError && (
+              <p className="font-body text-xs text-destructive mb-2">{searchError}</p>
+            )}
+
+            {searchResults.length > 0 && (
+              <div className="space-y-1.5 mb-3 max-h-72 overflow-y-auto pr-1">
+                {searchResults.map((r) => (
+                  <button
+                    key={r.videoId}
+                    type="button"
+                    onClick={() => selectSearchResult(r)}
+                    className="w-full flex items-center gap-3 p-2 rounded-xl border border-border/40 bg-background/50 hover:border-primary/30 hover:bg-primary/5 transition-all text-left"
+                  >
+                    {r.thumbnail ? (
+                      <img src={r.thumbnail} alt="" className="w-14 h-10 rounded-md object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-14 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Music className="w-4 h-4 text-primary/50" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-heading text-sm font-semibold text-foreground truncate">{r.title}</p>
+                      <p className="font-body text-xs text-muted-foreground truncate">{r.channelTitle}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {searched && !searching && searchResults.length === 0 && !searchError && (
+              <p className="font-body text-xs text-muted-foreground mb-2">
+                No results — try a different search, or paste a YouTube link below.
+              </p>
+            )}
+
+            <div className="flex items-center gap-2 my-3">
+              <div className="flex-1 h-px bg-border/50" />
+              <span className="font-body text-xs text-muted-foreground">or paste a link</span>
+              <div className="flex-1 h-px bg-border/50" />
+            </div>
+
             <div className="flex gap-2">
               <input
                 type="url"
@@ -214,27 +309,6 @@ const MusicSelection = ({
           </div>
         )}
       </div>
-
-      {/* Request a Music */}
-      <a
-        href="https://instagram.com/wish4love_official"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-3 p-4 rounded-2xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors group"
-      >
-        <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-          <Instagram className="w-5 h-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-display text-sm font-bold text-foreground">Request a Custom Song</p>
-          <p className="font-body text-xs text-muted-foreground">
-            Don't see your song? DM us on Instagram and we'll add it for you.
-          </p>
-        </div>
-        <span className="font-body text-xs font-semibold text-primary group-hover:underline notranslate shrink-0" translate="no">
-          @wish4love_official
-        </span>
-      </a>
 
       <div className="mt-6 flex justify-between">
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}

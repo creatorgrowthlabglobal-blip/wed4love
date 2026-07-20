@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.telegram-payment-webhook]
 verify_jwt = false
+
+[functions.search-youtube-music]
+verify_jwt = false
