@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
@@ -13,6 +13,7 @@ import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import PhilippinesPaymentModal from "@/components/PhilippinesPaymentModal";
 import { filesToBase64, saveLetter } from "@/lib/letterStorage";
+import { saveDraft, loadDraft, clearDraft, draftImagesToFiles } from "@/lib/letterDraft";
 import { getCurrentUser } from "@/lib/auth";
 import {
   createWhopCheckout,
@@ -42,6 +43,51 @@ const CreateLetter = () => {
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
   const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
+  const [imageDataUrls, setImageDataUrls] = useState<string[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore an in-progress letter from localStorage (e.g. user was sent to
+  // sign up mid-flow, or reloaded the tab). Runs once on mount.
+  useEffect(() => {
+    const draft = loadDraft();
+    if (!draft) {
+      setHydrated(true);
+      return;
+    }
+    setLetterType(draft.letterType);
+    setTemplate(draft.template);
+    setDetails(draft.details);
+    setLetterText(draft.letterText);
+    setSelectedMusic(draft.selectedMusic);
+    setStep(draft.step);
+    if (draft.images?.length) {
+      draftImagesToFiles(draft.images)
+        .then((files) => setImages(files))
+        .catch((e) => console.warn("[CreateLetter] draft image restore failed", e))
+        .finally(() => setHydrated(true));
+    } else {
+      setHydrated(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep a base64 mirror of the current photos so they survive a reload.
+  useEffect(() => {
+    let cancelled = false;
+    filesToBase64(images).then((urls) => {
+      if (!cancelled) setImageDataUrls(urls);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [images]);
+
+  // Autosave the draft as the user progresses. Skipped until restore (above)
+  // has finished, so we never overwrite a saved draft with blank initial state.
+  useEffect(() => {
+    if (!hydrated) return;
+    saveDraft({ step, letterType, template, details, letterText, selectedMusic, images: imageDataUrls });
+  }, [hydrated, step, letterType, template, details, letterText, selectedMusic, imageDataUrls]);
 
   const handleGCashPay = (): string => {
     const letterId = Math.random().toString(36).substring(2, 10);
@@ -65,6 +111,7 @@ const CreateLetter = () => {
         template,
       })
     ).catch((e) => console.error("[CreateLetter] gcash save failed", e));
+    clearDraft();
     return letterId;
   };
 
@@ -163,6 +210,7 @@ const CreateLetter = () => {
           variant: "destructive",
         });
       }
+      clearDraft();
       setTimeout(() => navigate(`/letter-ready/${letterId}`, { replace: true }), 600);
       return;
     }
@@ -182,6 +230,7 @@ const CreateLetter = () => {
     // Make sure the letter is persisted before we navigate away — otherwise
     // a fast Whop response could redirect before localStorage is written.
     await savePromise.catch((e) => console.error("[CreateLetter] save failed", e));
+    clearDraft();
     // Same-tab navigation is the most reliable across desktop + mobile +
     // in-app browsers. Avoids popup blockers that bite when the click
     // originated from a modal button (state update breaks the gesture chain).

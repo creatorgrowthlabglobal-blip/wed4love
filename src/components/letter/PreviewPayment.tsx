@@ -4,10 +4,12 @@ import { Eye, Heart, Lock, Play, X, CreditCard, QrCode } from "lucide-react";
 import { filesToBase64 } from "@/lib/letterStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
+import { getCurrentUser } from "@/lib/auth";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import SignupGate from "@/components/letter/SignupGate";
 
 interface PreviewPaymentProps {
   letterData: {
@@ -30,6 +32,15 @@ type PreviewStage = "mailbox" | "envelope";
 const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
   const [showPaymentChoice, setShowPaymentChoice] = useState(false);
+  const [showSignupGate, setShowSignupGate] = useState(false);
+
+  const handleSendClick = () => {
+    if (getCurrentUser()) {
+      setShowPaymentChoice(true);
+    } else {
+      setShowSignupGate(true);
+    }
+  };
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -235,7 +246,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setShowPaymentChoice(true)}
+              onClick={handleSendClick}
               className="w-full py-4 rounded-2xl font-heading text-lg font-bold text-primary-foreground transition-all duration-300"
               style={{
                 background: "linear-gradient(135deg, hsl(var(--primary)), hsl(340 90% 58%))",
@@ -394,6 +405,14 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
         )}
       </AnimatePresence>
 
+      <SignupGate
+        isOpen={showSignupGate}
+        onClose={() => setShowSignupGate(false)}
+        onSuccess={() => {
+          setShowSignupGate(false);
+          setShowPaymentChoice(true);
+        }}
+      />
     </>
   );
 };
