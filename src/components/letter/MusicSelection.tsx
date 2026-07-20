@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Music, Play, Pause, Check, Youtube, X, Search, Loader2 } from "lucide-react";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
-import { extractYouTubeId, searchYouTubeMusic, YouTubeSearchResult } from "@/lib/youtube";
+import { searchYouTubeMusic, YouTubeSearchResult } from "@/lib/youtube";
 import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 
 interface MusicSelectionProps {
@@ -23,8 +23,6 @@ const MusicSelection = ({
 }: MusicSelectionProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [previewing, setPreviewing] = useState<string | null>(null);
-  const [youtubeInput, setYoutubeInput] = useState("");
-  const [youtubeError, setYoutubeError] = useState("");
   const [ytPreviewing, setYtPreviewing] = useState(false);
   const ytPreview = useYouTubeAudio(youtubeVideoId, 0.4);
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,8 +63,6 @@ const MusicSelection = ({
     setPreviewing(null);
     setYtPreviewing(false);
     onYoutubeVideoIdChange(null);
-    setYoutubeInput("");
-    setYoutubeError("");
     onSelectMusic(id);
   };
 
@@ -78,9 +74,9 @@ const MusicSelection = ({
     try {
       const results = await searchYouTubeMusic(q);
       setSearchResults(results);
-      if (results.length === 0) setSearchError("No results — try a different search, or paste a YouTube link directly.");
+      if (results.length === 0) setSearchError("No results — try a different search.");
     } catch {
-      setSearchError("Search isn't working right now. Try pasting a YouTube link instead.");
+      setSearchError("Search isn't working right now. Please try again in a moment.");
     } finally {
       setSearching(false);
       setSearched(true);
@@ -106,22 +102,10 @@ const MusicSelection = ({
     }
   };
 
-  const handleYoutubeSubmit = () => {
-    const id = extractYouTubeId(youtubeInput);
-    if (!id) {
-      setYoutubeError("That doesn't look like a valid YouTube link. Try pasting the full URL.");
-      return;
-    }
-    setYoutubeError("");
-    onYoutubeVideoIdChange(id);
-  };
-
   const clearYoutube = () => {
     ytPreview.pause();
     setYtPreviewing(false);
     onYoutubeVideoIdChange(null);
-    setYoutubeInput("");
-    setYoutubeError("");
     setSearchQuery("");
     setSearchResults([]);
     setSearchError("");
@@ -142,8 +126,98 @@ const MusicSelection = ({
           Choose Your Melody
         </h2>
         <p className="font-body text-base text-muted-foreground">
-          Pick a song from our curated collection
+          Search for any song, or pick one of our curated picks
         </p>
+      </div>
+
+      {/* Search for a song */}
+      <div className="letter-paper rounded-2xl p-5 sm:p-6 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Youtube className="w-5 h-5 text-elegant-gold" />
+          <span className="font-heading text-base font-semibold">Search for a Song</span>
+        </div>
+
+        {youtubeVideoId ? (
+          <div className="flex items-center gap-3 p-3 rounded-xl border bg-primary/10 border-primary/40">
+            <button
+              type="button"
+              onClick={toggleYtPreview}
+              className="w-10 h-10 rounded-full bg-primary/15 hover:bg-primary/25 flex items-center justify-center flex-shrink-0 transition-colors"
+              aria-label={ytPreviewing ? "Pause preview" : "Play preview"}
+            >
+              {ytPreviewing ? <Pause className="w-4 h-4 text-primary" /> : <Play className="w-4 h-4 text-primary ml-0.5" />}
+            </button>
+            <div className="flex-1 min-w-0">
+              <p className="font-heading text-sm font-semibold text-foreground truncate">Custom song selected</p>
+              <p className="font-body text-xs text-muted-foreground truncate">This will play instead of a curated song</p>
+            </div>
+            <button
+              type="button"
+              onClick={clearYoutube}
+              className="w-8 h-8 rounded-full bg-secondary/70 hover:bg-secondary flex items-center justify-center flex-shrink-0 text-foreground/60"
+              aria-label="Remove custom song"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setSearchError(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
+                placeholder="Search for a song or artist..."
+                className="flex-1 px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-foreground font-body text-sm outline-none focus:border-primary/50 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={handleSearch}
+                disabled={searching || !searchQuery.trim()}
+                className="px-4 py-2.5 rounded-xl bg-primary/10 text-primary font-body text-sm font-semibold hover:bg-primary/20 transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                Search
+              </button>
+            </div>
+
+            {searchError && (
+              <p className="font-body text-xs text-destructive mt-2">{searchError}</p>
+            )}
+
+            {searchResults.length > 0 && (
+              <div className="space-y-1.5 mt-3 max-h-72 overflow-y-auto pr-1">
+                {searchResults.map((r) => (
+                  <button
+                    key={r.videoId}
+                    type="button"
+                    onClick={() => selectSearchResult(r)}
+                    className="w-full flex items-center gap-3 p-2 rounded-xl border border-border/40 bg-background/50 hover:border-primary/30 hover:bg-primary/5 transition-all text-left"
+                  >
+                    {r.thumbnail ? (
+                      <img src={r.thumbnail} alt="" className="w-14 h-10 rounded-md object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-14 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Music className="w-4 h-4 text-primary/50" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-heading text-sm font-semibold text-foreground truncate">{r.title}</p>
+                      <p className="font-body text-xs text-muted-foreground truncate">{r.channelTitle}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {searched && !searching && searchResults.length === 0 && !searchError && (
+              <p className="font-body text-xs text-muted-foreground mt-2">
+                No results — try a different search.
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Preset songs */}
@@ -187,127 +261,6 @@ const MusicSelection = ({
             );
           })}
         </div>
-      </div>
-
-      {/* Add your own song — search or paste a link */}
-      <div className="letter-paper rounded-2xl p-5 sm:p-6 mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Youtube className="w-5 h-5 text-elegant-gold" />
-          <span className="font-heading text-base font-semibold">Add Your Own Song</span>
-        </div>
-
-        {youtubeVideoId ? (
-          <div className="flex items-center gap-3 p-3 rounded-xl border bg-primary/10 border-primary/40">
-            <button
-              type="button"
-              onClick={toggleYtPreview}
-              className="w-10 h-10 rounded-full bg-primary/15 hover:bg-primary/25 flex items-center justify-center flex-shrink-0 transition-colors"
-              aria-label={ytPreviewing ? "Pause preview" : "Play preview"}
-            >
-              {ytPreviewing ? <Pause className="w-4 h-4 text-primary" /> : <Play className="w-4 h-4 text-primary ml-0.5" />}
-            </button>
-            <div className="flex-1 min-w-0">
-              <p className="font-heading text-sm font-semibold text-foreground truncate">Custom YouTube song selected</p>
-              <p className="font-body text-xs text-muted-foreground truncate">This will play instead of a curated song</p>
-            </div>
-            <button
-              type="button"
-              onClick={clearYoutube}
-              className="w-8 h-8 rounded-full bg-secondary/70 hover:bg-secondary flex items-center justify-center flex-shrink-0 text-foreground/60"
-              aria-label="Remove custom song"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        ) : (
-          <div>
-            {/* Search */}
-            <div className="flex gap-2 mb-1.5">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setSearchError(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
-                placeholder="Search for a song or artist..."
-                className="flex-1 px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-foreground font-body text-sm outline-none focus:border-primary/50 transition-colors"
-              />
-              <button
-                type="button"
-                onClick={handleSearch}
-                disabled={searching || !searchQuery.trim()}
-                className="px-4 py-2.5 rounded-xl bg-primary/10 text-primary font-body text-sm font-semibold hover:bg-primary/20 transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
-              >
-                {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                Search
-              </button>
-            </div>
-
-            {searchError && (
-              <p className="font-body text-xs text-destructive mb-2">{searchError}</p>
-            )}
-
-            {searchResults.length > 0 && (
-              <div className="space-y-1.5 mb-3 max-h-72 overflow-y-auto pr-1">
-                {searchResults.map((r) => (
-                  <button
-                    key={r.videoId}
-                    type="button"
-                    onClick={() => selectSearchResult(r)}
-                    className="w-full flex items-center gap-3 p-2 rounded-xl border border-border/40 bg-background/50 hover:border-primary/30 hover:bg-primary/5 transition-all text-left"
-                  >
-                    {r.thumbnail ? (
-                      <img src={r.thumbnail} alt="" className="w-14 h-10 rounded-md object-cover flex-shrink-0" />
-                    ) : (
-                      <div className="w-14 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Music className="w-4 h-4 text-primary/50" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-heading text-sm font-semibold text-foreground truncate">{r.title}</p>
-                      <p className="font-body text-xs text-muted-foreground truncate">{r.channelTitle}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {searched && !searching && searchResults.length === 0 && !searchError && (
-              <p className="font-body text-xs text-muted-foreground mb-2">
-                No results — try a different search, or paste a YouTube link below.
-              </p>
-            )}
-
-            <div className="flex items-center gap-2 my-3">
-              <div className="flex-1 h-px bg-border/50" />
-              <span className="font-body text-xs text-muted-foreground">or paste a link</span>
-              <div className="flex-1 h-px bg-border/50" />
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={youtubeInput}
-                onChange={(e) => { setYoutubeInput(e.target.value); setYoutubeError(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleYoutubeSubmit(); } }}
-                placeholder="https://youtube.com/watch?v=..."
-                className="flex-1 px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-foreground font-body text-sm outline-none focus:border-primary/50 transition-colors"
-              />
-              <button
-                type="button"
-                onClick={handleYoutubeSubmit}
-                className="px-5 py-2.5 rounded-xl bg-primary/10 text-primary font-body text-sm font-semibold hover:bg-primary/20 transition-colors flex-shrink-0"
-              >
-                Use this song
-              </button>
-            </div>
-            {youtubeError && (
-              <p className="font-body text-xs text-destructive mt-2">{youtubeError}</p>
-            )}
-            <p className="font-body text-xs text-muted-foreground mt-2">
-              Paste any YouTube link and it'll play when your letter is opened.
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="mt-6 flex justify-between">
