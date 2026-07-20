@@ -14,6 +14,7 @@ export interface LetterDraft {
   };
   letterText: string;
   selectedMusic: string | null;
+  youtubeVideoId: string | null;
   images: string[]; // base64 data URLs
   savedAt: number;
 }

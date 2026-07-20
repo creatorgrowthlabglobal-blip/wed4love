@@ -41,6 +41,7 @@ const CreateLetter = () => {
   const [letterText, setLetterText] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
+  const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
   const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
   const [imageDataUrls, setImageDataUrls] = useState<string[]>([]);
@@ -59,6 +60,7 @@ const CreateLetter = () => {
     setDetails(draft.details);
     setLetterText(draft.letterText);
     setSelectedMusic(draft.selectedMusic);
+    setYoutubeVideoId(draft.youtubeVideoId ?? null);
     setStep(draft.step);
     if (draft.images?.length) {
       draftImagesToFiles(draft.images)
@@ -86,8 +88,8 @@ const CreateLetter = () => {
   // has finished, so we never overwrite a saved draft with blank initial state.
   useEffect(() => {
     if (!hydrated) return;
-    saveDraft({ step, letterType, template, details, letterText, selectedMusic, images: imageDataUrls });
-  }, [hydrated, step, letterType, template, details, letterText, selectedMusic, imageDataUrls]);
+    saveDraft({ step, letterType, template, details, letterText, selectedMusic, youtubeVideoId, images: imageDataUrls });
+  }, [hydrated, step, letterType, template, details, letterText, selectedMusic, youtubeVideoId, imageDataUrls]);
 
   const handleGCashPay = (): string => {
     const letterId = Math.random().toString(36).substring(2, 10);
@@ -105,6 +107,7 @@ const CreateLetter = () => {
         videos: [],
         audios: [],
         selectedMusic,
+        youtubeVideoId,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -183,6 +186,7 @@ const CreateLetter = () => {
         videos: [],
         audios: [],
         selectedMusic,
+        youtubeVideoId,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -273,6 +277,8 @@ const CreateLetter = () => {
               key="music"
               selectedMusic={selectedMusic}
               onSelectMusic={setSelectedMusic}
+              youtubeVideoId={youtubeVideoId}
+              onYoutubeVideoIdChange={setYoutubeVideoId}
               onNext={() => setStep(5)}
               onBack={() => setStep(3)}
             />
@@ -286,6 +292,7 @@ const CreateLetter = () => {
                 letterText,
                 images,
                 selectedMusic,
+                youtubeVideoId,
                 letterType,
               }}
               template={template}

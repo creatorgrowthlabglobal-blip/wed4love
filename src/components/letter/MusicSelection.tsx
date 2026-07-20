@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Music, Play, Pause, Check, Instagram } from "lucide-react";
+import { Music, Play, Pause, Check, Instagram, Youtube, X } from "lucide-react";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
+import { extractYouTubeId } from "@/lib/youtube";
+import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 
 interface MusicSelectionProps {
   selectedMusic: string | null;
   onSelectMusic: (id: string) => void;
+  youtubeVideoId: string | null;
+  onYoutubeVideoIdChange: (id: string | null) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -13,19 +17,29 @@ interface MusicSelectionProps {
 const MusicSelection = ({
   selectedMusic,
   onSelectMusic,
+  youtubeVideoId,
+  onYoutubeVideoIdChange,
   onNext, onBack,
 }: MusicSelectionProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [previewing, setPreviewing] = useState<string | null>(null);
+  const [youtubeInput, setYoutubeInput] = useState("");
+  const [youtubeError, setYoutubeError] = useState("");
+  const [ytPreviewing, setYtPreviewing] = useState(false);
+  const ytPreview = useYouTubeAudio(youtubeVideoId, 0.4);
 
   useEffect(() => {
     return () => {
       audioRef.current?.pause();
       audioRef.current = null;
+      ytPreview.pause();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const togglePreview = (id: string, url: string) => {
+    ytPreview.pause();
+    setYtPreviewing(false);
     if (previewing === id) {
       audioRef.current?.pause();
       setPreviewing(null);
@@ -38,6 +52,47 @@ const MusicSelection = ({
     audio.onended = () => setPreviewing(null);
     audioRef.current = audio;
     setPreviewing(id);
+  };
+
+  const selectPreset = (id: string) => {
+    audioRef.current?.pause();
+    ytPreview.pause();
+    setPreviewing(null);
+    setYtPreviewing(false);
+    onYoutubeVideoIdChange(null);
+    setYoutubeInput("");
+    setYoutubeError("");
+    onSelectMusic(id);
+  };
+
+  const toggleYtPreview = () => {
+    audioRef.current?.pause();
+    setPreviewing(null);
+    if (ytPreviewing) {
+      ytPreview.pause();
+      setYtPreviewing(false);
+    } else {
+      ytPreview.play();
+      setYtPreviewing(true);
+    }
+  };
+
+  const handleYoutubeSubmit = () => {
+    const id = extractYouTubeId(youtubeInput);
+    if (!id) {
+      setYoutubeError("That doesn't look like a valid YouTube link. Try pasting the full URL.");
+      return;
+    }
+    setYoutubeError("");
+    onYoutubeVideoIdChange(id);
+  };
+
+  const clearYoutube = () => {
+    ytPreview.pause();
+    setYtPreviewing(false);
+    onYoutubeVideoIdChange(null);
+    setYoutubeInput("");
+    setYoutubeError("");
   };
 
   return (
@@ -66,12 +121,12 @@ const MusicSelection = ({
         </div>
         <div className="space-y-2">
           {MUSIC_PRESETS.map((m) => {
-            const isSelected = selectedMusic === m.id;
+            const isSelected = !youtubeVideoId && selectedMusic === m.id;
             const isPlaying = previewing === m.id;
             return (
               <div
                 key={m.id}
-                onClick={() => onSelectMusic(m.id)}
+                onClick={() => selectPreset(m.id)}
                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                   isSelected
                     ? "bg-primary/10 border-primary/40"
@@ -99,6 +154,65 @@ const MusicSelection = ({
             );
           })}
         </div>
+      </div>
+
+      {/* Custom YouTube link */}
+      <div className="letter-paper rounded-2xl p-5 sm:p-6 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Youtube className="w-5 h-5 text-elegant-gold" />
+          <span className="font-heading text-base font-semibold">Or paste any YouTube link</span>
+        </div>
+
+        {youtubeVideoId ? (
+          <div className="flex items-center gap-3 p-3 rounded-xl border bg-primary/10 border-primary/40">
+            <button
+              type="button"
+              onClick={toggleYtPreview}
+              className="w-10 h-10 rounded-full bg-primary/15 hover:bg-primary/25 flex items-center justify-center flex-shrink-0 transition-colors"
+              aria-label={ytPreviewing ? "Pause preview" : "Play preview"}
+            >
+              {ytPreviewing ? <Pause className="w-4 h-4 text-primary" /> : <Play className="w-4 h-4 text-primary ml-0.5" />}
+            </button>
+            <div className="flex-1 min-w-0">
+              <p className="font-heading text-sm font-semibold text-foreground truncate">Custom YouTube song selected</p>
+              <p className="font-body text-xs text-muted-foreground truncate">This will play instead of a curated song</p>
+            </div>
+            <button
+              type="button"
+              onClick={clearYoutube}
+              className="w-8 h-8 rounded-full bg-secondary/70 hover:bg-secondary flex items-center justify-center flex-shrink-0 text-foreground/60"
+              aria-label="Remove custom song"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={youtubeInput}
+                onChange={(e) => { setYoutubeInput(e.target.value); setYoutubeError(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleYoutubeSubmit(); } }}
+                placeholder="https://youtube.com/watch?v=..."
+                className="flex-1 px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-foreground font-body text-sm outline-none focus:border-primary/50 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={handleYoutubeSubmit}
+                className="px-5 py-2.5 rounded-xl bg-primary/10 text-primary font-body text-sm font-semibold hover:bg-primary/20 transition-colors flex-shrink-0"
+              >
+                Use this song
+              </button>
+            </div>
+            {youtubeError && (
+              <p className="font-body text-xs text-destructive mt-2">{youtubeError}</p>
+            )}
+            <p className="font-body text-xs text-muted-foreground mt-2">
+              Paste any YouTube link and it'll play when your letter is opened.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Request a Music */}

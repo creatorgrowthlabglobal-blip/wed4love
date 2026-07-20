@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, StoredLetter } from "@/lib/letterStorage";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
+import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
 
@@ -23,6 +24,7 @@ const ViewLetter = () => {
   const [stage, setStage] = useState<Stage>("mailbox"); // overridden below for purple template
   const [notFound, setNotFound] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ytAudio = useYouTubeAudio(letter?.youtubeVideoId ?? null, 0.3);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,6 +60,10 @@ const ViewLetter = () => {
   const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
     if (!letter) return;
+    if (letter.youtubeVideoId) {
+      ytAudio.play();
+      return;
+    }
     const preset = getPresetById(letter.selectedMusic);
     let src = preset?.url || letter.customMusicData;
     if (!src) {
@@ -88,7 +94,8 @@ const ViewLetter = () => {
     if (!letter) return;
     const handler = () => {
       startMusic();
-      if (audioRef.current && !audioRef.current.paused) {
+      const started = letter.youtubeVideoId ? true : audioRef.current && !audioRef.current.paused;
+      if (started) {
         window.removeEventListener("pointerdown", handler, true);
         window.removeEventListener("touchstart", handler, true);
         window.removeEventListener("click", handler, true);

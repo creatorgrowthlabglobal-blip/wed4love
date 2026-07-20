@@ -5,6 +5,7 @@ import { filesToBase64 } from "@/lib/letterStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import { getCurrentUser } from "@/lib/auth";
+import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
@@ -18,6 +19,7 @@ interface PreviewPaymentProps {
     letterText: string;
     images: File[];
     selectedMusic: string | null;
+    youtubeVideoId?: string | null;
     letterType: "love" | "birthday" | null;
   };
   template: "photo" | "purple";
@@ -44,6 +46,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ytAudio = useYouTubeAudio(letterData.youtubeVideoId ?? null, 0.3);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -79,6 +82,11 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
 
   const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
+    if (letterData.youtubeVideoId) {
+      ytAudio.play();
+      return;
+    }
+
     const preset = getPresetById(letterData.selectedMusic);
     let src = preset?.url;
     if (!src) {
@@ -108,13 +116,20 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
         audioRef.current.currentTime = 0;
         audioRef.current = null;
       }
+      ytAudio.pause();
       return;
     }
 
     const handler = () => {
       startMusic();
 
-      if (audioRef.current && !audioRef.current.paused) {
+      // YouTube's playVideo() is async (postMessage into the iframe), so we
+      // can't check "did it actually start" synchronously like <audio> —
+      // just stop retrying after the first genuine gesture triggers it once.
+      const started = letterData.youtubeVideoId
+        ? true
+        : audioRef.current && !audioRef.current.paused;
+      if (started) {
         window.removeEventListener("pointerdown", handler, true);
         window.removeEventListener("touchstart", handler, true);
         window.removeEventListener("click", handler, true);
@@ -146,6 +161,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
       audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
+    ytAudio.pause();
     setShowPreview(false);
   };
   const advancePreview = () => {

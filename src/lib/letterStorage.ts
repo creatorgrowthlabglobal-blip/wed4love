@@ -12,6 +12,7 @@ export interface StoredLetter {
   audios: string[]; // base64 data URLs
   selectedMusic: string | null;
   customMusicData?: string | null; // base64 data URL for uploaded music
+  youtubeVideoId?: string | null; // pasted YouTube link, extracted video id
   pin?: string; // deprecated, kept for backward compat
   quiz: QuizQuestion[];
   email: string;
