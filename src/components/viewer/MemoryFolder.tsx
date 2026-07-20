@@ -10,6 +10,7 @@ import VaultBouquet from "./vault/VaultBouquet";
 import VaultEnding from "./vault/VaultEnding";
 
 interface MemoryFolderProps {
+  letterId?: string;
   letterText: string;
   senderName: string;
   receiverName: string;
@@ -25,7 +26,7 @@ const vaultCards = [
   { id: "bouquet" as const, label: "Bouquet", icon: Flower2, description: "Hidden feelings", emoji: "🌸" },
 ];
 
-const MemoryFolder = ({ letterText, senderName, receiverName, images }: MemoryFolderProps) => {
+const MemoryFolder = ({ letterId, letterText, senderName, receiverName, images }: MemoryFolderProps) => {
   const [vaultOpen, setVaultOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
 
@@ -135,7 +136,7 @@ const MemoryFolder = ({ letterText, senderName, receiverName, images }: MemoryFo
                 })}
               </div>
 
-              <VaultEnding />
+              <VaultEnding letterId={letterId} />
             </div>
           </motion.div>
         )}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
@@ -21,6 +21,7 @@ import {
   hasActiveLetterAccess,
 } from "@/lib/whop";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 
 
@@ -28,6 +29,7 @@ const STEP_LABELS = ["Details", "Write", "Photos", "Music", "Preview"];
 
 const CreateLetter = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(0);
   const [letterType, setLetterType] = useState<"love" | "birthday">("love");
   const [template, setTemplate] = useState<"photo" | "purple">("photo");
@@ -70,6 +72,17 @@ const CreateLetter = () => {
     } else {
       setHydrated(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Viral loop signal: someone arrived here from another letter's "Make one
+  // back" CTA. Fire-and-forget — no UI impact, just a funnel breadcrumb.
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (!ref) return;
+    supabase.functions
+      .invoke("telegram-notify", { body: { event: "reply_letter_started", data: { from_letter_id: ref } } })
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

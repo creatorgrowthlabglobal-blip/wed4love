@@ -14,6 +14,7 @@ const ICONS: Record<string, string> = {
   whatsapp_click: '📱',
   contact_message: '✉️',
   checkout_started: '🛒',
+  reply_letter_started: '🔁',
 };
 
 const esc = (s: unknown) =>

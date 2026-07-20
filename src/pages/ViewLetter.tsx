@@ -225,6 +225,7 @@ const ViewLetter = () => {
       {stage === "folder" && (
         <MemoryFolder
           key="folder"
+          letterId={letter.id}
           letterText={letter.letterText}
           senderName={letter.senderName || "Someone"}
           receiverName={letter.receiverName || "Someone Special"}

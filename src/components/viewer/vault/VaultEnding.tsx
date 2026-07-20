@@ -1,6 +1,12 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Heart } from "lucide-react";
 
-const VaultEnding = () => (
+interface VaultEndingProps {
+  letterId?: string;
+}
+
+const VaultEnding = ({ letterId }: VaultEndingProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -42,6 +48,29 @@ const VaultEnding = () => (
         </motion.button>
       ))}
     </div>
+
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6, duration: 0.8 }}
+      className="mt-10 pt-8"
+      style={{ borderTop: "1px solid hsl(340 40% 80% / 0.4)" }}
+    >
+      <p className="font-display text-base italic mb-4" style={{ color: "hsl(340 30% 35%)" }}>
+        Someone loves you enough to make this.
+      </p>
+      <Link
+        to={letterId ? `/create-letter?ref=${letterId}` : "/create-letter"}
+        className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-display text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
+        style={{
+          background: "linear-gradient(135deg, hsl(340 90% 65%), hsl(340 90% 58%))",
+          boxShadow: "0 8px 24px hsl(340 80% 60% / 0.35)",
+        }}
+      >
+        <Heart className="w-4 h-4 fill-current" />
+        Make one back →
+      </Link>
+    </motion.div>
   </motion.div>
 );
 
