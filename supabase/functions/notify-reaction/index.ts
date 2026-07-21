@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const { letter_id } = await req.json().catch(() => ({}));
+    const { letter_id, debug } = await req.json().catch(() => ({}));
     if (typeof letter_id !== 'string' || !letter_id) {
       return new Response(JSON.stringify({ error: 'letter_id required' }), {
         status: 400,
@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
     if (senderEmail && isValidEmail(senderEmail) && LOVABLE_API_KEY && RESEND_API_KEY) {
-      const watchUrl = `https://wish4love.com/letter-ready/${letter_id}`;
+      const watchUrl = `https://wish4love.com/reaction/${letter_id}`;
       const html = `
         <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">
           <h2 style="color:#f472b6;margin-bottom:8px;">Wish4Love 🎥</h2>
@@ -68,7 +68,24 @@ Deno.serve(async (req) => {
           html,
         }),
       });
-      if (!res.ok) console.error('[notify-reaction] resend error', res.status, await res.text().catch(() => ''));
+      const resText = await res.text().catch(() => '');
+      if (!res.ok) console.error('[notify-reaction] resend error', res.status, resText);
+      if (debug) {
+        return new Response(JSON.stringify({ ok: true, debug: { attempted: true, resendStatus: res.status, resendBody: resText, senderEmail } }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    } else if (debug) {
+      return new Response(JSON.stringify({
+        ok: true,
+        debug: {
+          attempted: false,
+          senderEmail,
+          isValidEmail: isValidEmail(senderEmail),
+          hasLovableKey: !!LOVABLE_API_KEY,
+          hasResendKey: !!RESEND_API_KEY,
+        },
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const token = Deno.env.get('TELEGRAM_BOT_TOKEN');

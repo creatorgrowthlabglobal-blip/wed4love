@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import Index from "./pages/Index";
 import CreateLetter from "./pages/CreateLetter";
 import LetterReady from "./pages/LetterReady";
+import ReactionView from "./pages/ReactionView";
 import LetterHistory from "./pages/LetterHistory";
 import ViewLetter from "./pages/ViewLetter";
 import NotFound from "./pages/NotFound";
@@ -84,6 +85,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/create-letter" element={<CreateLetter />} />
           <Route path="/letter-ready/:id" element={<LetterReady />} />
+          <Route path="/reaction/:id" element={<ReactionView />} />
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
           <Route path="/demo" element={<Demo />} />
