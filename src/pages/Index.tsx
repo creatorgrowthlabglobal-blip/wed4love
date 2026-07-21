@@ -17,12 +17,14 @@ import mailboxOpen from "@/assets/mailbox-open.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
 import heroPolaroid from "@/assets/photo1.jpg";
 import howItWorksPhoto from "@/assets/photo2.jpg";
+import { useLocalizedPrice } from "@/hooks/useLocalizedPrice";
 
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showTemplatePicker, setShowTemplatePicker] = useState(false);
   const [template, setTemplate] = useState<"photo" | "purple">("photo");
   const [previewStage, setPreviewStage] = useState<"mailbox" | "envelope">("mailbox");
+  const localizedPrice = useLocalizedPrice(4.99);
 
   // Warm both mailbox frames into cache the moment the landing page mounts,
   // so the preview opens with zero network wait.
@@ -128,7 +130,9 @@ const Index = () => {
 
                 <div className="flex flex-col items-center lg:items-start gap-2">
                   <p className="font-body text-sm text-muted-foreground">
-                    Letter <strong className="text-foreground">$4.99</strong> · one-time payment
+                    Letter <strong className="text-foreground">$4.99</strong>
+                    {localizedPrice && <span className="text-muted-foreground/70"> ({localizedPrice})</span>}
+                    {" "}· one-time payment
                   </p>
                   <button
                     onClick={openPreview}
@@ -332,7 +336,12 @@ const Index = () => {
               </div>
               <p className="font-display text-lg font-bold text-foreground mb-1">The Grand Gesture</p>
               <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
-              <p className="font-display text-5xl font-bold text-foreground mb-1">$4.99</p>
+              <p className="font-display text-5xl font-bold text-foreground mb-1">
+                $4.99
+                {localizedPrice && (
+                  <span className="font-body text-base font-normal text-muted-foreground/70 ml-2">{localizedPrice}</span>
+                )}
+              </p>
               <p className="font-body text-xs text-muted-foreground mb-6">Yours forever — no subscriptions</p>
 
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">

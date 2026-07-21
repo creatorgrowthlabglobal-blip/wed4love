@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.notify-reaction]
 verify_jwt = false
+
+[functions.get-localized-price]
+verify_jwt = false

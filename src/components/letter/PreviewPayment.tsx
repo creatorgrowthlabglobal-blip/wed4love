@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import { getCurrentUser } from "@/lib/auth";
 import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
+import { useLocalizedPrice } from "@/hooks/useLocalizedPrice";
 
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
@@ -43,6 +44,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
   const [showPreview, setShowPreview] = useState(false);
   const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [showSignupGate, setShowSignupGate] = useState(false);
+  const localizedPrice = useLocalizedPrice(4.99);
 
   const handleSendClick = () => {
     if (getCurrentUser()) {
@@ -267,7 +269,9 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
               <p className="font-body text-xs sm:text-sm text-muted-foreground line-through mb-0.5">Regular price $7.13</p>
               <div className="flex items-end justify-center gap-2">
                 <p className="font-display text-4xl sm:text-6xl font-bold text-foreground">$4.99</p>
-                <span className="font-body text-sm text-muted-foreground mb-1.5 sm:mb-2">USD</span>
+                <span className="font-body text-sm text-muted-foreground mb-1.5 sm:mb-2">
+                  USD{localizedPrice ? ` (${localizedPrice})` : ""}
+                </span>
               </div>
               <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1">One-time · No subscription · Yours forever</p>
             </div>
