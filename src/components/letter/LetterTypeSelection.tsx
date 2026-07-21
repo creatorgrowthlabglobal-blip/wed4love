@@ -110,45 +110,41 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 This is how your letter will look when they open it
               </p>
 
-              <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
                 {/* Template 3 — Realistic Paper (Premium), shown first to lead with the flagship design */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0 }}
-                  className="col-span-2 rounded-2xl overflow-hidden border-2 border-elegant-gold/50 relative"
-                  style={{ background: "linear-gradient(135deg, hsl(30 60% 97%), hsl(40 70% 95%))" }}
+                  className="rounded-2xl overflow-hidden border-2 border-elegant-gold/50 bg-background relative"
                 >
-                  <div className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-elegant-gold/90 text-white font-body text-[10px] font-bold uppercase tracking-wide">
-                    <SparklesIcon className="w-3 h-3" />
+                  <div className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-elegant-gold/90 text-white font-body text-[9px] font-bold uppercase tracking-wide">
+                    <SparklesIcon className="w-2.5 h-2.5" />
                     Premium
                   </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-4 p-4 sm:p-5">
-                    <div className="w-full sm:w-40 aspect-[4/3] rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: "radial-gradient(ellipse at 50% 40%, #FDF1F5 0%, #F6DCE5 60%, #EFC9D6 100%)" }}>
-                      <span className="text-4xl">📜</span>
-                    </div>
-                    <div className="flex-1 text-center sm:text-left">
-                      <p className="font-display text-base sm:text-lg font-bold text-foreground">Realistic Paper</p>
-                      <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-1.5">Fold-Open 3D</p>
-                      <p className="font-body text-xs text-muted-foreground mb-3 hidden sm:block">
-                        A handwritten paper letter that unfolds in full 3D right in their browser.
-                      </p>
-                      <div className="flex gap-2 max-w-xs mx-auto sm:mx-0">
-                        <button
-                          onClick={() => openPreview("paper3d")}
-                          className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-primary/10 text-primary font-body text-xs font-semibold hover:bg-primary/20 transition-colors"
-                        >
-                          <Play className="w-3 h-3" />
-                          Preview
-                        </button>
-                        <button
-                          onClick={() => onSelect("love", "paper3d")}
-                          className="flex-1 px-2 py-2 rounded-xl bg-primary text-primary-foreground font-body text-xs font-semibold hover:opacity-90 transition-opacity"
-                        >
-                          Select
-                        </button>
-                      </div>
+                  <div
+                    className="aspect-[4/3] flex items-center justify-center"
+                    style={{ background: "radial-gradient(ellipse at 50% 40%, #FDF1F5 0%, #F6DCE5 60%, #EFC9D6 100%)" }}
+                  >
+                    <span className="text-4xl">📜</span>
+                  </div>
+                  <div className="p-3 sm:p-4">
+                    <p className="font-display text-sm sm:text-base font-bold text-foreground">Realistic Paper</p>
+                    <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Fold-Open 3D</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openPreview("paper3d")}
+                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-primary/10 text-primary font-body text-xs font-semibold hover:bg-primary/20 transition-colors"
+                      >
+                        <Play className="w-3 h-3" />
+                        Preview
+                      </button>
+                      <button
+                        onClick={() => onSelect("love", "paper3d")}
+                        className="flex-1 px-2 py-2 rounded-xl bg-primary text-primary-foreground font-body text-xs font-semibold hover:opacity-90 transition-opacity"
+                      >
+                        Select
+                      </button>
                     </div>
                   </div>
                 </motion.div>

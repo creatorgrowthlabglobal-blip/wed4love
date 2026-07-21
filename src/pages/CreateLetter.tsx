@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { Heart } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import CheckoutOverlay from "@/components/CheckoutOverlay";
@@ -13,7 +14,7 @@ import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import PhilippinesPaymentModal from "@/components/PhilippinesPaymentModal";
 import { filesToBase64, saveLetter, uploadVoiceMessage, type LetterTemplate } from "@/lib/letterStorage";
-import { saveDraft, loadDraft, clearDraft, draftImagesToFiles } from "@/lib/letterDraft";
+import { saveDraft, loadDraft, clearDraft, draftImagesToFiles, type LetterDraft } from "@/lib/letterDraft";
 import { getCurrentUser } from "@/lib/auth";
 import {
   createWhopCheckout,
@@ -50,15 +51,9 @@ const CreateLetter = () => {
   const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
   const [imageDataUrls, setImageDataUrls] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<LetterDraft | null>(null);
 
-  // Restore an in-progress letter from localStorage (e.g. user was sent to
-  // sign up mid-flow, or reloaded the tab). Runs once on mount.
-  useEffect(() => {
-    const draft = loadDraft();
-    if (!draft) {
-      setHydrated(true);
-      return;
-    }
+  const applyDraft = (draft: LetterDraft) => {
     setLetterType(draft.letterType);
     setTemplate(draft.template);
     setDetails(draft.details);
@@ -74,6 +69,35 @@ const CreateLetter = () => {
     } else {
       setHydrated(true);
     }
+  };
+
+  const resumeDraft = () => {
+    if (pendingDraft) applyDraft(pendingDraft);
+    setPendingDraft(null);
+  };
+
+  const discardDraft = () => {
+    clearDraft();
+    setPendingDraft(null);
+    setHydrated(true);
+  };
+
+  // Restore an in-progress letter from localStorage (e.g. user was sent to
+  // sign up mid-flow, or reloaded the tab). Runs once on mount. If the draft
+  // has real progress (past the template picker), ask before jumping back in
+  // rather than silently skipping steps — that read as "the app skips the
+  // template picker" when it was actually just resuming unannounced.
+  useEffect(() => {
+    const draft = loadDraft();
+    if (!draft) {
+      setHydrated(true);
+      return;
+    }
+    if (draft.step > 0) {
+      setPendingDraft(draft);
+      return;
+    }
+    applyDraft(draft);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -275,6 +299,37 @@ const CreateLetter = () => {
     >
       {step !== 5 && <Header />}
       <FloatingHearts count={5} />
+
+      {pendingDraft && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center px-4 bg-background/80 backdrop-blur-md">
+          <div className="w-full max-w-sm letter-paper rounded-3xl p-6 sm:p-8 text-center shadow-romantic border border-primary/15">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-5 h-5 text-primary fill-primary/30" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-foreground mb-2">Continue your letter?</h3>
+            <p className="font-body text-sm text-muted-foreground mb-6">
+              {pendingDraft.details.receiverName
+                ? `You were writing a letter to ${pendingDraft.details.receiverName}. `
+                : "You have an unfinished letter. "}
+              Pick up where you left off, or start something new.
+            </p>
+            <div className="flex flex-col gap-2.5">
+              <button
+                onClick={resumeDraft}
+                className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-heading text-sm font-semibold shadow-romantic hover:shadow-glow transition-all"
+              >
+                Continue where I left off
+              </button>
+              <button
+                onClick={discardDraft}
+                className="w-full py-3.5 rounded-xl bg-secondary text-secondary-foreground font-heading text-sm font-semibold border border-border/50 transition-all hover:shadow-card"
+              >
+                Start a new letter
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <main className={`relative z-10 ${step === 5 ? "pt-8" : "pt-36 sm:pt-28"} pb-20 px-4 sm:px-6`}>
         {step > 0 && (
           <ProgressBar

@@ -6,10 +6,11 @@ interface VaultLetterProps {
   letterText: string;
   senderName: string;
   receiverName: string;
+  images?: string[];
   onClose: () => void;
 }
 
-const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLetterProps) => {
+const VaultLetter = ({ letterText, senderName, receiverName, images = [], onClose }: VaultLetterProps) => {
   const [visibleChars, setVisibleChars] = useState(0);
   const [showFull, setShowFull] = useState(false);
   const text = letterText || "No letter text written yet.";
@@ -168,29 +169,29 @@ const VaultLetter = ({ letterText, senderName, receiverName, onClose }: VaultLet
               )}
             </div>
 
-            {/* Photo placeholders */}
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: showFull ? 1 : 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mt-10 grid grid-cols-3 gap-3 sm:gap-4"
-            >
-              {["Photo 1", "Photo 2", "Photo 3"].map((label, i) => (
-                <div
-                  key={label}
-                  className="aspect-[3/4] flex items-center justify-center rounded-sm relative"
-                  style={{
-                    background: "linear-gradient(160deg, hsl(40 30% 92%), hsl(35 25% 86%))",
-                    border: "1px dashed hsl(30 30% 45% / 0.5)",
-                    boxShadow: "0 6px 14px hsl(30 30% 20% / 0.15), inset 0 0 30px hsl(30 25% 70% / 0.2)",
-                    transform: `rotate(${(i - 1) * 2}deg)`,
-                  }}
-                >
-                  <span className="font-handwritten text-base sm:text-lg" style={{ color: "hsl(30 25% 35%)" }}>
-                    {label}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
+            {/* Photos — only shown when the letter actually has some */}
+            {images.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: showFull ? 1 : 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="mt-10 grid grid-cols-3 gap-3 sm:gap-4"
+              >
+                {images.slice(0, 3).map((src, i) => (
+                  <div
+                    key={i}
+                    className="aspect-[3/4] overflow-hidden rounded-sm relative"
+                    style={{
+                      background: "linear-gradient(160deg, hsl(40 30% 92%), hsl(35 25% 86%))",
+                      border: "1px solid hsl(30 30% 45% / 0.3)",
+                      boxShadow: "0 6px 14px hsl(30 30% 20% / 0.15)",
+                      transform: `rotate(${(i - 1) * 2}deg)`,
+                    }}
+                  >
+                    <img src={src} alt={`Memory ${i + 1}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </motion.div>
+            )}
 
             {/* Signature */}
             <motion.div

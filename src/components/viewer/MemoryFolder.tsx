@@ -145,7 +145,7 @@ const MemoryFolder = ({ letterId, letterText, senderName, receiverName, images }
       {/* Section overlays */}
       <AnimatePresence>
         {activeSection === "letter" && (
-          <VaultLetter key="vault-letter" letterText={letterText} senderName={senderName} receiverName={receiverName} onClose={closeSection} />
+          <VaultLetter key="vault-letter" letterText={letterText} senderName={senderName} receiverName={receiverName} images={images} onClose={closeSection} />
         )}
         {activeSection === "memories" && (
           <VaultMemories key="vault-memories" images={images} onClose={closeSection} />

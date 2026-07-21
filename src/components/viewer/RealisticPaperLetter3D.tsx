@@ -174,13 +174,33 @@ const PaperScene = ({
     if (group.current && progress < 1) {
       group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.25) * 0.08;
     }
-    // Pull the camera back as the letter unfolds so the fully-open (3-panel
-    // wide) sheet stays framed instead of overflowing the viewport.
-    const targetZ = 4.5 + progress * 2.6;
+
+    // Camera distance needed to fit a given (width, height) at this fov —
+    // aspect-ratio aware, so narrow portrait phone screens (where width is
+    // the constraint, not height) get pulled back further than a wide
+    // desktop viewport would need. Fixing distances tuned for one aspect
+    // ratio is exactly what made the fully-open letter overflow off-screen
+    // on phones.
+    const camera = state.camera as THREE.PerspectiveCamera;
+    const fovRad = (camera.fov * Math.PI) / 180;
+    const aspect = state.size.width / state.size.height;
+    const distanceToFit = (width: number, height: number, margin: number) => {
+      const distForHeight = (height * margin) / (2 * Math.tan(fovRad / 2));
+      const distForWidth = (width * margin) / (2 * Math.tan(fovRad / 2) * aspect);
+      return Math.max(distForHeight, distForWidth);
+    };
+    // Camera framing fits the FULL open (3-panel) sheet, so the paper
+    // backdrop always looks contained/intentional rather than overflowing
+    // off-screen. The DOM reading card is a separate concern — it's sized
+    // with normal CSS (not stretched to the projected panel dimensions) and
+    // just centered on the middle panel's midpoint, see below.
+    const closedZ = distanceToFit(PANEL_W, PANEL_H, 1.5);
+    const openZ = distanceToFit(PANEL_W * 3, PANEL_H, 1.15);
+    const targetZ = closedZ + progress * (openZ - closedZ);
     state.camera.position.z += (targetZ - state.camera.position.z) * 0.08;
 
     if (progress >= 1 && !settledRef.current && group.current) {
-      const halfW = (PANEL_W * 3) / 2;
+      const halfW = PANEL_W / 2;
       const halfH = PANEL_H / 2;
       const corners = [
         new THREE.Vector3(-halfW, halfH, 0),
@@ -254,7 +274,14 @@ const LetterBody = ({
   voicePlaying: boolean;
   onToggleVoice: () => void;
 }): ReactNode => (
-  <div className="w-full h-full overflow-y-auto px-5 py-6 sm:px-8 sm:py-8" onClick={(e) => e.stopPropagation()}>
+  <div
+    className="w-full px-5 py-6 sm:px-8 sm:py-8 rounded-lg"
+    style={{
+      background: "linear-gradient(160deg, #f9f0da, #ecdfc0)",
+      boxShadow: "0 20px 50px rgba(60,40,30,0.3)",
+    }}
+    onClick={(e) => e.stopPropagation()}
+  >
     <p style={{ fontFamily: "'Caveat', 'Dancing Script', cursive", fontSize: "clamp(20px,3vw,26px)", color: "#4B3A2A", marginBottom: "0.75rem" }}>
       My Dearest {receiverName},
     </p>
@@ -439,10 +466,11 @@ const RealisticPaperLetter3D = ({
         </motion.p>
       )}
 
-      {/* Letter content — precisely locked onto the 3D paper's screen-space
-          projection (not a separate popup) via world-to-screen coordinates,
-          computed once the unfold settles. Robust, crisp text without the
-          blur/sizing pitfalls of CSS-3D-transformed DOM content. */}
+      {/* Letter content — centered on the 3D paper's screen-space midpoint
+          (not a separate popup) via world-to-screen coordinates, computed
+          once the unfold settles. A comfortable, normally-sized CSS card
+          rather than one stretched to match the projected panel's exact
+          (often awkward, especially on narrow phones) pixel dimensions. */}
       <AnimatePresence>
         {webglOk && phase === "open" && openRect && (
           <motion.div
@@ -451,10 +479,13 @@ const RealisticPaperLetter3D = ({
             transition={{ duration: 0.5, delay: 0.15 }}
             style={{
               position: "absolute",
-              left: openRect.left,
-              top: openRect.top,
-              width: openRect.width,
-              height: openRect.height,
+              left: openRect.left + openRect.width / 2,
+              top: openRect.top + openRect.height / 2,
+              transform: "translate(-50%, -50%)",
+              width: "min(92vw, 420px)",
+              maxHeight: "min(75vh, 480px)",
+              overflowY: "auto",
+              borderRadius: "0.5rem",
             }}
           >
             <LetterBody {...letterBodyProps} />

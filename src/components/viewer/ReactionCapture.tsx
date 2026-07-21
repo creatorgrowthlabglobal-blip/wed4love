@@ -9,6 +9,20 @@ interface ReactionCaptureProps {
 
 const MAX_SECONDS = 15;
 
+// Safari (desktop and iOS) doesn't support WebM at all — MediaRecorder throws
+// synchronously if you hand it an unsupported mimeType, so we have to probe
+// candidates in order rather than assuming WebM always works.
+const VIDEO_MIME_CANDIDATES = [
+  "video/webm;codecs=vp9,opus",
+  "video/webm;codecs=vp8,opus",
+  "video/webm",
+  "video/mp4;codecs=h264,aac",
+  "video/mp4",
+];
+
+const pickSupportedMimeType = (candidates: string[]): string | null =>
+  candidates.find((c) => MediaRecorder.isTypeSupported(c)) ?? null;
+
 /**
  * Consent-gated front-camera reaction recorder, shown once the recipient has
  * read the letter. Uploads directly to the private letter-media bucket and
@@ -49,15 +63,24 @@ const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
 
   const startRecording = async () => {
     setError("");
+    let stream: MediaStream | null = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+    } catch {
+      setError("Couldn't access your camera — check your browser's permission settings.");
+      return;
+    }
+
+    const mimeType = pickSupportedMimeType(VIDEO_MIME_CANDIDATES);
+    if (!mimeType) {
+      stream.getTracks().forEach((t) => t.stop());
+      setError("Video recording isn't supported in this browser. Try a different one, like Chrome.");
+      return;
+    }
+
+    try {
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {});
-      }
       chunksRef.current = [];
-      const mimeType = MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "video/mp4";
       const recorder = new MediaRecorder(stream, { mimeType });
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -80,10 +103,25 @@ const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
           return s + 1;
         });
       }, 1000);
-    } catch {
-      setError("Couldn't access your camera — check your browser's permission settings.");
+    } catch (e) {
+      console.error("[ReactionCapture] MediaRecorder creation failed", e);
+      stream.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      setError("Couldn't start recording on this device. Please try again.");
     }
   };
+
+  // The live camera preview can only be attached once the <video> element has
+  // actually mounted — it's conditionally rendered and only exists once phase
+  // becomes "recording", which happens *after* getUserMedia resolves. Setting
+  // srcObject inside startRecording() itself is too early (videoRef.current
+  // is still null at that point), which is what caused the black preview.
+  useEffect(() => {
+    if (phase === "recording" && streamRef.current && videoRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [phase]);
 
   useEffect(() => {
     if (phase === "preview" && recordedBlob && videoRef.current) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square, Play, Pause, Trash2, Sparkles } from "lucide-react";
+import { Mic, Square, Play, Pause, Trash2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 
 interface VoiceRecorderProps {
   audioBlob: Blob | null;
@@ -8,9 +8,18 @@ interface VoiceRecorderProps {
 
 const MAX_SECONDS = 60;
 
+// Safari (desktop and iOS) doesn't support WebM at all — MediaRecorder throws
+// synchronously if you hand it an unsupported mimeType, so we have to probe
+// candidates in order rather than assuming WebM always works.
+const AUDIO_MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/aac"];
+
+const pickSupportedMimeType = (candidates: string[]): string | null =>
+  candidates.find((c) => MediaRecorder.isTypeSupported(c)) ?? null;
+
 const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
+  const [expanded, setExpanded] = useState(false);
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -41,10 +50,23 @@ const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
 
   const startRecording = async () => {
     setError("");
+    let stream: MediaStream | null = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setError("Couldn't access your microphone — check your browser's permission settings.");
+      return;
+    }
+
+    const mimeType = pickSupportedMimeType(AUDIO_MIME_CANDIDATES);
+    if (!mimeType) {
+      stream.getTracks().forEach((t) => t.stop());
+      setError("Voice recording isn't supported in this browser. Try a different one, like Chrome.");
+      return;
+    }
+
+    try {
       chunksRef.current = [];
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4";
       const recorder = new MediaRecorder(stream, { mimeType });
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -52,7 +74,7 @@ const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: mimeType });
         onChange(blob);
-        stream.getTracks().forEach((t) => t.stop());
+        stream?.getTracks().forEach((t) => t.stop());
       };
       mediaRecorderRef.current = recorder;
       recorder.start();
@@ -67,8 +89,10 @@ const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
           return s + 1;
         });
       }, 1000);
-    } catch {
-      setError("Couldn't access your microphone — check your browser's permission settings.");
+    } catch (e) {
+      console.error("[VoiceRecorder] MediaRecorder creation failed", e);
+      stream.getTracks().forEach((t) => t.stop());
+      setError("Couldn't start recording on this device. Please try again.");
     }
   };
 
@@ -99,22 +123,36 @@ const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
     setPlaying(true);
   };
 
+  const isOpen = expanded || !!audioBlob || recording;
+
   return (
-    <div className="letter-paper rounded-2xl p-5 sm:p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Mic className="w-5 h-5 text-elegant-gold" />
-        <span className="font-heading text-base font-semibold">Voice Message</span>
+    <div className="letter-paper rounded-2xl p-4 sm:p-5">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full flex items-center gap-2"
+      >
+        <Mic className="w-4 h-4 text-elegant-gold flex-shrink-0" />
+        <span className="font-heading text-sm font-semibold">Voice Message</span>
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-elegant-gold/15 text-elegant-gold font-body text-[10px] font-bold uppercase tracking-wide">
           <Sparkles className="w-2.5 h-2.5" />
           Premium
         </span>
-      </div>
+        <span className="flex-1" />
+        {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+      </button>
 
-      {!audioBlob && !recording && (
+      {!isOpen && (
+        <p className="font-body text-xs text-muted-foreground mt-1 text-left">
+          Let them hear your voice when they open the letter
+        </p>
+      )}
+
+      {isOpen && !audioBlob && !recording && (
         <button
           type="button"
           onClick={startRecording}
-          className="w-full flex flex-col items-center justify-center gap-2 py-6 rounded-xl border-2 border-dashed border-primary/30 hover:border-primary/50 hover:bg-primary/5 transition-colors"
+          className="w-full mt-3 flex flex-col items-center justify-center gap-2 py-6 rounded-xl border-2 border-dashed border-primary/30 hover:border-primary/50 hover:bg-primary/5 transition-colors"
         >
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Mic className="w-5 h-5 text-primary" />
@@ -125,7 +163,7 @@ const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
       )}
 
       {recording && (
-        <div className="flex flex-col items-center justify-center gap-3 py-6">
+        <div className="flex flex-col items-center justify-center gap-3 py-6 mt-3">
           <div className="w-12 h-12 rounded-full bg-red-500/15 flex items-center justify-center animate-pulse">
             <Mic className="w-5 h-5 text-red-500" />
           </div>
@@ -142,7 +180,7 @@ const VoiceRecorder = ({ audioBlob, onChange }: VoiceRecorderProps) => {
       )}
 
       {audioBlob && !recording && (
-        <div className="flex items-center gap-3 p-3 rounded-xl border bg-primary/10 border-primary/40">
+        <div className="flex items-center gap-3 p-3 mt-3 rounded-xl border bg-primary/10 border-primary/40">
           <button
             type="button"
             onClick={togglePlay}
