@@ -110,7 +110,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 This is how your letter will look when they open it
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-3xl mx-auto">
                 {/* Template 3 — Realistic Paper (Premium), shown first to lead with the flagship design */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -128,20 +128,20 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   >
                     <span className="text-4xl">📜</span>
                   </div>
-                  <div className="p-3 sm:p-4">
+                  <div className="p-1.5 sm:p-4">
                     <p className="font-display text-sm sm:text-base font-bold text-foreground">Realistic Paper</p>
                     <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Fold-Open 3D</p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
                       <button
                         onClick={() => openPreview("paper3d")}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-primary/10 text-primary font-body text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
                       >
-                        <Play className="w-3 h-3" />
+                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                         Preview
                       </button>
                       <button
                         onClick={() => onSelect("love", "paper3d")}
-                        className="flex-1 px-2 py-2 rounded-xl bg-primary text-primary-foreground font-body text-xs font-semibold hover:opacity-90 transition-opacity"
+                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
                       >
                         Select
                       </button>
@@ -160,20 +160,20 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                     className="aspect-[4/3] bg-cover bg-center"
                     style={{ backgroundImage: `url(${mailboxClosed})` }}
                   />
-                  <div className="p-3 sm:p-4">
+                  <div className="p-1.5 sm:p-4">
                     <p className="font-display text-sm sm:text-base font-bold text-foreground">3D Mailbox</p>
                     <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Lavender Garden</p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
                       <button
                         onClick={() => openPreview("photo")}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-primary/10 text-primary font-body text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
                       >
-                        <Play className="w-3 h-3" />
+                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                         Preview
                       </button>
                       <button
                         onClick={() => onSelect("love", "photo")}
-                        className="flex-1 px-2 py-2 rounded-xl bg-primary text-primary-foreground font-body text-xs font-semibold hover:opacity-90 transition-opacity"
+                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
                       >
                         Select
                       </button>
@@ -195,20 +195,20 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                       className="w-full h-full object-cover object-top"
                     />
                   </div>
-                  <div className="p-3 sm:p-4">
+                  <div className="p-1.5 sm:p-4">
                     <p className="font-display text-sm sm:text-base font-bold text-foreground">Premium Envelope</p>
                     <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Rose Classic</p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
                       <button
                         onClick={() => openPreview("purple")}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-primary/10 text-primary font-body text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
                       >
-                        <Play className="w-3 h-3" />
+                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                         Preview
                       </button>
                       <button
                         onClick={() => onSelect("love", "purple")}
-                        className="flex-1 px-2 py-2 rounded-xl bg-primary text-primary-foreground font-body text-xs font-semibold hover:opacity-90 transition-opacity"
+                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
                       >
                         Select
                       </button>
