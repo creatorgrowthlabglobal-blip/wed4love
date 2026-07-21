@@ -68,7 +68,14 @@ Deno.serve(async (req) => {
           html,
         }),
       });
-      if (!res.ok) console.error('[notify-reaction] resend error', res.status, await res.text().catch(() => ''));
+      const bodyText = await res.text().catch(() => '');
+      if (!res.ok) {
+        console.error('[notify-reaction] resend error', res.status, bodyText);
+      } else {
+        console.log('[notify-reaction] resend ok', res.status, bodyText);
+      }
+    } else {
+      console.log('[notify-reaction] skipped email', { hasSender: !!senderEmail, validEmail: senderEmail ? isValidEmail(senderEmail) : false, hasLovableKey: !!LOVABLE_API_KEY, hasResendKey: !!RESEND_API_KEY });
     }
 
     const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
