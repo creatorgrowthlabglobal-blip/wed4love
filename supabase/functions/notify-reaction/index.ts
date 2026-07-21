@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const { letter_id, debug } = await req.json().catch(() => ({}));
+    const { letter_id } = await req.json().catch(() => ({}));
     if (typeof letter_id !== 'string' || !letter_id) {
       return new Response(JSON.stringify({ error: 'letter_id required' }), {
         status: 400,
@@ -74,25 +74,8 @@ Deno.serve(async (req) => {
       } else {
         console.log('[notify-reaction] resend ok', res.status, resText);
       }
-      if (debug) {
-        return new Response(JSON.stringify({ ok: true, debug: { attempted: true, resendStatus: res.status, resendBody: resText, senderEmail } }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
     } else {
       console.log('[notify-reaction] skipped email', { hasSender: !!senderEmail, validEmail: senderEmail ? isValidEmail(senderEmail) : false, hasLovableKey: !!LOVABLE_API_KEY, hasResendKey: !!RESEND_API_KEY });
-      if (debug) {
-        return new Response(JSON.stringify({
-          ok: true,
-          debug: {
-            attempted: false,
-            senderEmail,
-            isValidEmail: isValidEmail(senderEmail),
-            hasLovableKey: !!LOVABLE_API_KEY,
-            hasResendKey: !!RESEND_API_KEY,
-          },
-        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      }
     }
 
     const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
