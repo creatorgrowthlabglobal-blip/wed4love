@@ -49,31 +49,31 @@ const UnlockDatePicker = ({ unlockAt, onChange }: UnlockDatePickerProps) => {
   };
 
   return (
-    <div className="letter-paper rounded-2xl p-5 sm:p-6">
+    <div className="letter-paper rounded-xl p-3.5 sm:p-5">
       <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2">
-          <Clock className="w-5 h-5 text-elegant-gold" />
-          <span className="font-heading text-base font-semibold">Lock Until a Special Date</span>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-elegant-gold/15 text-elegant-gold font-body text-[10px] font-bold uppercase tracking-wide">
-            <Sparkles className="w-2.5 h-2.5" />
+        <div className="flex items-center gap-1.5">
+          <Clock className="w-4 h-4 text-elegant-gold" />
+          <span className="font-heading text-sm font-semibold">Lock Until a Special Date</span>
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-elegant-gold/15 text-elegant-gold font-body text-[9px] font-bold uppercase tracking-wide">
+            <Sparkles className="w-2 h-2" />
             Premium
           </span>
         </div>
         {enabled && (
           <button type="button" onClick={handleToggle} className="text-foreground/40 hover:text-foreground/70" aria-label="Disable">
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
-      <p className="font-body text-xs text-muted-foreground mb-3">
-        The letter stays sealed with a countdown until this moment — perfect for an anniversary or midnight surprise.
+      <p className="font-body text-xs text-muted-foreground mb-2.5">
+        Sealed with a countdown until this moment — perfect for an anniversary or midnight surprise.
       </p>
 
       {!enabled ? (
         <button
           type="button"
           onClick={handleToggle}
-          className="w-full py-3 rounded-xl border-2 border-dashed border-primary/30 hover:border-primary/50 hover:bg-primary/5 transition-colors font-body text-sm font-medium text-foreground"
+          className="w-full py-2 rounded-lg border-2 border-dashed border-primary/30 hover:border-primary/50 hover:bg-primary/5 transition-colors font-body text-xs font-medium text-foreground"
         >
           Add an unlock date
         </button>
@@ -83,9 +83,9 @@ const UnlockDatePicker = ({ unlockAt, onChange }: UnlockDatePickerProps) => {
             type="datetime-local"
             defaultValue={unlockAt ? toLocalInputValue(unlockAt) : ""}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-foreground font-body text-sm outline-none focus:border-primary/50 transition-colors"
+            className="w-full px-3 py-2 rounded-lg border border-border/60 bg-background/50 text-foreground font-body text-xs outline-none focus:border-primary/50 transition-colors"
           />
-          {error && <p className="font-body text-xs text-destructive mt-2">{error}</p>}
+          {error && <p className="font-body text-xs text-destructive mt-1.5">{error}</p>}
         </div>
       )}
     </div>

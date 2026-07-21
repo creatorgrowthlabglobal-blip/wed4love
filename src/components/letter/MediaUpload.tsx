@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ImagePlus, X, Upload, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-const MAX_PHOTOS = 5;
 const MAX_DIM = 1600;
 const QUALITY = 0.82;
 
@@ -12,6 +11,7 @@ interface MediaUploadProps {
   onImagesChange: (files: File[]) => void;
   onNext: () => void;
   onBack: () => void;
+  isBirthday?: boolean;
 }
 
 /**
@@ -72,7 +72,8 @@ const compressImageFile = async (file: File): Promise<File> => {
   }
 };
 
-const MediaUpload = ({ images, onImagesChange, onNext, onBack }: MediaUploadProps) => {
+const MediaUpload = ({ images, onImagesChange, onNext, onBack, isBirthday }: MediaUploadProps) => {
+  const MAX_PHOTOS = isBirthday ? 3 : 5;
   const imageRef = useRef<HTMLInputElement>(null);
   const [processing, setProcessing] = useState(false);
   const atLimit = images.length >= MAX_PHOTOS;

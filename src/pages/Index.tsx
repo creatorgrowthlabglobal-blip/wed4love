@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenLine, Heart, Sparkles, Music, Bell, Link as LinkIcon, Check, Mail, Mailbox, X, Mic, Video, Lock, Eye, Gem, BookOpen, ArrowRight } from "lucide-react";
+import { PenLine, Heart, Sparkles, Music, Bell, Link as LinkIcon, Check, Mail, Mailbox, X, Mic, Video, Lock, Eye, Gem, BookOpen, ArrowRight, Play } from "lucide-react";
 import Header from "@/components/Header";
 import TestimonialsMarquee from "@/components/TestimonialsMarquee";
 import FloatingHearts from "@/components/FloatingHearts";
@@ -89,7 +89,7 @@ const Index = () => {
   };
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      {!showPreview && !showTemplatePicker && <Header />}
       <FloatingHearts count={6} />
 
       {/* Hero Section */}
@@ -155,7 +155,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.45 }}
-                className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-y-4 gap-x-6"
+                className="flex flex-col items-center lg:items-start gap-3"
               >
                 <Link
                   to="/create-letter"
@@ -176,10 +176,19 @@ const Index = () => {
                   </p>
                   <button
                     onClick={openPreview}
-                    className="group inline-flex items-center gap-1.5 font-body text-sm font-semibold text-foreground/70 hover:text-primary transition-colors"
+                    className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-full font-body text-sm font-semibold transition-all duration-300 hover:scale-[1.04] active:scale-[0.97]"
+                    style={{
+                      background: "linear-gradient(135deg, hsl(340 80% 96%), hsl(280 60% 95%), hsl(40 80% 94%))",
+                      border: "1px solid hsl(340 60% 85%)",
+                      color: "hsl(340 60% 45%)",
+                      boxShadow: "0 2px 12px hsl(340 80% 70% / 0.18), inset 0 1px 0 hsl(0 0% 100% / 0.8)",
+                    }}
                   >
-                    <Mail className="w-3.5 h-3.5 group-hover:rotate-[-8deg] transition-transform duration-400" />
+                    <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 group-hover:bg-primary/25 transition-colors">
+                      <Play className="w-2.5 h-2.5 text-primary fill-primary" />
+                    </span>
                     Preview the experience
+                    <span className="text-primary/50 group-hover:translate-x-0.5 transition-transform duration-300">→</span>
                   </button>
                 </div>
               </motion.div>
@@ -519,7 +528,7 @@ const Index = () => {
                 style={{
                   position: "fixed",
                   inset: 0,
-                  zIndex: 50,
+                  zIndex: 60,
                   background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
                 }}
               >

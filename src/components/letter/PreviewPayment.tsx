@@ -94,6 +94,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
 
   const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
+    if (template === "birthday") return;
     if (letterData.youtubeVideoId) {
       ytAudio.play();
       return;
@@ -104,6 +105,12 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
     if (!src) {
       if (!randomMusicRef.current) randomMusicRef.current = getRandomPresetUrl();
       src = randomMusicRef.current;
+    }
+
+    const resolvedSrc = new URL(src, window.location.href).href;
+    if (audioRef.current && audioRef.current.src !== resolvedSrc) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
 
     if (!audioRef.current) {
@@ -194,23 +201,22 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.6 }}
-        className="max-w-2xl mx-auto mt-6 sm:mt-24"
+        className="max-w-2xl mx-auto mt-0 sm:mt-24"
       >
-        <div className="text-center mb-4 sm:mb-8">
+        <div className="text-center mb-1.5 sm:mb-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-2 sm:mb-4"
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4"
           >
-            <Eye className="w-3.5 h-3.5 text-primary" />
-            <span className="font-body text-sm text-primary tracking-wide">Preview & Pay</span>
+            <Eye className="w-3 h-3 text-primary" />
+            <span className="font-body text-xs text-primary tracking-wide">Preview & Pay</span>
           </motion.div>
-          <p className="font-display text-lg sm:text-xl text-primary mb-1">Behold your creation</p>
-          <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
+          <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-0.5 sm:mb-2">
             Your Letter Awaits
           </h2>
-          <p className="font-body text-sm sm:text-base text-muted-foreground">
+          <p className="font-body text-xs sm:text-base text-muted-foreground">
             Preview the experience, then send it with love
           </p>
         </div>
@@ -220,13 +226,13 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.5 }}
-          className="mb-4 sm:mb-8"
+          className="mb-2.5 sm:mb-8"
         >
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={openPreview}
-            className="w-full flex items-center justify-center gap-3 px-8 py-3.5 sm:py-5 rounded-2xl font-heading text-base sm:text-lg font-bold transition-all duration-400"
+            className="w-full flex items-center justify-center gap-3 px-8 py-3 sm:py-5 rounded-2xl font-heading text-base sm:text-lg font-bold transition-all duration-400"
             style={{
               background: "linear-gradient(135deg, hsl(280 50% 90%), hsl(340 80% 85%), hsl(40 90% 80%))",
               color: "#4B2E2E",
@@ -238,25 +244,34 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
           </motion.button>
         </motion.div>
 
-        {/* Optional voice message */}
+        {/* BACKUP — voice message (hidden, re-enable when ready)
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="mb-4 sm:mb-8"
+          className="mb-2.5 sm:mb-8"
         >
           <VoiceRecorder audioBlob={voiceBlob} onChange={onVoiceChange} />
         </motion.div>
+        */}
 
-        {/* Optional locked unlock date */}
+        {/* BACKUP — unlock date (hidden, re-enable when ready)
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.32, duration: 0.5 }}
-          className="mb-4 sm:mb-8"
+          className="mb-2.5 sm:mb-8"
         >
           <UnlockDatePicker unlockAt={unlockAt} onChange={onUnlockAtChange} />
         </motion.div>
+        */}
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-2.5 sm:mb-8">
+          <div className="flex-1 h-px bg-border/50" />
+          <span className="font-body text-xs text-muted-foreground">and</span>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
 
         {/* Payment Section */}
         <motion.div
@@ -332,13 +347,13 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
       {/* Full-screen cinematic preview overlay */}
       <AnimatePresence>
         {showPreview && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 100 }}>
+          <div style={{ position: "fixed", inset: 0, zIndex: 200 }}>
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed top-4 left-4 z-[110] inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-sm font-semibold text-white"
+              className="fixed top-4 left-4 z-[210] inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-sm font-semibold text-white"
               style={{ background: "rgba(37, 31, 40, 0.78)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.2)" }}
             >
               ← Go back

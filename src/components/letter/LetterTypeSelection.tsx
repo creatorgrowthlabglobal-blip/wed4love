@@ -110,20 +110,52 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.4 }}
             >
-              <p className="font-display text-lg text-primary mb-1">Pick your style</p>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+              <p className="font-display text-base sm:text-lg text-primary mb-1">Pick your style</p>
+              <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
                 Choose a Template
               </h2>
-              <p className="font-body text-sm text-muted-foreground mb-8">
+              <p className="font-body text-sm text-muted-foreground mb-4 sm:mb-8">
                 This is how your letter will look when they open it
               </p>
 
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-3xl mx-auto">
-                {/* Template 3 — Realistic Paper (Premium), shown first to lead with the flagship design */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 max-w-3xl mx-auto">
+                {/* Template 1 — 3D Mailbox (first) */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0 }}
+                  className="rounded-2xl overflow-hidden border-2 border-border/50 bg-background hover:border-primary/40 transition-all duration-300"
+                >
+                  <div
+                    className="aspect-[4/3] bg-cover bg-center"
+                    style={{ backgroundImage: `url(${mailboxClosed})` }}
+                  />
+                  <div className="p-1.5 sm:p-4">
+                    <p className="font-display text-sm sm:text-base font-bold text-foreground">3D Mailbox</p>
+                    <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Lavender Garden</p>
+                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                      <button
+                        onClick={() => openPreview("photo")}
+                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
+                      >
+                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
+                        Preview
+                      </button>
+                      <button
+                        onClick={() => onSelect("love", "photo")}
+                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
+                      >
+                        Select
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Template 2 — Realistic Paper (Premium, second) */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
                   className="rounded-2xl overflow-hidden border-2 border-elegant-gold/50 bg-background relative"
                 >
                   <div className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-elegant-gold/90 text-white font-body text-[9px] font-bold uppercase tracking-wide">
@@ -149,38 +181,6 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                       </button>
                       <button
                         onClick={() => onSelect("love", "paper3d")}
-                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
-                      >
-                        Select
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Template 1 — Lavender Garden */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="rounded-2xl overflow-hidden border-2 border-border/50 bg-background hover:border-primary/40 transition-all duration-300"
-                >
-                  <div
-                    className="aspect-[4/3] bg-cover bg-center"
-                    style={{ backgroundImage: `url(${mailboxClosed})` }}
-                  />
-                  <div className="p-1.5 sm:p-4">
-                    <p className="font-display text-sm sm:text-base font-bold text-foreground">3D Mailbox</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Lavender Garden</p>
-                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-                      <button
-                        onClick={() => openPreview("photo")}
-                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
-                      >
-                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
-                        Preview
-                      </button>
-                      <button
-                        onClick={() => onSelect("love", "photo")}
                         className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
                       >
                         Select
@@ -235,21 +235,21 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                     className="aspect-[4/3] bg-cover bg-center"
                     style={{ backgroundImage: `url(${birthdayMailboxClosed})` }}
                   />
-                  <div className="p-3 sm:p-4">
+                  <div className="p-1.5 sm:p-4">
                     <p className="font-display text-sm sm:text-base font-bold text-foreground">Birthday Mailbox</p>
                     <p className="font-display text-xs sm:text-sm font-semibold mb-3" style={{ color: "#D4802A" }}>Birthday Exclusive</p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
                       <button
                         onClick={() => openPreview("birthday")}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-amber-100 font-body text-xs font-semibold hover:bg-amber-200 transition-colors"
+                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-amber-100 font-body text-[10px] sm:text-xs font-semibold hover:bg-amber-200 transition-colors"
                         style={{ color: "#D4802A" }}
                       >
-                        <Play className="w-3 h-3" />
+                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                         Preview
                       </button>
                       <button
                         onClick={() => onSelect("birthday", "birthday")}
-                        className="flex-1 px-2 py-2 rounded-xl font-body text-xs font-semibold hover:opacity-90 transition-opacity text-white"
+                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity text-white"
                         style={{ background: "#D4802A" }}
                       >
                         Select
@@ -274,7 +274,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed top-4 right-4 z-[120] w-10 h-10 rounded-full flex items-center justify-center"
+              className="fixed top-4 right-4 z-[220] w-10 h-10 rounded-full flex items-center justify-center"
               style={{ background: "rgba(37, 31, 40, 0.72)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)" }}
               aria-label="Close preview"
             >
@@ -284,7 +284,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
             {previewStage === "mailbox" && previewTemplate === "purple" && (
               <div
                 key="prev-mailbox-purple"
-                className="fixed inset-0 z-[100] flex items-center justify-center"
+                className="fixed inset-0 z-[200] flex items-center justify-center"
                 style={{ background: "#F2EFE8" }}
               >
                 <div className="relative w-[min(560px,90vw)] h-[min(560px,80vh)]">
@@ -304,7 +304,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 style={{
                   position: "fixed",
                   inset: 0,
-                  zIndex: 100,
+                  zIndex: 200,
                   background: "radial-gradient(ellipse at 50% 35%, #FFF9E6 0%, #FFF0B3 55%, #FFE082 100%)",
                 }}
               >
@@ -323,7 +323,7 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 style={{
                   position: "fixed",
                   inset: 0,
-                  zIndex: 100,
+                  zIndex: 200,
                   background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)",
                 }}
               >

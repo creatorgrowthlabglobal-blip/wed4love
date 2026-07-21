@@ -65,6 +65,36 @@ export const sounds = {
     setTimeout(() => playTone(494, 0.25, "sine", 0.06), 200);
     setTimeout(() => playTone(587, 0.35, "sine", 0.08), 400);
   },
+  happyBirthday: () => {
+    try {
+      const c = ctx();
+      // [frequency Hz, duration s, start offset s]
+      const notes: [number, number, number][] = [
+        [392, 0.22, 0.00], [392, 0.10, 0.28], [440, 0.32, 0.42], [392, 0.32, 0.80],
+        [523, 0.32, 1.18], [494, 0.65, 1.56],
+        [392, 0.22, 2.40], [392, 0.10, 2.68], [440, 0.32, 2.82], [392, 0.32, 3.20],
+        [587, 0.32, 3.58], [523, 0.65, 3.96],
+        [392, 0.22, 4.80], [392, 0.10, 5.08], [784, 0.32, 5.22], [659, 0.32, 5.60],
+        [523, 0.22, 5.98], [494, 0.22, 6.26], [440, 0.55, 6.54],
+        [698, 0.22, 7.30], [698, 0.10, 7.58], [659, 0.32, 7.72], [523, 0.32, 8.10],
+        [587, 0.32, 8.48], [523, 0.75, 8.86],
+      ];
+      notes.forEach(([freq, dur, start]) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, c.currentTime + start);
+        gain.gain.linearRampToValueAtTime(0.2, c.currentTime + start + 0.02);
+        gain.gain.setValueAtTime(0.2, c.currentTime + start + dur - 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + start + dur);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(c.currentTime + start);
+        osc.stop(c.currentTime + start + dur + 0.05);
+      });
+    } catch {}
+  },
   birdsFly: () => {
     try {
       const audio = birdsAudio.cloneNode(true) as HTMLAudioElement;

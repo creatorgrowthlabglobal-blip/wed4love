@@ -297,7 +297,7 @@ const CreateLetter = () => {
     <div
       className="min-h-screen gradient-blush relative"
     >
-      {step !== 5 && <Header />}
+      {step < 5 && <Header />}
       <FloatingHearts count={5} />
 
       {pendingDraft && (
@@ -330,7 +330,7 @@ const CreateLetter = () => {
           </div>
         </div>
       )}
-      <main className={`relative z-10 ${step === 5 ? "pt-8" : "pt-36 sm:pt-28"} pb-20 px-4 sm:px-6`}>
+      <main className={`relative z-10 ${step === 5 ? "pt-6 sm:pt-8" : step === 0 ? "pt-20 sm:pt-28" : "pt-36 sm:pt-28"} pb-20 px-4 sm:px-6`}>
         {step > 0 && (
           <ProgressBar
             currentStep={step - 1}
@@ -348,8 +348,9 @@ const CreateLetter = () => {
               key="media"
               images={images}
               onImagesChange={setImages}
-              onNext={() => setStep(4)}
+              onNext={() => template === "birthday" ? setStep(5) : setStep(4)}
               onBack={() => setStep(2)}
+              isBirthday={template === "birthday"}
             />
           )}
           {step === 4 && (
@@ -386,7 +387,7 @@ const CreateLetter = () => {
                 const id = handleGCashPay();
                 setGcashLetterId(id);
               }}
-              onBack={() => setStep(4)}
+              onBack={() => template === "birthday" ? setStep(3) : setStep(4)}
             />
           )}
         </AnimatePresence>

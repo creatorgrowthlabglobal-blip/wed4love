@@ -60,12 +60,12 @@ const BALLOONS: {
   id: number; x: number; y: number; hue: Hue;
   bobDuration: number; bobDelay: number; enterDelay: number; rotate: number;
 }[] = [
-  { id: 0, x: 14, y: 33, hue: "gold",     bobDuration: 2.8, bobDelay: 0.0, enterDelay: 0.0,  rotate: -6 },
-  { id: 1, x: 50, y: 30, hue: "rose",     bobDuration: 3.2, bobDelay: 0.5, enterDelay: 0.16, rotate:  3 },
-  { id: 2, x: 82, y: 35, hue: "sky",      bobDuration: 2.6, bobDelay: 1.0, enterDelay: 0.32, rotate: -4 },
-  { id: 3, x: 25, y: 62, hue: "lavender", bobDuration: 3.0, bobDelay: 0.3, enterDelay: 0.48, rotate:  7 },
-  { id: 4, x: 61, y: 57, hue: "coral",    bobDuration: 2.9, bobDelay: 0.8, enterDelay: 0.64, rotate: -3 },
-  { id: 5, x: 83, y: 70, hue: "mint",     bobDuration: 3.5, bobDelay: 0.2, enterDelay: 0.8,  rotate:  5 },
+  { id: 0, x: 12, y: 33, hue: "gold",     bobDuration: 2.8, bobDelay: 0.0, enterDelay: 0.0,  rotate: -6 },
+  { id: 1, x: 47, y: 30, hue: "rose",     bobDuration: 3.2, bobDelay: 0.5, enterDelay: 0.16, rotate:  3 },
+  { id: 2, x: 74, y: 35, hue: "sky",      bobDuration: 2.6, bobDelay: 1.0, enterDelay: 0.32, rotate: -4 },
+  { id: 3, x: 23, y: 62, hue: "lavender", bobDuration: 3.0, bobDelay: 0.3, enterDelay: 0.48, rotate:  7 },
+  { id: 4, x: 58, y: 57, hue: "coral",    bobDuration: 2.9, bobDelay: 0.8, enterDelay: 0.64, rotate: -3 },
+  { id: 5, x: 76, y: 70, hue: "mint",     bobDuration: 3.5, bobDelay: 0.2, enterDelay: 0.8,  rotate:  5 },
 ];
 
 // Deterministic — no Math.random at render time
@@ -185,6 +185,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
           }));
           setBdayConfetti(pieces);
           setPhase("birthday");
+          try { sounds.happyBirthday(); } catch {}
           setTimeout(onComplete, 4500);
         } else {
           setCountdownNum(n);
@@ -913,6 +914,23 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                       );
                     };
 
+                    const nameChars = receiverName
+                      ? receiverName.toUpperCase().split("").filter(c => c.trim())
+                      : [];
+                    const nameLen = nameChars.length;
+                    const nameLw = nameLen <= 4 ? 38 : nameLen <= 6 ? 33 : nameLen <= 8 ? 28 : 23;
+                    const nameLh = nameLen <= 4 ? 44 : nameLen <= 6 ? 39 : nameLen <= 8 ? 33 : 28;
+                    const nameFs = nameLen <= 4 ? "22px" : nameLen <= 6 ? "18px" : nameLen <= 8 ? "15px" : "12px";
+                    const nameRots = nameChars.map((_, i) => (i % 2 === 0 ? -1.5 : 2));
+                    const namePal = [
+                      { bg: "#FFCC80", bd: "#E65100", tx: "#5A1A00" },
+                      { bg: "#CE93D8", bd: "#7B1FA2", tx: "#2A0042" },
+                      { bg: "#FFD54F", bd: "#E5A800", tx: "#5A3500" },
+                      { bg: "#FF8A80", bd: "#C62828", tx: "#5C0000" },
+                      { bg: "#80D8FF", bd: "#0277BD", tx: "#01375A" },
+                      { bg: "#A5D6A7", bd: "#2E7D32", tx: "#0A2E0C" },
+                    ];
+
                     return (
                       <>
                         {renderRow(
@@ -940,6 +958,9 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                           ],
                           30, 36, 4, [1.5, -2, 1, -1.5, 2, -1, 1.5, -2], "18px", 0.52,
                         )}
+                        {nameChars.length > 0 && renderRow(
+                          nameChars, namePal, nameLw, nameLh, 4, nameRots, nameFs, 0.88,
+                        )}
                       </>
                     );
                   })()}
@@ -951,80 +972,11 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                     <div style={{ height: 1, width: 44, background: "linear-gradient(90deg, rgba(200,150,40,0.55), transparent)" }} />
                   </div>
 
+
                 </div>
 
-                {/* ── Polaroids — adapts to photo count ── */}
-                <motion.div
-                  initial={{ opacity: 0, y: 26 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.34 }}
-                  style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: 390 }}
-                >
-                  {(() => {
-                    const photoCount = images?.filter(Boolean).length ?? 0;
-                    const polaroidStyle = (rot: number): React.CSSProperties => ({
-                      background: "#fff",
-                      padding: "7px 7px 28px",
-                      boxShadow: "0 12px 40px rgba(0,0,0,0.14), 0 3px 10px rgba(0,0,0,0.07)",
-                      borderRadius: 3,
-                      border: "1px solid rgba(0,0,0,0.05)",
-                    });
-
-                    if (photoCount === 0) {
-                      return null;
-                    }
-
-                    if (photoCount === 1) {
-                      return (
-                        <motion.div
-                          initial={{ scale: 0, rotate: -5, opacity: 0 }}
-                          animate={{ scale: 1, rotate: -2, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 }}
-                          style={{ ...polaroidStyle(-2), maxWidth: 210 }}
-                        >
-                          <img src={images![0]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
-                        </motion.div>
-                      );
-                    }
-
-                    if (photoCount === 2) {
-                      return (
-                        <div style={{ display: "flex", gap: "clamp(10px,3vw,20px)", justifyContent: "center", width: "100%" }}>
-                          {([-6, 5] as const).map((rot, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ scale: 0, rotate: rot * 3, opacity: 0 }}
-                              animate={{ scale: 1, rotate: rot, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 + i * 0.15 }}
-                              style={{ ...polaroidStyle(rot), flex: "1 1 0", maxWidth: 160 }}
-                            >
-                              <img src={images![i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
-                            </motion.div>
-                          ))}
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div style={{ display: "flex", gap: "clamp(8px,3vw,18px)", justifyContent: "center", width: "100%" }}>
-                        {([-7, 5, -3] as const).map((rot, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ scale: 0, rotate: rot * 3, opacity: 0 }}
-                            animate={{ scale: 1, rotate: rot, opacity: 1 }}
-                            transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.5 + i * 0.15 }}
-                            style={{ ...polaroidStyle(rot), flex: "1 1 0", maxWidth: 118 }}
-                          >
-                            <img src={images![i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
-                          </motion.div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-                </motion.div>
-
-                {/* ── Letter text ── */}
-                {letterText && (
+                {/* ── Letter paper (photos + text together) ── */}
+                {(letterText || (images && images.filter(Boolean).length > 0)) && (
                   <motion.div
                     initial={{ opacity: 0, y: 22 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1032,20 +984,25 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                     style={{ width: "100%", maxWidth: 380 }}
                   >
                     {/* Vintage paper letter */}
-                    <div style={{ position: "relative", transform: "rotate(-0.6deg)" }}>
-                      {/* Paper base — warm parchment with aged tones */}
+                    <div style={{ position: "relative", transform: "rotate(-0.6deg)", overflow: "hidden" }}>
+                      {/* Paper base — warm parchment with birthday ribbon */}
                       <div style={{
                         position: "relative",
                         background: "linear-gradient(160deg, #f9eed3 0%, #f3e4b9 30%, #f8eccc 60%, #faf2dc 100%)",
                         borderRadius: 2,
                         padding: "clamp(22px,5.5vw,32px) clamp(18px,4.5vw,28px)",
+                        paddingTop: "clamp(28px,6vw,38px)",
                         boxShadow:
                           "0 1px 2px rgba(0,0,0,0.05), " +
                           "0 6px 24px rgba(100,60,10,0.18), " +
                           "0 18px 48px rgba(80,45,5,0.10), " +
                           "inset 0 0 80px rgba(150,90,20,0.05)",
-                        overflow: "hidden",
                       }}>
+                        {/* Colourful birthday ribbon at top */}
+                        <div style={{
+                          position: "absolute", top: 0, left: 0, right: 0, height: 7,
+                          background: "linear-gradient(90deg, #FF8A80 0%, #FFD54F 20%, #80D8FF 40%, #CE93D8 60%, #A5D6A7 80%, #FF8A80 100%)",
+                        }} />
                         {/* Faint horizontal ruled lines */}
                         <div style={{
                           position: "absolute", inset: 0, pointerEvents: "none",
@@ -1060,27 +1017,87 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
                             "radial-gradient(ellipse at 0% 100%,  rgba(110,65,10,0.08) 0%, transparent 40%), " +
                             "radial-gradient(ellipse at 100% 100%,rgba(110,65,10,0.09) 0%, transparent 45%)",
                         }} />
-                        {/* Subtle centre fade to lighten mid-paper */}
+                        {/* Subtle centre fade */}
                         <div style={{
                           position: "absolute", inset: 0, pointerEvents: "none",
                           background: "radial-gradient(ellipse at 50% 45%, rgba(255,248,220,0.28) 0%, transparent 70%)",
                         }} />
 
+                        {/* Polaroids inside the paper */}
+                        {(() => {
+                          const photoCount = images?.filter(Boolean).length ?? 0;
+                          if (photoCount === 0) return null;
+                          const polaroidStyle = (): React.CSSProperties => ({
+                            background: "#fff",
+                            padding: "6px 6px 22px",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.13), 0 2px 6px rgba(0,0,0,0.07)",
+                            borderRadius: 2,
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            position: "relative",
+                            zIndex: 1,
+                          });
+                          if (photoCount === 1) return (
+                            <div style={{ display: "flex", justifyContent: "center", marginBottom: 20, position: "relative", zIndex: 1 }}>
+                              <motion.div
+                                initial={{ scale: 0, rotate: -5, opacity: 0 }}
+                                animate={{ scale: 1, rotate: -2, opacity: 1 }}
+                                transition={{ type: "spring", stiffness: 180, damping: 16, delay: 1.0 }}
+                                style={{ ...polaroidStyle(), width: "55%" }}
+                              >
+                                <img src={images![0]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
+                              </motion.div>
+                            </div>
+                          );
+                          if (photoCount === 2) return (
+                            <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 20, position: "relative", zIndex: 1 }}>
+                              {([-5, 4] as const).map((rot, i) => (
+                                <motion.div key={i}
+                                  initial={{ scale: 0, rotate: rot * 2, opacity: 0 }}
+                                  animate={{ scale: 1, rotate: rot, opacity: 1 }}
+                                  transition={{ type: "spring", stiffness: 180, damping: 16, delay: 1.0 + i * 0.12 }}
+                                  style={{ ...polaroidStyle(), flex: "1 1 0" }}
+                                >
+                                  <img src={images![i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
+                                </motion.div>
+                              ))}
+                            </div>
+                          );
+                          return (
+                            <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 20, position: "relative", zIndex: 1 }}>
+                              {([-6, 3, -4] as const).map((rot, i) => (
+                                <motion.div key={i}
+                                  initial={{ scale: 0, rotate: rot * 2, opacity: 0 }}
+                                  animate={{ scale: 1, rotate: rot, opacity: 1 }}
+                                  transition={{ type: "spring", stiffness: 180, damping: 16, delay: 1.0 + i * 0.12 }}
+                                  style={{ ...polaroidStyle(), flex: "1 1 0" }}
+                                >
+                                  <img src={images![i]} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} alt="" />
+                                </motion.div>
+                              ))}
+                            </div>
+                          );
+                        })()}
+
                         {/* Letter text */}
-                        <p style={{
-                          position: "relative", zIndex: 1,
-                          fontFamily: "Georgia, 'Times New Roman', serif",
-                          fontSize: "clamp(13px,3.5vw,15px)",
-                          color: "#3a1e0c",
-                          lineHeight: 2.1,
-                          whiteSpace: "pre-wrap",
-                          fontStyle: "italic",
-                          textAlign: "center",
-                          margin: 0,
-                          letterSpacing: "0.015em",
-                        }}>
-                          {letterText}
-                        </p>
+                        {letterText && (
+                          <p style={{
+                            position: "relative", zIndex: 1,
+                            fontFamily: "Georgia, 'Times New Roman', serif",
+                            fontSize: "clamp(13px,3.5vw,15px)",
+                            color: "#3a1e0c",
+                            lineHeight: 2.1,
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            fontStyle: "italic",
+                            textAlign: "center",
+                            margin: 0,
+                            letterSpacing: "0.015em",
+                            width: "100%",
+                          }}>
+                            {letterText}
+                          </p>
+                        )}
                       </div>
                       {/* Drop shadow beneath paper edge */}
                       <div style={{
