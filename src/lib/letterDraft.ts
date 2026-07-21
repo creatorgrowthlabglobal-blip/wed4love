@@ -1,10 +1,12 @@
+import type { LetterTemplate } from "./letterStorage";
+
 const DRAFT_KEY = "wish4love_letter_draft_v1";
 const DRAFT_TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export interface LetterDraft {
   step: number;
   letterType: "love" | "birthday";
-  template: "photo" | "purple";
+  template: LetterTemplate;
   details: {
     senderName: string;
     receiverName: string;

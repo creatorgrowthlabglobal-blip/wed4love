@@ -1,6 +1,9 @@
 import { QuizQuestion } from "@/components/letter/QuizCreation";
 import { supabase } from "@/integrations/supabase/client";
 
+/** "paper3d" is the premium realistic-paper-unfold template. */
+export type LetterTemplate = "photo" | "purple" | "paper3d";
+
 export interface StoredLetter {
   id: string;
   type: "love" | "birthday";
@@ -17,7 +20,7 @@ export interface StoredLetter {
   quiz: QuizQuestion[];
   email: string;
   date: string;
-  template?: "photo" | "purple"; // mailbox template choice
+  template?: LetterTemplate; // mailbox template choice
 }
 
 const readAsDataURL = (file: Blob): Promise<string> =>

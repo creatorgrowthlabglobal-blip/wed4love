@@ -12,7 +12,7 @@ import MediaUpload from "@/components/letter/MediaUpload";
 import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import PhilippinesPaymentModal from "@/components/PhilippinesPaymentModal";
-import { filesToBase64, saveLetter } from "@/lib/letterStorage";
+import { filesToBase64, saveLetter, type LetterTemplate } from "@/lib/letterStorage";
 import { saveDraft, loadDraft, clearDraft, draftImagesToFiles } from "@/lib/letterDraft";
 import { getCurrentUser } from "@/lib/auth";
 import {
@@ -32,7 +32,7 @@ const CreateLetter = () => {
   const [searchParams] = useSearchParams();
   const [step, setStep] = useState(0);
   const [letterType, setLetterType] = useState<"love" | "birthday">("love");
-  const [template, setTemplate] = useState<"photo" | "purple">("photo");
+  const [template, setTemplate] = useState<LetterTemplate>("photo");
   const [details, setDetails] = useState({
     senderName: "",
     receiverName: "",
@@ -131,7 +131,7 @@ const CreateLetter = () => {
     return letterId;
   };
 
-  const handleSelectType = (type: "love" | "birthday", tmpl: "photo" | "purple") => {
+  const handleSelectType = (type: "love" | "birthday", tmpl: LetterTemplate) => {
     setLetterType(type);
     setTemplate(tmpl);
     setStep(1);

@@ -13,6 +13,7 @@ import VideoPlayer from "@/components/viewer/VideoPlayer";
 import MemoryFolder from "@/components/viewer/MemoryFolder";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
+import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
@@ -34,7 +35,9 @@ const ViewLetter = () => {
           if (cancelled) return;
           if (found) {
             setLetter(found);
-            if ((found.template || "photo") === "purple") {
+            // Purple and the 3D paper template are self-contained reveals —
+            // they skip the separate "mailbox" stage entirely.
+            if ((found.template || "photo") !== "photo") {
               setStage("envelope");
             }
           } else {
@@ -184,7 +187,7 @@ const ViewLetter = () => {
           <PurpleMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
         </FramedScene>
       )}
-      {stage === "mailbox" && template !== "purple" && (
+      {stage === "mailbox" && template === "photo" && (
         <motion.div
           key="mailbox-photo"
           initial={{ opacity: 0 }}
@@ -201,7 +204,18 @@ const ViewLetter = () => {
           <RealisticMailbox className="w-full h-full" onContinue={advance} senderName={letter.senderName} />
         </motion.div>
       )}
-      {stage === "envelope" && (
+      {stage === "envelope" && template === "paper3d" && (
+        <RealisticPaperLetter3D
+          key="envelope-paper3d"
+          receiverName={letter.receiverName || "Someone Special"}
+          senderName={letter.senderName}
+          letterText={letter.letterText}
+          images={letter.images}
+          onLetterOpen={startMusic}
+          onContinue={advance}
+        />
+      )}
+      {stage === "envelope" && template !== "paper3d" && (
         <FramedScene key="envelope">
           <EnvelopeReveal
             receiverName={letter.receiverName || "Someone Special"}

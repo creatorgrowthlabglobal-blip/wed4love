@@ -1,30 +1,33 @@
 import { useState, Suspense } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Play, X, ArrowRight } from "lucide-react";
+import { Heart, Play, X, ArrowRight, Sparkles as SparklesIcon } from "lucide-react";
 import TestimonialsMarquee from "@/components/TestimonialsMarquee";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
+import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import FramedScene from "@/components/viewer/FramedScene";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
+import type { LetterTemplate } from "@/lib/letterStorage";
 
 type SubPhase = "type" | "template";
 type PreviewStage = "mailbox" | "envelope";
 
 interface LetterTypeSelectionProps {
-  onSelect: (type: "love" | "birthday", template: "photo" | "purple") => void;
+  onSelect: (type: "love" | "birthday", template: LetterTemplate) => void;
 }
 
 const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
   const [subPhase, setSubPhase] = useState<SubPhase>("template");
-  const [previewTemplate, setPreviewTemplate] = useState<"photo" | "purple" | null>(null);
+  const [previewTemplate, setPreviewTemplate] = useState<LetterTemplate | null>(null);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
 
-  const openPreview = (template: "photo" | "purple") => {
+  const openPreview = (template: LetterTemplate) => {
     setPreviewTemplate(template);
-    // Template 2 (purple) skips the mailbox and opens straight to the envelope
-    setPreviewStage(template === "purple" ? "envelope" : "mailbox");
+    // Purple and the 3D paper template each have their own self-contained
+    // reveal — they skip the separate "mailbox" stage entirely.
+    setPreviewStage(template === "photo" ? "mailbox" : "envelope");
   };
 
   const closePreview = () => setPreviewTemplate(null);
@@ -108,6 +111,48 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
               </p>
 
               <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+                {/* Template 3 — Realistic Paper (Premium), shown first to lead with the flagship design */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0 }}
+                  className="col-span-2 rounded-2xl overflow-hidden border-2 border-elegant-gold/50 relative"
+                  style={{ background: "linear-gradient(135deg, hsl(30 60% 97%), hsl(40 70% 95%))" }}
+                >
+                  <div className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-elegant-gold/90 text-white font-body text-[10px] font-bold uppercase tracking-wide">
+                    <SparklesIcon className="w-3 h-3" />
+                    Premium
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-center gap-4 p-4 sm:p-5">
+                    <div className="w-full sm:w-40 aspect-[4/3] rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: "radial-gradient(ellipse at 50% 40%, #FDF1F5 0%, #F6DCE5 60%, #EFC9D6 100%)" }}>
+                      <span className="text-4xl">📜</span>
+                    </div>
+                    <div className="flex-1 text-center sm:text-left">
+                      <p className="font-display text-base sm:text-lg font-bold text-foreground">Realistic Paper</p>
+                      <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-1.5">Fold-Open 3D</p>
+                      <p className="font-body text-xs text-muted-foreground mb-3 hidden sm:block">
+                        A handwritten paper letter that unfolds in full 3D right in their browser.
+                      </p>
+                      <div className="flex gap-2 max-w-xs mx-auto sm:mx-0">
+                        <button
+                          onClick={() => openPreview("paper3d")}
+                          className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-primary/10 text-primary font-body text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        >
+                          <Play className="w-3 h-3" />
+                          Preview
+                        </button>
+                        <button
+                          onClick={() => onSelect("love", "paper3d")}
+                          className="flex-1 px-2 py-2 rounded-xl bg-primary text-primary-foreground font-body text-xs font-semibold hover:opacity-90 transition-opacity"
+                        >
+                          Select
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
                 {/* Template 1 — Lavender Garden */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -231,7 +276,16 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
               </motion.div>
             )}
 
-            {previewStage === "envelope" && (
+            {previewStage === "envelope" && previewTemplate === "paper3d" && (
+              <RealisticPaperLetter3D
+                receiverName="Someone Special"
+                senderName="You"
+                letterText="This is how your paper letter will unfold and reveal itself in full 3D."
+                onContinue={closePreview}
+              />
+            )}
+
+            {previewStage === "envelope" && previewTemplate !== "paper3d" && (
               <FramedScene>
                 <EnvelopeReveal receiverName="Someone Special" onContinue={closePreview} />
               </FramedScene>

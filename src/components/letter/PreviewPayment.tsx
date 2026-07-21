@@ -10,7 +10,9 @@ import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import FramedScene from "@/components/viewer/FramedScene";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
+import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import SignupGate from "@/components/letter/SignupGate";
+import type { LetterTemplate } from "@/lib/letterStorage";
 
 interface PreviewPaymentProps {
   letterData: {
@@ -22,8 +24,8 @@ interface PreviewPaymentProps {
     youtubeVideoId?: string | null;
     letterType: "love" | "birthday" | null;
   };
-  template: "photo" | "purple";
-  onTemplateChange: (t: "photo" | "purple") => void;
+  template: LetterTemplate;
+  onTemplateChange: (t: LetterTemplate) => void;
   onPay: () => void;
   onGCashPay: () => void;
   onBack: () => void;
@@ -151,8 +153,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
   }, [showPreview, letterData.selectedMusic]);
 
   const openPreview = () => {
-    // Photo template starts at the mailbox; purple skips straight to the envelope
-    setPreviewStage(template === "purple" ? "envelope" : "mailbox");
+    // Photo template starts at the mailbox; purple/paper3d skip straight to their own reveal
+    setPreviewStage(template === "photo" ? "mailbox" : "envelope");
     setShowPreview(true);
   };
   const closePreview = () => {
@@ -324,8 +326,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
               </motion.div>
             )}
 
-            {/* Envelope stage — both templates use FramedScene here */}
-            {previewStage === "envelope" && (
+            {/* Envelope stage — purple template */}
+            {previewStage === "envelope" && template === "purple" && (
               <FramedScene key="prev-envelope">
                 <EnvelopeReveal
                   receiverName={letterData.receiverName}
@@ -336,6 +338,19 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
                   onContinue={closePreview}
                 />
               </FramedScene>
+            )}
+
+            {/* Envelope stage — realistic 3D paper template */}
+            {previewStage === "envelope" && template === "paper3d" && (
+              <RealisticPaperLetter3D
+                key="prev-paper3d"
+                receiverName={letterData.receiverName}
+                senderName={letterData.senderName}
+                letterText={letterData.letterText}
+                images={previewImages}
+                onLetterOpen={startMusic}
+                onContinue={closePreview}
+              />
             )}
           </div>
         )}
