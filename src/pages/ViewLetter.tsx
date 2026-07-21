@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, getSignedMediaUrl, StoredLetter } from "@/lib/letterStorage";
+import { supabase } from "@/integrations/supabase/client";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -29,6 +30,13 @@ const ViewLetter = () => {
   const [voiceMessageUrl, setVoiceMessageUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ytAudio = useYouTubeAudio(letter?.youtubeVideoId ?? null, 0.3);
+
+  const openedNotifiedRef = useRef(false);
+  useEffect(() => {
+    if (stage !== "envelope" || openedNotifiedRef.current || !id) return;
+    openedNotifiedRef.current = true;
+    supabase.functions.invoke("mark-letter-opened", { body: { letter_id: id } }).catch(() => {});
+  }, [stage, id]);
 
   useEffect(() => {
     if (!letter?.voiceMessagePath) {

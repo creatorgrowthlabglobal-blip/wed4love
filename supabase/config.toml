@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.search-youtube-music]
 verify_jwt = false
+
+[functions.mark-letter-opened]
+verify_jwt = false
