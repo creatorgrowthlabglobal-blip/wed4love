@@ -10,6 +10,7 @@ interface RealisticPaperLetter3DProps {
   senderName?: string;
   letterText?: string;
   images?: string[];
+  voiceMessageUrl?: string | null;
   onContinue: () => void;
   onLetterOpen?: () => void;
 }
@@ -160,6 +161,7 @@ const RealisticPaperLetter3D = ({
   senderName,
   letterText = "",
   images = [],
+  voiceMessageUrl,
   onContinue,
   onLetterOpen,
 }: RealisticPaperLetter3DProps) => {
@@ -167,6 +169,24 @@ const RealisticPaperLetter3D = ({
   const [visibleCount, setVisibleCount] = useState(0);
   const [typingDone, setTypingDone] = useState(false);
   const [webglOk, setWebglOk] = useState(true);
+  const [voicePlaying, setVoicePlaying] = useState(false);
+  const voiceAudioRef = useMemo(() => (voiceMessageUrl ? new Audio(voiceMessageUrl) : null), [voiceMessageUrl]);
+
+  useEffect(() => {
+    return () => voiceAudioRef?.pause();
+  }, [voiceAudioRef]);
+
+  const toggleVoice = () => {
+    if (!voiceAudioRef) return;
+    if (voicePlaying) {
+      voiceAudioRef.pause();
+      setVoicePlaying(false);
+    } else {
+      voiceAudioRef.onended = () => setVoicePlaying(false);
+      voiceAudioRef.play().catch(() => setVoicePlaying(false));
+      setVoicePlaying(true);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -311,8 +331,20 @@ const RealisticPaperLetter3D = ({
                   </p>
                 )}
 
+                {typingDone && voiceAudioRef && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={toggleVoice}
+                      className="font-body text-sm font-semibold px-6 py-2.5 rounded-full"
+                      style={{ background: "rgba(200,80,120,0.1)", border: "1px solid rgba(200,80,120,0.35)", color: "#4B3A2A" }}
+                    >
+                      {voicePlaying ? "⏸" : "▶"} Hear their voice
+                    </button>
+                  </div>
+                )}
+
                 {typingDone && (
-                  <div className="text-center mt-8">
+                  <div className="text-center mt-4">
                     <button
                       onClick={onContinue}
                       className="font-body text-sm font-semibold px-7 py-3 rounded-full"

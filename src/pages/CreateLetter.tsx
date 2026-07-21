@@ -12,7 +12,7 @@ import MediaUpload from "@/components/letter/MediaUpload";
 import MusicSelection from "@/components/letter/MusicSelection";
 import PreviewPayment from "@/components/letter/PreviewPayment";
 import PhilippinesPaymentModal from "@/components/PhilippinesPaymentModal";
-import { filesToBase64, saveLetter, type LetterTemplate } from "@/lib/letterStorage";
+import { filesToBase64, saveLetter, uploadVoiceMessage, type LetterTemplate } from "@/lib/letterStorage";
 import { saveDraft, loadDraft, clearDraft, draftImagesToFiles } from "@/lib/letterDraft";
 import { getCurrentUser } from "@/lib/auth";
 import {
@@ -44,6 +44,7 @@ const CreateLetter = () => {
   const [images, setImages] = useState<File[]>([]);
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
+  const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
   const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
   const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
   const [imageDataUrls, setImageDataUrls] = useState<string[]>([]);
@@ -109,7 +110,10 @@ const CreateLetter = () => {
     const user = getCurrentUser();
     const email = user?.email || "";
     // Save in background — don't block modal opening
-    filesToBase64(images).then((imgData) =>
+    Promise.all([
+      filesToBase64(images),
+      voiceBlob ? uploadVoiceMessage(letterId, voiceBlob) : Promise.resolve(null),
+    ]).then(([imgData, voiceMessagePath]) =>
       saveLetter({
         id: letterId,
         type: letterType || "love",
@@ -121,6 +125,7 @@ const CreateLetter = () => {
         audios: [],
         selectedMusic,
         youtubeVideoId,
+        voiceMessagePath,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -188,7 +193,10 @@ const CreateLetter = () => {
     // path the letter just needs to exist by the time the user returns from
     // Whop — so we let it complete in the background while they're paying.
     const savePromise = (async () => {
-      const imgData = await filesToBase64(images);
+      const [imgData, voiceMessagePath] = await Promise.all([
+        filesToBase64(images),
+        voiceBlob ? uploadVoiceMessage(letterId, voiceBlob) : Promise.resolve(null),
+      ]);
       return await saveLetter({
         id: letterId,
         type: letterType || "love",
@@ -200,6 +208,7 @@ const CreateLetter = () => {
         audios: [],
         selectedMusic,
         youtubeVideoId,
+        voiceMessagePath,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -310,6 +319,8 @@ const CreateLetter = () => {
               }}
               template={template}
               onTemplateChange={setTemplate}
+              voiceBlob={voiceBlob}
+              onVoiceChange={setVoiceBlob}
               onPay={handlePay}
               onGCashPay={() => {
                 const id = handleGCashPay();

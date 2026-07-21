@@ -12,6 +12,7 @@ import FramedScene from "@/components/viewer/FramedScene";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import SignupGate from "@/components/letter/SignupGate";
+import VoiceRecorder from "@/components/letter/VoiceRecorder";
 import type { LetterTemplate } from "@/lib/letterStorage";
 
 interface PreviewPaymentProps {
@@ -26,6 +27,8 @@ interface PreviewPaymentProps {
   };
   template: LetterTemplate;
   onTemplateChange: (t: LetterTemplate) => void;
+  voiceBlob: Blob | null;
+  onVoiceChange: (blob: Blob | null) => void;
   onPay: () => void;
   onGCashPay: () => void;
   onBack: () => void;
@@ -33,7 +36,7 @@ interface PreviewPaymentProps {
 
 type PreviewStage = "mailbox" | "envelope";
 
-const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
+const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onVoiceChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
   const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [showSignupGate, setShowSignupGate] = useState(false);
@@ -220,6 +223,16 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, onPay, onGCash
             <Play className="w-5 h-5" />
             Preview Full Experience
           </motion.button>
+        </motion.div>
+
+        {/* Optional voice message */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="mb-4 sm:mb-8"
+        >
+          <VoiceRecorder audioBlob={voiceBlob} onChange={onVoiceChange} />
         </motion.div>
 
         {/* Payment Section */}

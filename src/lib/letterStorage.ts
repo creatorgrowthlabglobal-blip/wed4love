@@ -16,6 +16,7 @@ export interface StoredLetter {
   selectedMusic: string | null;
   customMusicData?: string | null; // base64 data URL for uploaded music
   youtubeVideoId?: string | null; // pasted YouTube link, extracted video id
+  voiceMessagePath?: string | null; // path within the private letter-media bucket, not a URL
   pin?: string; // deprecated, kept for backward compat
   quiz: QuizQuestion[];
   email: string;
@@ -87,6 +88,46 @@ export const fileToBase64 = (file: File): Promise<string> => compressImage(file)
 
 export const filesToBase64 = (files: File[]): Promise<string[]> =>
   Promise.all(files.map((f) => compressImage(f)));
+
+/**
+ * Uploads a recorded voice message to the private letter-media bucket and
+ * returns its storage path (not a URL — the bucket is private, so playback
+ * must go through a short-lived signed URL, see getSignedMediaUrl below).
+ */
+export const uploadVoiceMessage = async (letterId: string, blob: Blob): Promise<string | null> => {
+  try {
+    const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+    const path = `${letterId}/voice.${ext}`;
+    const { error } = await supabase.storage
+      .from("letter-media")
+      .upload(path, blob, { upsert: true, contentType: blob.type });
+    if (error) {
+      console.error("[uploadVoiceMessage] upload failed", error);
+      return null;
+    }
+    return path;
+  } catch (e) {
+    console.error("[uploadVoiceMessage] threw", e);
+    return null;
+  }
+};
+
+/** Short-lived signed URL for playing back private letter-media objects. */
+export const getSignedMediaUrl = async (path: string, expiresInSeconds = 3600): Promise<string | null> => {
+  try {
+    const { data, error } = await supabase.storage
+      .from("letter-media")
+      .createSignedUrl(path, expiresInSeconds);
+    if (error) {
+      console.error("[getSignedMediaUrl] failed", error);
+      return null;
+    }
+    return data?.signedUrl || null;
+  } catch (e) {
+    console.error("[getSignedMediaUrl] threw", e);
+    return null;
+  }
+};
 
 const LOCAL_KEY = "wish4love_full_letters";
 const HISTORY_KEY = "wish4love_letters";

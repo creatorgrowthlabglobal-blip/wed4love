@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { getLetter, StoredLetter } from "@/lib/letterStorage";
+import { getLetter, getSignedMediaUrl, StoredLetter } from "@/lib/letterStorage";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -24,8 +24,23 @@ const ViewLetter = () => {
   const [letter, setLetter] = useState<StoredLetter | null>(null);
   const [stage, setStage] = useState<Stage>("mailbox"); // overridden below for purple template
   const [notFound, setNotFound] = useState(false);
+  const [voiceMessageUrl, setVoiceMessageUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ytAudio = useYouTubeAudio(letter?.youtubeVideoId ?? null, 0.3);
+
+  useEffect(() => {
+    if (!letter?.voiceMessagePath) {
+      setVoiceMessageUrl(null);
+      return;
+    }
+    let cancelled = false;
+    getSignedMediaUrl(letter.voiceMessagePath).then((url) => {
+      if (!cancelled) setVoiceMessageUrl(url);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [letter?.voiceMessagePath]);
 
   useEffect(() => {
     let cancelled = false;
@@ -211,6 +226,7 @@ const ViewLetter = () => {
           senderName={letter.senderName}
           letterText={letter.letterText}
           images={letter.images}
+          voiceMessageUrl={voiceMessageUrl}
           onLetterOpen={startMusic}
           onContinue={advance}
         />
@@ -222,6 +238,7 @@ const ViewLetter = () => {
             senderName={letter.senderName}
             letterText={letter.letterText}
             images={letter.images}
+            voiceMessageUrl={voiceMessageUrl}
             onLetterOpen={startMusic}
             onContinue={advance}
           />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sounds } from "@/lib/sounds";
 import photo1 from "@/assets/photo1.jpg";
@@ -15,6 +15,7 @@ interface EnvelopeRevealProps {
   senderName?: string;
   letterText?: string;
   images?: string[];
+  voiceMessageUrl?: string | null;
   onContinue: () => void;
   onLetterOpen?: () => void;
 }
@@ -135,9 +136,27 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
 
 type Phase = "idle" | "opening" | "open";
 
-export default function EnvelopeReveal({ receiverName, senderName, letterText, images, onContinue, onLetterOpen }: EnvelopeRevealProps) {
+export default function EnvelopeReveal({ receiverName, senderName, letterText, images, voiceMessageUrl, onContinue, onLetterOpen }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
+  const [voicePlaying, setVoicePlaying] = useState(false);
+  const voiceAudioRef = useMemo(() => (voiceMessageUrl ? new Audio(voiceMessageUrl) : null), [voiceMessageUrl]);
+
+  useEffect(() => {
+    return () => voiceAudioRef?.pause();
+  }, [voiceAudioRef]);
+
+  const toggleVoice = () => {
+    if (!voiceAudioRef) return;
+    if (voicePlaying) {
+      voiceAudioRef.pause();
+      setVoicePlaying(false);
+    } else {
+      voiceAudioRef.onended = () => setVoicePlaying(false);
+      voiceAudioRef.play().catch(() => setVoicePlaying(false));
+      setVoicePlaying(true);
+    }
+  };
   const [visibleCount, setVisibleCount] = useState(0);
   const [typingDone, setTypingDone] = useState(false);
   const envelopeSceneSize = "min(280px, 52vw, calc(100% - 2rem))";
@@ -844,6 +863,36 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 {signature}
               </p>
             </motion.div>
+
+            {/* Voice message — only appears once the letter has finished "writing" itself */}
+            {typingDone && voiceAudioRef && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                style={{ marginTop: "2rem", textAlign: "center" }}
+              >
+                <button
+                  onClick={toggleVoice}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    background: "rgba(200,80,120,0.1)",
+                    border: "1px solid rgba(200,80,120,0.35)",
+                    borderRadius: "24px",
+                    padding: "10px 24px",
+                    fontFamily: "'Caveat', 'Dancing Script', cursive",
+                    fontSize: "clamp(18px, 2.6vw, 22px)",
+                    color: TEXT_DARK,
+                    cursor: "pointer",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {voicePlaying ? "⏸" : "▶"} Hear their voice
+                </button>
+              </motion.div>
+            )}
 
             {/* Continue — only appears once the letter has finished "writing" itself */}
             {typingDone && (
