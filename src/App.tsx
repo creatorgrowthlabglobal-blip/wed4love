@@ -83,7 +83,7 @@ const App = () => (
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/" element={<Index />} />
           <Route path="/create-letter" element={<CreateLetter />} />
-          <Route path="/letter-ready/:id" element={<ProtectedRoute><LetterReady /></ProtectedRoute>} />
+          <Route path="/letter-ready/:id" element={<LetterReady />} />
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
           <Route path="/demo" element={<Demo />} />

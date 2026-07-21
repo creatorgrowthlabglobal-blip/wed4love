@@ -41,13 +41,17 @@ Deno.serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
     if (senderEmail && isValidEmail(senderEmail) && LOVABLE_API_KEY && RESEND_API_KEY) {
+      const watchUrl = `https://wish4love.com/letter-ready/${letter_id}`;
       const html = `
         <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:32px;background:#fff8f5;border-radius:16px;">
           <h2 style="color:#f472b6;margin-bottom:8px;">Wish4Love 🎥</h2>
           <p style="color:#555;font-size:16px;">
             <strong>${receiverName}</strong> just left you a video reaction to your letter!
           </p>
-          <p style="color:#999;font-size:13px;margin-top:20px;">Log back in to Wish4Love to watch it.</p>
+          <p style="margin-top:24px;">
+            <a href="${watchUrl}" style="display:inline-block;background:#f472b6;color:#fff;text-decoration:none;font-size:15px;font-weight:bold;padding:12px 28px;border-radius:999px;">Watch the reaction</a>
+          </p>
+          <p style="color:#999;font-size:12px;margin-top:20px;word-break:break-all;">Or copy this link: ${watchUrl}</p>
         </div>
       `;
       const res = await fetch(`${GATEWAY_URL}/emails`, {
