@@ -16,6 +16,7 @@ interface EnvelopeRevealProps {
   letterText?: string;
   images?: string[];
   voiceMessageUrl?: string | null;
+  showWatermark?: boolean;
   onContinue: () => void;
   onLetterOpen?: () => void;
 }
@@ -136,7 +137,7 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
 
 type Phase = "idle" | "opening" | "open";
 
-export default function EnvelopeReveal({ receiverName, senderName, letterText, images, voiceMessageUrl, onContinue, onLetterOpen }: EnvelopeRevealProps) {
+export default function EnvelopeReveal({ receiverName, senderName, letterText, images, voiceMessageUrl, showWatermark = true, onContinue, onLetterOpen }: EnvelopeRevealProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [flapBehind, setFlapBehind] = useState(false);
   const [voicePlaying, setVoicePlaying] = useState(false);
@@ -863,6 +864,12 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 {signature}
               </p>
             </motion.div>
+
+            {showWatermark && typingDone && (
+              <p style={{ textAlign: "center", marginTop: "2rem", fontSize: "11px", color: TEXT_MID, opacity: 0.55, fontFamily: "'Inter', sans-serif" }}>
+                Sent with Wish4Love 💌
+              </p>
+            )}
 
             {/* Voice message — only appears once the letter has finished "writing" itself */}
             {typingDone && voiceAudioRef && (

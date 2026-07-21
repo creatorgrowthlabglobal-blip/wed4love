@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLetter, getSignedMediaUrl, StoredLetter } from "@/lib/letterStorage";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchEntitlement, hasPremiumFeatures } from "@/lib/whop";
 import { getPresetById, getRandomPresetUrl } from "@/lib/musicPresets";
 import { useYouTubeAudio } from "@/hooks/useYouTubeAudio";
 import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
@@ -28,8 +29,20 @@ const ViewLetter = () => {
   const [notFound, setNotFound] = useState(false);
   const [locked, setLocked] = useState(false);
   const [voiceMessageUrl, setVoiceMessageUrl] = useState<string | null>(null);
+  const [senderIsPremium, setSenderIsPremium] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ytAudio = useYouTubeAudio(letter?.youtubeVideoId ?? null, 0.3);
+
+  useEffect(() => {
+    if (!letter?.email) return;
+    let cancelled = false;
+    fetchEntitlement(letter.email).then((ent) => {
+      if (!cancelled) setSenderIsPremium(hasPremiumFeatures(ent));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [letter?.email]);
 
   const openedNotifiedRef = useRef(false);
   useEffect(() => {
@@ -250,6 +263,7 @@ const ViewLetter = () => {
           letterText={letter.letterText}
           images={letter.images}
           voiceMessageUrl={voiceMessageUrl}
+          showWatermark={!senderIsPremium}
           onLetterOpen={startMusic}
           onContinue={advance}
         />
@@ -262,6 +276,7 @@ const ViewLetter = () => {
             letterText={letter.letterText}
             images={letter.images}
             voiceMessageUrl={voiceMessageUrl}
+            showWatermark={!senderIsPremium}
             onLetterOpen={startMusic}
             onContinue={advance}
           />

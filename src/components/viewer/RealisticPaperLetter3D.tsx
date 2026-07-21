@@ -11,6 +11,7 @@ interface RealisticPaperLetter3DProps {
   letterText?: string;
   images?: string[];
   voiceMessageUrl?: string | null;
+  showWatermark?: boolean;
   onContinue: () => void;
   onLetterOpen?: () => void;
 }
@@ -162,6 +163,7 @@ const RealisticPaperLetter3D = ({
   letterText = "",
   images = [],
   voiceMessageUrl,
+  showWatermark = true,
   onContinue,
   onLetterOpen,
 }: RealisticPaperLetter3DProps) => {
@@ -328,6 +330,12 @@ const RealisticPaperLetter3D = ({
                     style={{ fontFamily: "'Pinyon Script', 'Dancing Script', cursive", fontSize: "clamp(28px,4vw,34px)", color: "#4B3A2A" }}
                   >
                     {senderName}
+                  </p>
+                )}
+
+                {showWatermark && typingDone && (
+                  <p className="text-center mt-6 font-body text-[11px]" style={{ color: "#4B3A2A", opacity: 0.5 }}>
+                    Sent with Wish4Love 💌
                   </p>
                 )}
 
