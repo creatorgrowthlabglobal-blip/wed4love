@@ -14,6 +14,7 @@ import MemoryFolder from "@/components/viewer/MemoryFolder";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
+import LockedCountdown from "@/components/viewer/LockedCountdown";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
 
@@ -24,6 +25,7 @@ const ViewLetter = () => {
   const [letter, setLetter] = useState<StoredLetter | null>(null);
   const [stage, setStage] = useState<Stage>("mailbox"); // overridden below for purple template
   const [notFound, setNotFound] = useState(false);
+  const [locked, setLocked] = useState(false);
   const [voiceMessageUrl, setVoiceMessageUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ytAudio = useYouTubeAudio(letter?.youtubeVideoId ?? null, 0.3);
@@ -50,6 +52,9 @@ const ViewLetter = () => {
           if (cancelled) return;
           if (found) {
             setLetter(found);
+            if (found.unlockAt && new Date(found.unlockAt).getTime() > Date.now()) {
+              setLocked(true);
+            }
             // Purple and the 3D paper template are self-contained reveals —
             // they skip the separate "mailbox" stage entirely.
             if ((found.template || "photo") !== "photo") {
@@ -169,6 +174,16 @@ const ViewLetter = () => {
           <p className="font-body text-sm" style={{ color: "hsl(0 15% 55%)" }}>Loading your letter...</p>
         </div>
       </div>
+    );
+  }
+
+  if (locked && letter.unlockAt) {
+    return (
+      <LockedCountdown
+        unlockAt={letter.unlockAt}
+        senderName={letter.senderName}
+        onUnlocked={() => setLocked(false)}
+      />
     );
   }
 

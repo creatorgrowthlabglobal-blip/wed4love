@@ -13,6 +13,7 @@ import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import SignupGate from "@/components/letter/SignupGate";
 import VoiceRecorder from "@/components/letter/VoiceRecorder";
+import UnlockDatePicker from "@/components/letter/UnlockDatePicker";
 import type { LetterTemplate } from "@/lib/letterStorage";
 
 interface PreviewPaymentProps {
@@ -29,6 +30,8 @@ interface PreviewPaymentProps {
   onTemplateChange: (t: LetterTemplate) => void;
   voiceBlob: Blob | null;
   onVoiceChange: (blob: Blob | null) => void;
+  unlockAt: string | null;
+  onUnlockAtChange: (iso: string | null) => void;
   onPay: () => void;
   onGCashPay: () => void;
   onBack: () => void;
@@ -36,7 +39,7 @@ interface PreviewPaymentProps {
 
 type PreviewStage = "mailbox" | "envelope";
 
-const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onVoiceChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
+const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onVoiceChange, unlockAt, onUnlockAtChange, onPay, onGCashPay, onBack }: PreviewPaymentProps) => {
   const [showPreview, setShowPreview] = useState(false);
   const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [showSignupGate, setShowSignupGate] = useState(false);
@@ -233,6 +236,16 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
           className="mb-4 sm:mb-8"
         >
           <VoiceRecorder audioBlob={voiceBlob} onChange={onVoiceChange} />
+        </motion.div>
+
+        {/* Optional locked unlock date */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32, duration: 0.5 }}
+          className="mb-4 sm:mb-8"
+        >
+          <UnlockDatePicker unlockAt={unlockAt} onChange={onUnlockAtChange} />
         </motion.div>
 
         {/* Payment Section */}

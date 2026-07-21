@@ -45,6 +45,7 @@ const CreateLetter = () => {
   const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
   const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
+  const [unlockAt, setUnlockAt] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState<null | "checkout" | "create">(null);
   const [gcashLetterId, setGcashLetterId] = useState<string | null>(null);
   const [imageDataUrls, setImageDataUrls] = useState<string[]>([]);
@@ -126,6 +127,7 @@ const CreateLetter = () => {
         selectedMusic,
         youtubeVideoId,
         voiceMessagePath,
+        unlockAt,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -209,6 +211,7 @@ const CreateLetter = () => {
         selectedMusic,
         youtubeVideoId,
         voiceMessagePath,
+        unlockAt,
         quiz: [],
         email,
         date: new Date().toLocaleDateString(),
@@ -321,6 +324,8 @@ const CreateLetter = () => {
               onTemplateChange={setTemplate}
               voiceBlob={voiceBlob}
               onVoiceChange={setVoiceBlob}
+              unlockAt={unlockAt}
+              onUnlockAtChange={setUnlockAt}
               onPay={handlePay}
               onGCashPay={() => {
                 const id = handleGCashPay();

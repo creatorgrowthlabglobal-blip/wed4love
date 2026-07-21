@@ -22,6 +22,8 @@ export interface StoredLetter {
   email: string;
   date: string;
   template?: LetterTemplate; // mailbox template choice
+  unlockAt?: string | null; // ISO timestamp; letter stays sealed until this passes (premium)
+  openedAt?: string | null; // set once, first time the recipient opens the envelope
 }
 
 const readAsDataURL = (file: Blob): Promise<string> =>
@@ -197,9 +199,12 @@ const recompressDataUrl = async (dataUrl: string, maxDim = 1000, quality = 0.7):
 
 const trySaveRemote = async (letter: StoredLetter): Promise<{ ok: boolean; error?: string }> => {
   try {
+    // unlockAt lives as a real `unlock_at` column (queryable/indexed) rather
+    // than buried in the data JSONB, so it's split out of the blob here.
+    const { unlockAt, openedAt: _openedAt, ...rest } = letter;
     const { error } = await supabase
       .from("letters")
-      .upsert({ id: letter.id, data: letter as any }, { onConflict: "id" });
+      .upsert({ id: letter.id, data: rest as any, unlock_at: unlockAt || null }, { onConflict: "id" });
     if (error) return { ok: false, error: error.message };
     return { ok: true };
   } catch (e: any) {
@@ -277,7 +282,7 @@ export const getLetter = async (id: string): Promise<StoredLetter | null> => {
   try {
     const { data, error } = await supabase
       .from("letters")
-      .select("data")
+      .select("data, unlock_at, opened_at")
       .eq("id", id)
       .maybeSingle();
     if (error) {
@@ -285,7 +290,11 @@ export const getLetter = async (id: string): Promise<StoredLetter | null> => {
       return null;
     }
     if (data?.data) {
-      const letter = data.data as unknown as StoredLetter;
+      const letter = {
+        ...(data.data as unknown as StoredLetter),
+        unlockAt: data.unlock_at,
+        openedAt: data.opened_at,
+      };
       // Cache locally for instant subsequent loads
       writeLocal(letter);
       return letter;
