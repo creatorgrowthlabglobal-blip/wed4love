@@ -1,9 +1,10 @@
-import { Suspense, useMemo, useRef, useState, useEffect } from "react";
+import { Suspense, useMemo, useRef, useState, useEffect, ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { ContactShadows, Environment, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
 import { sounds } from "@/lib/sounds";
+import goldSealSrc from "@/assets/gold-seal.png";
 
 interface RealisticPaperLetter3DProps {
   receiverName: string;
@@ -16,39 +17,86 @@ interface RealisticPaperLetter3DProps {
   onLetterOpen?: () => void;
 }
 
+interface ScreenRect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 const PANEL_W = 1.5;
 const PANEL_H = 2.1;
 
-/** Small procedural paper-grain texture — no external asset needed. */
+/** Warm, richly-grained ivory paper texture — no external asset needed. */
 const usePaperTexture = () => {
   return useMemo(() => {
     const canvas = document.createElement("canvas");
-    canvas.width = 256;
-    canvas.height = 256;
+    canvas.width = 512;
+    canvas.height = 512;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    ctx.fillStyle = "#fbf6ec";
-    ctx.fillRect(0, 0, 256, 256);
-    for (let i = 0; i < 2200; i++) {
-      const x = Math.random() * 256;
-      const y = Math.random() * 256;
-      const shade = 235 + Math.random() * 15;
-      ctx.fillStyle = `rgba(${shade - 20}, ${shade - 28}, ${shade - 40}, ${Math.random() * 0.06})`;
+    const grad = ctx.createRadialGradient(256, 256, 60, 256, 256, 380);
+    grad.addColorStop(0, "#f9f0da");
+    grad.addColorStop(1, "#ecdfc0");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 9000; i++) {
+      const x = Math.random() * 512;
+      const y = Math.random() * 512;
+      const shade = Math.random() > 0.5 ? 40 : -30;
+      ctx.fillStyle = `rgba(${150 + shade}, ${120 + shade}, ${80 + shade}, ${Math.random() * 0.08})`;
       ctx.fillRect(x, y, 1, 1);
     }
-    // A few faint horizontal fibers
-    ctx.strokeStyle = "rgba(180,150,110,0.05)";
-    for (let i = 0; i < 30; i++) {
-      const y = Math.random() * 256;
+    ctx.strokeStyle = "rgba(160,120,70,0.06)";
+    for (let i = 0; i < 60; i++) {
+      const y = Math.random() * 512;
       ctx.beginPath();
       ctx.moveTo(0, y);
-      ctx.lineTo(256, y + (Math.random() - 0.5) * 8);
+      ctx.lineTo(512, y + (Math.random() - 0.5) * 14);
       ctx.stroke();
     }
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     return tex;
   }, []);
+};
+
+/** Chroma-keys the white background out of gold-seal.png so it reads as a real wax seal in 3D. */
+const useWaxSealTexture = () => {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      if (cancelled) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const whiteness = (r + g + b) / 3;
+        if (whiteness > 235) {
+          data[i + 3] = 0;
+        } else if (whiteness > 195) {
+          data[i + 3] = Math.min(data[i + 3], Math.round(255 * ((235 - whiteness) / 40)));
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.needsUpdate = true;
+      setTexture(tex);
+    };
+    img.src = goldSealSrc;
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  return texture;
 };
 
 const Panel = ({
@@ -69,13 +117,7 @@ const Panel = ({
   <group position={[hingeX, 0, 0]} rotation={[0, foldRotation, 0]}>
     <mesh position={[localX, 0, 0]} castShadow receiveShadow>
       <planeGeometry args={[width, height]} />
-      <meshStandardMaterial
-        color="#fbf6ec"
-        map={paperMap ?? undefined}
-        roughness={0.92}
-        metalness={0}
-        side={THREE.DoubleSide}
-      />
+      <meshStandardMaterial color="#f5e9cd" map={paperMap ?? undefined} roughness={0.9} metalness={0} side={THREE.DoubleSide} />
     </mesh>
   </group>
 );
@@ -109,23 +151,59 @@ const useUnfoldProgress = (playing: boolean, durationMs: number, onDone?: () => 
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-const PaperScene = ({ playing, onUnfolded }: { playing: boolean; onUnfolded?: () => void }) => {
+const PaperScene = ({
+  playing,
+  onUnfolded,
+  onOpenRect,
+}: {
+  playing: boolean;
+  onUnfolded?: () => void;
+  onOpenRect: (rect: ScreenRect) => void;
+}) => {
   const group = useRef<THREE.Group>(null);
   const paperMap = usePaperTexture();
-  const progress = useUnfoldProgress(playing, 1600, onUnfolded);
+  const sealMap = useWaxSealTexture();
+  const progress = useUnfoldProgress(playing, 1700, onUnfolded);
+  const settledRef = useRef(false);
 
-  // Right wing unfolds first (0 -> 0.6 of progress), left wing follows (0.35 -> 1).
   const rightT = easeOutCubic(Math.min(1, progress / 0.65));
   const leftT = easeOutCubic(Math.min(1, Math.max(0, (progress - 0.35) / 0.65)));
+  const sealOpacity = Math.max(0, 1 - progress * 3.5);
 
   useFrame((state) => {
-    if (group.current) {
+    if (group.current && progress < 1) {
       group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.25) * 0.08;
     }
     // Pull the camera back as the letter unfolds so the fully-open (3-panel
     // wide) sheet stays framed instead of overflowing the viewport.
-    const targetZ = 4.4 + progress * 2.4;
+    const targetZ = 4.5 + progress * 2.6;
     state.camera.position.z += (targetZ - state.camera.position.z) * 0.08;
+
+    if (progress >= 1 && !settledRef.current && group.current) {
+      const halfW = (PANEL_W * 3) / 2;
+      const halfH = PANEL_H / 2;
+      const corners = [
+        new THREE.Vector3(-halfW, halfH, 0),
+        new THREE.Vector3(halfW, halfH, 0),
+        new THREE.Vector3(halfW, -halfH, 0),
+        new THREE.Vector3(-halfW, -halfH, 0),
+      ].map((v) => v.applyMatrix4(group.current!.matrixWorld));
+      const screenPts = corners.map((v) => {
+        const p = v.clone().project(state.camera);
+        return { x: (p.x * 0.5 + 0.5) * state.size.width, y: (1 - (p.y * 0.5 + 0.5)) * state.size.height };
+      });
+      const xs = screenPts.map((p) => p.x);
+      const ys = screenPts.map((p) => p.y);
+      onOpenRect({
+        left: Math.min(...xs),
+        top: Math.min(...ys),
+        width: Math.max(...xs) - Math.min(...xs),
+        height: Math.max(...ys) - Math.min(...ys),
+      });
+      if (Math.abs(state.camera.position.z - targetZ) < 0.015) {
+        settledRef.current = true;
+      }
+    }
   });
 
   return (
@@ -133,29 +211,103 @@ const PaperScene = ({ playing, onUnfolded }: { playing: boolean; onUnfolded?: ()
       {/* Center panel — root, never rotates */}
       <mesh castShadow receiveShadow>
         <planeGeometry args={[PANEL_W, PANEL_H]} />
-        <meshStandardMaterial color="#fbf6ec" map={paperMap ?? undefined} roughness={0.92} side={THREE.DoubleSide} />
+        <meshStandardMaterial color="#f5e9cd" map={paperMap ?? undefined} roughness={0.9} side={THREE.DoubleSide} />
       </mesh>
-      {/* Right wing hinges at center panel's right edge, folds flat over it when closed */}
-      <Panel
-        width={PANEL_W}
-        height={PANEL_H}
-        hingeX={PANEL_W / 2}
-        localX={PANEL_W / 2}
-        foldRotation={Math.PI * (1 - rightT)}
-        paperMap={paperMap}
-      />
-      {/* Left wing hinges at center panel's left edge */}
-      <Panel
-        width={PANEL_W}
-        height={PANEL_H}
-        hingeX={-PANEL_W / 2}
-        localX={-PANEL_W / 2}
-        foldRotation={-Math.PI * (1 - leftT)}
-        paperMap={paperMap}
-      />
+      <Panel width={PANEL_W} height={PANEL_H} hingeX={PANEL_W / 2} localX={PANEL_W / 2} foldRotation={Math.PI * (1 - rightT)} paperMap={paperMap} />
+      <Panel width={PANEL_W} height={PANEL_H} hingeX={-PANEL_W / 2} localX={-PANEL_W / 2} foldRotation={-Math.PI * (1 - leftT)} paperMap={paperMap} />
+
+      {sealMap && sealOpacity > 0.01 && (
+        <mesh position={[0, 0, 0.02]}>
+          <planeGeometry args={[0.55, 0.55]} />
+          <meshBasicMaterial map={sealMap} transparent opacity={sealOpacity} depthWrite={false} />
+        </mesh>
+      )}
     </group>
   );
 };
+
+/** Shared letter body — used both projected onto the 3D paper and in the no-WebGL fallback. */
+const LetterBody = ({
+  receiverName,
+  senderName,
+  letterText,
+  visibleCount,
+  typingDone,
+  displayPhotos,
+  showWatermark,
+  onSkip,
+  onContinue,
+  voiceAvailable,
+  voicePlaying,
+  onToggleVoice,
+}: {
+  receiverName: string;
+  senderName?: string;
+  letterText: string;
+  visibleCount: number;
+  typingDone: boolean;
+  displayPhotos: string[];
+  showWatermark: boolean;
+  onSkip: () => void;
+  onContinue: () => void;
+  voiceAvailable: boolean;
+  voicePlaying: boolean;
+  onToggleVoice: () => void;
+}): ReactNode => (
+  <div className="w-full h-full overflow-y-auto px-5 py-6 sm:px-8 sm:py-8" onClick={(e) => e.stopPropagation()}>
+    <p style={{ fontFamily: "'Caveat', 'Dancing Script', cursive", fontSize: "clamp(20px,3vw,26px)", color: "#4B3A2A", marginBottom: "0.75rem" }}>
+      My Dearest {receiverName},
+    </p>
+
+    {displayPhotos.length > 0 && (
+      <div className="flex gap-3 mb-4 flex-wrap">
+        {displayPhotos.map((src, i) => (
+          <img key={i} src={src} alt="Memory" className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-sm" style={{ boxShadow: "0 6px 16px rgba(60,40,30,0.2)" }} />
+        ))}
+      </div>
+    )}
+
+    <p className="break-words [word-break:break-word] [overflow-wrap:anywhere]" style={{ fontFamily: "'Caveat', 'Dancing Script', cursive", fontSize: "clamp(16px,2.1vw,20px)", color: "#4B3A2A", lineHeight: 1.6 }}>
+      {letterText.slice(0, visibleCount)}
+    </p>
+
+    {!typingDone && (
+      <div className="text-right mt-2">
+        <button onClick={onSkip} className="font-body text-xs px-3 py-1 rounded-full" style={{ background: "rgba(160,120,70,0.08)", border: "1px solid rgba(160,120,70,0.35)", color: "#7a6248" }}>
+          Skip ▶
+        </button>
+      </div>
+    )}
+
+    {senderName && typingDone && (
+      <p className="text-right mt-6" style={{ fontFamily: "'Pinyon Script', 'Dancing Script', cursive", fontSize: "clamp(24px,3.4vw,30px)", color: "#4B3A2A" }}>
+        {senderName}
+      </p>
+    )}
+
+    {showWatermark && typingDone && (
+      <p className="text-center mt-4 font-body text-[10px]" style={{ color: "#4B3A2A", opacity: 0.5 }}>
+        Sent with Wish4Love 💌
+      </p>
+    )}
+
+    {typingDone && voiceAvailable && (
+      <div className="text-center mt-4">
+        <button onClick={onToggleVoice} className="font-body text-xs sm:text-sm font-semibold px-5 py-2 rounded-full" style={{ background: "rgba(200,80,120,0.1)", border: "1px solid rgba(200,80,120,0.35)", color: "#4B3A2A" }}>
+          {voicePlaying ? "⏸" : "▶"} Hear their voice
+        </button>
+      </div>
+    )}
+
+    {typingDone && (
+      <div className="text-center mt-3">
+        <button onClick={onContinue} className="font-body text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-full" style={{ background: "rgba(160,120,70,0.1)", border: "1px solid rgba(160,120,70,0.4)", color: "#4B3A2A" }}>
+          Continue ▶
+        </button>
+      </div>
+    )}
+  </div>
+);
 
 const RealisticPaperLetter3D = ({
   receiverName,
@@ -172,6 +324,7 @@ const RealisticPaperLetter3D = ({
   const [typingDone, setTypingDone] = useState(false);
   const [webglOk, setWebglOk] = useState(true);
   const [voicePlaying, setVoicePlaying] = useState(false);
+  const [openRect, setOpenRect] = useState<ScreenRect | null>(null);
   const voiceAudioRef = useMemo(() => (voiceMessageUrl ? new Audio(voiceMessageUrl) : null), [voiceMessageUrl]);
 
   useEffect(() => {
@@ -227,6 +380,21 @@ const RealisticPaperLetter3D = ({
 
   const displayPhotos = images.slice(0, 2);
 
+  const letterBodyProps = {
+    receiverName,
+    senderName,
+    letterText,
+    visibleCount,
+    typingDone,
+    displayPhotos,
+    showWatermark,
+    onSkip: skipTyping,
+    onContinue,
+    voiceAvailable: !!voiceAudioRef,
+    voicePlaying,
+    onToggleVoice: toggleVoice,
+  };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
@@ -235,28 +403,28 @@ const RealisticPaperLetter3D = ({
     >
       {webglOk ? (
         <div className="absolute inset-0">
-          <Canvas
-            camera={{ position: [0, 0, 4.4], fov: 34 }}
-            dpr={[1, 2]}
-            gl={{ antialias: true, alpha: true }}
-          >
+          <Canvas camera={{ position: [0, 0, 4.5], fov: 34 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
             <Suspense fallback={null}>
-              <ambientLight intensity={0.7} />
-              <directionalLight position={[3, 4, 5]} intensity={1} color="#fff3e0" />
-              <directionalLight position={[-4, 2, -3]} intensity={0.4} color="#f0d28a" />
+              <ambientLight intensity={0.75} />
+              <directionalLight position={[3, 4, 5]} intensity={1.1} color="#fff3e0" />
+              <directionalLight position={[-4, 2, -3]} intensity={0.45} color="#f0d28a" />
               <pointLight position={[0, -1, 3]} intensity={0.4} color="#ff9ec4" />
-              <PaperScene playing={phase === "unfolding"} onUnfolded={handleUnfolded} />
+              <PaperScene playing={phase === "unfolding"} onUnfolded={handleUnfolded} onOpenRect={setOpenRect} />
+              <Sparkles count={40} scale={[6, 4, 3]} size={1.6} speed={0.3} color="#f4c9dc" opacity={0.5} />
               <ContactShadows position={[0, -1.3, 0]} opacity={0.35} scale={5} blur={2.4} far={2} color="#8a5c6e" />
               <Environment preset="apartment" />
             </Suspense>
           </Canvas>
         </div>
       ) : (
-        // No-WebGL fallback: same interaction, flat CSS card instead of a 3D scene.
-        <div className="w-64 h-80 rounded-sm bg-[#fbf6ec] shadow-2xl flex items-center justify-center">
-          <p className="font-body text-sm text-muted-foreground px-6 text-center">
-            {phase === "idle" ? "Tap to open" : ""}
-          </p>
+        <div className="w-72 h-96 rounded-sm shadow-2xl overflow-hidden" style={{ background: "#f5e9cd" }}>
+          {phase === "open" ? (
+            <LetterBody {...letterBodyProps} />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="font-body text-sm text-muted-foreground px-6 text-center">Tap to open</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -271,99 +439,25 @@ const RealisticPaperLetter3D = ({
         </motion.p>
       )}
 
+      {/* Letter content — precisely locked onto the 3D paper's screen-space
+          projection (not a separate popup) via world-to-screen coordinates,
+          computed once the unfold settles. Robust, crisp text without the
+          blur/sizing pitfalls of CSS-3D-transformed DOM content. */}
       <AnimatePresence>
-        {phase === "open" && (
+        {webglOk && phase === "open" && openRect && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="absolute inset-x-0 bottom-0 top-[8%] sm:top-[10%] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            style={{
+              position: "absolute",
+              left: openRect.left,
+              top: openRect.top,
+              width: openRect.width,
+              height: openRect.height,
+            }}
           >
-            <div className="max-w-lg mx-auto px-6 pb-10">
-              <div
-                className="rounded-sm p-6 sm:p-10"
-                style={{ background: "#fbf6ec", boxShadow: "0 20px 60px rgba(60,40,30,0.25)" }}
-              >
-                <p
-                  style={{ fontFamily: "'Caveat', 'Dancing Script', cursive", fontSize: "clamp(22px,3.4vw,28px)", color: "#4B3A2A", marginBottom: "1rem" }}
-                >
-                  My Dearest {receiverName},
-                </p>
-
-                {displayPhotos.length > 0 && (
-                  <div className="flex gap-3 mb-4 flex-wrap">
-                    {displayPhotos.map((src, i) => (
-                      <img
-                        key={i}
-                        src={src}
-                        alt="Memory"
-                        className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-sm"
-                        style={{ boxShadow: "0 6px 16px rgba(60,40,30,0.2)" }}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                <p
-                  className="break-words [word-break:break-word] [overflow-wrap:anywhere]"
-                  style={{ fontFamily: "'Caveat', 'Dancing Script', cursive", fontSize: "clamp(18px,2.4vw,22px)", color: "#4B3A2A", lineHeight: 1.6 }}
-                >
-                  {letterText.slice(0, visibleCount)}
-                </p>
-
-                {!typingDone && (
-                  <div className="text-right mt-2">
-                    <button
-                      onClick={skipTyping}
-                      className="font-body text-xs px-3 py-1 rounded-full"
-                      style={{ background: "rgba(160,120,70,0.08)", border: "1px solid rgba(160,120,70,0.35)", color: "#7a6248" }}
-                    >
-                      Skip ▶
-                    </button>
-                  </div>
-                )}
-
-                {senderName && typingDone && (
-                  <p
-                    className="text-right mt-8"
-                    style={{ fontFamily: "'Pinyon Script', 'Dancing Script', cursive", fontSize: "clamp(28px,4vw,34px)", color: "#4B3A2A" }}
-                  >
-                    {senderName}
-                  </p>
-                )}
-
-                {showWatermark && typingDone && (
-                  <p className="text-center mt-6 font-body text-[11px]" style={{ color: "#4B3A2A", opacity: 0.5 }}>
-                    Sent with Wish4Love 💌
-                  </p>
-                )}
-
-                {typingDone && voiceAudioRef && (
-                  <div className="text-center mt-6">
-                    <button
-                      onClick={toggleVoice}
-                      className="font-body text-sm font-semibold px-6 py-2.5 rounded-full"
-                      style={{ background: "rgba(200,80,120,0.1)", border: "1px solid rgba(200,80,120,0.35)", color: "#4B3A2A" }}
-                    >
-                      {voicePlaying ? "⏸" : "▶"} Hear their voice
-                    </button>
-                  </div>
-                )}
-
-                {typingDone && (
-                  <div className="text-center mt-4">
-                    <button
-                      onClick={onContinue}
-                      className="font-body text-sm font-semibold px-7 py-3 rounded-full"
-                      style={{ background: "rgba(160,120,70,0.1)", border: "1px solid rgba(160,120,70,0.4)", color: "#4B3A2A" }}
-                    >
-                      Continue ▶
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <LetterBody {...letterBodyProps} />
           </motion.div>
         )}
       </AnimatePresence>
