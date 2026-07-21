@@ -1,6 +1,7 @@
-// Marks a letter as opened (idempotent, first-open-wins) and — for senders
-// with premium features — emails them a read receipt. Called once by
-// ViewLetter.tsx when the recipient's envelope actually opens.
+// Marks a letter as opened (idempotent, first-open-wins) and emails the
+// sender a read receipt. Called once by ViewLetter.tsx when the recipient's
+// envelope actually opens. Like reactions, this isn't premium-gated — no
+// paid tier exists yet, so gating it would mean it never fires for anyone.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -111,15 +112,7 @@ Deno.serve(async (req) => {
     const receiverName = String(letterData.receiverName || '');
 
     if (senderEmail) {
-      const { data: entitlement } = await supabase
-        .from('entitlements')
-        .select('has_premium_features')
-        .eq('email', senderEmail.toLowerCase().trim())
-        .maybeSingle();
-
-      if (entitlement?.has_premium_features) {
-        await sendReadReceiptEmail(senderEmail, receiverName, letter_id);
-      }
+      await sendReadReceiptEmail(senderEmail, receiverName, letter_id);
     }
 
     return new Response(JSON.stringify({ ok: true, alreadyOpened: false }), {
