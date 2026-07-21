@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("entitlements")
-      .select("email, has_letter_access, paid_calls, used_calls, letter_access_expires_at")
+      .select("email, has_letter_access, paid_calls, used_calls, letter_access_expires_at, has_premium_features")
       .eq("email", normalized)
       .maybeSingle();
 
@@ -56,6 +56,7 @@ Deno.serve(async (req) => {
         paid_calls: 0,
         used_calls: 0,
         letter_access_expires_at: allowed ? new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString() : null,
+        has_premium_features: false,
       } as typeof entitlement;
     }
 

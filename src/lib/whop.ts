@@ -101,6 +101,7 @@ export interface Entitlement {
   paid_calls: number;
   used_calls: number;
   letter_access_expires_at?: string | null;
+  has_premium_features?: boolean;
 }
 
 export async function fetchEntitlement(email: string): Promise<Entitlement | null> {
@@ -119,6 +120,11 @@ export function hasActiveLetterAccess(ent: Entitlement | null | undefined): bool
   if (!ent || !ent.has_letter_access) return false;
   if (!ent.letter_access_expires_at) return true; // legacy rows
   return new Date(ent.letter_access_expires_at).getTime() > Date.now();
+}
+
+/** Premium letter features (voice message, locked unlock, read receipts, no watermark). */
+export function hasPremiumFeatures(ent: Entitlement | null | undefined): boolean {
+  return Boolean(ent?.has_premium_features);
 }
 
 /** Atomically consume one paid call credit. Returns true if a credit was deducted. */
