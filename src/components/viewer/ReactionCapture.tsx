@@ -5,6 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface ReactionCaptureProps {
   letterId: string;
+  /** Marketing-preview mode: skips the upload/DB insert/email — lets a visitor
+   *  try the real camera flow without writing anything or needing a real letter. */
+  demoMode?: boolean;
 }
 
 const MAX_SECONDS = 15;
@@ -31,7 +34,7 @@ const pickSupportedMimeType = (candidates: string[]): string | null =>
  * email the sender — "someone left you a reaction" is the whole point of the
  * feature: free, ready-made content starring the person they sent this to.
  */
-const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
+const ReactionCapture = ({ letterId, demoMode = false }: ReactionCaptureProps) => {
   const [phase, setPhase] = useState<"prompt" | "declined" | "recording" | "preview" | "sending" | "sent">("prompt");
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState("");
@@ -143,6 +146,13 @@ const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
     if (!recordedBlob) return;
     setPhase("sending");
     setError("");
+
+    if (demoMode) {
+      // Marketing preview: skip persistence entirely, just show what sending feels like.
+      setTimeout(() => setPhase("sent"), 600);
+      return;
+    }
+
     try {
       const ext = recordedBlob.type.includes("mp4") ? "mp4" : "webm";
       const path = `${letterId}/reactions/${crypto.randomUUID()}.${ext}`;
@@ -174,7 +184,11 @@ const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
         style={{ borderTop: "1px solid hsl(340 40% 80% / 0.4)" }}
       >
         <p className="font-body text-sm" style={{ color: "hsl(340 30% 45%)" }}>
-          {phase === "sent" ? "Your reaction is on its way to them 💌" : ""}
+          {phase === "sent"
+            ? demoMode
+              ? "That's it — that's the whole feature. Nothing was saved. 💌"
+              : "Your reaction is on its way to them 💌"
+            : ""}
         </p>
       </motion.div>
     );
@@ -191,7 +205,7 @@ const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
       {phase === "prompt" && (
         <div className="text-center">
           <p className="font-display text-base italic mb-4" style={{ color: "hsl(340 30% 35%)" }}>
-            Want to send back a reaction? 🎥
+            {demoMode ? "Try it — record a test reaction 🎥" : "Want to send back a reaction? 🎥"}
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
@@ -200,7 +214,7 @@ const ReactionCapture = ({ letterId }: ReactionCaptureProps) => {
               style={{ background: "linear-gradient(135deg, hsl(340 90% 65%), hsl(340 90% 58%))", boxShadow: "0 8px 24px hsl(340 80% 60% / 0.35)" }}
             >
               <Video className="w-4 h-4" />
-              Record a Reaction
+              {demoMode ? "Try Recording" : "Record a Reaction"}
             </button>
             <button
               onClick={() => setPhase("declined")}

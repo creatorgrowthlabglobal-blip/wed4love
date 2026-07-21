@@ -424,7 +424,7 @@ const RealisticPaperLetter3D = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
       style={{ background: "radial-gradient(ellipse at 50% 35%, #FDF1F5 0%, #F6DCE5 55%, #EFC9D6 100%)" }}
       onClick={handleStart}
     >
