@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
+import ReactionCapture from "@/components/viewer/ReactionCapture";
 
 interface VaultEndingProps {
   letterId?: string;
@@ -71,6 +72,8 @@ const VaultEnding = ({ letterId }: VaultEndingProps) => (
         Make one back →
       </Link>
     </motion.div>
+
+    {letterId && <ReactionCapture letterId={letterId} />}
   </motion.div>
 );
 

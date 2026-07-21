@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle2, Copy, Download, Share2, Heart, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle2, Copy, Download, Share2, Heart, Sparkles, Video } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
+import { supabase } from "@/integrations/supabase/client";
+import { getSignedMediaUrl } from "@/lib/letterStorage";
 
 const LetterReady = () => {
   const { id } = useParams();
@@ -13,6 +15,25 @@ const LetterReady = () => {
   const PUBLIC_BASE_URL = "https://wish4love.com";
   const letterLink = `${PUBLIC_BASE_URL}/view/${id}`;
   const [copied, setCopied] = useState(false);
+  const [reactionUrls, setReactionUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    supabase
+      .from("letter_reactions")
+      .select("video_url")
+      .eq("letter_id", id)
+      .order("created_at", { ascending: false })
+      .then(async ({ data }) => {
+        if (cancelled || !data?.length) return;
+        const urls = await Promise.all(data.map((r) => getSignedMediaUrl(r.video_url)));
+        if (!cancelled) setReactionUrls(urls.filter((u): u is string => !!u));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(letterLink);
@@ -163,6 +184,31 @@ const LetterReady = () => {
               Share With Love
             </motion.button>
           </motion.div>
+
+          {reactionUrls.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75 }}
+              className="letter-paper rounded-3xl p-6 mb-8"
+            >
+              <p className="font-heading text-xs text-muted-foreground uppercase tracking-widest mb-4 flex items-center justify-center gap-1.5">
+                <Video className="w-3.5 h-3.5 text-primary" />
+                Reactions ({reactionUrls.length})
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {reactionUrls.map((url, i) => (
+                  <video
+                    key={i}
+                    src={url}
+                    controls
+                    playsInline
+                    className="w-full aspect-[3/4] object-cover rounded-xl bg-black"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0 }}

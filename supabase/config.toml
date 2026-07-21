@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.mark-letter-opened]
 verify_jwt = false
+
+[functions.notify-reaction]
+verify_jwt = false
