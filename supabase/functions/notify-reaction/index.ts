@@ -69,23 +69,30 @@ Deno.serve(async (req) => {
         }),
       });
       const resText = await res.text().catch(() => '');
-      if (!res.ok) console.error('[notify-reaction] resend error', res.status, resText);
+      if (!res.ok) {
+        console.error('[notify-reaction] resend error', res.status, resText);
+      } else {
+        console.log('[notify-reaction] resend ok', res.status, resText);
+      }
       if (debug) {
         return new Response(JSON.stringify({ ok: true, debug: { attempted: true, resendStatus: res.status, resendBody: resText, senderEmail } }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-    } else if (debug) {
-      return new Response(JSON.stringify({
-        ok: true,
-        debug: {
-          attempted: false,
-          senderEmail,
-          isValidEmail: isValidEmail(senderEmail),
-          hasLovableKey: !!LOVABLE_API_KEY,
-          hasResendKey: !!RESEND_API_KEY,
-        },
-      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    } else {
+      console.log('[notify-reaction] skipped email', { hasSender: !!senderEmail, validEmail: senderEmail ? isValidEmail(senderEmail) : false, hasLovableKey: !!LOVABLE_API_KEY, hasResendKey: !!RESEND_API_KEY });
+      if (debug) {
+        return new Response(JSON.stringify({
+          ok: true,
+          debug: {
+            attempted: false,
+            senderEmail,
+            isValidEmail: isValidEmail(senderEmail),
+            hasLovableKey: !!LOVABLE_API_KEY,
+            hasResendKey: !!RESEND_API_KEY,
+          },
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
     }
 
     const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
