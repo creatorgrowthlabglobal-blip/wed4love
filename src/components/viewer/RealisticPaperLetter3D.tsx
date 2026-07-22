@@ -326,13 +326,6 @@ const LetterBody = ({
       </div>
     )}
 
-    {typingDone && (
-      <div className="text-center mt-3">
-        <button onClick={onContinue} className="font-body text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-full" style={{ background: "rgba(160,120,70,0.1)", border: "1px solid rgba(160,120,70,0.4)", color: "#4B3A2A" }}>
-          Continue ▶
-        </button>
-      </div>
-    )}
   </div>
 );
 

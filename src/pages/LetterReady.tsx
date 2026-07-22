@@ -10,9 +10,9 @@ import { getSignedMediaUrl } from "@/lib/letterStorage";
 
 const LetterReady = () => {
   const { id } = useParams();
-  // Always generate shareable links on the production domain so recipients
-  // get a branded wish4love.com URL regardless of where the letter was made.
-  const PUBLIC_BASE_URL = "https://wish4love.com";
+  // Use production domain for shareable links, except in development where we
+  // use the local server so changes can be tested before deploying.
+  const PUBLIC_BASE_URL = import.meta.env.DEV ? window.location.origin : "https://wish4love.com";
   const letterLink = `${PUBLIC_BASE_URL}/view/${id}`;
   const [copied, setCopied] = useState(false);
   const [reactionUrls, setReactionUrls] = useState<string[]>([]);

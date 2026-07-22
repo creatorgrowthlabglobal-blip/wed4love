@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart } from "lucide-react";
+import { Heart, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 interface SenderReceiverDetailsProps {
@@ -15,9 +15,10 @@ interface SenderReceiverDetailsProps {
   };
   onChange: (data: SenderReceiverDetailsProps["data"]) => void;
   onNext: () => void;
+  onBack: () => void;
 }
 
-const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetailsProps) => {
+const SenderReceiverDetails = ({ data, onChange, onNext, onBack }: SenderReceiverDetailsProps) => {
   const senderRef = useRef<HTMLInputElement>(null);
   const receiverRef = useRef<HTMLInputElement>(null);
 
@@ -86,7 +87,17 @@ const SenderReceiverDetails = ({ data, onChange, onNext }: SenderReceiverDetails
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex items-center justify-between">
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={onBack}
+          className="flex items-center gap-2 px-5 py-3 rounded-xl font-heading text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          style={{ background: "hsl(var(--secondary))" }}
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </motion.button>
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}

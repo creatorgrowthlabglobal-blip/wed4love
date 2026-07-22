@@ -901,32 +901,6 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
               </motion.div>
             )}
 
-            {/* Continue — only appears once the letter has finished "writing" itself */}
-            {typingDone && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                style={{ marginTop: "2.5rem", textAlign: "center" }}
-              >
-                <button
-                  onClick={handleClose}
-                  style={{
-                    background: "rgba(160,120,70,0.1)",
-                    border: "1px solid rgba(160,120,70,0.4)",
-                    borderRadius: "24px",
-                    padding: "10px 28px",
-                    fontFamily: "'Caveat', 'Dancing Script', cursive",
-                    fontSize: "clamp(18px, 2.6vw, 22px)",
-                    color: TEXT_DARK,
-                    cursor: "pointer",
-                    letterSpacing: "0.03em",
-                  }}
-                >
-                  Continue ▶
-                </button>
-              </motion.div>
-            )}
 
           </motion.div>
           </motion.div>

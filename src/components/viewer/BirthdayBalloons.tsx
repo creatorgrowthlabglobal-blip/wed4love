@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sounds } from "@/lib/sounds";
 import frameImg from "@/assets/letter-frame.webp";
@@ -125,6 +125,22 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
   const [bdayConfetti, setBdayConfetti] = useState<BdayConfetti[]>([]);
   const nextId = useRef(0);
   const total = BALLOONS.length;
+  const bdayAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio("/music/happy-birthday.mp4");
+    audio.loop = true;
+    audio.volume = 0.35;
+    audio.addEventListener("loadedmetadata", () => { audio.currentTime = 26; }, { once: true });
+    bdayAudioRef.current = audio;
+
+    return () => {
+      if (bdayAudioRef.current) {
+        bdayAudioRef.current.pause();
+        bdayAudioRef.current = null;
+      }
+    };
+  }, []);
 
   const handlePop = (b: typeof BALLOONS[0]) => {
     if (popped.has(b.id) || phase !== "game") return;
@@ -185,7 +201,7 @@ const BirthdayBalloons = ({ onComplete, letterText, images, senderName, receiver
           }));
           setBdayConfetti(pieces);
           setPhase("birthday");
-          try { sounds.happyBirthday(); } catch {}
+          if (bdayAudioRef.current) bdayAudioRef.current.play().catch(() => {});
           setTimeout(onComplete, 4500);
         } else {
           setCountdownNum(n);

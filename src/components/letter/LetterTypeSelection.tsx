@@ -1,8 +1,6 @@
-import { useState, Suspense } from "react";
-
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Play, X, ArrowRight, Sparkles as SparklesIcon } from "lucide-react";
-import TestimonialsMarquee from "@/components/TestimonialsMarquee";
+import { Heart, Play, Sparkles as SparklesIcon, Cake, ArrowLeft, ArrowRight } from "lucide-react";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import BirthdayMailbox from "@/components/viewer/BirthdayMailbox";
@@ -11,10 +9,10 @@ import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
 import FramedScene from "@/components/viewer/FramedScene";
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
-import type { LetterTemplate } from "@/lib/letterStorage";
 import birthdayMailboxClosed from "@/assets/birthday-mailbox-closed.png";
+import type { LetterTemplate } from "@/lib/letterStorage";
 
-type SubPhase = "type" | "template";
+type Category = "love" | "birthday" | null;
 type PreviewStage = "mailbox" | "birthday-balloons" | "envelope";
 
 interface LetterTypeSelectionProps {
@@ -22,9 +20,17 @@ interface LetterTypeSelectionProps {
 }
 
 const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
-  const [subPhase, setSubPhase] = useState<SubPhase>("template");
+  const [category, setCategory] = useState<Category>(null);
   const [previewTemplate, setPreviewTemplate] = useState<LetterTemplate | null>(null);
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
+
+  // Hide the navbar while a preview is open
+  useEffect(() => {
+    const header = document.querySelector("header") as HTMLElement | null;
+    if (!header) return;
+    header.style.display = previewTemplate ? "none" : "";
+    return () => { header.style.display = ""; };
+  }, [previewTemplate]);
 
   const openPreview = (template: LetterTemplate) => {
     setPreviewTemplate(template);
@@ -47,103 +53,144 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
 
   return (
     <>
-      <div className="text-center">
+      <div className="text-center pt-8 sm:pt-12">
         <AnimatePresence mode="wait">
-          {subPhase === "type" && (
+
+          {/* ── Step 1: Category Selection ── */}
+          {category === null && (
             <motion.div
-              key="type"
-              initial={{ opacity: 0, y: 20 }}
+              key="category"
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.4 }}
+              exit={{ opacity: 0, x: -24 }}
+              transition={{ duration: 0.35 }}
             >
-              <p className="font-display text-lg text-primary mb-1">What story will you tell?</p>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
-                Create a Love Letter
+              <p className="font-display text-base sm:text-lg text-primary mb-1">What are you creating?</p>
+              <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
+                Choose a Letter Type
               </h2>
-              <p className="font-body text-sm text-muted-foreground mb-8">
-                Every great love story begins with the first word...
+              <p className="font-body text-sm text-muted-foreground mb-6">
+                Pick the occasion and we'll show you the perfect templates
               </p>
 
-              <div className="max-w-lg mx-auto">
+              <div className="flex flex-col gap-3 max-w-sm mx-auto w-full">
+                {/* Love Letter box */}
                 <motion.button
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  whileHover={{ x: 6, scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setSubPhase("template")}
-                  className="group relative overflow-hidden rounded-2xl cursor-pointer text-left w-full"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.07, duration: 0.35 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setCategory("love")}
+                  className="group w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 border-primary/25 hover:border-primary/60 text-left transition-all duration-200"
+                  style={{ background: "hsl(var(--primary) / 0.06)" }}
                 >
-                  <div className="p-5 sm:p-6 rounded-2xl transition-all duration-300 group-hover:shadow-glow" style={{ background: "#ffffff", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 24px -4px hsl(0 20% 20% / 0.06), 0 1px 3px hsl(0 20% 20% / 0.04)" }}>
-                    <div className="flex items-center gap-4">
-                      <span className="text-3xl sm:text-4xl flex-shrink-0">💌</span>
-                      <motion.div
-                        className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/15 transition-all duration-300 flex-shrink-0"
-                        whileHover={{ rotate: 10 }}
-                      >
-                        <Heart className="w-5 h-5 text-primary" />
-                      </motion.div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-display text-lg sm:text-xl font-bold text-foreground mb-0.5">
-                          Love Letter
-                        </h3>
-                        <p className="font-body text-xs text-primary/70">Pour your heart out</p>
-                        <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">
-                          Express your deepest feelings to someone who makes your heart skip a beat
-                        </p>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-                    </div>
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    style={{ background: "hsl(var(--primary) / 0.14)" }}
+                  >
+                    <span className="text-xl">💌</span>
                   </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="font-display text-base font-bold text-foreground">Love Letter</p>
+                    <p className="font-body text-xs text-muted-foreground mt-0.5">3D Mailbox · Realistic Paper · Premium Envelope</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-primary opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0" />
                 </motion.button>
 
+                {/* Birthday Letter box */}
+                <motion.button
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.14, duration: 0.35 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setCategory("birthday")}
+                  className="group w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 text-left transition-all duration-200"
+                  style={{
+                    borderColor: "#D4802A30",
+                    background: "#FEF9EE",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#D4802A80")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#D4802A30")}
+                >
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    style={{ background: "#FEF3C7" }}
+                  >
+                    <span className="text-xl">🎂</span>
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="font-display text-base font-bold text-foreground">Birthday Letter</p>
+                    <p className="font-body text-xs text-muted-foreground mt-0.5">Balloon pop · Festive reveal · Birthday Exclusive</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0" style={{ color: "#D4802A" }} />
+                </motion.button>
               </div>
+
             </motion.div>
           )}
 
-          {subPhase === "template" && (
+          {/* ── Step 2a: Love Letter Templates ── */}
+          {category === "love" && (
             <motion.div
-              key="template"
-              initial={{ opacity: 0, x: 30 }}
+              key="love-templates"
+              initial={{ opacity: 0, x: 28 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.4 }}
+              exit={{ opacity: 0, x: -28 }}
+              transition={{ duration: 0.35 }}
             >
-              <p className="font-display text-base sm:text-lg text-primary mb-1">Pick your style</p>
-              <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
-                Choose a Template
-              </h2>
-              <p className="font-body text-sm text-muted-foreground mb-4 sm:mb-8">
-                This is how your letter will look when they open it
+              {/* Back + heading */}
+              <div className="max-w-3xl mx-auto mb-3">
+                <button
+                  onClick={() => setCategory(null)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                  style={{ background: "hsl(var(--secondary))" }}
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Back
+                </button>
+              </div>
+              <div className="flex items-center justify-center gap-2 mb-5 sm:mb-6">
+                <Heart className="w-4 h-4 text-primary fill-primary/30" />
+                <span className="font-display text-base sm:text-lg font-bold text-foreground">Love Letter</span>
+              </div>
+
+              <p className="font-body text-sm text-muted-foreground mb-5 sm:mb-6">
+                Choose how your letter will appear when they open it
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 max-w-3xl mx-auto">
-                {/* Template 1 — 3D Mailbox (first) */}
+              {/* Template cards — single column on mobile, 3 cols on desktop */}
+              <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
+
+                {/* 3D Mailbox */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0 }}
-                  className="rounded-2xl overflow-hidden border-2 border-border/50 bg-background hover:border-primary/40 transition-all duration-300"
+                  transition={{ delay: 0.05 }}
+                  className="rounded-2xl overflow-hidden border-2 border-border/50 hover:border-primary/40 bg-background transition-all duration-300 sm:flex-col flex"
                 >
                   <div
-                    className="aspect-[4/3] bg-cover bg-center"
+                    className="w-28 sm:w-auto sm:aspect-[4/3] flex-shrink-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${mailboxClosed})` }}
                   />
-                  <div className="p-1.5 sm:p-4">
-                    <p className="font-display text-sm sm:text-base font-bold text-foreground">3D Mailbox</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Lavender Garden</p>
-                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between text-left">
+                    <div>
+                      <p className="font-display text-sm sm:text-base font-bold text-foreground">3D Mailbox</p>
+                      <p className="font-display text-xs font-semibold text-primary mb-2 sm:mb-3">Lavender Garden</p>
+                    </div>
+                    <div className="flex gap-2">
                       <button
                         onClick={() => openPreview("photo")}
-                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-body text-xs font-semibold transition-colors"
+                        style={{ background: "hsl(var(--primary) / 0.10)", color: "hsl(var(--primary))" }}
                       >
-                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
-                        Preview
+                        <Play className="w-3 h-3 shrink-0" /> Preview
                       </button>
                       <button
                         onClick={() => onSelect("love", "photo")}
-                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
+                        className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+                        style={{ background: "hsl(var(--primary))" }}
                       >
                         Select
                       </button>
@@ -151,37 +198,40 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   </div>
                 </motion.div>
 
-                {/* Template 2 — Realistic Paper (Premium, second) */}
+                {/* Realistic Paper */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="rounded-2xl overflow-hidden border-2 border-elegant-gold/50 bg-background relative"
+                  transition={{ delay: 0.11 }}
+                  className="rounded-2xl overflow-hidden border-2 border-elegant-gold/50 bg-background transition-all duration-300 sm:flex-col flex relative"
                 >
                   <div className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-elegant-gold/90 text-white font-body text-[9px] font-bold uppercase tracking-wide">
                     <SparklesIcon className="w-2.5 h-2.5" />
                     Premium
                   </div>
                   <div
-                    className="aspect-[4/3] flex items-center justify-center"
+                    className="w-28 sm:w-auto sm:aspect-[4/3] flex-shrink-0 flex items-center justify-center"
                     style={{ background: "radial-gradient(ellipse at 50% 40%, #FDF1F5 0%, #F6DCE5 60%, #EFC9D6 100%)" }}
                   >
                     <span className="text-4xl">📜</span>
                   </div>
-                  <div className="p-1.5 sm:p-4">
-                    <p className="font-display text-sm sm:text-base font-bold text-foreground">Realistic Paper</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Fold-Open 3D</p>
-                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between text-left">
+                    <div>
+                      <p className="font-display text-sm sm:text-base font-bold text-foreground">Realistic Paper</p>
+                      <p className="font-display text-xs font-semibold text-primary mb-2 sm:mb-3">Fold-Open 3D</p>
+                    </div>
+                    <div className="flex gap-2">
                       <button
                         onClick={() => openPreview("paper3d")}
-                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-body text-xs font-semibold transition-colors"
+                        style={{ background: "hsl(var(--primary) / 0.10)", color: "hsl(var(--primary))" }}
                       >
-                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
-                        Preview
+                        <Play className="w-3 h-3 shrink-0" /> Preview
                       </button>
                       <button
                         onClick={() => onSelect("love", "paper3d")}
-                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
+                        className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+                        style={{ background: "hsl(var(--primary))" }}
                       >
                         Select
                       </button>
@@ -189,34 +239,35 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   </div>
                 </motion.div>
 
-                {/* Template 2 — Purple Classic */}
+                {/* Premium Envelope */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="rounded-2xl overflow-hidden border-2 border-border/50 bg-background hover:border-primary/40 transition-all duration-300"
+                  transition={{ delay: 0.17 }}
+                  className="rounded-2xl overflow-hidden border-2 border-border/50 hover:border-primary/40 bg-background transition-all duration-300 sm:flex-col flex"
                 >
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    <img
-                      src="/envelope-thumbnail.png"
-                      alt="Premium Envelope preview"
-                      className="w-full h-full object-cover object-top"
-                    />
-                  </div>
-                  <div className="p-1.5 sm:p-4">
-                    <p className="font-display text-sm sm:text-base font-bold text-foreground">Premium Envelope</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary mb-3">Rose Classic</p>
-                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                  <img
+                    src="/envelope-thumbnail.png"
+                    alt="Premium Envelope"
+                    className="w-28 sm:w-auto sm:aspect-[4/3] flex-shrink-0 object-cover object-top"
+                  />
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between text-left">
+                    <div>
+                      <p className="font-display text-sm sm:text-base font-bold text-foreground">Premium Envelope</p>
+                      <p className="font-display text-xs font-semibold text-primary mb-2 sm:mb-3">Rose Classic</p>
+                    </div>
+                    <div className="flex gap-2">
                       <button
                         onClick={() => openPreview("purple")}
-                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary/10 text-primary font-body text-[10px] sm:text-xs font-semibold hover:bg-primary/20 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-body text-xs font-semibold transition-colors"
+                        style={{ background: "hsl(var(--primary) / 0.10)", color: "hsl(var(--primary))" }}
                       >
-                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
-                        Preview
+                        <Play className="w-3 h-3 shrink-0" /> Preview
                       </button>
                       <button
                         onClick={() => onSelect("love", "purple")}
-                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity"
+                        className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+                        style={{ background: "hsl(var(--primary))" }}
                       >
                         Select
                       </button>
@@ -224,66 +275,111 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                   </div>
                 </motion.div>
 
-                {/* Template 3 — Birthday Mailbox */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="rounded-2xl overflow-hidden border-2 border-amber-200/60 bg-background hover:border-amber-400/60 transition-all duration-300"
-                >
-                  <div
-                    className="aspect-[4/3] bg-cover bg-center"
-                    style={{ backgroundImage: `url(${birthdayMailboxClosed})` }}
-                  />
-                  <div className="p-1.5 sm:p-4">
-                    <p className="font-display text-sm sm:text-base font-bold text-foreground">Birthday Mailbox</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold mb-3" style={{ color: "#D4802A" }}>Birthday Exclusive</p>
-                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-                      <button
-                        onClick={() => openPreview("birthday")}
-                        className="w-full sm:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-amber-100 font-body text-[10px] sm:text-xs font-semibold hover:bg-amber-200 transition-colors"
-                        style={{ color: "#D4802A" }}
-                      >
-                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
-                        Preview
-                      </button>
-                      <button
-                        onClick={() => onSelect("birthday", "birthday")}
-                        className="w-full sm:flex-1 px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-body text-[10px] sm:text-xs font-semibold hover:opacity-90 transition-opacity text-white"
-                        style={{ background: "#D4802A" }}
-                      >
-                        Select
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
               </div>
 
-              <TestimonialsMarquee className="mt-8" />
             </motion.div>
           )}
+
+          {/* ── Step 2b: Birthday Letter Template ── */}
+          {category === "birthday" && (
+            <motion.div
+              key="birthday-template"
+              initial={{ opacity: 0, x: 28 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -28 }}
+              transition={{ duration: 0.35 }}
+            >
+              {/* Back + heading */}
+              <div className="max-w-lg mx-auto mb-3">
+                <button
+                  onClick={() => setCategory(null)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                  style={{ background: "hsl(var(--secondary))" }}
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Back
+                </button>
+              </div>
+              <div className="flex items-center justify-center gap-2 mb-5 sm:mb-6">
+                <Cake className="w-4 h-4" style={{ color: "#D4802A" }} />
+                <span className="font-display text-base sm:text-lg font-bold text-foreground">Birthday Letter</span>
+              </div>
+
+              <p className="font-body text-sm text-muted-foreground mb-5 sm:mb-6">
+                A festive experience made just for birthdays
+              </p>
+
+              {/* Birthday card — horizontal on desktop, stacked on mobile */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.08 }}
+                className="max-w-lg mx-auto rounded-2xl overflow-hidden border-2 border-amber-200/60 hover:border-amber-400/60 bg-background transition-all duration-300"
+              >
+                <div
+                  className="w-full aspect-[16/7] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${birthdayMailboxClosed})` }}
+                />
+                <div className="p-4 sm:p-6 text-left">
+                  <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-full border border-amber-200/70 bg-amber-50">
+                    <Cake className="w-3 h-3" style={{ color: "#D4802A" }} />
+                    <span className="font-body text-[10px] font-bold uppercase tracking-widest" style={{ color: "#D4802A" }}>
+                      Birthday Exclusive
+                    </span>
+                  </div>
+                  <p className="font-display text-lg sm:text-xl font-bold text-foreground mb-1.5">
+                    Birthday Mailbox
+                  </p>
+                  <p className="font-body text-sm text-muted-foreground mb-5 leading-relaxed">
+                    A festive mailbox reveal, a balloon pop game, and a heartfelt personal letter — all in one magical birthday experience.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => openPreview("birthday")}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-body text-sm font-semibold transition-colors"
+                      style={{ background: "#FEF3C7", color: "#D4802A" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#FDE68A")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "#FEF3C7")}
+                    >
+                      <Play className="w-3.5 h-3.5" />
+                      Preview
+                    </button>
+                    <button
+                      onClick={() => onSelect("birthday", "birthday")}
+                      className="flex-1 py-2.5 rounded-xl font-body text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                      style={{ background: "#D4802A" }}
+                    >
+                      Select this Template
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </div>
 
-      {/* Full-screen template preview overlay */}
+      {/* ── Full-screen preview overlay ── */}
       <AnimatePresence>
         {previewTemplate && (
           <>
             <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
               onClick={closePreview}
-              className="fixed top-4 right-4 z-[220] w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(37, 31, 40, 0.72)", boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)" }}
-              aria-label="Close preview"
+              className="fixed top-4 left-4 z-[9999] flex items-center gap-2 px-4 py-2.5 rounded-full font-body text-sm font-semibold text-gray-800"
+              style={{ background: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}
             >
-              <X className="w-5 h-5 text-white" />
+              <ArrowLeft className="w-4 h-4" />
+              Back
             </motion.button>
 
             {previewStage === "mailbox" && previewTemplate === "purple" && (
               <div
-                key="prev-mailbox-purple"
                 className="fixed inset-0 z-[200] flex items-center justify-center"
                 style={{ background: "#F2EFE8" }}
               >
@@ -294,9 +390,9 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 </div>
               </div>
             )}
+
             {previewStage === "mailbox" && previewTemplate === "birthday" && (
               <motion.div
-                key="prev-mailbox-birthday"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -313,9 +409,9 @@ const LetterTypeSelection = ({ onSelect }: LetterTypeSelectionProps) => {
                 </Suspense>
               </motion.div>
             )}
+
             {previewStage === "mailbox" && previewTemplate !== "purple" && previewTemplate !== "birthday" && (
               <motion.div
-                key="prev-mailbox-photo"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

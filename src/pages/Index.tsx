@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { PenLine, Heart, Sparkles, Music, Bell, Link as LinkIcon, Check, Mail, Mailbox, X, Mic, Video, Lock, Eye, Gem, BookOpen, ArrowRight, Play } from "lucide-react";
+import { PenLine, Heart, Sparkles, Music, Bell, Link as LinkIcon, Check, Mail, Mailbox, X, Mic, Video, Lock, Eye, Gem, BookOpen, ArrowRight, Play, Cake, ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import TestimonialsMarquee from "@/components/TestimonialsMarquee";
 import FloatingHearts from "@/components/FloatingHearts";
@@ -9,6 +9,8 @@ import EnvelopeReveal from "@/components/viewer/EnvelopeReveal";
 import RealisticMailbox from "@/components/viewer/RealisticMailbox";
 import PurpleMailbox from "@/components/viewer/PurpleMailbox";
 import RealisticPaperLetter3D from "@/components/viewer/RealisticPaperLetter3D";
+import BirthdayMailbox from "@/components/viewer/BirthdayMailbox";
+import BirthdayBalloons from "@/components/viewer/BirthdayBalloons";
 import ReactionCapture from "@/components/viewer/ReactionCapture";
 import FramedScene from "@/components/viewer/FramedScene";
 import Footer from "@/components/Footer";
@@ -16,14 +18,16 @@ import Footer from "@/components/Footer";
 
 import mailboxClosed from "@/assets/mailbox-closed.jpg";
 import mailboxOpen from "@/assets/mailbox-open.jpg";
+import birthdayMailboxClosed from "@/assets/birthday-mailbox-closed.png";
 import heroBg from "@/assets/hero-bg.jpg";
 import heroPolaroid from "@/assets/photo1.jpg";
 import howItWorksPhoto from "@/assets/photo2.jpg";
 import { useLocalizedPrice } from "@/hooks/useLocalizedPrice";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 
-type Template = "photo" | "purple" | "paper3d";
-type PreviewStage = "mailbox" | "envelope" | "features";
+type Template = "photo" | "purple" | "paper3d" | "birthday";
+type PreviewStage = "mailbox" | "envelope" | "features" | "birthday-balloons";
+type PickerCategory = "love" | "birthday" | null;
 
 const SAMPLE_LETTER_TEXT =
   "Every time your name lights up my phone, I still feel that same flutter I did on our very first date. This is just a small, unfinished proof of something big — that I love the life we're building, one ordinary Tuesday at a time.";
@@ -41,6 +45,7 @@ const FEATURE_HIGHLIGHTS = [
 const Index = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [pickerCategory, setPickerCategory] = useState<PickerCategory>(null);
   const [template, setTemplate] = useState<Template>("photo");
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
   const localizedPrice = useLocalizedPrice(4.99);
@@ -72,14 +77,18 @@ const Index = () => {
 
 
   const openPreview = () => {
+    setPickerCategory(null);
     setShowTemplatePicker(true);
   };
   const startPreviewWith = (t: Template) => {
     setTemplate(t);
     setShowTemplatePicker(false);
-    // Purple and the 3D paper template are self-contained reveals — they skip
-    // the separate "mailbox" stage entirely, same as the real recipient flow.
-    setPreviewStage(t === "photo" ? "mailbox" : "envelope");
+    setPickerCategory(null);
+    if (t === "birthday") {
+      setPreviewStage("mailbox");
+    } else {
+      setPreviewStage(t === "photo" ? "mailbox" : "envelope");
+    }
     setShowPreview(true);
   };
   const advanceToFeatures = () => setPreviewStage("features");
@@ -87,13 +96,23 @@ const Index = () => {
     setShowPreview(false);
     stopSampleMusic();
   };
+  const backToTemplatePicker = () => {
+    setShowPreview(false);
+    stopSampleMusic();
+    setPickerCategory(template === "birthday" ? "birthday" : "love");
+    setShowTemplatePicker(true);
+  };
+  const closePicker = () => {
+    setShowTemplatePicker(false);
+    setPickerCategory(null);
+  };
   return (
     <div className="min-h-screen bg-background">
       {!showPreview && !showTemplatePicker && <Header />}
       <FloatingHearts count={6} />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40 pb-20 sm:pb-28">
+      <section className="relative overflow-hidden pt-40 sm:pt-40 pb-20 sm:pb-28">
         {/* Subtle gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(350_100%_96%)] to-background" />
 
@@ -168,10 +187,9 @@ const Index = () => {
                   Create a Letter
                 </Link>
 
-                <div className="flex flex-col items-center lg:items-start gap-2">
+                <div className="flex flex-col items-center lg:items-start gap-2 mt-2">
                   <p className="font-body text-sm text-muted-foreground">
                     Letter <strong className="text-foreground">$4.99</strong>
-                    {localizedPrice && <span className="text-muted-foreground/70"> ({localizedPrice})</span>}
                     {" "}· one-time payment
                   </p>
                   <button
@@ -453,9 +471,6 @@ const Index = () => {
               <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
               <p className="font-display text-5xl font-bold text-foreground mb-1">
                 $4.99
-                {localizedPrice && (
-                  <span className="font-body text-base font-normal text-muted-foreground/70 ml-2">{localizedPrice}</span>
-                )}
               </p>
               <p className="font-body text-xs text-muted-foreground mb-6">Yours forever — no subscriptions</p>
 
@@ -495,11 +510,23 @@ const Index = () => {
         {showPreview && (
           <>
             <motion.button
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              onClick={backToTemplatePicker}
+              className="fixed top-4 left-4 z-[9999] flex items-center gap-2 px-4 py-2.5 rounded-full font-body text-sm font-semibold text-gray-800"
+              style={{ background: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </motion.button>
+            <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed top-4 right-4 z-[60] w-10 h-10 rounded-full flex items-center justify-center"
+              className="fixed top-4 right-4 z-[9999] w-10 h-10 rounded-full flex items-center justify-center"
               style={{
                 background: "rgba(37, 31, 40, 0.72)",
                 boxShadow: "0 8px 24px rgba(37, 31, 40, 0.16)",
@@ -518,7 +545,38 @@ const Index = () => {
                 </Suspense>
               </FramedScene>
             )}
-            {previewStage === "mailbox" && template !== "purple" && (
+            {previewStage === "mailbox" && template === "birthday" && (
+              <motion.div
+                key="p-mailbox-birthday"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 60,
+                  background: "radial-gradient(ellipse at 50% 35%, #FFF9E6 0%, #FFF0B3 55%, #FFE082 100%)",
+                }}
+              >
+                <Suspense fallback={null}>
+                  <BirthdayMailbox
+                    className="w-full h-full"
+                    onContinue={() => setPreviewStage("birthday-balloons")}
+                  />
+                </Suspense>
+              </motion.div>
+            )}
+            {previewStage === "birthday-balloons" && (
+              <BirthdayBalloons
+                key="p-birthday-balloons"
+                onComplete={advanceToFeatures}
+                letterText="Wishing you a day filled with joy, laughter, and all the things that make you smile. You deserve every bit of happiness this world has to offer. Here's to you on your special day! 🎂"
+                senderName="From the heart"
+                receiverName="You"
+              />
+            )}
+            {previewStage === "mailbox" && template !== "purple" && template !== "birthday" && (
               <motion.div
                 key="p-mailbox-photo"
                 initial={{ opacity: 0 }}
@@ -643,7 +701,7 @@ const Index = () => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[70] flex items-center justify-center p-4"
             style={{ background: "rgba(40,28,55,0.55)", backdropFilter: "blur(6px)" }}
-            onClick={() => setShowTemplatePicker(false)}
+            onClick={closePicker}
           >
             <motion.div
               initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
@@ -652,68 +710,155 @@ const Index = () => {
               className="w-full max-w-2xl rounded-3xl p-4 sm:p-8 max-h-[90vh] overflow-y-auto"
               style={{ background: "linear-gradient(180deg,#FBF4E4,#F4E9D0)", boxShadow: "0 20px 60px rgba(90,70,120,0.25)" }}
             >
-              <div className="text-center mb-4 sm:mb-6">
-                <h3 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1">Choose a template</h3>
-                <p className="font-body text-xs sm:text-sm text-muted-foreground">Pick one to preview the full experience</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <motion.button
-                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => startPreviewWith("paper3d")}
-                  className="rounded-2xl overflow-hidden text-left border-2 transition-all relative"
-                  style={{ borderColor: "rgba(212,175,55,0.5)", background: "#fff" }}
-                >
-                  <div className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-elegant-gold/90 text-white font-body text-[9px] font-bold uppercase tracking-wide">
-                    <Sparkles className="w-2.5 h-2.5" />
-                    Premium
-                  </div>
-                  <div
-                    className="aspect-[4/3] flex items-center justify-center"
-                    style={{ background: "radial-gradient(ellipse at 50% 40%, #FDF1F5 0%, #F6DCE5 60%, #EFC9D6 100%)" }}
-                  >
-                    <span className="text-4xl">📜</span>
-                  </div>
-                  <div className="p-2 sm:p-4">
-                    <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">Realistic Paper</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Fold-Open 3D</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Unfolds panel by panel in full 3D.</p>
-                  </div>
-                </motion.button>
-                <motion.button
-                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => startPreviewWith("photo")}
-                  className="rounded-2xl overflow-hidden text-left border-2 transition-all"
-                  style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}
-                >
-                  <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${mailboxClosed})` }} />
-                  <div className="p-2 sm:p-4">
-                    <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">3D Mailbox</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Lavender Garden</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Photoreal mailbox in a cottage garden.</p>
-                  </div>
-                </motion.button>
-                <motion.button
-                  whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => startPreviewWith("purple")}
-                  className="rounded-2xl overflow-hidden text-left border-2 transition-all"
-                  style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}
-                >
-                  <div className="aspect-[4/3] relative overflow-hidden bg-[hsl(350_100%_96%)]">
-                    <img src="/envelope-preview.png" alt="Envelope preview"
-                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }} />
-                  </div>
-                  <div className="p-2 sm:p-4">
-                    <p className="font-display text-sm sm:text-lg font-bold text-foreground leading-tight">Premium Envelope</p>
-                    <p className="font-display text-xs sm:text-sm font-semibold text-primary">Rose Classic</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1 hidden sm:block">Opens straight to a beautiful envelope reveal.</p>
-                  </div>
-                </motion.button>
-              </div>
-              <div className="mt-4 sm:mt-6 flex justify-end">
-                <button onClick={() => setShowTemplatePicker(false)} className="px-5 py-2 rounded-xl font-body text-sm text-muted-foreground hover:text-foreground transition">
-                  Cancel
-                </button>
-              </div>
+              <AnimatePresence mode="wait">
+
+                {/* Step 1: Category */}
+                {pickerCategory === null && (
+                  <motion.div key="picker-category" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
+                    <div className="text-center mb-5 sm:mb-6">
+                      <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground mb-1">Preview the experience</h3>
+                      <p className="font-body text-xs sm:text-sm text-muted-foreground">What kind of letter do you want to preview?</p>
+                    </div>
+                    <div className="flex flex-col gap-3 max-w-sm mx-auto">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => setPickerCategory("love")}
+                        className="group w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 text-left transition-all duration-200"
+                        style={{ borderColor: "hsl(var(--primary) / 0.25)", background: "hsl(var(--primary) / 0.06)" }}
+                      >
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                          style={{ background: "hsl(var(--primary) / 0.14)" }}>
+                          <span className="text-xl">💌</span>
+                        </div>
+                        <div className="flex-1 text-left">
+                          <p className="font-display text-base font-bold text-foreground">Love Letter</p>
+                          <p className="font-body text-xs text-muted-foreground mt-0.5">3D Mailbox · Realistic Paper · Premium Envelope</p>
+                        </div>
+                        <ArrowLeft className="w-4 h-4 text-primary opacity-60 group-hover:opacity-100 rotate-180 transition-all duration-200 flex-shrink-0" />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => setPickerCategory("birthday")}
+                        className="group w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 text-left transition-all duration-200"
+                        style={{ borderColor: "#D4802A30", background: "#FEF9EE" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#D4802A80")}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#D4802A30")}
+                      >
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                          style={{ background: "#FEF3C7" }}>
+                          <span className="text-xl">🎂</span>
+                        </div>
+                        <div className="flex-1 text-left">
+                          <p className="font-display text-base font-bold text-foreground">Birthday Letter</p>
+                          <p className="font-body text-xs text-muted-foreground mt-0.5">Balloon pop · Festive reveal · Birthday Exclusive</p>
+                        </div>
+                        <ArrowLeft className="w-4 h-4 opacity-60 group-hover:opacity-100 rotate-180 transition-all duration-200 flex-shrink-0" style={{ color: "#D4802A" }} />
+                      </motion.button>
+                    </div>
+                    <div className="mt-5 flex justify-end">
+                      <button onClick={closePicker} className="px-5 py-2 rounded-xl font-body text-sm text-muted-foreground hover:text-foreground transition">
+                        Cancel
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2a: Love templates */}
+                {pickerCategory === "love" && (
+                  <motion.div key="picker-love" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
+                    <div className="mb-4 sm:mb-5">
+                      <button onClick={() => setPickerCategory(null)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors mb-3"
+                        style={{ background: "rgba(0,0,0,0.07)" }}>
+                        <ArrowLeft className="w-3.5 h-3.5" /> Back
+                      </button>
+                      <div className="text-center">
+                        <h3 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-1">💌 Love Letter</h3>
+                        <p className="font-body text-xs sm:text-sm text-muted-foreground">Pick a template to preview</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <motion.button whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => startPreviewWith("paper3d")}
+                        className="rounded-2xl overflow-hidden text-left border-2 transition-all relative"
+                        style={{ borderColor: "rgba(212,175,55,0.5)", background: "#fff" }}>
+                        <div className="absolute top-1.5 right-1.5 z-10 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-elegant-gold/90 text-white font-body text-[8px] font-bold uppercase tracking-wide">
+                          <Sparkles className="w-2 h-2" /> Premium
+                        </div>
+                        <div className="aspect-[4/3] flex items-center justify-center"
+                          style={{ background: "radial-gradient(ellipse at 50% 40%, #FDF1F5 0%, #F6DCE5 60%, #EFC9D6 100%)" }}>
+                          <span className="text-3xl">📜</span>
+                        </div>
+                        <div className="p-2">
+                          <p className="font-display text-xs font-bold text-foreground leading-tight">Realistic Paper</p>
+                          <p className="font-display text-[10px] font-semibold text-primary">Fold-Open 3D</p>
+                        </div>
+                      </motion.button>
+                      <motion.button whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => startPreviewWith("photo")}
+                        className="rounded-2xl overflow-hidden text-left border-2 transition-all"
+                        style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}>
+                        <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url(${mailboxClosed})` }} />
+                        <div className="p-2">
+                          <p className="font-display text-xs font-bold text-foreground leading-tight">3D Mailbox</p>
+                          <p className="font-display text-[10px] font-semibold text-primary">Lavender Garden</p>
+                        </div>
+                      </motion.button>
+                      <motion.button whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => startPreviewWith("purple")}
+                        className="rounded-2xl overflow-hidden text-left border-2 transition-all"
+                        style={{ borderColor: "rgba(0,0,0,0.08)", background: "#fff" }}>
+                        <div className="aspect-[4/3] relative overflow-hidden bg-[hsl(350_100%_96%)]">
+                          <img src="/envelope-preview.png" alt="Envelope preview"
+                            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }} />
+                        </div>
+                        <div className="p-2">
+                          <p className="font-display text-xs font-bold text-foreground leading-tight">Premium Envelope</p>
+                          <p className="font-display text-[10px] font-semibold text-primary">Rose Classic</p>
+                        </div>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2b: Birthday template */}
+                {pickerCategory === "birthday" && (
+                  <motion.div key="picker-birthday" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
+                    <div className="mb-4 sm:mb-5">
+                      <button onClick={() => setPickerCategory(null)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors mb-3"
+                        style={{ background: "rgba(0,0,0,0.07)" }}>
+                        <ArrowLeft className="w-3.5 h-3.5" /> Back
+                      </button>
+                      <div className="text-center">
+                        <h3 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-1">🎂 Birthday Letter</h3>
+                        <p className="font-body text-xs sm:text-sm text-muted-foreground">Preview the birthday experience</p>
+                      </div>
+                    </div>
+                    <motion.button
+                      whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
+                      onClick={() => startPreviewWith("birthday")}
+                      className="w-full rounded-2xl overflow-hidden text-left border-2 transition-all"
+                      style={{ borderColor: "#D4802A40", background: "#fff" }}
+                    >
+                      <div className="w-full aspect-[16/7] bg-cover bg-center" style={{ backgroundImage: `url(${birthdayMailboxClosed})` }} />
+                      <div className="p-4 sm:p-5">
+                        <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full border border-amber-200/70 bg-amber-50">
+                          <Cake className="w-3 h-3" style={{ color: "#D4802A" }} />
+                          <span className="font-body text-[10px] font-bold uppercase tracking-widest" style={{ color: "#D4802A" }}>Birthday Exclusive</span>
+                        </div>
+                        <p className="font-display text-base sm:text-lg font-bold text-foreground mb-1">Birthday Mailbox</p>
+                        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                          A festive mailbox reveal, a balloon pop game, and a heartfelt personal letter — all in one magical birthday experience.
+                        </p>
+                        <div className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-body text-sm font-semibold text-white"
+                          style={{ background: "#D4802A" }}>
+                          <Play className="w-3.5 h-3.5 fill-current" /> Preview Now
+                        </div>
+                      </div>
+                    </motion.button>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
             </motion.div>
           </motion.div>
         )}

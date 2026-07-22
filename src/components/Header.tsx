@@ -1,18 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart, Instagram } from "lucide-react";
-import { getCurrentUser, signOut } from "@/lib/auth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Header = () => {
-  const navigate = useNavigate();
-  const user = getCurrentUser();
-
-  const handleSignOut = () => {
-    signOut();
-    navigate("/create-letter", { replace: true });
-  };
-
   return (
     <motion.header
       initial={{ opacity: 0, y: -10 }}
@@ -58,21 +49,6 @@ const Header = () => {
             <Instagram className="w-4 h-4" />
           </a>
           <LanguageSwitcher />
-          {user ? (
-            <button
-              onClick={handleSignOut}
-              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-            >
-              Sign out
-            </button>
-          ) : (
-            <Link
-              to="/auth"
-              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-            >
-              Sign in
-            </Link>
-          )}
           <Link
             to="/create-letter"
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"

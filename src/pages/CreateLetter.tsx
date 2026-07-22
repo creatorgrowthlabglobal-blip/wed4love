@@ -341,7 +341,7 @@ const CreateLetter = () => {
 
         <AnimatePresence mode="wait">
           {step === 0 && <LetterTypeSelection key="type" onSelect={handleSelectType} />}
-          {step === 1 && <SenderReceiverDetails key="details" data={details} onChange={setDetails} onNext={() => setStep(2)} />}
+          {step === 1 && <SenderReceiverDetails key="details" data={details} onChange={setDetails} onNext={() => setStep(2)} onBack={() => setStep(0)} />}
           {step === 2 && <LetterWriting key="write" letterText={letterText} onChange={setLetterText} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
           {step === 3 && (
             <MediaUpload

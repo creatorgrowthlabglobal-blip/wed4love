@@ -78,7 +78,7 @@ const ViewLetter = () => {
             if (found.unlockAt && new Date(found.unlockAt).getTime() > Date.now()) {
               setLocked(true);
             }
-            const t = found.template || "photo";
+            const t = found.template || (found.type === "birthday" ? "birthday" : "photo");
             if (t === "purple" || t === "paper3d") {
               setStage("envelope");
             }
@@ -105,6 +105,7 @@ const ViewLetter = () => {
   const randomMusicRef = useRef<string | null>(null);
   const startMusic = () => {
     if (!letter) return;
+    if ((letter.template || "photo") === "birthday") return;
     if (letter.youtubeVideoId) {
       ytAudio.play();
       return;
@@ -209,10 +210,14 @@ const ViewLetter = () => {
     );
   }
 
+  // If template wasn't stored, fall back to "birthday" for birthday-type letters
+  // so the flow never drops into the love-letter envelope path.
+  const template = letter.template || (letter.type === "birthday" ? "birthday" : "photo");
+
   const getNextStage = (current: Stage): Stage | null => {
     const hasQuiz = letter.quiz && letter.quiz.length > 0;
     const hasMedia = letter.videos.length > 0 || letter.audios.length > 0;
-    const isBirthdayTemplate = (letter.template || "photo") === "birthday";
+    const isBirthdayTemplate = template === "birthday";
 
     let flow: Stage[];
     if (isBirthdayTemplate) {
@@ -235,8 +240,6 @@ const ViewLetter = () => {
     const next = getNextStage(stage);
     if (next) setStage(next);
   };
-
-  const template = letter.template || "photo";
 
   return (
     <>
