@@ -499,6 +499,22 @@ const Index = () => {
               >
                 Create Your Letter
               </Link>
+
+              {/* Trust signals */}
+              <div className="mt-6 flex flex-col items-center gap-2.5">
+                <div className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+                  <span>🛡️</span>
+                  <span>If they never open it, we'll refund you — no questions asked.</span>
+                </div>
+                <div className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+                  <span>💌</span>
+                  <span>Over <strong className="text-foreground">1,200 letters</strong> sent this month</span>
+                </div>
+                <div className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+                  <span>🔒</span>
+                  <span>Visa · Mastercard · Apple Pay · Google Pay · GCash</span>
+                </div>
+              </div>
             </motion.div>
           </div>
 
