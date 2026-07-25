@@ -34,12 +34,15 @@ const SAMPLE_LETTER_TEXT =
 const SAMPLE_MUSIC_URL = MUSIC_PRESETS.find((m) => m.id === "honeymoon-avenue")?.url ?? MUSIC_PRESETS[0].url;
 
 const FEATURE_HIGHLIGHTS = [
-  { icon: BookOpen, title: "3D Fold-Open Letter", desc: "A realistic paper letter that unfolds in full 3D — not just a flat card.", premium: true },
-  { icon: Mic, title: "Voice Messages", desc: "Attach a short voice note they can play right inside the letter.", premium: true },
-  { icon: Music, title: "Any Song, Instantly", desc: "Search YouTube for any track, or pick from our curated collection.", premium: false },
-  { icon: Video, title: "Reactions", desc: "They can film a reaction the moment they finish reading — try it below.", premium: false },
+  { icon: BookOpen, title: "All Templates Included", desc: "Every template — love letters, birthday reveals, 3D paper & vintage mailbox — all included at no extra cost.", premium: false },
+  { icon: Music, title: "Custom Music", desc: "Upload your own audio file or search any song instantly. Your music, your moment.", premium: false },
+  { icon: Mic, title: "Voice Messages", desc: "Record a short voice note that plays automatically when they open the letter.", premium: true },
+  { icon: Video, title: "Photo & Video", desc: "Embed photos and let them film a reaction the moment they finish reading.", premium: false },
   { icon: Lock, title: "Locked & Scheduled", desc: "Lock it until midnight, a birthday, or an anniversary with a countdown reveal.", premium: true },
-  { icon: Eye, title: "Read Receipts", desc: "Get a quiet notification the moment they open your letter.", premium: true },
+  { icon: Eye, title: "Lifetime Keepsake", desc: "Your letter link never expires — they can revisit it years from now.", premium: true },
+  { icon: Gem, title: "Full Money-Back Guarantee", desc: "Not satisfied? We'll refund every cent, no questions asked.", premium: false },
+  { icon: Heart, title: "Read Receipts", desc: "Get a quiet notification the moment they open your letter.", premium: true },
+  { icon: Sparkles, title: "Shareable Anywhere", desc: "One unique link works on WhatsApp, Instagram DMs, SMS — anywhere they are.", premium: false },
 ];
 
 const Index = () => {
@@ -48,7 +51,7 @@ const Index = () => {
   const [pickerCategory, setPickerCategory] = useState<PickerCategory>(null);
   const [template, setTemplate] = useState<Template>("photo");
   const [previewStage, setPreviewStage] = useState<PreviewStage>("mailbox");
-  const localizedPrice = useLocalizedPrice(4.99);
+  const localizedPrice = useLocalizedPrice(9.99);
   const sampleAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const playSampleMusic = () => {
@@ -189,7 +192,7 @@ const Index = () => {
 
                 <div className="flex flex-col items-center lg:items-start gap-2 mt-2">
                   <p className="font-body text-sm text-muted-foreground">
-                    Letter <strong className="text-foreground">$4.99</strong>
+                    Letter <strong className="text-foreground">$9.99</strong>
                     {" "}· one-time payment
                   </p>
                   <button
@@ -470,18 +473,18 @@ const Index = () => {
               <p className="font-display text-lg font-bold text-foreground mb-1">The Grand Gesture</p>
               <p className="font-body text-sm text-muted-foreground mb-3">One-time payment</p>
               <p className="font-display text-5xl font-bold text-foreground mb-1">
-                $4.99
+                $9.99
               </p>
               <p className="font-body text-xs text-muted-foreground mb-6">Yours forever — no subscriptions</p>
 
               <ul className="space-y-3 text-left max-w-xs mx-auto mb-8 flex-1">
                 {[
-                  { icon: LinkIcon, text: "Shareable unique link" },
-                  { icon: BookOpen, text: "3D fold-open paper letter, or vintage mailbox reveal" },
-                  { icon: Heart, text: "Handwritten letter with your photos" },
-                  { icon: Music, text: "Any song, searched or curated" },
-                  { icon: Video, text: "Recipient can send a reaction back" },
-                  { icon: Heart, text: "Lifetime keepsake link" },
+                  { icon: Sparkles, text: "All templates included — love & birthday" },
+                  { icon: Music, text: "Custom music — upload your own or search any song" },
+                  { icon: BookOpen, text: "3D fold-open paper or vintage mailbox reveal" },
+                  { icon: Heart, text: "Photos, voice notes & video reactions" },
+                  { icon: LinkIcon, text: "Lifetime keepsake link — never expires" },
+                  { icon: Gem, text: "Full money-back guarantee if unsatisfied" },
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-3 font-body text-sm text-foreground">
                     <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">

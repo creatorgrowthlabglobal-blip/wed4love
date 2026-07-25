@@ -49,7 +49,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [saleTimeLeft, setSaleTimeLeft] = useState("");
   const [testimonialIdx, setTestimonialIdx] = useState(0);
-  const localizedPrice = useLocalizedPrice(4.99);
+  const localizedPrice = useLocalizedPrice(9.99);
 
   const TESTIMONIALS = [
     { initial: "S", name: "Sofia R.", quote: "She cried opening it. Best $5 I ever spent." },
@@ -364,14 +364,14 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
                   className="font-display text-5xl sm:text-6xl font-bold leading-none"
                   style={{ color: "hsl(340 40% 22%)" }}
                 >
-                  $4.99
+                  $9.99
                 </span>
                 <span className="font-body text-sm mb-2 text-muted-foreground">
                   USD{localizedPrice ? ` · ${localizedPrice}` : ""}
                 </span>
               </div>
               <p className="font-body text-xs text-muted-foreground">
-                <span className="line-through mr-1">$7.13</span>
+                <span className="line-through mr-1">$14.27</span>
                 · One-time · Yours forever
               </p>
             </div>
@@ -385,10 +385,12 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
             {/* Features */}
             <div className="space-y-2.5 mb-5">
               {[
-                "Letter with photos & music",
-                "Vintage mailbox reveal experience",
-                "Shareable link — open anytime",
-                "Lifetime keepsake, never expires",
+                "All templates included — love & birthday",
+                "Custom music — upload or search any song",
+                "Photos, voice notes & video reactions",
+                "Vintage mailbox or 3D paper letter reveal",
+                "Lifetime keepsake link, never expires",
+                "Full refund if you're not satisfied",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3">
                   <div
@@ -461,7 +463,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
                 boxShadow: "0 8px 24px hsl(340 80% 60% / 0.32), inset 0 1px 0 hsl(0 0% 100% / 0.2)",
               }}
             >
-              Send This Letter — $4.99
+              Send This Letter — $9.99
             </motion.button>
 
             <p className="mt-3 font-body text-xs text-muted-foreground text-center flex items-center justify-center gap-1.5">
@@ -610,8 +612,8 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
                 </div>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-1">Choose payment method</h3>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="font-body text-sm text-muted-foreground line-through">$7.13</span>
-                  <span className="font-display text-xl font-bold text-foreground">$4.99</span>
+                  <span className="font-body text-sm text-muted-foreground line-through">$14.27</span>
+                  <span className="font-display text-xl font-bold text-foreground">$9.99</span>
                   <span className="px-2 py-0.5 rounded-full bg-red-500 text-white font-body text-xs font-bold">30% OFF</span>
                 </div>
               </div>
@@ -698,7 +700,7 @@ const PreviewPayment = ({ letterData, template, onTemplateChange, voiceBlob, onV
                   boxShadow: "0 8px 24px hsl(340 80% 60% / 0.3)",
                 }}
               >
-                Complete My Letter — $4.99
+                Complete My Letter — $9.99
               </motion.button>
               <button
                 onClick={() => { setShowExitIntent(false); onBack(); }}

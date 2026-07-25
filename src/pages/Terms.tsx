@@ -37,12 +37,12 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">6. Payments</h2>
-            <p>Letters are offered at $4.99 each. Each letter includes 1 free reminder call; additional calls are $1 each. All payments are processed through our payment partners. Prices are subject to change with notice.</p>
+            <p>Letters are offered at $9.99 each. Each letter includes all templates (love &amp; birthday), custom music upload, photos, voice notes, video reactions, and a lifetime keepsake link. All payments are processed through our payment partners. Prices are subject to change with notice.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">7. Refunds</h2>
-            <p>All purchases are final. Due to the digital and personalized nature of our letters, we do not offer refunds once a letter has been created and sent. If you experience a technical issue that prevents delivery, please <Link to="/contact" className="text-primary underline">contact us</Link> within 7 days and we will resolve it or issue a credit at our discretion. Reminder call credits are non-refundable but do not expire.</p>
+            <p>We offer a full money-back guarantee. If you are unsatisfied with your letter for any reason, <Link to="/contact" className="text-primary underline">contact us</Link> within 14 days of purchase and we will issue a complete refund — no questions asked. Reminder call credits are non-refundable but do not expire.</p>
           </div>
 
           <div>
