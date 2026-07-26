@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import HomePage from "./pages/HomePage";
 import Index from "./pages/Index";
 import CreateLetter from "./pages/CreateLetter";
 import LetterReady from "./pages/LetterReady";
@@ -14,6 +15,9 @@ import AuthPage from "./pages/AuthPage";
 import PaymentStatus from "./pages/PaymentStatus";
 import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
+import GetStarted from "./pages/GetStarted";
+import InviteTemplates from "./pages/InviteTemplates";
+import ViewInvite from "./pages/ViewInvite";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
@@ -82,12 +86,16 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/letters" element={<Index />} />
           <Route path="/create-letter" element={<CreateLetter />} />
           <Route path="/letter-ready/:id" element={<LetterReady />} />
           <Route path="/reaction/:id" element={<ReactionView />} />
           <Route path="/letter-history" element={<ProtectedRoute><LetterHistory /></ProtectedRoute>} />
           <Route path="/view/:id" element={<ViewLetter />} />
+          <Route path="/get-started" element={<GetStarted />} />
+          <Route path="/invite-templates" element={<InviteTemplates />} />
+          <Route path="/invite/:id" element={<ViewInvite />} />
           <Route path="/demo" element={<Demo />} />
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="/payment-debug" element={<PaymentDebug />} />

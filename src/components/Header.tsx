@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Heart, Instagram } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
+
 const Header = () => {
   return (
     <motion.header
@@ -23,17 +24,11 @@ const Header = () => {
         {/* Center Nav - absolutely centered */}
         <nav className="hidden sm:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
           <a
-            href="/#pricing"
+            href="/letters#pricing"
             className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
           >
             Pricing
           </a>
-          <Link
-            to="/demo"
-            className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-          >
-            Demo
-          </Link>
         </nav>
 
         {/* Right Actions */}
@@ -49,13 +44,6 @@ const Header = () => {
             <Instagram className="w-4 h-4" />
           </a>
           <LanguageSwitcher />
-          <Link
-            to="/create-letter"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
-          >
-            <Heart className="w-3.5 h-3.5 fill-current" />
-            Create
-          </Link>
         </div>
       </div>
     </motion.header>

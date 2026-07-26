@@ -248,3 +248,59 @@
   font-family: 'Courier New', 'Courier', monospace;
   letter-spacing: 0.02em;
 }
+
+/* ── Hero blob gradient ── */
+@keyframes blob-1 {
+  0%, 100% { transform: translate(0px,   0px)  scale(1);    }
+  30%       { transform: translate(90px, -70px) scale(1.10); }
+  65%       { transform: translate(-50px, 55px) scale(0.93); }
+}
+@keyframes blob-2 {
+  0%, 100% { transform: translate(0px,   0px)  scale(1);    }
+  35%       { transform: translate(-80px, 60px) scale(1.07); }
+  70%       { transform: translate(55px, -40px) scale(1.12); }
+}
+@keyframes blob-3 {
+  0%, 100% { transform: translate(0px,  0px)   scale(1);    }
+  40%       { transform: translate(50px, 70px)  scale(1.05); }
+  75%       { transform: translate(-30px,-50px) scale(0.96); }
+}
+@keyframes blob-4 {
+  0%, 100% { transform: translate(0px,  0px)   scale(1);    }
+  50%       { transform: translate(-60px,40px)  scale(1.08); }
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Rose — top-left */
+.hero-blob-rose {
+  width: 640px; height: 640px;
+  top: -180px; left: -120px;
+  background: radial-gradient(circle, hsl(340 80% 82% / 0.72) 0%, transparent 70%);
+  animation: blob-1 20s ease-in-out infinite;
+}
+/* Gold — top-right */
+.hero-blob-gold {
+  width: 560px; height: 560px;
+  top: -80px; right: -80px;
+  background: radial-gradient(circle, hsl(38 85% 78% / 0.60) 0%, transparent 70%);
+  animation: blob-2 24s ease-in-out infinite;
+}
+/* Lavender — bottom-left */
+.hero-blob-lavender {
+  width: 500px; height: 500px;
+  bottom: 40px; left: 10%;
+  background: radial-gradient(circle, hsl(280 55% 82% / 0.50) 0%, transparent 70%);
+  animation: blob-3 18s ease-in-out infinite;
+}
+/* Peach — bottom-right */
+.hero-blob-peach {
+  width: 420px; height: 420px;
+  bottom: -60px; right: 8%;
+  background: radial-gradient(circle, hsl(18 80% 82% / 0.45) 0%, transparent 70%);
+  animation: blob-4 22s ease-in-out infinite;
+}
