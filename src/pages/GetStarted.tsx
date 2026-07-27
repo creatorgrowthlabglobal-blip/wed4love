@@ -24,11 +24,11 @@ const PRODUCTS = [
   },
   {
     emoji: "💍",
-    type: "Digital Invitation",
+    type: "Digital Wedding Invitation",
     subtitle: "Wedding · Engagement · Events",
     desc: "Cinematic wedding & event invites with live RSVP tracking, a countdown timer, 3D animations, and auto-play music.",
     features: ["3D Cinematic Opening Reveal", "Live RSVP + Headcount", "Auto-Play Music & Gallery", "Live Countdown Timer"],
-    cta: "Choose a Template",
+    cta: "Create an Invitation",
     href: "/invite-templates",
     available: true,
     bg: "linear-gradient(135deg, hsl(42 80% 97%) 0%, hsl(35 60% 94%) 100%)",

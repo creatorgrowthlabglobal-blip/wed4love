@@ -17,6 +17,8 @@ import PaymentDebug from "./pages/PaymentDebug";
 import Demo from "./pages/Demo";
 import GetStarted from "./pages/GetStarted";
 import InviteTemplates from "./pages/InviteTemplates";
+import ChooseTemplate from "./pages/ChooseTemplate";
+import CreateInvite from "./pages/CreateInvite";
 import ViewInvite from "./pages/ViewInvite";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -95,6 +97,8 @@ const App = () => (
           <Route path="/view/:id" element={<ViewLetter />} />
           <Route path="/get-started" element={<GetStarted />} />
           <Route path="/invite-templates" element={<InviteTemplates />} />
+          <Route path="/choose-template" element={<ChooseTemplate />} />
+          <Route path="/create-invite" element={<CreateInvite />} />
           <Route path="/invite/:id" element={<ViewInvite />} />
           <Route path="/demo" element={<Demo />} />
           <Route path="/payment-status" element={<PaymentStatus />} />
