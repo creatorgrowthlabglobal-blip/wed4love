@@ -1,7 +1,7 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Play } from "lucide-react";
-import gardenRoseThumbnail from "@/assets/garden-rose-thumbnail.png";
+import gardenRoseThumbnail from "@/assets/taj-mahal-thumbnail.jpg";
 import rusticBloomThumbnail from "@/assets/rustic-bloom-thumbnail.png";
 import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import goldenHourThumbnail from "@/assets/golden-hour-thumbnail.png";

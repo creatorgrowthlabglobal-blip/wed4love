@@ -1,11 +1,16 @@
 import Header from "@/components/Header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Refund = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/10 to-background">
       <Header />
       <main className="max-w-3xl mx-auto px-6 pt-28 pb-20">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground mb-2">Refund Policy</h1>
         <p className="font-body text-sm text-muted-foreground mb-10">Last updated: June 2026</p>
 

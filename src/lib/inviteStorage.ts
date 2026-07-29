@@ -14,6 +14,8 @@ export interface StoredInvite {
   venueName: string;
   venueAddress: string;
   venueCity: string;
+  venueLat?: number | null;
+  venueLng?: number | null;
   story: Array<{ year: string; title: string; desc: string }>;
   schedule: Array<{ time: string; event: string; desc: string }>;
   dresscode: string;
@@ -23,6 +25,7 @@ export interface StoredInvite {
   transportTrain: string;
   transportPlane: string;
   hotels: Array<{ name: string; stars: number; distance: string; note: string }>;
+  selectedMusic?: string | null;
   createdAt: string;
 }
 

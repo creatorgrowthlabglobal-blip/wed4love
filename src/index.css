@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     /* Wish4Love Bright Romantic Palette */
     --background: 24 100% 97%;
     --foreground: 0 20% 20%;

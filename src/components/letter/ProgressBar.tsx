@@ -5,10 +5,13 @@ interface ProgressBarProps {
   currentStep: number;
   totalSteps: number;
   stepLabels: string[];
+  accentColor?: string;
 }
 
-const ProgressBar = ({ currentStep, totalSteps, stepLabels }: ProgressBarProps) => {
+const ProgressBar = ({ currentStep, totalSteps, stepLabels, accentColor }: ProgressBarProps) => {
   const progress = ((currentStep) / (totalSteps - 1)) * 100;
+  const active = accentColor ?? "hsl(var(--primary))";
+  const activeLight = accentColor ?? "hsl(var(--elegant-gold))";
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-10 sm:mb-12">
@@ -22,10 +25,10 @@ const ProgressBar = ({ currentStep, totalSteps, stepLabels }: ProgressBarProps) 
             <motion.div
               animate={{
                 scale: i === currentStep ? 1.2 : 1,
-                backgroundColor: i <= currentStep ? "hsl(var(--primary))" : "hsl(var(--muted))",
+                backgroundColor: i <= currentStep ? active : "hsl(var(--muted))",
               }}
               className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-heading font-bold transition-colors duration-500 ${
-                i <= currentStep ? "text-primary-foreground" : "text-muted-foreground"
+                i <= currentStep ? "text-white" : "text-muted-foreground"
               }`}
             >
               {i < currentStep ? (
@@ -34,9 +37,10 @@ const ProgressBar = ({ currentStep, totalSteps, stepLabels }: ProgressBarProps) 
                 i + 1
               )}
             </motion.div>
-            <span className={`text-xs font-body tracking-wide transition-colors duration-300 hidden sm:block ${
-              i <= currentStep ? "text-primary font-semibold" : "text-muted-foreground"
-            }`}>
+            <span
+              className="text-xs font-body tracking-wide transition-colors duration-300 hidden sm:block"
+              style={{ color: i <= currentStep ? active : undefined, fontWeight: i <= currentStep ? 600 : undefined }}
+            >
               {label}
             </span>
           </div>
@@ -46,7 +50,7 @@ const ProgressBar = ({ currentStep, totalSteps, stepLabels }: ProgressBarProps) 
         <motion.div
           className="absolute inset-y-0 left-0 rounded-full"
           style={{
-            background: "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--elegant-gold)))",
+            background: `linear-gradient(90deg, ${active}, ${activeLight})`,
           }}
           initial={{ width: "0%" }}
           animate={{ width: `${progress}%` }}

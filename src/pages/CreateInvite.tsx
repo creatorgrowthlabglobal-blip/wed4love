@@ -1,14 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { X, Plus, Trash2, ArrowRight, ChevronLeft } from "lucide-react";
+import { X, Plus, Trash2, ArrowRight, ArrowLeft } from "lucide-react";
+import ProgressBar from "@/components/letter/ProgressBar";
+import { MUSIC_PRESETS } from "@/lib/musicPresets";
+import VenueMapPicker from "@/components/invite/VenueMapPicker";
+import type { MusicPreset } from "@/lib/musicPresets";
 import { saveInviteLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 7;
 const GOLD   = "hsl(28 62% 50%)";
 const GOLD_L = "hsl(28 52% 68%)";
+
+// ── Per-template theme colors ─────────────────────────────────────────────────
+const THEMES: Record<string, { gold: string; goldL: string; goldGrad: string; glow: string }> = {
+  "garden-rose":   { gold: "hsl(340 58% 52%)", goldL: "hsl(340 50% 70%)", goldGrad: "hsl(340 66% 62%)", glow: "hsl(340 58% 52% / 0.24)" },
+  "rustic-bloom":  { gold: "hsl(15 48% 42%)",  goldL: "hsl(15 38% 58%)",  goldGrad: "hsl(20 52% 50%)",  glow: "hsl(15 48% 42% / 0.24)"  },
+  "midnight-luxe": { gold: "hsl(45 72% 48%)",  goldL: "hsl(45 60% 64%)",  goldGrad: "hsl(45 78% 56%)",  glow: "hsl(45 72% 48% / 0.24)"  },
+  "golden-hour":   { gold: "hsl(38 80% 46%)",  goldL: "hsl(38 68% 62%)",  goldGrad: "hsl(38 84% 54%)",  glow: "hsl(38 80% 46% / 0.24)"  },
+  "blush-romance": { gold: "hsl(335 58% 52%)", goldL: "hsl(335 50% 70%)", goldGrad: "hsl(335 64% 62%)", glow: "hsl(335 58% 52% / 0.24)" },
+};
+const DEFAULT_THEME = { gold: GOLD, goldL: GOLD_L, goldGrad: "hsl(38 76% 56%)", glow: "hsl(28 76% 54% / 0.22)" };
 const DARK   = "hsl(24 22% 16%)";
 const MID    = "hsl(24 12% 42%)";
 const LIGHT  = "hsl(24 8% 60%)";
@@ -17,38 +31,42 @@ const BG     = "radial-gradient(ellipse 130% 80% at 15% -10%, hsl(340 48% 95%) 0
 
 // ── Input styles ──────────────────────────────────────────────────────────────
 const labelSt: React.CSSProperties = {
-  fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.22em",
-  textTransform: "uppercase", color: LIGHT, display: "block", marginBottom: 6,
+  fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.18em",
+  textTransform: "uppercase", color: MID, display: "block", marginBottom: 6,
 };
 
 const lineInput: React.CSSProperties = {
-  width: "100%", padding: "10px 0", fontSize: "1rem", fontFamily: "inherit",
-  background: "transparent", color: DARK, outline: "none", borderRadius: 0,
-  border: "none", borderBottom: `1.5px solid ${LINE}`,
-  transition: "border-color 0.18s",
+  width: "100%", padding: "11px 14px", fontSize: "0.95rem", fontFamily: "inherit",
+  background: "rgba(255,255,255,0.88)",
+  color: DARK, outline: "none", borderRadius: 10,
+  border: `1.5px solid hsl(36 28% 72%)`,
+  transition: "border-color 0.18s, background 0.18s",
+  colorScheme: "light",
 };
 
 const boxArea: React.CSSProperties = {
   width: "100%", padding: "11px 14px", fontSize: "0.92rem", fontFamily: "inherit",
-  background: "rgba(255,255,255,0.55)", backdropFilter: "blur(6px)",
+  background: "rgba(255,255,255,0.88)",
   color: DARK, outline: "none", borderRadius: 10, resize: "none",
-  border: `1.5px solid ${LINE}`,
+  border: `1.5px solid hsl(36 28% 72%)`,
   transition: "border-color 0.18s, background 0.18s",
 };
 
 const onLineF = (e: React.FocusEvent<HTMLInputElement>) => {
-  e.currentTarget.style.borderBottomColor = GOLD;
+  e.currentTarget.style.borderColor = "var(--tg)";
+  e.currentTarget.style.background = "rgba(255,255,255,1)";
 };
 const onLineB = (e: React.FocusEvent<HTMLInputElement>) => {
-  e.currentTarget.style.borderBottomColor = LINE;
+  e.currentTarget.style.borderColor = "hsl(36 28% 72%)";
+  e.currentTarget.style.background = "rgba(255,255,255,0.88)";
 };
 const onBoxF = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = GOLD;
-  e.currentTarget.style.background = "rgba(255,255,255,0.85)";
+  e.currentTarget.style.borderColor = "var(--tg)";
+  e.currentTarget.style.background = "rgba(255,255,255,1)";
 };
 const onBoxB = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = LINE;
-  e.currentTarget.style.background = "rgba(255,255,255,0.55)";
+  e.currentTarget.style.borderColor = "hsl(36 28% 72%)";
+  e.currentTarget.style.background = "rgba(255,255,255,0.88)";
 };
 
 // ── Field components ───────────────────────────────────────────────────────────
@@ -77,10 +95,10 @@ const Divider = () => (
 
 // ── Section label ─────────────────────────────────────────────────────────────
 const Section = ({ icon, title }: { icon: string; title: string }) => (
-  <div className="flex items-center gap-2.5 mb-5">
-    <span style={{ fontSize: 18 }}>{icon}</span>
-    <p className="font-display font-bold text-sm" style={{ color: DARK }}>{title}</p>
-    <div className="flex-1 h-px ml-2" style={{ background: LINE }} />
+  <div className="flex items-center gap-2 mb-5">
+    <span style={{ fontSize: 16 }}>{icon}</span>
+    <p className="font-body font-semibold text-sm" style={{ color: MID }}>{title}</p>
+    <div className="flex-1 h-px ml-1" style={{ background: LINE }} />
   </div>
 );
 
@@ -88,12 +106,12 @@ const Section = ({ icon, title }: { icon: string; title: string }) => (
 const EntryCard = ({ index, label, onRemove, showRemove, children }: {
   index: number; label: string; onRemove: () => void; showRemove: boolean; children: React.ReactNode;
 }) => (
-  <div className="rounded-2xl p-5 flex flex-col gap-4"
-    style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", border: `1px solid hsl(38 28% 85%)` }}>
+  <div className="flex flex-col gap-4 pt-4"
+    style={{ borderTop: `1px solid hsl(36 28% 82%)` }}>
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2.5">
-        <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold"
-          style={{ background: GOLD, color: "white", fontSize: 10 }}>{index + 1}</div>
+      <div className="flex items-center gap-2">
+        <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold shrink-0"
+          style={{ background: "var(--tg)", color: "white", fontSize: 10 }}>{index + 1}</div>
         <span className="font-body text-xs font-semibold" style={{ color: MID }}>{label}</span>
       </div>
       {showRemove && (
@@ -112,7 +130,7 @@ const EntryCard = ({ index, label, onRemove, showRemove, children }: {
 const AddBtn = ({ onClick, label }: { onClick: () => void; label: string }) => (
   <button onClick={onClick}
     className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-body text-sm font-semibold transition-opacity hover:opacity-70"
-    style={{ border: `1.5px dashed ${GOLD_L}`, color: GOLD, background: "transparent" }}>
+    style={{ border: "1.5px dashed var(--tgl)", color: "var(--tg)", background: "transparent" }}>
     <Plus className="w-4 h-4" /> {label}
   </button>
 );
@@ -122,17 +140,19 @@ interface FormState {
   partner1: string; partner2: string; hashtag: string; email: string; phone: string;
   dateISO: string; timeRaw: string; rsvpISO: string;
   venueName: string; venueAddress: string; venueCity: string;
+  venueLat: number | null; venueLng: number | null;
   story: { year: string; title: string; desc: string }[];
   schedule: { time: string; event: string; desc: string }[];
   dresscode: string; dresscodeNote: string; menuNote: string;
   transportCar: string; transportTrain: string; transportPlane: string;
   hotels: { name: string; stars: number; distance: string; note: string }[];
+  selectedMusic: string | null;
 }
 
 const DEFAULT: FormState = {
   partner1: "", partner2: "", hashtag: "", email: "", phone: "",
   dateISO: "", timeRaw: "16:30", rsvpISO: "",
-  venueName: "", venueAddress: "", venueCity: "",
+  venueName: "", venueAddress: "", venueCity: "", venueLat: null, venueLng: null,
   story: [{ year: "", title: "", desc: "" }, { year: "", title: "", desc: "" }],
   schedule: [
     { time: "16:30", event: "Guest Arrival",  desc: "Welcome and reception" },
@@ -143,6 +163,7 @@ const DEFAULT: FormState = {
   dresscode: "", dresscodeNote: "", menuNote: "",
   transportCar: "", transportTrain: "", transportPlane: "",
   hotels: [{ name: "", stars: 4, distance: "", note: "" }],
+  selectedMusic: null,
 };
 
 type SP = { form: FormState; set: (k: keyof FormState, v: FormState[keyof FormState]) => void };
@@ -183,7 +204,7 @@ const StepCouple = ({ form, set }: SP) => (
 );
 
 // ── Step 2: Big Day ────────────────────────────────────────────────────────────
-const StepBigDay = ({ form, set }: SP) => (
+const StepBigDay = ({ form, set, theme }: SP & { theme: typeof DEFAULT_THEME }) => (
   <div className="flex flex-col gap-7">
     <div className="grid grid-cols-2 gap-6">
       <F label="Wedding Date" type="date" value={form.dateISO}
@@ -195,12 +216,21 @@ const StepBigDay = ({ form, set }: SP) => (
       hint="The date guests must reply by"
       onChange={e => set("rsvpISO", e.target.value)} />
     <Divider />
-    <F label="Venue Name" placeholder="The Grand Pavilion" value={form.venueName}
-      onChange={e => set("venueName", e.target.value)} />
-    <F label="Street Address" placeholder="12 Rose Garden Lane" value={form.venueAddress}
-      onChange={e => set("venueAddress", e.target.value)} />
-    <F label="City & Country" placeholder="Paris, France" value={form.venueCity}
-      onChange={e => set("venueCity", e.target.value)} />
+    <VenueMapPicker
+      venueName={form.venueName}
+      venueAddress={form.venueAddress}
+      venueCity={form.venueCity}
+      venueLat={form.venueLat}
+      venueLng={form.venueLng}
+      accentColor={theme.gold}
+      onChange={patch => {
+        if (patch.venueName   !== undefined) set("venueName",   patch.venueName!);
+        if (patch.venueAddress !== undefined) set("venueAddress", patch.venueAddress!);
+        if (patch.venueCity   !== undefined) set("venueCity",   patch.venueCity!);
+        if (patch.venueLat    !== undefined) set("venueLat",    patch.venueLat!);
+        if (patch.venueLng    !== undefined) set("venueLng",    patch.venueLng!);
+      }}
+    />
   </div>
 );
 
@@ -319,7 +349,7 @@ const StepDetails = ({ form, set }: SP) => {
                     {[1,2,3,4,5].map(n => (
                       <button key={n} onClick={() => updateHotel(i, "stars", n)}
                         className="text-2xl leading-none select-none transition-transform hover:scale-110"
-                        style={{ color: n <= hotel.stars ? GOLD : "hsl(38 22% 80%)" }}>★</button>
+                        style={{ color: n <= hotel.stars ? "var(--tg)" : "hsl(38 22% 80%)" }}>★</button>
                     ))}
                   </div>
                 </div>
@@ -361,10 +391,12 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
       time: formatDisplayTime(form.timeRaw),
       rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
       venueName: form.venueName || "Your Venue", venueAddress: form.venueAddress, venueCity: form.venueCity,
+      venueLat: form.venueLat, venueLng: form.venueLng,
       story: form.story, schedule: form.schedule,
       dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
       transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
       hotels: form.hotels,
+      selectedMusic: form.selectedMusic,
       createdAt: new Date().toISOString(),
     };
     saveInviteLocal(draft);
@@ -434,7 +466,7 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
               One-time · Yours forever
             </p>
           </div>
-          <div className="mb-5" style={{ height: 1, background: `linear-gradient(90deg, transparent, ${GOLD_L}, transparent)` }} />
+          <div className="mb-5" style={{ height: 1, background: "linear-gradient(90deg, transparent, var(--tgl), transparent)" }} />
           <ul className="space-y-3 mb-5">
             {[
               "Cinematic 3D envelope opening reveal",
@@ -447,13 +479,13 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
               <li key={item} className="flex items-center gap-3">
                 <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
                   style={{ background: "hsl(38 56% 94%)", border: `1px solid hsl(38 42% 82%)` }}>
-                  <span style={{ color: GOLD, fontSize: 10, fontWeight: 700 }}>✓</span>
+                  <span style={{ color: "var(--tg)", fontSize: 10, fontWeight: 700 }}>✓</span>
                 </div>
                 <p className="font-body text-sm" style={{ color: MID }}>{item}</p>
               </li>
             ))}
           </ul>
-          <div className="mb-5" style={{ height: 1, background: `linear-gradient(90deg, transparent, ${GOLD_L}, transparent)` }} />
+          <div className="mb-5" style={{ height: 1, background: "linear-gradient(90deg, transparent, var(--tgl), transparent)" }} />
           <div className="flex items-center gap-3 mb-5 min-h-[44px]">
             <div className="flex -space-x-2 shrink-0">
               {["S","M","A"].map((l, i) => (
@@ -466,7 +498,7 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
             <div className="flex-1 overflow-hidden">
               <div className="flex gap-0.5 mb-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} style={{ color: GOLD, fontSize: 11 }}>★</span>
+                  <span key={i} style={{ color: "var(--tg)", fontSize: 11 }}>★</span>
                 ))}
               </div>
               <AnimatePresence mode="wait">
@@ -485,8 +517,8 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
             onClick={onCreate}
             className="w-full py-4 rounded-2xl font-body text-base font-bold text-white"
             style={{
-              background: `linear-gradient(135deg, ${GOLD}, hsl(38 76% 56%))`,
-              boxShadow: `0 8px 28px hsl(28 76% 56% / 0.26), inset 0 1px 0 rgba(255,255,255,0.14)`,
+              background: "linear-gradient(135deg, var(--tg), var(--tgg))",
+              boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
             }}>
             Create My Invitation — $9.99
           </motion.button>
@@ -499,6 +531,199 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
   );
 };
 
+// ── Step 6: Photos ─────────────────────────────────────────────────────────────
+const MAX_PHOTOS = 6;
+const MAX_DIM = 1600;
+const IMG_QUALITY = 0.82;
+
+const compressImage = (file: File): Promise<File> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(
+        (blob) => resolve(blob ? new File([blob], file.name, { type: "image/jpeg" }) : file),
+        "image/jpeg", IMG_QUALITY
+      );
+    };
+    img.src = url;
+  });
+
+interface StepPhotosProps { images: File[]; setImages: React.Dispatch<React.SetStateAction<File[]>>; }
+
+const StepPhotos = ({ images, setImages }: StepPhotosProps) => {
+  const [previews, setPreviews] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const urls = images.map(f => URL.createObjectURL(f));
+    setPreviews(urls);
+    return () => urls.forEach(u => URL.revokeObjectURL(u));
+  }, [images]);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files) return;
+    const remaining = MAX_PHOTOS - images.length;
+    const toAdd = Array.from(files).slice(0, remaining);
+    const compressed = await Promise.all(toAdd.map(compressImage));
+    setImages(prev => [...prev, ...compressed]);
+  };
+
+  const remove = (i: number) => setImages(prev => prev.filter((_, idx) => idx !== i));
+
+  return (
+    <div className="flex flex-col gap-6">
+      <p className="font-body text-sm" style={{ color: MID }}>
+        Add up to {MAX_PHOTOS} photos — they'll appear in your invite for guests to enjoy.
+      </p>
+
+      {images.length < MAX_PHOTOS && (
+        <>
+          <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
+            onChange={e => { handleFiles(e.target.files); e.target.value = ""; }} />
+          <button onClick={() => inputRef.current?.click()}
+            className="flex flex-col items-center justify-center gap-3 w-full py-10 rounded-2xl font-body text-sm font-semibold transition-colors"
+            style={{ border: "2px dashed var(--tgl)", color: "var(--tg)", background: "rgba(255,255,255,0.5)" }}>
+            <span style={{ fontSize: 32 }}>📷</span>
+            <span>Tap to add photos</span>
+            <span className="font-normal" style={{ color: LIGHT, fontSize: "0.72rem" }}>
+              {images.length}/{MAX_PHOTOS} added · JPEG, PNG, WebP
+            </span>
+          </button>
+        </>
+      )}
+
+      {previews.length > 0 && (
+        <div className="grid grid-cols-3 gap-3">
+          {previews.map((src, i) => (
+            <div key={i} className="relative aspect-square rounded-xl overflow-hidden group"
+              style={{ border: "1.5px solid hsl(36 28% 78%)" }}>
+              <img src={src} alt="" className="w-full h-full object-cover" />
+              <button onClick={() => remove(i)}
+                className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: "hsl(0 52% 58%)", color: "white" }}>
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+          {images.length < MAX_PHOTOS && (
+            <button onClick={() => inputRef.current?.click()}
+              className="aspect-square rounded-xl flex flex-col items-center justify-center gap-1 font-body text-xs font-semibold transition-colors"
+              style={{ border: "2px dashed var(--tgl)", color: "var(--tg)", background: "rgba(255,255,255,0.4)" }}>
+              <Plus className="w-5 h-5" />
+              Add
+            </button>
+          )}
+        </div>
+      )}
+
+      {images.length === 0 && (
+        <p className="font-body text-xs text-center" style={{ color: LIGHT }}>
+          Photos are optional — you can skip this step
+        </p>
+      )}
+    </div>
+  );
+};
+
+// ── Step 7: Music ──────────────────────────────────────────────────────────────
+interface StepMusicProps { selectedMusic: string | null; onSelect: (id: string | null) => void; }
+
+const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
+  const [playing, setPlaying] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const togglePlay = (preset: MusicPreset) => {
+    if (playing === preset.id) {
+      audioRef.current?.pause();
+      setPlaying(null);
+    } else {
+      audioRef.current?.pause();
+      const audio = new Audio(preset.url);
+      audioRef.current = audio;
+      audio.play().catch(() => {});
+      audio.onended = () => setPlaying(null);
+      setPlaying(preset.id);
+    }
+  };
+
+  useEffect(() => () => { audioRef.current?.pause(); }, []);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="font-body text-sm" style={{ color: MID }}>
+        Pick a song to play when guests open your invite. Press ▶ to preview.
+      </p>
+
+      <div className="flex flex-col gap-2.5">
+        {MUSIC_PRESETS.map(preset => {
+          const isSelected = selectedMusic === preset.id;
+          const isPlaying = playing === preset.id;
+          return (
+            <div key={preset.id}
+              onClick={() => onSelect(isSelected ? null : preset.id)}
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-200"
+              style={{
+                background: isSelected ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.55)",
+                border: isSelected ? "1.5px solid var(--tg)" : "1.5px solid hsl(36 28% 78%)",
+                boxShadow: isSelected ? "0 4px 16px var(--tglow)" : "none",
+              }}>
+              <button
+                onClick={e => { e.stopPropagation(); togglePlay(preset); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors"
+                style={{ background: isPlaying ? "var(--tg)" : "hsl(38 30% 90%)", color: isPlaying ? "white" : "var(--tg)" }}>
+                <span style={{ fontSize: 13, lineHeight: 1 }}>{isPlaying ? "⏸" : "▶"}</span>
+              </button>
+              <div className="flex-1 min-w-0">
+                <p className="font-body text-sm font-semibold truncate" style={{ color: DARK }}>{preset.title}</p>
+                <p className="font-body text-xs truncate" style={{ color: LIGHT }}>{preset.artist}</p>
+              </div>
+              {isSelected && (
+                <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: "var(--tg)" }}>
+                  <span style={{ color: "white", fontSize: 10, fontWeight: 700 }}>✓</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Premium custom music — locked */}
+      <div className="relative rounded-2xl overflow-hidden mt-2" style={{ border: "1.5px solid hsl(36 28% 78%)" }}>
+        <div className="px-4 pt-4 pb-12 select-none" style={{ opacity: 0.35, pointerEvents: "none" }}>
+          <p className="font-body text-sm font-semibold mb-1" style={{ color: DARK }}>Custom Music URL</p>
+          <p className="font-body text-xs mb-3" style={{ color: LIGHT }}>Paste any direct audio URL or YouTube link</p>
+          <input className="font-body" style={{ ...lineInput, opacity: 0.6 }} disabled placeholder="https://…" />
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+          style={{ background: "rgba(255,255,255,0.84)", backdropFilter: "blur(5px)" }}>
+          <span style={{ fontSize: 20 }}>🔒</span>
+          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Premium Feature</p>
+          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Use your own music with Premium</p>
+          <a href="/#pricing" target="_blank" rel="noopener noreferrer"
+            className="mt-1 px-5 py-2 rounded-xl font-body text-xs font-bold text-white transition-opacity hover:opacity-80"
+            style={{ background: "linear-gradient(135deg, var(--tg), var(--tgg))", boxShadow: "0 4px 14px var(--tglow)" }}>
+            Upgrade to Premium
+          </a>
+        </div>
+      </div>
+
+      {!selectedMusic && (
+        <p className="font-body text-xs text-center mt-1" style={{ color: LIGHT }}>
+          Music is optional — you can skip this step
+        </p>
+      )}
+    </div>
+  );
+};
+
 // ── Step meta ──────────────────────────────────────────────────────────────────
 const STEP_META = [
   { icon: "💍", title: "The Happy Couple",     sub: "Start with the stars of the show" },
@@ -506,6 +731,8 @@ const STEP_META = [
   { icon: "📖", title: "Your Love Story",       sub: "Share the moments that led you here" },
   { icon: "🥂", title: "Day of Celebrations",   sub: "Walk your guests through the perfect day" },
   { icon: "🌸", title: "The Finishing Touches", sub: "Dress code, menu & travel details" },
+  { icon: "📷", title: "Your Photos",           sub: "Add photos guests will cherish" },
+  { icon: "🎵", title: "Choose Your Song",      sub: "A song that plays when they open the invite" },
   { icon: "✨", title: "Almost There!",         sub: "Preview your invite, then share it with love" },
 ];
 
@@ -514,8 +741,10 @@ const CreateInvite = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const templateId = searchParams.get("template") ?? "garden-rose";
+  const theme = THEMES[templateId] ?? DEFAULT_THEME;
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormState>(DEFAULT);
+  const [images, setImages] = useState<File[]>([]);
   const [dir, setDir] = useState(1);
 
   const set = (k: keyof FormState, v: FormState[keyof FormState]) =>
@@ -535,10 +764,6 @@ const CreateInvite = () => {
   const isLastStep = step === STEP_META.length;
   const meta = STEP_META[step - 1];
 
-  const coupleLabel = form.partner1 && form.partner2
-    ? `${form.partner1} & ${form.partner2}`
-    : form.partner1 || form.partner2 || null;
-
   const handleCreate = () => {
     const id = `invite-${Date.now()}`;
     const stored: StoredInvite = {
@@ -549,10 +774,12 @@ const CreateInvite = () => {
       time: formatDisplayTime(form.timeRaw),
       rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
       venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
+      venueLat: form.venueLat, venueLng: form.venueLng,
       story: form.story, schedule: form.schedule,
       dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
       transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
       hotels: form.hotels,
+      selectedMusic: form.selectedMusic,
       createdAt: new Date().toISOString(),
     };
     saveInviteLocal(stored);
@@ -560,31 +787,26 @@ const CreateInvite = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: BG }}>
-
-      {/* ── Pill progress dots ── */}
-      <div style={{ position: "fixed", top: 20, left: 0, right: 0, zIndex: 50, pointerEvents: "none" }}>
-        <div className="flex items-center justify-center gap-1.5">
-          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-            <motion.div key={i}
-              animate={{ width: i === step - 1 ? 22 : 6, opacity: i < step ? 1 : 0.35 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              style={{ height: 5, borderRadius: 3, background: i < step ? GOLD : "hsl(38 28% 72%)" }}
-            />
-          ))}
-        </div>
-      </div>
+    <div className="min-h-screen" style={{ background: BG, "--tg": theme.gold, "--tgl": theme.goldL, "--tgg": theme.goldGrad, "--tglow": theme.glow } as React.CSSProperties}>
 
       {/* ── Floating ✕ ── */}
       <button onClick={() => navigate(-1)}
-        style={{ position: "fixed", top: 14, left: 20, zIndex: 50, color: MID, opacity: 0.7, lineHeight: 1 }}
+        style={{ position: "fixed", top: 14, right: 20, zIndex: 50, color: MID, opacity: 0.7, lineHeight: 1 }}
         className="transition-opacity hover:opacity-40">
         <X className="w-5 h-5" />
       </button>
 
       {/* ── Main ── */}
-      <main className="px-5 pb-24" style={{ paddingTop: 60 }}>
+      <main className="px-5 pb-24" style={{ paddingTop: 40 }}>
         <div className="max-w-lg mx-auto">
+
+          {/* Progress bar */}
+          <ProgressBar
+            currentStep={step - 1}
+            totalSteps={8}
+            stepLabels={["Couple", "Big Day", "Story", "Program", "Details", "Photos", "Music", "Preview"]}
+            accentColor={theme.gold}
+          />
 
           {/* Step hero */}
           <AnimatePresence mode="wait" custom={dir}>
@@ -594,33 +816,33 @@ const CreateInvite = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: dir * -20 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center mb-10">
+              className="mb-10">
 
-              <div className="text-4xl mb-4 select-none">{meta.icon}</div>
-
-              <AnimatePresence mode="wait">
-                {coupleLabel ? (
-                  <motion.p key="couple"
-                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                    className="font-handwritten mb-2"
-                    style={{ fontSize: "clamp(1.7rem, 7vw, 2.4rem)", color: "hsl(24 38% 34%)", lineHeight: 1.1 }}>
-                    {coupleLabel}
-                  </motion.p>
-                ) : (
-                  <motion.div key="space" style={{ height: "clamp(1.7rem, 7vw, 2.4rem)", marginBottom: 8 }} />
-                )}
-              </AnimatePresence>
-
+            <div className="text-center">
               {/* Gold rule */}
-              <div style={{ width: 40, height: 1.5, background: `linear-gradient(90deg, transparent, ${GOLD_L}, transparent)`, margin: "0 auto 12px" }} />
+              <div style={{ width: 40, height: 1.5, background: "linear-gradient(90deg, transparent, var(--tgl), transparent)", margin: "0 auto 12px" }} />
 
-              <h2 className="font-display font-bold mb-1"
-                style={{ fontSize: "clamp(1.1rem, 4vw, 1.35rem)", color: DARK }}>
-                {meta.title}
-              </h2>
-              <p className="font-body text-sm" style={{ color: LIGHT }}>{meta.sub}</p>
+              <div className="flex items-center mb-1">
+                {step > 1 ? (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    onClick={goBack}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                    style={{ background: "hsl(var(--secondary))" }}>
+                    <ArrowLeft className="w-4 h-4" /> Back
+                  </motion.button>
+                ) : <div className="w-16" />}
+                <h2 className="flex-1 text-center font-display font-bold"
+                  style={{ fontSize: "clamp(1.1rem, 4vw, 1.35rem)", color: DARK }}>
+                  {meta.title}
+                </h2>
+                <div className="w-16" />
+              </div>
+              <p className="font-body text-sm text-center" style={{ color: LIGHT }}>{meta.sub}</p>
+            </div>
             </motion.div>
           </AnimatePresence>
+
 
           {/* Form fields */}
           <AnimatePresence mode="wait" custom={dir}>
@@ -631,38 +853,42 @@ const CreateInvite = () => {
               exit={{ opacity: 0, x: dir * -30 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
               {step === 1 && <StepCouple  form={form} set={set} />}
-              {step === 2 && <StepBigDay  form={form} set={set} />}
+              {step === 2 && <StepBigDay  form={form} set={set} theme={theme} />}
               {step === 3 && <StepStory   form={form} set={set} />}
               {step === 4 && <StepProgram form={form} set={set} />}
               {step === 5 && <StepDetails form={form} set={set} />}
-              {step === 6 && <InvitePreviewPay form={form} onCreate={handleCreate} />}
+              {step === 6 && <StepPhotos  images={images} setImages={setImages} />}
+              {step === 7 && <StepMusic   selectedMusic={form.selectedMusic} onSelect={id => set("selectedMusic", id)} />}
+              {step === 8 && <InvitePreviewPay form={form} onCreate={handleCreate} />}
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation */}
-          {!isLastStep && (
-            <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="mt-10 flex items-center gap-3">
+            {!isLastStep && (
+              <motion.button
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                onClick={step === 1 ? () => navigate(-1) : goBack}
+                className="flex items-center gap-2 px-5 py-4 rounded-full font-body text-sm font-semibold transition-colors shrink-0"
+                style={{ background: "rgba(255,255,255,0.92)", border: "1.5px solid hsl(36 28% 80%)", color: MID, boxShadow: "0 2px 8px hsl(30 20% 50% / 0.08)" }}>
+                <ArrowLeft className="w-4 h-4" /> Back
+              </motion.button>
+            )}
+
+            {!isLastStep && (
               <motion.button
                 whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.97 }}
                 onClick={goNext}
-                className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-body text-base font-bold text-white"
+                className="flex-1 flex items-center justify-center gap-2.5 py-4 rounded-2xl font-body text-base font-bold text-white"
                 style={{
-                  background: `linear-gradient(135deg, ${GOLD}, hsl(38 76% 56%))`,
-                  boxShadow: `0 8px 32px hsl(28 76% 54% / 0.22)`,
+                  background: "linear-gradient(135deg, var(--tg), var(--tgg))",
+                  boxShadow: "0 8px 32px var(--tglow)",
                 }}>
                 {step === TOTAL_STEPS ? "Review & Publish" : "Continue"}
                 <ArrowRight className="w-4 h-4" />
               </motion.button>
-
-              {step > 1 && (
-                <button onClick={goBack}
-                  className="flex items-center gap-1.5 font-body text-sm py-1 transition-opacity hover:opacity-40"
-                  style={{ color: LIGHT }}>
-                  <ChevronLeft className="w-3.5 h-3.5" /> Go back
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
         </div>
       </main>

@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useSearchParams } from "react-router-dom";
 import {
@@ -493,7 +493,23 @@ const ViewInvite = () => {
   const [musicOn, setMusicOn] = useState(false);
   const [rsvpDone, setRsvpDone] = useState(false);
   const [celebrating, setCelebrating] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const countdown = useCountdown(INVITE.dateISO);
+
+  const handleEnvelopeOpen = () => {
+    setOpened(true);
+    setTimeout(() => {
+      setMusicOn(true);
+      audioRef.current?.play().catch(() => {});
+    }, 600);
+  };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (musicOn) audio.play().catch(() => {});
+    else audio.pause();
+  }, [musicOn]);
 
   const handleRsvp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -504,8 +520,9 @@ const ViewInvite = () => {
   return (
     <ThemeCtx.Provider value={C}>
     <div className="min-h-screen" style={{ background: C.cream }}>
+      <audio ref={audioRef} src="/music/birds-of-a-feather.mp3" loop preload="auto" />
       <AnimatePresence>
-        {!opened && <EnvelopeReveal onOpen={() => setOpened(true)} groom={INVITE.groom} bride={INVITE.bride} date={INVITE.date} />}
+        {!opened && <EnvelopeReveal onOpen={handleEnvelopeOpen} groom={INVITE.groom} bride={INVITE.bride} date={INVITE.date} />}
       </AnimatePresence>
       <AnimatePresence>
         {celebrating && <CelebrationOverlay onDone={() => { setCelebrating(false); setRsvpDone(true); }} />}

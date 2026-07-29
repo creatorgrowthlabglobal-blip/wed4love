@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, Mail, ArrowRight } from "lucide-react";
+import { Heart, Mail, ArrowRight, ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 
@@ -26,12 +26,16 @@ const DEMOS = [
 ];
 
 const Demo = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen gradient-blush relative">
       <Header />
       <FloatingHearts count={6} />
 
       <main className="relative z-10 pt-32 pb-24 px-4 sm:px-6">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}

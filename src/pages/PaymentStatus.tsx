@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, AlertTriangle, RefreshCw, Mail } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle, RefreshCw, Mail, ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
 import { Button } from "@/components/ui/button";
@@ -134,6 +134,9 @@ const PaymentStatus = () => {
       <Header />
       <FloatingHearts count={4} />
       <main className="relative z-10 pt-32 pb-20 px-4 sm:px-6">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

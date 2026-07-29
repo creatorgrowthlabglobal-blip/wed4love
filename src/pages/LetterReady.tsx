@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle2, Copy, Download, Share2, Heart, Sparkles, Video } from "lucide-react";
+import { CheckCircle2, Copy, Download, Share2, Heart, Sparkles, Video, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
@@ -10,6 +10,7 @@ import { getSignedMediaUrl } from "@/lib/letterStorage";
 
 const LetterReady = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   // Use production domain for shareable links, except in development where we
   // use the local server so changes can be tested before deploying.
   const PUBLIC_BASE_URL = import.meta.env.DEV ? window.location.origin : "https://wish4love.com";
@@ -95,6 +96,9 @@ const LetterReady = () => {
       <Header />
       <FloatingHearts count={10} />
       <main className="relative z-10 pt-28 pb-20 px-4 sm:px-6 flex items-center justify-center min-h-screen">
+        <button onClick={() => navigate(-1)} className="absolute top-6 left-6 inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors z-10">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}

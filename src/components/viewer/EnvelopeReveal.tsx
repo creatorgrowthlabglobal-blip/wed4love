@@ -21,14 +21,14 @@ interface EnvelopeRevealProps {
   onLetterOpen?: () => void;
 }
 
-const PAPER_BG = "#FDF6F0";
-const ENVELOPE_BASE = "#FFF0F4";    // warm ivory-blush face
-const ENV_LEFT = "#EAB8CE";         // left fold panel
-const ENV_RIGHT = "#F5D2E4";        // right fold panel
-const ENV_BOTTOM = "#E3AECA";       // bottom fold panel
-const ENVELOPE_MID = "#F5C9DA";     // flap / compat
+const PAPER_BG = "#FDF8EC";
+const ENVELOPE_BASE = "#F7F0D8";    // warm ivory face
+const ENV_LEFT = "#C9A455";         // left fold panel — champagne gold
+const ENV_RIGHT = "#D4B870";        // right fold panel — lighter champagne
+const ENV_BOTTOM = "#B89030";       // bottom fold panel — deep champagne
+const ENVELOPE_MID = "#D4AF72";     // flap / compat
 const ENVELOPE_DARK = "#1a1a1a";
-const FLAP_COLOR = "#F4CADB";
+const FLAP_COLOR = "#D4AF72";
 const TEXT_DARK = "#2C2A25";
 const TEXT_MID = "#6B6456";
 
@@ -55,35 +55,48 @@ const SealSVG = () => (
       width: "clamp(44px, 10vw, 72px)",
       height: "clamp(44px, 10vw, 72px)",
       pointerEvents: "none",
-      filter: "drop-shadow(0 5px 10px rgba(70,10,35,0.40)) drop-shadow(0 2px 4px rgba(0,0,0,0.25))",
+      filter: "drop-shadow(0 5px 12px rgba(60,40,5,0.50)) drop-shadow(0 2px 4px rgba(0,0,0,0.28))",
     }}
   >
     <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%", display: "block" }}>
-      {/* Sunburst outer ring — 16 short rays */}
-      {Array.from({ length: 16 }).map((_, i) => {
-        const a = (i * 360) / 16;
+      <defs>
+        <radialGradient id="sealGold" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#F0D080" />
+          <stop offset="50%" stopColor="#C9A030" />
+          <stop offset="100%" stopColor="#8B6A10" />
+        </radialGradient>
+        <radialGradient id="sealInner" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#D4A828" />
+          <stop offset="100%" stopColor="#7A5508" />
+        </radialGradient>
+      </defs>
+      {/* Sunburst outer ring — 20 short rays */}
+      {Array.from({ length: 20 }).map((_, i) => {
+        const a = (i * 360) / 20;
         const r1 = 33, r2 = 36;
         const toRad = (deg: number) => (deg * Math.PI) / 180;
         const x1 = 36 + r1 * Math.cos(toRad(a)), y1 = 36 + r1 * Math.sin(toRad(a));
-        const x2 = 36 + r2 * Math.cos(toRad(a - 5)), y2 = 36 + r2 * Math.sin(toRad(a - 5));
-        const x3 = 36 + r2 * Math.cos(toRad(a + 5)), y3 = 36 + r2 * Math.sin(toRad(a + 5));
-        return <polygon key={i} points={`${x1},${y1} ${x2},${y2} ${x3},${y3}`} fill="#7A1535" />;
+        const x2 = 36 + r2 * Math.cos(toRad(a - 4)), y2 = 36 + r2 * Math.sin(toRad(a - 4));
+        const x3 = 36 + r2 * Math.cos(toRad(a + 4)), y3 = 36 + r2 * Math.sin(toRad(a + 4));
+        return <polygon key={i} points={`${x1},${y1} ${x2},${y2} ${x3},${y3}`} fill="#8B6A10" />;
       })}
       {/* Outer disc */}
-      <circle cx="36" cy="36" r="32" fill="#8B1A40" />
-      {/* Mid ring */}
-      <circle cx="36" cy="36" r="28" fill="#9E2550" />
+      <circle cx="36" cy="36" r="32" fill="url(#sealGold)" />
+      {/* Mid ring — thin dark separator */}
+      <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(90,60,5,0.5)" strokeWidth="1.2" />
       {/* Thin cream ring */}
-      <circle cx="36" cy="36" r="25" fill="none" stroke="#F8D8E8" strokeWidth="1" opacity="0.55" />
+      <circle cx="36" cy="36" r="25" fill="none" stroke="rgba(255,245,200,0.55)" strokeWidth="1" />
       {/* Inner disc */}
-      <circle cx="36" cy="36" r="23" fill="#7A1535" />
-      {/* Heart */}
+      <circle cx="36" cy="36" r="23" fill="url(#sealInner)" />
+      {/* Fine inner border */}
+      <circle cx="36" cy="36" r="20" fill="none" stroke="rgba(255,240,180,0.35)" strokeWidth="0.7" />
+      {/* Heart — deep burgundy on gold */}
       <path
         d="M36 50 C 24 41, 20 33, 23 26.5 C 25.5 21.5, 31 21, 36 26 C 41 21, 46.5 21.5, 49 26.5 C 52 33, 48 41, 36 50 Z"
-        fill="#FFE4EF"
+        fill="#6B1228"
       />
-      {/* Highlight on heart */}
-      <ellipse cx="30" cy="30" rx="4" ry="2.5" fill="white" opacity="0.22" transform="rotate(-25 30 30)" />
+      {/* Heart shine */}
+      <ellipse cx="30" cy="30" rx="4" ry="2.5" fill="white" opacity="0.18" transform="rotate(-25 30 30)" />
     </svg>
   </div>
 );
@@ -118,15 +131,16 @@ const EnvelopeFlap = ({ isOpen }: { isOpen: boolean }) => {
       >
         <defs>
           <linearGradient id="flapGrad" x1="50%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stopColor="#F8DDE8" />
-            <stop offset="100%" stopColor="#EDB8CE" />
+            <stop offset="0%" stopColor="#F5EDD5" />
+            <stop offset="60%" stopColor="#D8B560" />
+            <stop offset="100%" stopColor="#C09030" />
           </linearGradient>
         </defs>
         <path
           d="M 0,0 L 180,180 L 360,0"
           fill="url(#flapGrad)"
-          stroke="rgba(140,70,100,0.45)"
-          strokeWidth="2"
+          stroke="rgba(130,95,15,0.55)"
+          strokeWidth="1.5"
           strokeLinejoin="round"
         />
       </svg>
@@ -324,7 +338,7 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 transform: "translateX(-50%)",
                 fontSize: "clamp(36px, 7vw, 56px)",
                 fontFamily: "'Pinyon Script', cursive",
-                color: "#C0396A",
+                color: "#8B6510",
                 whiteSpace: "nowrap",
                 pointerEvents: "none",
                 zIndex: 2,
@@ -374,10 +388,10 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                   inset: 0,
                   borderRadius: "6px",
                   background: ENVELOPE_BASE,
-                  border: `2px solid rgba(160,80,110,0.55)`,
+                  border: `2px solid rgba(160,120,30,0.65)`,
                   overflow: "hidden",
                   zIndex: 10,
-                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6), 0 28px 48px rgba(100,40,70,0.28), 0 8px 16px rgba(100,40,70,0.16)",
+                  boxShadow: "inset 0 0 0 1px rgba(255,248,210,0.7), 0 32px 56px rgba(60,45,5,0.30), 0 8px 20px rgba(60,45,5,0.18)",
                 }}
               >
                 {/* Fold panels + decorative details */}
@@ -389,25 +403,25 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                 >
                   <defs>
                     <linearGradient id="lgLeft" x1="0%" y1="50%" x2="100%" y2="50%">
-                      <stop offset="0%" stopColor="#E0A8C0" />
-                      <stop offset="100%" stopColor="#F0CAD8" />
+                      <stop offset="0%" stopColor="#A87E20" />
+                      <stop offset="100%" stopColor="#D4B060" />
                     </linearGradient>
                     <linearGradient id="lgRight" x1="100%" y1="50%" x2="0%" y2="50%">
-                      <stop offset="0%" stopColor="#E0A8C0" />
-                      <stop offset="100%" stopColor="#F5D5E5" />
+                      <stop offset="0%" stopColor="#A87E20" />
+                      <stop offset="100%" stopColor="#C9A850" />
                     </linearGradient>
                     {/* Shadow strips along side seams */}
                     <linearGradient id="seamShadowL" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="rgba(100,30,60,0.18)" />
-                      <stop offset="100%" stopColor="rgba(100,30,60,0)" />
+                      <stop offset="0%" stopColor="rgba(60,40,5,0.22)" />
+                      <stop offset="100%" stopColor="rgba(60,40,5,0)" />
                     </linearGradient>
                     <linearGradient id="seamShadowR" x1="100%" y1="0%" x2="0%" y2="0%">
-                      <stop offset="0%" stopColor="rgba(100,30,60,0.18)" />
-                      <stop offset="100%" stopColor="rgba(100,30,60,0)" />
+                      <stop offset="0%" stopColor="rgba(60,40,5,0.22)" />
+                      <stop offset="100%" stopColor="rgba(60,40,5,0)" />
                     </linearGradient>
                     <linearGradient id="lgBottom" x1="50%" y1="100%" x2="50%" y2="0%">
-                      <stop offset="0%" stopColor="#D9A0BC" />
-                      <stop offset="100%" stopColor="#EDB8CE" />
+                      <stop offset="0%" stopColor="#8B6510" />
+                      <stop offset="100%" stopColor="#C9A040" />
                     </linearGradient>
                   </defs>
 
@@ -422,43 +436,36 @@ export default function EnvelopeReveal({ receiverName, senderName, letterText, i
                   <polygon points="360,0 360,240 338,218 338,22" fill="url(#seamShadowR)" opacity="0.7" />
 
                   {/* V-shaped flap crease lines — top corners to center only */}
-                  <line x1="0" y1="0" x2="180" y2="120" stroke="rgba(140,70,100,0.35)" strokeWidth="1.2" />
-                  <line x1="360" y1="0" x2="180" y2="120" stroke="rgba(140,70,100,0.35)" strokeWidth="1.2" />
+                  <line x1="0" y1="0" x2="180" y2="120" stroke="rgba(120,88,12,0.40)" strokeWidth="1.2" />
+                  <line x1="360" y1="0" x2="180" y2="120" stroke="rgba(120,88,12,0.40)" strokeWidth="1.2" />
 
-                  {/* Decorative inner border */}
-                  <rect x="8" y="8" width="344" height="224" fill="none" stroke="rgba(190,120,150,0.50)" strokeWidth="0.9" rx="3" />
-                  <rect x="12" y="12" width="336" height="216" fill="none" stroke="rgba(220,165,185,0.35)" strokeWidth="0.6" rx="2" />
+                  {/* Decorative inner border — double gold rule */}
+                  <rect x="8" y="8" width="344" height="224" fill="none" stroke="rgba(170,128,30,0.60)" strokeWidth="1.0" rx="3" />
+                  <rect x="13" y="13" width="334" height="214" fill="none" stroke="rgba(200,165,60,0.35)" strokeWidth="0.6" rx="2" />
 
-                  {/* Postage stamp — top right */}
+                  {/* Postage stamp — top right, ivory & gold */}
                   <g transform="translate(280, 16)">
-                    <rect width="60" height="70" fill="#FFF8F2" stroke="rgba(180,110,140,0.70)" strokeWidth="1.2" rx="2" />
+                    <rect width="60" height="70" fill="#FBF5E0" stroke="rgba(150,115,20,0.75)" strokeWidth="1.2" rx="2" />
                     {/* Perforated dashed inner frame */}
-                    <rect x="5" y="5" width="50" height="60" fill="none" stroke="rgba(200,140,160,0.55)" strokeWidth="0.7" strokeDasharray="2.5,2" rx="1" />
-                    {/* Heart illustration inside stamp */}
-                    <path d="M30 51 C 22 43, 19 37, 21 31.5 C 23 27, 27.5 26.5, 30 30.5 C 32.5 26.5, 37 27, 39 31.5 C 41 37, 38 43, 30 51 Z" fill="#C0607A" opacity="0.80" />
-                    {/* Small shine on stamp heart */}
-                    <ellipse cx="26" cy="34" rx="2.5" ry="1.6" fill="white" opacity="0.30" transform="rotate(-20 26 34)" />
+                    <rect x="5" y="5" width="50" height="60" fill="none" stroke="rgba(160,125,25,0.50)" strokeWidth="0.7" strokeDasharray="2.5,2" rx="1" />
+                    {/* Crown motif inside stamp */}
+                    <path d="M15 46 L15 42 L20 36 L25 42 L30 34 L35 42 L40 36 L45 42 L45 46 Z" fill="none" stroke="rgba(140,100,15,0.75)" strokeWidth="1.1" strokeLinejoin="round" />
+                    <rect x="14" y="46" width="32" height="3" rx="1" fill="rgba(140,100,15,0.55)" />
                     {/* Stamp denomination line */}
-                    <rect x="10" y="57" width="40" height="4" rx="1" fill="rgba(180,110,140,0.20)" />
+                    <rect x="10" y="57" width="40" height="4" rx="1" fill="rgba(150,115,20,0.18)" />
                   </g>
 
-                  {/* Bottom-left corner rose */}
-                  <g transform="translate(26, 210)">
-                    <ellipse cx="0" cy="-8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55" />
-                    <ellipse cx="8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(90 8 0)" />
-                    <ellipse cx="0" cy="8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55" transform="rotate(180)" />
-                    <ellipse cx="-8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(270 -8 0)" />
-                    <circle cx="0" cy="0" r="4" fill="#F0C5D5" opacity="0.75" />
-                    <circle cx="0" cy="0" r="1.8" fill="#C88090" opacity="0.60" />
+                  {/* Bottom-left gold filigree ornament */}
+                  <g transform="translate(26, 216)" opacity="0.75">
+                    <path d="M0,-10 L2.5,-2.5 L10,0 L2.5,2.5 L0,10 L-2.5,2.5 L-10,0 L-2.5,-2.5 Z" fill="#C9A030" />
+                    <circle cx="0" cy="0" r="2.5" fill="#E8C84A" />
+                    <circle cx="0" cy="0" r="1" fill="#8B6510" />
                   </g>
-                  {/* Bottom-right corner rose */}
-                  <g transform="translate(334, 210)">
-                    <ellipse cx="0" cy="-8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55" />
-                    <ellipse cx="8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(90 8 0)" />
-                    <ellipse cx="0" cy="8" rx="3.5" ry="5" fill="#E8B0C8" opacity="0.55" transform="rotate(180)" />
-                    <ellipse cx="-8" cy="0" rx="5" ry="3.5" fill="#E8B0C8" opacity="0.55" transform="rotate(270 -8 0)" />
-                    <circle cx="0" cy="0" r="4" fill="#F0C5D5" opacity="0.75" />
-                    <circle cx="0" cy="0" r="1.8" fill="#C88090" opacity="0.60" />
+                  {/* Bottom-right gold filigree ornament */}
+                  <g transform="translate(334, 216)" opacity="0.75">
+                    <path d="M0,-10 L2.5,-2.5 L10,0 L2.5,2.5 L0,10 L-2.5,2.5 L-10,0 L-2.5,-2.5 Z" fill="#C9A030" />
+                    <circle cx="0" cy="0" r="2.5" fill="#E8C84A" />
+                    <circle cx="0" cy="0" r="1" fill="#8B6510" />
                   </g>
                 </svg>
 

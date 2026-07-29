@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -38,6 +39,7 @@ const articles = [
 ];
 
 const ArticlesIndex = () => {
+  const navigate = useNavigate();
   useEffect(() => {
     document.title = "Articles on Love, Letters & Connection — Wish4Love";
     return () => { document.title = "Wish4Love — Send a Digital Love Letter With Photos & Music"; };
@@ -47,6 +49,9 @@ const ArticlesIndex = () => {
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/10 to-background">
       <Header />
       <main className="max-w-2xl mx-auto px-6 pt-28 pb-20">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

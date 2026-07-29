@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Heart, ExternalLink } from "lucide-react";
+import { Heart, ExternalLink, ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LetterRecord {
   id: string;
@@ -11,6 +11,7 @@ interface LetterRecord {
 }
 
 const LetterHistory = () => {
+  const navigate = useNavigate();
   // Load from localStorage
   const letters: LetterRecord[] = JSON.parse(localStorage.getItem("wish4love_letters") || "[]");
 
@@ -19,6 +20,9 @@ const LetterHistory = () => {
       <Header />
       <FloatingHearts count={4} />
       <main className="relative z-10 pt-28 pb-20 px-4 sm:px-6">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <div className="max-w-lg mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">

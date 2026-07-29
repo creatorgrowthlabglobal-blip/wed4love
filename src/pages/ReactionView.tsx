@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Video, Heart } from "lucide-react";
+import { Video, Heart, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import FloatingHearts from "@/components/FloatingHearts";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSignedMediaUrl } from "@/lib/letterStorage";
 
 const ReactionView = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [reactionUrls, setReactionUrls] = useState<string[] | null>(null);
   const [receiverName, setReceiverName] = useState("");
@@ -52,6 +53,9 @@ const ReactionView = () => {
       <Header />
       <FloatingHearts count={8} />
       <main className="relative z-10 pt-28 pb-20 px-4 sm:px-6 flex items-center justify-center min-h-screen">
+        <button onClick={() => navigate(-1)} className="absolute top-6 left-6 inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors z-10">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}

@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { Mail, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, Send, Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +14,7 @@ const schema = z.object({
 });
 
 const Contact = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,9 @@ const Contact = () => {
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/10 to-background">
       <Header />
       <main className="max-w-2xl mx-auto px-6 pt-28 pb-20">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
         <div className="text-center mb-10">
           <Mail className="w-10 h-10 text-primary mx-auto mb-4" />
           <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground mb-3">Get in touch</h1>
