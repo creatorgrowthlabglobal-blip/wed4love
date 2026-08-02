@@ -1,316 +1,229 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Sparkles, Mail, ArrowLeft, Lock } from "lucide-react";
-import FloatingHearts from "@/components/FloatingHearts";
-import { isValidEmail, signIn, signUp } from "@/lib/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
-type Mode = "signup" | "signin";
+const GOLD      = "hsl(38 72% 44%)";
+const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
 
-const AuthPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+// Google G logo SVG
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+    <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+    <path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/>
+    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+  </svg>
+);
 
-  const [mode, setMode] = useState<Mode>("signin");
+const InputField = ({
+  icon: Icon,
+  type,
+  placeholder,
+  value,
+  onChange,
+  rightElement,
+}: {
+  icon: React.ElementType;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  rightElement?: React.ReactNode;
+}) => (
+  <div className="relative">
+    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400/70">
+      <Icon className="w-4 h-4" />
+    </span>
+    <input
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      className="w-full pl-10 pr-10 py-3 rounded-xl border text-sm font-body outline-none transition-all bg-white"
+      style={{
+        borderColor: "hsl(38 40% 85%)",
+        color: "hsl(30 20% 20%)",
+      }}
+      onFocus={e => (e.target.style.borderColor = GOLD)}
+      onBlur={e => (e.target.style.borderColor = "hsl(38 40% 85%)")}
+    />
+    {rightElement && (
+      <span className="absolute right-3.5 top-1/2 -translate-y-1/2">{rightElement}</span>
+    )}
+  </div>
+);
+
+export default function AuthPage() {
+  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [showSignupCTA, setShowSignupCTA] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const reset = () => { setError(null); setInfo(null); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setShowSignupCTA(false);
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (mode === "signup" && password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-    setLoading(true);
-    const result =
-      mode === "signup"
-        ? await signUp(email, password)
-        : await signIn(email, password);
-    setLoading(false);
-    if ("error" in result) {
-      setError(result.error);
-      if ("noAccount" in result && result.noAccount) {
-        setShowSignupCTA(true);
+    reset();
+    setBusy(true);
+
+    if (tab === "signin") {
+      const { error } = await signInWithEmail(email, password);
+      if (error) { setError(error); setBusy(false); return; }
+      navigate("/choose-template", { replace: true });
+    } else {
+      if (!name.trim()) { setError("Please enter your name."); setBusy(false); return; }
+      const { error, session } = await signUpWithEmail(email, password, name.trim());
+      if (error) { setError(error); setBusy(false); return; }
+      if (session) {
+        navigate("/choose-template", { replace: true });
+        return;
       }
-      return;
+      setInfo("Check your email to confirm your account, then sign in.");
+      setTab("signin");
     }
-    supabase.functions
-      .invoke("telegram-notify", {
-        body: { event: mode === "signup" ? "user_signed_up" : "user_signed_in", data: { email } },
-      })
-      .catch(() => {});
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    navigate(from || "/create-letter", { replace: true });
+    setBusy(false);
   };
 
-  const inputClass =
-    "w-full px-4 py-3 rounded-xl bg-input border border-border font-body text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all";
-
   return (
-    <div className="min-h-screen bg-background relative flex items-center justify-center px-4 py-12">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(350_100%_96%)] to-background pointer-events-none" />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[
-          { left: "8%", top: "22%", size: 12, delay: 0 },
-          { left: "88%", top: "18%", size: 10, delay: 1.2 },
-          { left: "5%", top: "72%", size: 14, delay: 2 },
-          { left: "92%", top: "65%", size: 8, delay: 0.6 },
-          { left: "50%", top: "7%", size: 9, delay: 1.8 },
-        ].map((s, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-primary/20"
-            style={{ left: s.left, top: s.top }}
-            animate={{ opacity: [0.15, 0.5, 0.15], scale: [0.8, 1.2, 0.8], rotate: [0, 180, 360] }}
-            transition={{ duration: 5, repeat: Infinity, delay: s.delay }}
-          >
-            <Sparkles style={{ width: s.size, height: s.size }} />
-          </motion.div>
-        ))}
-      </div>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-16"
+      style={{ background: "linear-gradient(155deg, hsl(42 80% 97%) 0%, hsl(350 50% 96%) 50%, hsl(38 60% 95%) 100%)" }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md"
+      >
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-block font-display font-bold text-2xl tracking-tight" style={{ color: GOLD }}>
+            Invitely
+          </Link>
+          <p className="mt-2 font-body text-sm" style={{ color: "hsl(30 12% 48%)" }}>
+            {tab === "signin" ? "Welcome back" : "Create your account"}
+          </p>
+        </div>
 
-      <FloatingHearts count={5} />
-
-      <div className="relative z-10 w-full max-w-md">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative bg-white/80 backdrop-blur-xl rounded-3xl border border-primary/10 p-8 pt-10"
-          style={{
-            boxShadow:
-              "0 20px 60px hsl(340 60% 80% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.04)",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="absolute top-4 left-4 inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back
-          </button>
-
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-6"
-          >
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-3">
-              <Heart className="w-6 h-6 text-primary fill-primary" />
-            </div>
-            <h1 className="font-display text-2xl font-bold text-foreground">Wish4Love</h1>
-            <p className="font-body text-sm text-muted-foreground mt-1">
-              Pour your heart out,{" "}
-              <span className="text-primary italic">the right way</span>
-            </p>
-          </motion.div>
+        <div className="bg-white rounded-2xl shadow-xl shadow-amber-900/6 border p-8" style={{ borderColor: "hsl(38 40% 90%)" }}>
 
           {/* Tabs */}
-          <div className="flex gap-2 p-1 bg-muted/50 rounded-full mb-6">
-            {(["signup", "signin"] as Mode[]).map((m) => (
+          <div className="flex rounded-xl p-1 mb-6" style={{ background: "hsl(38 60% 96%)" }}>
+            {(["signin", "signup"] as const).map(t => (
               <button
-                key={m}
-                type="button"
-                onClick={() => {
-                  setMode(m);
-                  setError("");
-                  setShowSignupCTA(false);
-                }}
-                className={`flex-1 py-2 rounded-full font-body text-sm font-semibold transition-all ${
-                  mode === m
-                    ? "bg-white text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                key={t}
+                onClick={() => { setTab(t); reset(); }}
+                className="flex-1 py-2 rounded-lg text-sm font-body font-semibold transition-all"
+                style={tab === t
+                  ? { background: GOLD_GRAD, color: "white", boxShadow: "0 2px 10px hsl(38 80% 55% / 0.25)" }
+                  : { color: "hsl(30 12% 48%)" }}
               >
-                {m === "signin" ? "Sign in" : "Sign up"}
+                {t === "signin" ? "Sign In" : "Sign Up"}
               </button>
             ))}
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.form
-              key={mode}
-              initial={{ opacity: 0, x: mode === "signup" ? 16 : -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: mode === "signup" ? -16 : 16 }}
-              transition={{ duration: 0.2 }}
-              onSubmit={handleSubmit}
-              className="space-y-5"
+          {/* Google */}
+          <button
+            onClick={signInWithGoogle}
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border font-body text-sm font-semibold transition-all hover:bg-gray-50 active:scale-[0.98]"
+            style={{ borderColor: "hsl(38 30% 85%)", color: "hsl(30 20% 25%)" }}
+          >
+            <GoogleIcon />
+            Continue with Google
+          </button>
+
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px" style={{ background: "hsl(38 30% 88%)" }} />
+            <span className="font-body text-xs" style={{ color: "hsl(30 12% 58%)" }}>or</span>
+            <div className="flex-1 h-px" style={{ background: "hsl(38 30% 88%)" }} />
+          </div>
+
+          {/* Error / Info */}
+          {error && (
+            <div className="flex items-start gap-2.5 mb-4 px-3.5 py-3 rounded-xl text-sm font-body" style={{ background: "hsl(0 80% 96%)", color: "hsl(0 65% 40%)", border: "1px solid hsl(0 70% 88%)" }}>
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              {error}
+            </div>
+          )}
+          {info && (
+            <div className="flex items-start gap-2.5 mb-4 px-3.5 py-3 rounded-xl text-sm font-body" style={{ background: "hsl(140 60% 95%)", color: "hsl(140 50% 28%)", border: "1px solid hsl(140 50% 82%)" }}>
+              {info}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+            {tab === "signup" && (
+              <InputField
+                icon={User}
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={setName}
+              />
+            )}
+            <InputField
+              icon={Mail}
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={setEmail}
+            />
+            <InputField
+              icon={Lock}
+              type={showPw ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={setPassword}
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowPw(v => !v)}
+                  className="text-amber-400/60 hover:text-amber-500 transition-colors"
+                >
+                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
+            />
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="mt-1 w-full py-3 rounded-xl font-body text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+              style={{ background: GOLD_GRAD, boxShadow: "0 4px 18px hsl(38 80% 55% / 0.28)" }}
             >
-              <div>
-                <h2 className="font-display text-xl font-bold text-foreground">
-                  {mode === "signup" ? "Create your account" : "Welcome back"}
-                </h2>
-                <p className="font-body text-sm text-muted-foreground mt-1">
-                  {mode === "signup"
-                    ? "Sign up with your email to start creating letters."
-                    : "Sign in with your email and password."}
-                </p>
-              </div>
+              {busy ? "Please wait…" : tab === "signin" ? "Sign In" : "Create Account"}
+            </button>
+          </form>
 
-              <div>
-                <label className="font-body text-sm font-medium text-foreground mb-1.5 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-primary" />
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                  placeholder="your@email.com"
-                  required
-                  autoComplete="email"
-                  autoFocus
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="font-body text-sm font-medium text-foreground mb-1.5 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-primary" />
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); setShowSignupCTA(false); }}
-                  placeholder="At least 6 characters"
-                  required
-                  minLength={6}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  className={inputClass}
-                />
-              </div>
-
-              <AnimatePresence>
-                {mode === "signup" && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <label className="font-body text-sm font-medium text-foreground mb-1.5 flex items-center gap-1.5">
-                      <Lock className="w-3.5 h-3.5 text-primary" />
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => { setConfirmPassword(e.target.value); setError(""); }}
-                      placeholder="Re-enter your password"
-                      required={mode === "signup"}
-                      minLength={6}
-                      autoComplete="new-password"
-                      className={inputClass}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence>
-                {error && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="font-body text-sm text-destructive"
-                  >
-                    {error}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence>
-                {showSignupCTA && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="rounded-xl bg-primary/5 border border-primary/10 p-4 text-center"
-                  >
-                    <p className="font-body text-sm text-foreground mb-2">
-                      No account found with this email.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMode("signup");
-                        setError("");
-                        setShowSignupCTA(false);
-                      }}
-                      className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-semibold hover:bg-primary/90 transition-colors"
-                    >
-                      Create an account
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-[hsl(340_90%_65%)] text-primary-foreground font-display text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
-                style={{
-                  boxShadow:
-                    "0 8px 30px hsl(340 100% 76% / 0.35), 0 4px 12px hsl(340 80% 60% / 0.2)",
-                }}
-              >
-                <Heart className="w-4 h-4 fill-current" />
-                {loading
-                  ? mode === "signup" ? "Creating account…" : "Signing in…"
-                  : mode === "signup" ? "Create account" : "Sign in"}
+          {tab === "signin" && (
+            <p className="mt-4 text-center font-body text-xs" style={{ color: "hsl(30 12% 55%)" }}>
+              Don't have an account?{" "}
+              <button onClick={() => { setTab("signup"); reset(); }} className="font-semibold hover:underline" style={{ color: GOLD }}>
+                Sign up free
               </button>
+            </p>
+          )}
+        </div>
 
-              <p className="font-body text-sm text-muted-foreground text-center">
-                {mode === "signup" ? (
-                  <>
-                    Already have an account?{" "}
-                    <button
-                      type="button"
-                      onClick={() => { setMode("signin"); setError(""); }}
-                      className="font-semibold text-primary hover:text-primary/80 transition-colors"
-                    >
-                      Sign in
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    New to Wish4Love?{" "}
-                    <button
-                      type="button"
-                      onClick={() => { setMode("signup"); setError(""); }}
-                      className="font-semibold text-primary hover:text-primary/80 transition-colors"
-                    >
-                      Create an account
-                    </button>
-                  </>
-                )}
-              </p>
-            </motion.form>
-          </AnimatePresence>
-        </motion.div>
-      </div>
+        <p className="mt-6 text-center font-body text-xs" style={{ color: "hsl(30 12% 58%)" }}>
+          By continuing you agree to our{" "}
+          <Link to="/terms" className="hover:underline" style={{ color: GOLD }}>Terms</Link>
+          {" & "}
+          <Link to="/privacy" className="hover:underline" style={{ color: GOLD }}>Privacy Policy</Link>
+        </p>
+      </motion.div>
     </div>
   );
-};
-
-export default AuthPage;
+}
