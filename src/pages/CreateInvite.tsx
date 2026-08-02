@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { X, Plus, Trash2, ArrowRight, ArrowLeft } from "lucide-react";
-import ProgressBar from "@/components/letter/ProgressBar";
+import ProgressBar from "@/components/invite/ProgressBar";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 import VenueMapPicker from "@/components/invite/VenueMapPicker";
 import type { MusicPreset } from "@/lib/musicPresets";
@@ -707,7 +707,7 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
           <span style={{ fontSize: 20 }}>🔒</span>
           <p className="font-body text-sm font-bold" style={{ color: DARK }}>Premium Feature</p>
           <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Use your own music with Premium</p>
-          <a href="/#pricing" target="_blank" rel="noopener noreferrer"
+          <a href="/pricing" target="_blank" rel="noopener noreferrer"
             className="mt-1 px-5 py-2 rounded-xl font-body text-xs font-bold text-white transition-opacity hover:opacity-80"
             style={{ background: "linear-gradient(135deg, var(--tg), var(--tgg))", boxShadow: "0 4px 14px var(--tglow)" }}>
             Upgrade to Premium
@@ -746,6 +746,7 @@ const CreateInvite = () => {
   const [form, setForm] = useState<FormState>(DEFAULT);
   const [images, setImages] = useState<File[]>([]);
   const [dir, setDir] = useState(1);
+  const [createdId, setCreatedId] = useState<string | null>(null);
 
   const set = (k: keyof FormState, v: FormState[keyof FormState]) =>
     setForm(f => ({ ...f, [k]: v }));
@@ -783,8 +784,63 @@ const CreateInvite = () => {
       createdAt: new Date().toISOString(),
     };
     saveInviteLocal(stored);
-    navigate(`/invite/${id}`);
+    setCreatedId(id);
   };
+
+  if (createdId) {
+    const inviteUrl = `/invite/${createdId}`;
+    const dashUrl   = `/dashboard/${createdId}`;
+    return (
+      <div className="min-h-screen flex items-center justify-center px-5" style={{ background: BG }}>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md text-center"
+        >
+          <div className="text-5xl mb-5">💍</div>
+          <h1 className="font-display font-bold mb-2" style={{ fontSize: "2rem", color: DARK }}>
+            Your invite is ready!
+          </h1>
+          <p className="font-body text-sm mb-8" style={{ color: MID }}>
+            Share the invite link with your guests. Use the dashboard to track RSVPs and check people in on the day.
+          </p>
+
+          <div className="flex flex-col gap-3 mb-6">
+            <a
+              href={inviteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-body text-base font-bold text-white"
+              style={{ background: `linear-gradient(135deg, ${theme.gold}, ${theme.goldGrad})` }}
+            >
+              View Invite
+              <ArrowRight className="w-4 h-4" />
+            </a>
+
+            <a
+              href={dashUrl}
+              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-body text-base font-semibold"
+              style={{ background: "rgba(255,255,255,0.92)", border: `1.5px solid hsl(36 28% 80%)`, color: DARK }}
+            >
+              Open RSVP Dashboard
+            </a>
+          </div>
+
+          <div
+            className="rounded-xl px-4 py-3 text-left"
+            style={{ background: "rgba(255,255,255,0.7)", border: "1px solid hsl(36 28% 82%)" }}
+          >
+            <p className="font-body text-xs mb-1" style={{ color: LIGHT, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              Invite link to share
+            </p>
+            <p className="font-body text-sm break-all select-all" style={{ color: DARK }}>
+              {window.location.origin}{inviteUrl}
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ background: BG, "--tg": theme.gold, "--tgl": theme.goldL, "--tgg": theme.goldGrad, "--tglow": theme.glow } as React.CSSProperties}>

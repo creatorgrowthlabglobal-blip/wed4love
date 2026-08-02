@@ -1,5 +1,3 @@
-import honeymoonAvenue from "@/assets/honeymoon-avenue.mp3.asset.json";
-
 export interface MusicPreset {
   id: string;
   title: string;
@@ -8,7 +6,7 @@ export interface MusicPreset {
 }
 
 export const MUSIC_PRESETS: MusicPreset[] = [
-  { id: "honeymoon-avenue", title: "Honeymoon Avenue (Live from London)", artist: "Ariana Grande", url: honeymoonAvenue.url },
+  { id: "honeymoon-avenue", title: "Honeymoon Avenue (Live from London)", artist: "Ariana Grande", url: "/music/honeymoon-avenue.mp3" },
   { id: "be-with-you", title: "Be with you", artist: "The Ridleys", url: "/music/be-with-you.mp3" },
   { id: "ivy", title: "Ivy", artist: "Frank Ocean", url: "/music/ivy.mp3" },
   { id: "birds-of-a-feather", title: "Birds of a Feather", artist: "Billie Eilish", url: "/music/birds-of-a-feather.mp3" },

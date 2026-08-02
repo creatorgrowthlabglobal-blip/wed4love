@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      rsvps: {
+        Row: {
+          id: string
+          invite_id: string
+          event_name: string | null
+          event_date: string | null
+          event_venue: string | null
+          event_location: string | null
+          name: string
+          email: string
+          attendance: string
+          guests_count: number
+          message: string | null
+          checked_in: boolean
+          checked_in_at: string | null
+          host_notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          invite_id: string
+          event_name?: string | null
+          event_date?: string | null
+          event_venue?: string | null
+          event_location?: string | null
+          name: string
+          email: string
+          attendance: string
+          guests_count?: number
+          message?: string | null
+          checked_in?: boolean
+          checked_in_at?: string | null
+          host_notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          invite_id?: string
+          event_name?: string | null
+          event_date?: string | null
+          event_venue?: string | null
+          event_location?: string | null
+          name?: string
+          email?: string
+          attendance?: string
+          guests_count?: number
+          message?: string | null
+          checked_in?: boolean
+          checked_in_at?: string | null
+          host_notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       claimed_whop_events: {
         Row: {
           app_email: string

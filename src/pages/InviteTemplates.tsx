@@ -149,7 +149,7 @@ const InviteTemplates = () => {
     >
       {/* Back */}
       <Link
-        to="/get-started"
+        to="/"
         className="fixed top-6 left-6 inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors z-10"
       >
         <ArrowLeft className="w-4 h-4" /> Back

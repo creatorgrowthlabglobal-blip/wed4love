@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import {
   MapPin, Calendar, Music, VolumeX, ChevronDown, Check, Mail, Phone,
   Clock, Users, Wine, Utensils, Heart, PartyPopper, Car, Train,
-  Plane, ChevronUp, Gift, Camera, Shirt, Hotel
+  Plane, ChevronUp, Gift, Camera, Shirt, Hotel, LayoutDashboard
 } from "lucide-react";
 import couplePhoto from "@/assets/photo1.jpg";
 import photo2 from "@/assets/photo2.jpg";
@@ -450,20 +451,23 @@ const HERO_OVERLAY: React.CSSProperties = {
   background: "linear-gradient(to bottom, rgba(10,7,4,0.52) 0%, rgba(10,7,4,0.22) 38%, rgba(10,7,4,0.38) 68%, rgba(10,7,4,0.78) 100%)",
 };
 
-// Drop a video file at public/wedding-bg.mp4 to activate the video background.
-const DEFAULT_VIDEO = "/wedding-bg.mp4";
+const TEMPLATE_VIDEOS: Record<string, string> = {
+  "garden-rose":   "/wedding-bg.mp4",
+  "rustic-bloom":  "/wedding-bg-rustic-bloom.mp4",
+};
 
-const HeroBackground = () => {
+const HeroBackground = ({ themeId }: { themeId: string }) => {
   const [videoFailed, setVideoFailed] = useState(false);
+  const src = TEMPLATE_VIDEOS[themeId];
 
-  if (videoFailed) return <HeroSlideshow />;
+  if (!src || videoFailed) return <HeroSlideshow />;
 
   return (
     <div className="absolute inset-0 overflow-hidden">
       <video
         autoPlay muted loop playsInline
         className="absolute w-full h-full object-cover"
-        src={DEFAULT_VIDEO}
+        src={src}
         onError={() => setVideoFailed(true)}
       />
       <div className="absolute inset-0 z-10" style={HERO_OVERLAY} />
@@ -511,8 +515,25 @@ const ViewInvite = () => {
     else audio.pause();
   }, [musicOn]);
 
-  const handleRsvp = (e: React.FormEvent) => {
+  const handleRsvp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const attendanceRaw = fd.get("attendance") as string;
+    const attendance = attendanceRaw === "Joyfully accepts" ? "attending" : "not_attending";
+
+    supabase.from("rsvps").insert({
+      invite_id: id ?? "demo-wedding",
+      event_name: `${INVITE.groom} & ${INVITE.bride}`,
+      event_date: INVITE.date,
+      event_venue: INVITE.venue.name,
+      event_location: INVITE.venue.city,
+      name: fd.get("name") as string,
+      email: fd.get("email") as string,
+      attendance,
+      guests_count: parseInt(fd.get("guests_count") as string) || 1,
+      message: (fd.get("message") as string) || null,
+    }).then(() => {});
+
     setCelebrating(true);
     setTimeout(() => { setCelebrating(false); setRsvpDone(true); }, 3800);
   };
@@ -531,7 +552,7 @@ const ViewInvite = () => {
 
       {/* ── Hero ── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-        <HeroBackground />
+        <HeroBackground themeId={themeId} />
 
         <div className="relative z-20">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
@@ -1192,14 +1213,14 @@ const ViewInvite = () => {
                 style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)" }}>
 
                 {[
-                  { label: "Full Name", type: "text",  placeholder: "Your full name" },
-                  { label: "Email",     type: "email", placeholder: "your@email.com" },
+                  { label: "Full Name", type: "text",  name: "name",  placeholder: "Your full name" },
+                  { label: "Email",     type: "email", name: "email", placeholder: "your@email.com" },
                 ].map((f) => (
                   <div key={f.label}>
                     <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-2 block" style={{ color: C.light }}>
                       {f.label}
                     </label>
-                    <input type={f.type} required placeholder={f.placeholder}
+                    <input type={f.type} name={f.name} required placeholder={f.placeholder}
                       className="w-full rounded-xl px-4 py-3 font-body text-sm outline-none transition-colors"
                       style={{ background: "white", border: "1px solid hsl(38 26% 84%)", color: C.dark }}
                       onFocus={e => (e.currentTarget.style.borderColor = C.gold)}
@@ -1224,9 +1245,27 @@ const ViewInvite = () => {
 
                 <div>
                   <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-2 block" style={{ color: C.light }}>
+                    Number of Guests
+                  </label>
+                  <select
+                    name="guests_count"
+                    defaultValue="1"
+                    className="w-full rounded-xl px-4 py-3 font-body text-sm outline-none appearance-none"
+                    style={{ background: "white", border: "1px solid hsl(38 26% 84%)", color: C.dark }}
+                    onFocus={e => (e.currentTarget.style.borderColor = C.gold)}
+                    onBlur={e => (e.currentTarget.style.borderColor = "hsl(38 26% 84%)")}
+                  >
+                    {[1, 2, 3, 4, 5, 6].map(n => (
+                      <option key={n} value={n}>{n} {n === 1 ? "person (just me)" : "people"}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-2 block" style={{ color: C.light }}>
                     Message <span style={{ color: C.light, textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>(optional)</span>
                   </label>
-                  <textarea rows={3} placeholder="Leave a warm wish for the couple…"
+                  <textarea rows={3} name="message" placeholder="Leave a warm wish for the couple…"
                     className="w-full rounded-xl px-4 py-3 font-body text-sm outline-none resize-none transition-colors"
                     style={{ background: "white", border: "1px solid hsl(38 26% 84%)", color: C.dark }}
                     onFocus={e => (e.currentTarget.style.borderColor = C.gold)}
@@ -1278,6 +1317,14 @@ const ViewInvite = () => {
         <p className="font-body text-sm mb-6" style={{ color: "hsl(42 25% 65%)" }}>{INVITE.date}</p>
         <div style={{ height: 1, background: C.primaryLine, maxWidth: 240, margin: "0 auto 20px" }} />
         <p className="font-body text-xs" style={{ color: C.primaryMuted }}>{INVITE.hashtag}</p>
+        <a
+          href={`/dashboard/${id ?? "demo-wedding"}`}
+          className="inline-flex items-center gap-1.5 mt-6 font-body text-xs transition-opacity hover:opacity-70"
+          style={{ color: "hsl(42 22% 48%)" }}
+        >
+          <LayoutDashboard className="w-3.5 h-3.5" />
+          RSVP Dashboard
+        </a>
       </footer>
     </div>
     </ThemeCtx.Provider>
