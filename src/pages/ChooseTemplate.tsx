@@ -1,52 +1,72 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Play, Sparkles } from "lucide-react";
-import gardenRoseThumbnail   from "@/assets/garden-rose-thumbnail.png";
-import rusticBloomThumbnail  from "@/assets/rustic-bloom-thumbnail.png";
+import { ArrowLeft, Play } from "lucide-react";
+import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
+import rusticBloomThumbnail from "@/assets/rustic-bloom-thumbnail.png";
+import heritageThumbnail    from "@/assets/taj-mahal-thumbnail.jpg";
+import goldenHourThumbnail  from "@/assets/photo1.jpg";
+import softLoveThumbnail    from "@/assets/photo2.jpg";
 
-const GOLD      = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
 
 const TEMPLATES = [
   {
     id: "garden-rose",
     name: "Garden Rose",
-    subtitle: "Romantic · Floral",
+    description: "Romantic florals, soft blush tones, and timeless elegance.",
     thumb: gardenRoseThumbnail,
     previewHref: "/invite/demo-wedding?theme=garden-rose",
-    tall: true,
     accent: "hsl(340 65% 52%)",
   },
   {
     id: "rustic-bloom",
     name: "Rustic Bloom",
-    subtitle: "Earthy · Botanical",
+    description: "Earthy botanicals and warm textures for a natural celebration.",
     thumb: rusticBloomThumbnail,
     previewHref: "/invite/demo-wedding?theme=rustic-bloom",
-    tall: true,
-    accent: "hsl(15 42% 48%)",
+    accent: "hsl(95 35% 48%)",
+  },
+  {
+    id: "golden-hour",
+    name: "Golden Hour",
+    description: "Warm sunset hues that capture a forever kind of love.",
+    thumb: goldenHourThumbnail,
+    previewHref: "/invite/demo-wedding?theme=golden-hour",
+    accent: "hsl(32 90% 55%)",
+  },
+  {
+    id: "heritage",
+    name: "Heritage",
+    description: "Grand architecture, rich tones, and regal sophistication.",
+    thumb: heritageThumbnail,
+    previewHref: "/invite/demo-wedding?theme=heritage",
+    accent: "hsl(20 55% 52%)",
+  },
+  {
+    id: "soft-love",
+    name: "Soft Love",
+    description: "Intimate moments, handwritten notes, and petal-soft warmth.",
+    thumb: softLoveThumbnail,
+    previewHref: "/invite/demo-wedding?theme=soft-love",
+    accent: "hsl(355 58% 58%)",
   },
 ];
 
-const Card = ({
-  t,
-  delay,
-  onSelect,
-  className = "",
-  style = {},
-}: {
-  t: typeof TEMPLATES[0];
+interface CardProps {
+  t: (typeof TEMPLATES)[0];
+  index: number;
   delay: number;
+  height: number;
   onSelect: () => void;
-  className?: string;
-  style?: React.CSSProperties;
-}) => (
+}
+
+const Card = ({ t, index, delay, height, onSelect }: CardProps) => (
   <motion.div
-    initial={{ opacity: 0, y: 14 }}
+    initial={{ opacity: 0, y: 18 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-    className={`relative rounded-2xl overflow-hidden group cursor-pointer ${className}`}
-    style={style}
+    transition={{ delay, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+    className="relative rounded-2xl overflow-hidden group cursor-pointer"
+    style={{ height }}
     onClick={onSelect}
   >
     {/* Full-bleed image */}
@@ -60,45 +80,68 @@ const Card = ({
     <div
       className="absolute inset-0"
       style={{
-        background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.82) 100%)",
+        background:
+          "linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.82) 100%)",
       }}
     />
 
-    {/* Top-right badge */}
-    <div className="absolute top-3 right-3 z-10">
+    {/* Number badge — top left */}
+    <div className="absolute top-3 left-3 z-10">
       <span
-        className="flex items-center gap-1 px-2 py-1 rounded-full font-body text-[10px] font-bold uppercase tracking-wider"
-        style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)", color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }}
+        className="flex items-center justify-center w-7 h-7 rounded-full font-body text-[11px] font-bold"
+        style={{
+          background: "rgba(0,0,0,0.38)",
+          backdropFilter: "blur(8px)",
+          color: "rgba(255,255,255,0.9)",
+          border: "1px solid rgba(255,255,255,0.18)",
+        }}
       >
-        <Sparkles className="w-2.5 h-2.5" />
-        Live
+        {String(index + 1).padStart(2, "0")}
       </span>
+    </div>
+
+    {/* Accent dot — top right */}
+    <div className="absolute top-3.5 right-3.5 z-10">
+      <div
+        className="w-2 h-2 rounded-full ring-2 ring-white/20"
+        style={{ background: t.accent }}
+      />
     </div>
 
     {/* Bottom content */}
     <div className="absolute bottom-0 inset-x-0 z-10 p-4">
-      {/* Accent dot + name */}
-      <div className="flex items-center gap-2 mb-0.5">
-        <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: t.accent }} />
-        <p className="font-display font-bold text-white leading-tight" style={{ fontSize: t.tall ? "1rem" : "0.9rem" }}>
-          {t.name}
-        </p>
-      </div>
-      <p className="font-body text-xs mb-3 pl-3.5" style={{ color: "rgba(255,255,255,0.65)" }}>
-        {t.subtitle}
+      <p className="font-display font-bold text-white text-base leading-tight mb-1">
+        {t.name}
+      </p>
+      <p
+        className="font-body text-xs leading-snug mb-3"
+        style={{ color: "rgba(255,255,255,0.62)" }}
+      >
+        {t.description}
       </p>
 
-      {/* Buttons */}
       <div className="flex gap-2">
         <button
-          onClick={e => { e.stopPropagation(); window.open(t.previewHref, "_blank"); }}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg font-body text-xs font-semibold transition-all hover:scale-105 active:scale-95"
-          style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(6px)", color: "white", border: "1px solid rgba(255,255,255,0.22)" }}
+          onClick={e => {
+            e.stopPropagation();
+            window.open(t.previewHref, "_blank");
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-body text-xs font-semibold transition-all hover:scale-105 active:scale-95"
+          style={{
+            background: "rgba(255,255,255,0.14)",
+            backdropFilter: "blur(6px)",
+            color: "white",
+            border: "1px solid rgba(255,255,255,0.22)",
+          }}
         >
-          <Play className="w-2.5 h-2.5" /> Demo
+          <Play className="w-2.5 h-2.5" />
+          View demo
         </button>
         <button
-          onClick={e => { e.stopPropagation(); onSelect(); }}
+          onClick={e => {
+            e.stopPropagation();
+            onSelect();
+          }}
           className="flex-1 py-1.5 rounded-lg font-body text-xs font-semibold transition-all hover:opacity-90 hover:scale-[1.02] active:scale-95"
           style={{ background: GOLD_GRAD, color: "white" }}
         >
@@ -112,11 +155,13 @@ const Card = ({
 const ChooseTemplate = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const plan     = params.get("plan") ?? "starter";
+  const plan = params.get("plan") ?? "starter";
 
   const handleSelect = (id: string) =>
     navigate(`/create-invite?plan=${plan}&template=${id}`);
 
+  const top3 = TEMPLATES.slice(0, 3);
+  const bot2 = TEMPLATES.slice(3);
 
   return (
     <div className="min-h-screen gradient-blush relative px-4 py-16 sm:py-20">
@@ -146,21 +191,40 @@ const ChooseTemplate = () => {
           </p>
           <div
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs font-semibold"
-            style={{ background: "hsl(38 60% 92%)", color: GOLD, border: `1.5px solid hsl(38 55% 76%)` }}
+            style={{
+              background: "hsl(38 60% 92%)",
+              color: "hsl(38 72% 44%)",
+              border: "1.5px solid hsl(38 55% 76%)",
+            }}
           >
-            2 templates available
+            5 templates available
           </div>
         </motion.div>
 
-        {/* ── Two equal cards side by side ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ height: "auto" }}>
-          {TEMPLATES.map((t, i) => (
+        {/* Top row — 3 taller cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          {top3.map((t, i) => (
             <Card
               key={t.id}
               t={t}
-              delay={0.08 + i * 0.1}
+              index={i}
+              delay={0.08 + i * 0.09}
+              height={400}
               onSelect={() => handleSelect(t.id)}
-              style={{ height: 420 }}
+            />
+          ))}
+        </div>
+
+        {/* Bottom row — 2 slightly shorter cards, centered */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:max-w-[66%] mx-auto">
+          {bot2.map((t, i) => (
+            <Card
+              key={t.id}
+              t={t}
+              index={3 + i}
+              delay={0.35 + i * 0.09}
+              height={340}
+              onSelect={() => handleSelect(t.id)}
             />
           ))}
         </div>
