@@ -3,13 +3,21 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Play } from "lucide-react";
 import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail from "@/assets/rustic-bloom-thumbnail.png";
-import heritageThumbnail    from "@/assets/taj-mahal-thumbnail.jpg";
-import goldenHourThumbnail  from "@/assets/photo1.jpg";
-import softLoveThumbnail    from "@/assets/photo2.jpg";
+import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
+import goldenHourThumbnail  from "@/assets/golden-hour-thumbnail.png";
+import softLoveThumbnail    from "@/assets/soft-love-thumbnail.jpg";
 
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
 
 const TEMPLATES = [
+  {
+    id: "golden-hour",
+    name: "Golden Hour",
+    description: "Warm sunset hues that capture a forever kind of love.",
+    thumb: goldenHourThumbnail,
+    previewHref: "/invite/demo-wedding?theme=golden-hour",
+    accent: "hsl(32 90% 55%)",
+  },
   {
     id: "garden-rose",
     name: "Garden Rose",
@@ -27,20 +35,12 @@ const TEMPLATES = [
     accent: "hsl(95 35% 48%)",
   },
   {
-    id: "golden-hour",
-    name: "Golden Hour",
-    description: "Warm sunset hues that capture a forever kind of love.",
-    thumb: goldenHourThumbnail,
-    previewHref: "/invite/demo-wedding?theme=golden-hour",
-    accent: "hsl(32 90% 55%)",
-  },
-  {
-    id: "heritage",
-    name: "Heritage",
-    description: "Grand architecture, rich tones, and regal sophistication.",
-    thumb: heritageThumbnail,
-    previewHref: "/invite/demo-wedding?theme=heritage",
-    accent: "hsl(20 55% 52%)",
+    id: "midnight-luxe",
+    name: "Midnight Luxe",
+    description: "Dark opulence, crystal chandeliers, and candlelit grandeur.",
+    thumb: midnightLuxeThumbnail,
+    previewHref: "/invite/demo-wedding?theme=midnight-luxe",
+    accent: "hsl(45 72% 54%)",
   },
   {
     id: "soft-love",

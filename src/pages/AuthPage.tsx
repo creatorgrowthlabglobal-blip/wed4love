@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -76,16 +76,18 @@ export default function AuthPage() {
     reset();
     setBusy(true);
 
+    const dest = (location.state as { from?: string })?.from ?? "/choose-template";
+
     if (tab === "signin") {
       const { error } = await signInWithEmail(email, password);
       if (error) { setError(error); setBusy(false); return; }
-      navigate("/choose-template", { replace: true });
+      navigate(dest, { replace: true });
     } else {
       if (!name.trim()) { setError("Please enter your name."); setBusy(false); return; }
       const { error, session } = await signUpWithEmail(email, password, name.trim());
       if (error) { setError(error); setBusy(false); return; }
       if (session) {
-        navigate("/choose-template", { replace: true });
+        navigate(dest, { replace: true });
         return;
       }
       setInfo("Check your email to confirm your account, then sign in.");

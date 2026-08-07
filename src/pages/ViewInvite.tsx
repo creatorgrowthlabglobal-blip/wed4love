@@ -454,21 +454,40 @@ const HERO_OVERLAY: React.CSSProperties = {
 const TEMPLATE_VIDEOS: Record<string, string> = {
   "garden-rose":   "/wedding-bg.mp4",
   "rustic-bloom":  "/wedding-bg-rustic-bloom.mp4",
+  "golden-hour":   "/wedding-bg-golden-hour.mp4",
+  "midnight-luxe": "/wedding-bg-midnight-luxe.mp4",
+  "soft-love":     "/wedding-bg-soft-love.mp4",
+};
+
+const TEMPLATE_VIDEO_FIT: Record<string, "cover" | "contain-width"> = {
+  "rustic-bloom": "contain-width",
 };
 
 const HeroBackground = ({ themeId }: { themeId: string }) => {
   const [videoFailed, setVideoFailed] = useState(false);
   const src = TEMPLATE_VIDEOS[themeId];
+  const fit = TEMPLATE_VIDEO_FIT[themeId] ?? "cover";
 
   if (!src || videoFailed) return <HeroSlideshow />;
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden" style={{ background: "#000" }}>
       <video
         autoPlay muted loop playsInline
-        className="absolute w-full h-full object-cover"
         src={src}
         onError={() => setVideoFailed(true)}
+        className="absolute"
+        style={fit === "contain-width" ? {
+          width: "100%",
+          height: "auto",
+          top: "50%",
+          left: 0,
+          transform: "translateY(-50%)",
+        } : {
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
       />
       <div className="absolute inset-0 z-10" style={HERO_OVERLAY} />
       <div className="absolute inset-0 z-10 pointer-events-none" style={{ boxShadow: "inset 0 0 120px rgba(0,0,0,0.45)" }} />
@@ -480,6 +499,106 @@ const HeroBackground = ({ themeId }: { themeId: string }) => {
 const Stars = ({ n }: { n: number }) => {
   const C = useTheme();
   return <span>{Array.from({ length: n }, (_, i) => <span key={i} style={{ color: C.gold }}>★</span>)}</span>;
+};
+
+// ── Ornamental baroque divider ─────────────────────────────────────────────────
+const OrnamentalDivider = ({ color }: { color: string }) => (
+  <div className="flex items-center justify-center my-5">
+    <svg width="230" height="30" viewBox="0 0 230 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="15" x2="82" y2="15" stroke={color} strokeWidth="0.8" opacity="0.4"/>
+      <line x1="148" y1="15" x2="230" y2="15" stroke={color} strokeWidth="0.8" opacity="0.4"/>
+      <circle cx="87" cy="15" r="3.5" fill="none" stroke={color} strokeWidth="1" opacity="0.6"/>
+      <circle cx="143" cy="15" r="3.5" fill="none" stroke={color} strokeWidth="1" opacity="0.6"/>
+      <path d="M93 15 Q99 9.5 105 15 Q99 20.5 93 15Z" fill={color} opacity="0.55"/>
+      <path d="M125 15 Q131 9.5 137 15 Q131 20.5 125 15Z" fill={color} opacity="0.55"/>
+      <circle cx="115" cy="15" r="8" fill="none" stroke={color} strokeWidth="1.2"/>
+      <circle cx="115" cy="15" r="3.5" fill="none" stroke={color} strokeWidth="0.9" opacity="0.65"/>
+      <circle cx="115" cy="15" r="1.5" fill={color}/>
+      <path d="M107 15 Q111 11 114 15" fill="none" stroke={color} strokeWidth="0.9" opacity="0.5"/>
+      <path d="M116 15 Q119 11 123 15" fill="none" stroke={color} strokeWidth="0.9" opacity="0.5"/>
+    </svg>
+  </div>
+);
+
+// ── Golden curtain header (for Garden Rose Our Story section) ──────────────────
+const GoldenCurtainTop = () => {
+  const C = useTheme();
+  const crystals = [
+    { left: "31%", h: 55 }, { left: "35%", h: 82 }, { left: "39%", h: 68 },
+    { left: "43%", h: 105 }, { left: "47%", h: 122 }, { left: "50%", h: 130 },
+    { left: "53%", h: 122 }, { left: "57%", h: 105 }, { left: "61%", h: 68 },
+    { left: "65%", h: 82 }, { left: "69%", h: 55 },
+  ];
+  return (
+    <div className="relative overflow-hidden w-full" style={{ height: 240 }}>
+      <div className="absolute inset-0" style={{ background: C.creamAlt }}/>
+
+      {/* Rod */}
+      <div className="absolute top-0 inset-x-0" style={{
+        zIndex: 10, height: 9,
+        background: "linear-gradient(to bottom, hsl(38 48% 34%), hsl(38 78% 58%), hsl(40 70% 54%), hsl(38 50% 36%))",
+        boxShadow: "0 3px 10px rgba(0,0,0,0.22)",
+      }}/>
+
+      {/* Rod rings */}
+      {[8, 18, 28, 38, 48, 58, 68, 78, 88, 98].map((pct, i) => (
+        <div key={i} className="absolute" style={{
+          zIndex: 20, top: 1.5, left: `${pct}%`,
+          width: 6, height: 6, borderRadius: "50%",
+          background: "hsl(38 65% 42%)",
+          border: "1.5px solid hsl(38 50% 34%)",
+          transform: "translateX(-50%)",
+        }}/>
+      ))}
+
+      {/* Left curtain */}
+      <div className="absolute top-0 left-0" style={{
+        zIndex: 5, width: "43%", height: "100%",
+        background: "linear-gradient(168deg, hsl(38 78% 56%) 0%, hsl(40 72% 62%) 15%, hsl(42 68% 58%) 25%, hsl(39 65% 50%) 45%, hsl(37 62% 44%) 65%, hsl(35 58% 36%) 100%)",
+        clipPath: "polygon(0 0, 100% 0, 52% 100%, 0 100%)",
+      }}>
+        {[20, 38, 56, 74].map((x, i) => (
+          <div key={i} style={{ position:"absolute", top:0, bottom:0, left:`${x}%`, width:1, background:"rgba(0,0,0,0.12)" }}/>
+        ))}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(255,255,255,0.08), rgba(255,255,255,0))" }}/>
+      </div>
+
+      {/* Right curtain */}
+      <div className="absolute top-0 right-0" style={{
+        zIndex: 5, width: "43%", height: "100%",
+        background: "linear-gradient(192deg, hsl(38 78% 56%) 0%, hsl(40 72% 62%) 15%, hsl(42 68% 58%) 25%, hsl(39 65% 50%) 45%, hsl(37 62% 44%) 65%, hsl(35 58% 36%) 100%)",
+        clipPath: "polygon(0 0, 100% 0, 100% 100%, 48% 100%)",
+      }}>
+        {[26, 44, 62, 80].map((x, i) => (
+          <div key={i} style={{ position:"absolute", top:0, bottom:0, left:`${x}%`, width:1, background:"rgba(0,0,0,0.1)" }}/>
+        ))}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to left, rgba(255,255,255,0.08), rgba(255,255,255,0))" }}/>
+      </div>
+
+      {/* Crystal chains */}
+      {crystals.map((c, i) => (
+        <div key={i} className="absolute" style={{ zIndex: 20, top: 9, left: c.left, height: c.h }}>
+          <div style={{ width:1, height:`calc(100% - 11px)`, background:"linear-gradient(to bottom, rgba(215,175,70,0.9), rgba(225,190,95,0.55), rgba(225,190,95,0))", margin:"0 auto" }}/>
+          <div style={{ width:5, height:9, borderRadius:"50% 50% 50% 50% / 35% 35% 65% 65%", background:"radial-gradient(circle at 35% 30%, hsl(42 90% 86%), hsl(40 75% 68%), hsl(37 62% 52%))", margin:"0 auto", boxShadow:"0 1px 4px rgba(150,110,20,0.45), inset 0 1px 2px rgba(255,255,255,0.45)" }}/>
+        </div>
+      ))}
+
+      {/* Center chandelier ornament */}
+      <div className="absolute" style={{ zIndex: 30, top: 9, left: "50%", transform: "translateX(-50%)" }}>
+        <div style={{ width:1.5, height:20, background:"linear-gradient(to bottom, hsl(38 65% 52%), hsl(38 70% 60%))", margin:"0 auto" }}/>
+        <div style={{ width:14, height:28, background:"linear-gradient(180deg, hsl(38 70% 46%), hsl(40 78% 60%), hsl(40 72% 56%), hsl(38 65% 46%), hsl(36 58% 38%))", borderRadius:"2px 2px 48% 48% / 2px 2px 58% 58%", margin:"0 auto", boxShadow:"0 4px 16px rgba(140,100,20,0.5), inset 0 1px 3px rgba(255,255,255,0.3)" }}/>
+        <div style={{ width:8, height:14, background:"radial-gradient(circle at 35% 30%, hsl(43 92% 88%), hsl(40 76% 66%), hsl(37 62% 50%))", borderRadius:"50% 50% 50% 50% / 35% 35% 65% 65%", margin:"-1px auto 0", boxShadow:"0 3px 10px rgba(140,100,20,0.45), inset 0 1px 3px rgba(255,255,255,0.5)" }}/>
+      </div>
+
+      {/* Bottom fade into section background */}
+      <div className="absolute bottom-0 inset-x-0" style={{
+        zIndex: 40, height: 55,
+        background: C.creamAlt,
+        WebkitMaskImage: "linear-gradient(to bottom, transparent, black)",
+        maskImage: "linear-gradient(to bottom, transparent, black)",
+      }}/>
+    </div>
+  );
 };
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -565,11 +684,17 @@ const ViewInvite = () => {
             {INVITE.groom} &amp; {INVITE.bride}
           </motion.h1>
 
-          <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.9, delay: 0.85 }}
-            className="flex items-center justify-center gap-3 my-6">
-            <div style={{ height: 1, width: 48, background: C.goldLight }} />
-            <Heart className="w-4 h-4" style={{ color: C.goldLight }} />
-            <div style={{ height: 1, width: 48, background: C.goldLight }} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.85 }}
+            className="my-6">
+            {themeId === "garden-rose" ? (
+              <OrnamentalDivider color="rgba(255,230,160,0.75)" />
+            ) : (
+              <div className="flex items-center justify-center gap-3">
+                <div style={{ height: 1, width: 48, background: C.goldLight }} />
+                <Heart className="w-4 h-4" style={{ color: C.goldLight }} />
+                <div style={{ height: 1, width: 48, background: C.goldLight }} />
+              </div>
+            )}
           </motion.div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1 }}
@@ -736,10 +861,19 @@ const ViewInvite = () => {
       </section>
 
       {/* ── Our Story ── */}
-      {INVITE.story.length > 0 && <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.creamAlt }}>
-        <div className="max-w-3xl mx-auto">
+      {INVITE.story.length > 0 && <section style={{ background: C.creamAlt }}>
+        {themeId === "garden-rose" && <GoldenCurtainTop />}
+        <div className={`max-w-3xl mx-auto px-5 sm:px-8 ${themeId === "garden-rose" ? "pt-6 pb-24 sm:pb-32" : "py-24 sm:py-32"}`}>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Our Journey" title="Our Story" />
+            {themeId === "garden-rose" ? (
+              <div className="text-center mb-12 sm:mb-16">
+                <p className="font-body font-semibold tracking-[0.3em] uppercase mb-3" style={{ fontSize: "0.65rem", color: C.gold }}>Our Journey</p>
+                <h2 className="font-handwritten" style={{ fontSize: "clamp(2.5rem, 7vw, 4.5rem)", color: C.dark, lineHeight: 1.1 }}>Our Story</h2>
+                <OrnamentalDivider color={C.gold} />
+              </div>
+            ) : (
+              <SectionHead eyebrow="Our Journey" title="Our Story" />
+            )}
           </motion.div>
 
           <div className="relative">
@@ -765,12 +899,28 @@ const ViewInvite = () => {
               );
             })}
           </div>
+
+          {/* Tree of life illustration — closing flourish */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex justify-center mt-10 mb-4">
+            <img
+              src="/botanical-tree.png"
+              alt=""
+              className="w-40 sm:w-52 opacity-90"
+              style={{ filter: "drop-shadow(0 8px 28px rgba(100,80,40,0.14))" }}
+            />
+          </motion.div>
         </div>
       </section>}
 
       {/* ── Day Program / Timeline ── */}
-      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.green }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="py-24 sm:py-32 px-5 sm:px-8 relative overflow-hidden" style={{ background: C.green }}>
+        {/* Botanical pattern background */}
+        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
+          <img src="/botanical-pattern.png" alt="" className="w-full h-full object-cover" style={{ opacity: 0.07 }} />
+        </div>
+        <div className="max-w-5xl mx-auto" style={{ position: "relative", zIndex: 1 }}>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <SectionHead eyebrow="What we have prepared for you" title="Day Program" light />
           </motion.div>
@@ -806,6 +956,18 @@ const ViewInvite = () => {
         <div className="max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <SectionHead eyebrow="Join Us" title="Venue & Map" subtitle="We can't wait to celebrate this special day with you. Here's everything you need to know." />
+          </motion.div>
+
+          {/* Fountain illustration */}
+          <motion.div initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }} transition={{ duration: 0.75 }}
+            className="flex justify-center mb-10">
+            <img
+              src="/botanical-fountain.png"
+              alt=""
+              className="w-44 sm:w-56 opacity-90"
+              style={{ filter: "drop-shadow(0 10px 32px rgba(100,80,40,0.18))" }}
+            />
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
@@ -1191,7 +1353,22 @@ const ViewInvite = () => {
       <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.creamAlt }}>
         <div className="max-w-md mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Confirm Attendance" title="Will You Join Us?" subtitle={`Please RSVP by ${INVITE.rsvpDeadline}`} />
+            {themeId === "garden-rose" ? (
+              <div className="text-center mb-10">
+                <p className="font-body tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.62rem", color: C.gold }}>
+                  Be Our Guest
+                </p>
+                <h2 className="font-handwritten mb-2" style={{ fontSize: "clamp(4rem, 14vw, 6rem)", color: C.dark, lineHeight: 1 }}>
+                  RSVP
+                </h2>
+                <OrnamentalDivider color={C.gold} />
+                <p className="font-body text-sm italic leading-relaxed mt-2 max-w-xs mx-auto" style={{ color: C.mid }}>
+                  Kindly RSVP by {INVITE.rsvpDeadline}. Due to limited capacity, each reservation is limited to two guests, with exceptions for immediate family.
+                </p>
+              </div>
+            ) : (
+              <SectionHead eyebrow="Confirm Attendance" title="Will You Join Us?" subtitle={`Please RSVP by ${INVITE.rsvpDeadline}`} />
+            )}
           </motion.div>
 
           <AnimatePresence mode="wait">
