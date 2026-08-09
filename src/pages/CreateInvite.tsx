@@ -6,8 +6,9 @@ import ProgressBar from "@/components/invite/ProgressBar";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 import VenueMapPicker from "@/components/invite/VenueMapPicker";
 import type { MusicPreset } from "@/lib/musicPresets";
-import { saveInviteLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
+import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
+import { useAuth } from "@/hooks/useAuth";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
 const TOTAL_STEPS = 7;
@@ -341,7 +342,7 @@ const StepDetails = ({ form, set }: SP) => {
               <F label="Hotel Name" placeholder="Hôtel Le Marais" value={hotel.name}
                 onChange={e => updateHotel(i, "name", e.target.value)} />
               <div className="grid grid-cols-2 gap-4">
-                <F label="Distance from Venue" placeholder="0.3 km" value={hotel.distance}
+                <F label="Distance from Venue" placeholder="e.g. 500 m or 1.2 km" value={hotel.distance}
                   onChange={e => updateHotel(i, "distance", e.target.value)} />
                 <div>
                   <label className="font-body" style={labelSt}>Stars</label>
@@ -368,19 +369,165 @@ const StepDetails = ({ form, set }: SP) => {
   );
 };
 
-// ── Preview & Pay ──────────────────────────────────────────────────────────────
-const TESTIMONIALS = [
-  { name: "Sofia R.",  quote: "She cried when she saw our invite. Every guest complimented it." },
-  { name: "Marco T.",  quote: "Our guests said they'd never seen anything like it. Truly magical." },
-  { name: "Aisha K.",  quote: "The envelope reveal had my mum in happy tears. Worth every penny." },
-  { name: "James L.",  quote: "Guests actually RSVP'd early because the invite was so beautiful." },
-  { name: "Priya D.",  quote: "My fiancé said it was the most beautiful thing he'd ever seen." },
+// ── Preparing screen ──────────────────────────────────────────────────────────
+const PREP_STEPS = [
+  { label: "Setting up your invitation",        duration: 5000 },
+  { label: "Applying your theme & colours",     duration: 5000 },
+  { label: "Adding your details & schedule",    duration: 5000 },
+  { label: "Configuring your RSVP dashboard",   duration: 5000 },
+  { label: "Securing your invite link",         duration: 5000 },
+  { label: "Putting the finishing touches…",    duration: 5000 },
 ];
+const PREP_TOTAL_MS = PREP_STEPS.reduce((s, x) => s + x.duration, 0); // 30 000
 
-const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () => void }) => {
-  const [saleTimeLeft, setSaleTimeLeft] = useState("");
-  const [tIdx, setTIdx] = useState(0);
+const PreparingScreen = ({ onDone, coupleName, templateName }: {
+  onDone: () => void;
+  coupleName: string;
+  templateName: string;
+}) => {
+  const [elapsed, setElapsed]   = useState(0);
+  const [stepIdx, setStepIdx]   = useState(0);
+  const startRef = useRef(Date.now());
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      const ms = Date.now() - startRef.current;
+      setElapsed(ms);
+
+      // advance step
+      let acc = 0;
+      for (let i = 0; i < PREP_STEPS.length; i++) {
+        acc += PREP_STEPS[i].duration;
+        if (ms < acc) { setStepIdx(i); break; }
+      }
+
+      if (ms >= PREP_TOTAL_MS) {
+        clearInterval(id);
+        onDone();
+      }
+    }, 80);
+    return () => clearInterval(id);
+  }, [onDone]);
+
+  const progress = Math.min(elapsed / PREP_TOTAL_MS, 1);
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6"
+      style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
+    >
+      {/* Blobs */}
+      <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
+        style={{ background: "radial-gradient(circle, hsl(38 72% 60% / 0.10) 0%, transparent 65%)", transform: "translate(30%,-30%)" }} />
+      <div className="absolute bottom-0 left-0 w-72 h-72 pointer-events-none"
+        style={{ background: "radial-gradient(circle, hsl(340 50% 70% / 0.07) 0%, transparent 65%)", transform: "translate(-25%,25%)" }} />
+
+      <div className="relative w-full max-w-sm text-center">
+
+        {/* Spinning ring */}
+        <div className="relative w-20 h-20 mx-auto mb-8">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="hsl(38 45% 88%)" strokeWidth="5" />
+            <circle
+              cx="40" cy="40" r="34" fill="none"
+              stroke="hsl(38 72% 44%)" strokeWidth="5"
+              strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 34}`}
+              strokeDashoffset={`${2 * Math.PI * 34 * (1 - progress)}`}
+              style={{ transition: "stroke-dashoffset 0.1s linear" }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-display font-bold text-sm" style={{ color: "hsl(38 72% 44%)" }}>
+              {Math.round(progress * 100)}%
+            </span>
+          </div>
+        </div>
+
+        {/* Eyebrow */}
+        <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3"
+          style={{ color: "hsl(38 50% 54%)" }}>
+          {coupleName ? `${coupleName} · ` : ""}{templateName}
+        </p>
+
+        {/* Current step */}
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={stepIdx}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+            className="font-display font-bold mb-8"
+            style={{ fontSize: "1.35rem", color: "hsl(30 20% 14%)" }}
+          >
+            {PREP_STEPS[stepIdx]?.label}
+          </motion.p>
+        </AnimatePresence>
+
+        {/* Step checklist */}
+        <ul className="flex flex-col gap-2.5 text-left">
+          {PREP_STEPS.map((s, i) => {
+            const done    = i < stepIdx;
+            const current = i === stepIdx;
+            return (
+              <li key={s.label} className="flex items-center gap-3">
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
+                  style={{
+                    background: done ? "hsl(38 72% 44%)" : current ? "hsl(38 60% 92%)" : "hsl(38 28% 90%)",
+                    border: current ? "2px solid hsl(38 72% 60%)" : "2px solid transparent",
+                  }}
+                >
+                  {done && <span style={{ color: "white", fontSize: 9, fontWeight: 700 }}>✓</span>}
+                  {current && (
+                    <motion.div
+                      animate={{ scale: [1, 1.4, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity }}
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ background: "hsl(38 72% 44%)" }}
+                    />
+                  )}
+                </div>
+                <span
+                  className="font-body text-xs transition-all duration-300"
+                  style={{
+                    color: done ? "hsl(30 16% 36%)" : current ? "hsl(30 20% 14%)" : "hsl(30 10% 68%)",
+                    fontWeight: current ? 600 : 400,
+                  }}
+                >
+                  {s.label}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+
+        <p className="font-body text-[10px] mt-8" style={{ color: "hsl(30 10% 64%)" }}>
+          Please don't close this tab — your invitation is being prepared.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ── Preview & Confirm ─────────────────────────────────────────────────────────
+const TEMPLATE_NAMES: Record<string, string> = {
+  "golden-hour":   "Golden Hour",
+  "garden-rose":   "Garden Rose",
+  "rustic-bloom":  "Rustic Bloom",
+  "midnight-luxe": "Midnight Luxe",
+  "soft-love":     "Soft Love",
+};
+
+const InvitePreviewPay = ({
+  form, onCreate, templateId, photoCount,
+}: {
+  form: FormState;
+  onCreate: () => void;
+  templateId: string;
+  photoCount: number;
+}) => {
   useEffect(() => {
     const draft: StoredInvite = {
       id: "invite-preview-draft",
@@ -402,131 +549,164 @@ const InvitePreviewPay = ({ form, onCreate }: { form: FormState; onCreate: () =>
     saveInviteLocal(draft);
   }, []);
 
-  useEffect(() => {
-    const id = setInterval(() => setTIdx(i => (i + 1) % TESTIMONIALS.length), 3200);
-    return () => clearInterval(id);
-  }, []);
+  const coupleName = form.partner1 && form.partner2
+    ? `${form.partner1} & ${form.partner2}`
+    : form.partner1 || form.partner2 || "—";
 
-  useEffect(() => {
-    const end = Date.now() + 2 * 86_400_000;
-    const tick = () => {
-      const d = Math.max(0, end - Date.now());
-      const h = Math.floor(d / 3_600_000);
-      const m = Math.floor((d % 3_600_000) / 60_000);
-      const s = Math.floor((d % 60_000) / 1_000);
-      setSaleTimeLeft(`${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`);
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
+  const storyCount  = form.story.filter(s => s.title.trim()).length;
+  const scheduleCount = form.schedule.filter(s => s.event.trim()).length;
+  const templateName = TEMPLATE_NAMES[templateId] ?? templateId;
+
+  const summaryRows = [
+    { label: "Couple",   value: coupleName },
+    { label: "Date",     value: [formatDisplayDate(form.dateISO), formatDisplayTime(form.timeRaw)].filter(Boolean).join(" · ") || "—" },
+    { label: "Venue",    value: [form.venueName, form.venueCity].filter(Boolean).join(", ") || "—" },
+    { label: "Template", value: templateName },
+    { label: "Music",    value: form.selectedMusic ? "Selected ✓" : "None" },
+    { label: "Photos",   value: photoCount > 0 ? `${photoCount} photo${photoCount !== 1 ? "s" : ""}` : "None" },
+    { label: "Story",    value: storyCount > 0 ? `${storyCount} moment${storyCount !== 1 ? "s" : ""}` : "None" },
+    { label: "Program",  value: scheduleCount > 0 ? `${scheduleCount} event${scheduleCount !== 1 ? "s" : ""}` : "None" },
+    ...(form.rsvpISO ? [{ label: "RSVP by", value: formatDisplayDate(form.rsvpISO) }] : []),
+  ];
+
+  const chips = [
+    { icon: "✦", label: templateName },
+    ...(form.selectedMusic    ? [{ icon: "♪", label: "Music added" }]                                       : []),
+    ...(photoCount > 0        ? [{ icon: "◈", label: `${photoCount} photo${photoCount !== 1 ? "s" : ""}` }] : []),
+    ...(storyCount > 0        ? [{ icon: "◇", label: `${storyCount} moment${storyCount !== 1 ? "s" : ""}` }]: []),
+    ...(scheduleCount > 0     ? [{ icon: "◉", label: `${scheduleCount} program events` }]                    : []),
+    ...(form.dresscode        ? [{ icon: "◈", label: form.dresscode }]                                       : []),
+  ];
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
+
+      {/* ── Luxury summary card ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="relative rounded-3xl overflow-hidden"
+        style={{
+          background: "linear-gradient(155deg, hsl(42 60% 98%) 0%, hsl(38 50% 96%) 50%, hsl(350 35% 97%) 100%)",
+          boxShadow: "0 20px 60px hsl(38 40% 55% / 0.14), 0 1px 0 hsl(38 55% 80%) inset",
+        }}
+      >
+        {/* Shimmer blobs */}
+        <div className="absolute top-0 right-0 w-72 h-72 pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(38 72% 60% / 0.12) 0%, transparent 65%)", transform: "translate(25%,-25%)" }} />
+        <div className="absolute bottom-0 left-0 w-56 h-56 pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(340 50% 70% / 0.08) 0%, transparent 65%)", transform: "translate(-20%,25%)" }} />
+
+        <div className="relative px-6 pt-7 pb-6">
+
+          {/* Eyebrow */}
+          <p className="font-body text-[9px] tracking-[0.35em] uppercase font-semibold text-center mb-5"
+            style={{ color: "hsl(38 55% 48%)" }}>
+            Wedding Invitation
+          </p>
+
+          {/* Decorative line */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(38 50% 72%))" }} />
+            <span style={{ color: "hsl(38 62% 52%)", fontSize: 10 }}>✦</span>
+            <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, hsl(38 50% 72%))" }} />
+          </div>
+
+          {/* Couple names */}
+          <p className="font-handwritten text-center leading-tight mb-1 break-words px-2"
+            style={{ fontSize: "clamp(1.5rem, 5vw, 2.4rem)", color: "hsl(30 20% 14%)", letterSpacing: "0.01em" }}>
+            {form.partner1 || "Partner 1"}
+          </p>
+          <p className="font-body text-center text-[10px] tracking-[0.3em] uppercase mb-1"
+            style={{ color: "hsl(38 55% 52%)" }}>
+            &amp;
+          </p>
+          <p className="font-handwritten text-center leading-tight mb-6 break-words px-2"
+            style={{ fontSize: "clamp(1.5rem, 5vw, 2.4rem)", color: "hsl(30 20% 14%)", letterSpacing: "0.01em" }}>
+            {form.partner2 || "Partner 2"}
+          </p>
+
+          {/* Date + venue */}
+          {(form.dateISO || form.venueName) && (
+            <div className="text-center mb-5 flex flex-col gap-1.5">
+              {form.dateISO && (
+                <p className="font-body text-sm font-semibold" style={{ color: "hsl(30 18% 26%)" }}>
+                  {formatDisplayDate(form.dateISO)}
+                  {form.timeRaw && (
+                    <span style={{ color: "hsl(38 45% 52%)" }}> · {formatDisplayTime(form.timeRaw)}</span>
+                  )}
+                </p>
+              )}
+              {form.venueName && (
+                <p className="font-body text-xs" style={{ color: "hsl(30 12% 46%)" }}>
+                  {[form.venueName, form.venueCity].filter(Boolean).join("  ·  ")}
+                </p>
+              )}
+              {form.rsvpISO && (
+                <p className="font-body text-[10px]" style={{ color: "hsl(30 10% 56%)" }}>
+                  RSVP by {formatDisplayDate(form.rsvpISO)}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Decorative line */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(38 45% 70%))" }} />
+            <span style={{ color: "hsl(38 50% 60%)", fontSize: 9 }}>◆ ◆ ◆</span>
+            <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, hsl(38 45% 70%))" }} />
+          </div>
+
+          {/* Feature chips */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {chips.map(c => (
+              <span
+                key={c.label}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-[10px] font-semibold"
+                style={{
+                  background: "hsl(38 55% 94%)",
+                  border: "1px solid hsl(38 45% 82%)",
+                  color: "hsl(38 55% 40%)",
+                }}
+              >
+                <span style={{ fontSize: 9 }}>{c.icon}</span>
+                {c.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Preview button */}
       <motion.button
         whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
         onClick={() => window.open("/invite/invite-preview-draft", "_blank")}
-        className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-body text-base font-semibold"
+        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-semibold"
         style={{
-          background: "linear-gradient(135deg, hsl(100 26% 90%), hsl(42 50% 87%), hsl(28 50% 84%))",
-          color: "hsl(28 25% 26%)",
-          boxShadow: "0 4px 20px hsl(30 20% 50% / 0.10)",
-        }}>
-        <span className="text-xl">👁️</span> Preview Your Invitation
+          background: "white",
+          color: "hsl(38 55% 44%)",
+          border: "1.5px solid hsl(38 45% 78%)",
+          boxShadow: "0 2px 12px hsl(38 40% 60% / 0.10)",
+        }}
+      >
+        <span style={{ fontSize: 15 }}>👁️</span> Preview Your Invitation
       </motion.button>
 
-      <div className="flex items-center gap-3">
-        <div className="flex-1 h-px" style={{ background: LINE }} />
-        <span className="font-body text-xs" style={{ color: LIGHT }}>unlock & share</span>
-        <div className="flex-1 h-px" style={{ background: LINE }} />
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="rounded-3xl overflow-hidden"
+      {/* Confirm button */}
+      <motion.button
+        whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
+        onClick={onCreate}
+        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white"
         style={{
-          background: "rgba(255,255,255,0.75)", backdropFilter: "blur(16px)",
-          border: `1.5px solid hsl(38 36% 86%)`,
-          boxShadow: "0 24px 60px hsl(30 26% 56% / 0.10), 0 4px 16px hsl(38 36% 66% / 0.08)",
-        }}>
-        <div className="px-6 py-7">
-          <div className="flex justify-center mb-5">
-            <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full font-body text-xs font-semibold"
-              style={{ background: "hsl(38 76% 95%)", border: "1px solid hsl(38 56% 82%)", color: "hsl(30 58% 34%)" }}>
-              ✦ Limited Launch Offer · 30% Off{saleTimeLeft ? ` · ${saleTimeLeft}` : ""}
-            </div>
-          </div>
-          <div className="text-center mb-5">
-            <div className="flex items-baseline justify-center gap-2 mb-1">
-              <span className="font-display text-6xl font-bold" style={{ color: DARK }}>$9.99</span>
-              <span className="font-body text-sm" style={{ color: LIGHT }}>USD</span>
-            </div>
-            <p className="font-body text-sm" style={{ color: LIGHT }}>
-              <span className="line-through mr-1.5" style={{ color: "hsl(38 25% 72%)" }}>$14.27</span>
-              One-time · Yours forever
-            </p>
-          </div>
-          <div className="mb-5" style={{ height: 1, background: "linear-gradient(90deg, transparent, var(--tgl), transparent)" }} />
-          <ul className="space-y-3 mb-5">
-            {[
-              "Cinematic 3D envelope opening reveal",
-              "Live countdown timer to your big day",
-              "RSVP tracking with live headcount",
-              "All 5 colour templates included",
-              "Shareable link that never expires",
-              "Full refund if you're not satisfied",
-            ].map(item => (
-              <li key={item} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                  style={{ background: "hsl(38 56% 94%)", border: `1px solid hsl(38 42% 82%)` }}>
-                  <span style={{ color: "var(--tg)", fontSize: 10, fontWeight: 700 }}>✓</span>
-                </div>
-                <p className="font-body text-sm" style={{ color: MID }}>{item}</p>
-              </li>
-            ))}
-          </ul>
-          <div className="mb-5" style={{ height: 1, background: "linear-gradient(90deg, transparent, var(--tgl), transparent)" }} />
-          <div className="flex items-center gap-3 mb-5 min-h-[44px]">
-            <div className="flex -space-x-2 shrink-0">
-              {["S","M","A"].map((l, i) => (
-                <div key={i} className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px]"
-                  style={{ background: "hsl(340 50% 90%)", border: "2px solid white", color: "hsl(340 50% 44%)" }}>
-                  {l}
-                </div>
-              ))}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <div className="flex gap-0.5 mb-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} style={{ color: "var(--tg)", fontSize: 11 }}>★</span>
-                ))}
-              </div>
-              <AnimatePresence mode="wait">
-                <motion.p key={tIdx}
-                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.25 }}
-                  className="font-body text-xs leading-snug" style={{ color: MID }}>
-                  "{TESTIMONIALS[tIdx].quote}"
-                  <span style={{ color: LIGHT }}> — {TESTIMONIALS[tIdx].name}</span>
-                </motion.p>
-              </AnimatePresence>
-            </div>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
-            onClick={onCreate}
-            className="w-full py-4 rounded-2xl font-body text-base font-bold text-white"
-            style={{
-              background: "linear-gradient(135deg, var(--tg), var(--tgg))",
-              boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
-            }}>
-            Create My Invitation — $9.99
-          </motion.button>
-          <p className="mt-3 font-body text-[11px] text-center" style={{ color: LIGHT }}>
-            🔒 Secure checkout · Instant access after payment
-          </p>
-        </div>
-      </motion.div>
+          background: "linear-gradient(135deg, var(--tg), var(--tgg))",
+          boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
+        }}
+      >
+        Confirm &amp; Create Invitation
+      </motion.button>
+      <p className="font-body text-[11px] text-center -mt-1" style={{ color: LIGHT }}>
+        You can edit details any time before your event.
+      </p>
     </div>
   );
 };
@@ -736,6 +916,9 @@ const STEP_META = [
   { icon: "✨", title: "Almost There!",         sub: "Preview your invite, then share it with love" },
 ];
 
+// ── Draft ID ───────────────────────────────────────────────────────────────────
+const DRAFT_PREFIX = "draft";
+
 // ── Main component ─────────────────────────────────────────────────────────────
 const CreateInvite = () => {
   const navigate = useNavigate();
@@ -747,14 +930,84 @@ const CreateInvite = () => {
   const [images, setImages] = useState<File[]>([]);
   const [dir, setDir] = useState(1);
   const [createdId, setCreatedId] = useState<string | null>(null);
+  const [isPreparing, setIsPreparing] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const { user } = useAuth();
+
+  const draftIdRef = useRef<string>(`${DRAFT_PREFIX}-${Date.now()}`);
+
+  // ── Load existing draft on mount ────────────────────────────────────────────
+  useEffect(() => {
+    if (!user) return;
+    const existing = loadDraftLocal(user.id);
+    if (!existing) return;
+
+    // Restore form state
+    setForm({
+      partner1: existing.partner1 ?? "",
+      partner2: existing.partner2 ?? "",
+      hashtag: existing.hashtag ?? "",
+      email: existing.email ?? "",
+      phone: existing.phone ?? "",
+      dateISO: existing.dateISO ?? "",
+      timeRaw: existing.time ? existing.time.replace(/ (AM|PM)/, "").trim() : "16:30",
+      rsvpISO: existing.rsvpDeadlineISO ?? "",
+      venueName: existing.venueName ?? "",
+      venueAddress: existing.venueAddress ?? "",
+      venueCity: existing.venueCity ?? "",
+      venueLat: existing.venueLat ?? null,
+      venueLng: existing.venueLng ?? null,
+      story: existing.story?.length ? existing.story : DEFAULT.story,
+      schedule: existing.schedule?.length ? existing.schedule : DEFAULT.schedule,
+      dresscode: existing.dresscode ?? "",
+      dresscodeNote: existing.dresscodeNote ?? "",
+      menuNote: existing.menuNote ?? "",
+      transportCar: existing.transportCar ?? "",
+      transportTrain: existing.transportTrain ?? "",
+      transportPlane: existing.transportPlane ?? "",
+      hotels: existing.hotels?.length ? existing.hotels : DEFAULT.hotels,
+      selectedMusic: existing.selectedMusic ?? null,
+    });
+    if (existing.currentStep && existing.currentStep > 1) {
+      setStep(existing.currentStep);
+    }
+    draftIdRef.current = existing.id;
+    setDraftRestored(true);
+  }, [user]);
 
   const set = (k: keyof FormState, v: FormState[keyof FormState]) =>
     setForm(f => ({ ...f, [k]: v }));
 
+  const buildDraft = (currentStep: number): StoredInvite => ({
+    id: draftIdRef.current,
+    template: templateId,
+    partner1: form.partner1, partner2: form.partner2,
+    hashtag: form.hashtag, email: form.email, phone: form.phone,
+    date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
+    time: formatDisplayTime(form.timeRaw),
+    rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
+    venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
+    venueLat: form.venueLat, venueLng: form.venueLng,
+    story: form.story, schedule: form.schedule,
+    dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
+    transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
+    hotels: form.hotels, selectedMusic: form.selectedMusic,
+    createdAt: new Date().toISOString(),
+    currentStep,
+    status: 'draft',
+  });
+
+  const saveDraft = (nextStep: number) => {
+    if (!user) return;
+    saveDraftLocal(buildDraft(nextStep), user.id);
+  };
+
   const goNext = () => {
     setDir(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    setStep(s => Math.min(s + 1, STEP_META.length));
+    const nextStep = Math.min(step + 1, STEP_META.length);
+    setStep(nextStep);
+    saveDraft(nextStep);
   };
   const goBack = () => {
     setDir(-1);
@@ -765,7 +1018,9 @@ const CreateInvite = () => {
   const isLastStep = step === STEP_META.length;
   const meta = STEP_META[step - 1];
 
-  const handleCreate = () => {
+  const handleCreate = () => setIsPreparing(true);
+
+  const finaliseCreate = () => {
     const id = `invite-${Date.now()}`;
     const stored: StoredInvite = {
       id, template: templateId,
@@ -776,70 +1031,30 @@ const CreateInvite = () => {
       rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
       venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
       venueLat: form.venueLat, venueLng: form.venueLng,
-      story: form.story, schedule: form.schedule,
+      story: form.story.filter(s => s.title.trim() || s.desc.trim()),
+      schedule: form.schedule.filter(s => s.event.trim()),
       dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
       transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
-      hotels: form.hotels,
+      hotels: form.hotels.filter(h => h.name.trim()),
       selectedMusic: form.selectedMusic,
       createdAt: new Date().toISOString(),
+      status: 'published',
     };
     saveInviteLocal(stored);
+    if (user) clearDraftLocal(user.id);
+    setIsPreparing(false);
     setCreatedId(id);
   };
 
+  if (isPreparing) {
+    const coupleName = [form.partner1, form.partner2].filter(Boolean).join(" & ");
+    const tName = TEMPLATE_NAMES[templateId] ?? templateId;
+    return <PreparingScreen onDone={finaliseCreate} coupleName={coupleName} templateName={tName} />;
+  }
+
   if (createdId) {
-    const inviteUrl = `/invite/${createdId}`;
-    const dashUrl   = `/dashboard/${createdId}`;
-    return (
-      <div className="min-h-screen flex items-center justify-center px-5" style={{ background: BG }}>
-        <motion.div
-          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-md text-center"
-        >
-          <div className="text-5xl mb-5">💍</div>
-          <h1 className="font-display font-bold mb-2" style={{ fontSize: "2rem", color: DARK }}>
-            Your invite is ready!
-          </h1>
-          <p className="font-body text-sm mb-8" style={{ color: MID }}>
-            Share the invite link with your guests. Use the dashboard to track RSVPs and check people in on the day.
-          </p>
-
-          <div className="flex flex-col gap-3 mb-6">
-            <a
-              href={inviteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-body text-base font-bold text-white"
-              style={{ background: `linear-gradient(135deg, ${theme.gold}, ${theme.goldGrad})` }}
-            >
-              View Invite
-              <ArrowRight className="w-4 h-4" />
-            </a>
-
-            <a
-              href={dashUrl}
-              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-body text-base font-semibold"
-              style={{ background: "rgba(255,255,255,0.92)", border: `1.5px solid hsl(36 28% 80%)`, color: DARK }}
-            >
-              Open RSVP Dashboard
-            </a>
-          </div>
-
-          <div
-            className="rounded-xl px-4 py-3 text-left"
-            style={{ background: "rgba(255,255,255,0.7)", border: "1px solid hsl(36 28% 82%)" }}
-          >
-            <p className="font-body text-xs mb-1" style={{ color: LIGHT, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-              Invite link to share
-            </p>
-            <p className="font-body text-sm break-all select-all" style={{ color: DARK }}>
-              {window.location.origin}{inviteUrl}
-            </p>
-          </div>
-        </motion.div>
-      </div>
-    );
+    navigate(`/dashboard/${createdId}`, { replace: true });
+    return null;
   }
 
   return (
@@ -851,6 +1066,38 @@ const CreateInvite = () => {
         className="transition-opacity hover:opacity-40">
         <X className="w-5 h-5" />
       </button>
+
+      {/* ── Draft restored banner ── */}
+      <AnimatePresence>
+        {draftRestored && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              position: "fixed", top: 12, left: "50%", transform: "translateX(-50%)",
+              zIndex: 50, display: "flex", alignItems: "center", gap: 10,
+              padding: "8px 16px", borderRadius: 12,
+              background: "rgba(255,255,255,0.95)", backdropFilter: "blur(10px)",
+              border: `1.5px solid ${theme.goldL}`,
+              boxShadow: "0 4px 20px hsl(30 20% 50% / 0.12)",
+              color: theme.gold, fontFamily: "inherit", fontSize: "0.8rem", fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
+          >
+            <span style={{ fontSize: 14 }}>✦</span>
+            Draft restored — continue where you left off
+            <button
+              onClick={() => setDraftRestored(false)}
+              style={{ color: MID, opacity: 0.6, lineHeight: 1, marginLeft: 4 }}
+              className="hover:opacity-100 transition-opacity"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Main ── */}
       <main className="px-5 pb-24" style={{ paddingTop: 40 }}>
@@ -915,7 +1162,7 @@ const CreateInvite = () => {
               {step === 5 && <StepDetails form={form} set={set} />}
               {step === 6 && <StepPhotos  images={images} setImages={setImages} />}
               {step === 7 && <StepMusic   selectedMusic={form.selectedMusic} onSelect={id => set("selectedMusic", id)} />}
-              {step === 8 && <InvitePreviewPay form={form} onCreate={handleCreate} />}
+              {step === 8 && <InvitePreviewPay form={form} onCreate={handleCreate} templateId={templateId} photoCount={images.length} />}
             </motion.div>
           </AnimatePresence>
 

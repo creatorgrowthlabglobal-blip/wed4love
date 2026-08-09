@@ -83,8 +83,10 @@ export default function RsvpDashboard() {
     const channel = supabase
       .channel(`rsvps_${inviteId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "rsvps" }, fetchRsvps)
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR") console.warn("[RsvpDashboard] realtime channel error");
+      });
+    return () => { supabase.removeChannel(channel).catch(() => {}); };
   }, [inviteId, fetchRsvps]);
 
   const checkIn = async (id: string, current: boolean) => {
@@ -547,7 +549,7 @@ export default function RsvpDashboard() {
                       color: rsvp.attendance === "attending" ? "hsl(100 28% 32%)" : "hsl(0 38% 46%)",
                     }}
                   >
-                    {rsvp.name.charAt(0).toUpperCase()}
+                    {rsvp.name?.charAt(0)?.toUpperCase() ?? "?"}
                   </div>
 
                   {/* Info */}

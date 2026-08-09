@@ -7,7 +7,7 @@ interface LocalizedPriceInfo {
   rate: number;
 }
 
-const CACHE_KEY = "wish4love_localized_price_v1";
+const CACHE_KEY = "wed4love_localized_price_v1";
 
 const fetchLocalizedInfo = async (): Promise<LocalizedPriceInfo | null> => {
   try {

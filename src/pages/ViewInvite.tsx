@@ -155,7 +155,7 @@ function buildInviteData(s: StoredInvite): typeof DEMO_INVITE {
       mapsUrl: `https://maps.google.com/?q=${encodeURIComponent(s.venueName + " " + s.venueCity)}`,
       embedUrl: `https://www.google.com/maps?q=${encodeURIComponent(s.venueName + " " + s.venueCity)}&output=embed`,
     },
-    story: s.story.filter(e => e.title),
+    story: s.story.filter(e => e.title || e.desc),
     schedule: s.schedule
       .filter(e => e.event)
       .map(e => ({ time: e.time, event: e.event, desc: e.desc, Icon: scheduleIcon(e.event) })),
@@ -187,7 +187,8 @@ function buildInviteData(s: StoredInvite): typeof DEMO_INVITE {
 function useCountdown(dateISO: string) {
   const target = new Date(`${dateISO}T16:30:00`).getTime();
   const calc = () => {
-    const diff = Math.max(0, target - Date.now());
+    const diff = target - Date.now();
+    if (diff <= 0) return null;
     return {
       days:    Math.floor(diff / 86400000),
       hours:   Math.floor((diff % 86400000) / 3600000),
@@ -204,83 +205,67 @@ function useCountdown(dateISO: string) {
 }
 
 // ── Envelope Reveal ───────────────────────────────────────────────────────────
-type EnvPhase = "idle" | "opening" | "rising" | "done";
+const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+  const tappedRef = useRef(false); // ref so async callbacks can check without stale closure
 
-const EnvelopeReveal = ({ onOpen, groom, bride, date }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
-  const C = useTheme();
-  const [phase, setPhase] = useState<EnvPhase>("idle");
-  const W = 300; const H = 200;
+  // Show first frame on mobile: muted autoplay → pause at 0
+  // Guards against pausing AFTER the user has already tapped
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const show = async () => {
+      if (tappedRef.current) return;
+      v.muted = true;
+      try {
+        await v.play();
+        if (!tappedRef.current) { v.pause(); v.currentTime = 0; }
+      } catch (_) {
+        if (!tappedRef.current) v.currentTime = 0.001;
+      }
+      v.muted = false;
+    };
+    v.readyState >= 2 ? show() : v.addEventListener('loadeddata', show, { once: true });
+  }, []);
 
   const tap = () => {
-    if (phase !== "idle") return;
-    setPhase("opening");
-    setTimeout(() => setPhase("rising"), 750);
-    setTimeout(() => setPhase("done"), 1900);
-    setTimeout(onOpen, 2500);
+    if (tappedRef.current) return;
+    tappedRef.current = true;
+    setStarted(true);
+    const v = videoRef.current;
+    if (!v) { onOpen(); return; }
+    v.currentTime = 0;
+    v.muted = false;
+    v.play().catch(onOpen);
   };
 
   return (
     <motion.div
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: "easeIn" }}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-7 overflow-hidden select-none"
-      style={{ background: C.cream }}
+      transition={{ duration: 0.6, ease: "easeIn" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black cursor-pointer select-none"
+      onClick={tap}
     >
-      {[280, 440, 600].map((s, i) => (
-        <div key={i} className="absolute rounded-full pointer-events-none"
-          style={{ width: s, height: s, border: `1px solid hsl(28 30% 68% / 0.18)` }} />
-      ))}
-
-      <div className="relative cursor-pointer" style={{ width: W, height: H }} onClick={tap}>
-        <div className="absolute inset-0"
-          style={{ background: "hsl(42 50% 91%)", border: `1.5px solid hsl(38 30% 74%)`, boxShadow: "0 14px 40px hsl(38 28% 44% / 0.16)" }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ clipPath: "polygon(0 100%, 50% 55%, 100% 100%)", background: "hsl(38 36% 82%)" }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ clipPath: "polygon(0 0, 44% 50%, 0 100%)", background: "hsl(42 42% 86%)" }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ clipPath: "polygon(100% 0, 56% 50%, 100% 100%)", background: "hsl(42 42% 86%)" }} />
-
-        <AnimatePresence>
-          {(phase === "rising" || phase === "done") && (
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: -H * 0.62, opacity: 1 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-x-5 bottom-3 flex items-center justify-center rounded-lg pointer-events-none"
-              style={{ height: H * 0.78, background: C.white, border: "1px solid hsl(38 26% 82%)", boxShadow: "0 8px 28px rgba(0,0,0,0.13)", zIndex: 3 }}
-            >
-              <div className="text-center px-5">
-                <p className="font-body tracking-[0.26em] uppercase mb-2" style={{ fontSize: "0.55rem", color: C.gold }}>You are invited</p>
-                <p className="font-handwritten" style={{ fontSize: "1.35rem", color: C.dark, lineHeight: 1.1 }}>
-                  {groom} & {bride}
-                </p>
-                <div style={{ width: 26, height: 1, background: C.gold, margin: "8px auto" }} />
-                <p className="font-body" style={{ fontSize: "0.6rem", color: C.mid }}>{date}</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <motion.div className="absolute top-0 inset-x-0 pointer-events-none"
-          style={{ height: "57%", clipPath: "polygon(0 0, 50% 72%, 100% 0)", background: "hsl(42 54% 94%)", zIndex: 10 }}
-          animate={phase !== "idle" ? { y: -H * 0.65, opacity: 0 } : { y: 0, opacity: 1 }}
-          transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
-        />
-
-        <motion.div className="absolute flex items-center justify-center rounded-full pointer-events-none"
-          style={{ width: 36, height: 36, top: "26%", left: "50%", transform: "translate(-50%, -50%)", background: C.green, fontSize: 15, zIndex: 11 }}
-          animate={phase !== "idle" ? { opacity: 0, scale: 0.6 } : { opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          💍
-        </motion.div>
-      </div>
+      <video
+        ref={videoRef}
+        src="/envelope.mp4"
+        playsInline
+        preload="auto"
+        onEnded={() => setTimeout(onOpen, 500)}
+        className="w-full h-full object-cover"
+        style={{ pointerEvents: "none" }}
+      />
 
       <AnimatePresence>
-        {phase === "idle" && (
-          <motion.p exit={{ opacity: 0 }} animate={{ opacity: [0.45, 1, 0.45] }} transition={{ duration: 2.4, repeat: Infinity }}
-            className="font-body tracking-[0.26em] uppercase relative z-10" style={{ fontSize: "0.62rem", color: C.mid }}>
+        {!started && (
+          <motion.p
+            exit={{ opacity: 0 }}
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute bottom-16 left-0 right-0 text-center font-body tracking-[0.28em] uppercase"
+            style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.75)" }}
+          >
             Tap to open
           </motion.p>
         )}
@@ -463,7 +448,7 @@ const TEMPLATE_VIDEO_FIT: Record<string, "cover" | "contain-width"> = {
   "rustic-bloom": "contain-width",
 };
 
-const HeroBackground = ({ themeId }: { themeId: string }) => {
+const HeroBackground = ({ themeId, videoRef }: { themeId: string; videoRef?: React.RefObject<HTMLVideoElement> }) => {
   const [videoFailed, setVideoFailed] = useState(false);
   const src = TEMPLATE_VIDEOS[themeId];
   const fit = TEMPLATE_VIDEO_FIT[themeId] ?? "cover";
@@ -473,6 +458,7 @@ const HeroBackground = ({ themeId }: { themeId: string }) => {
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: "#000" }}>
       <video
+        ref={videoRef}
         autoPlay muted loop playsInline
         src={src}
         onError={() => setVideoFailed(true)}
@@ -617,14 +603,13 @@ const ViewInvite = () => {
   const [rsvpDone, setRsvpDone] = useState(false);
   const [celebrating, setCelebrating] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const countdown = useCountdown(INVITE.dateISO);
 
   const handleEnvelopeOpen = () => {
     setOpened(true);
-    setTimeout(() => {
-      setMusicOn(true);
-      audioRef.current?.play().catch(() => {});
-    }, 600);
+    heroVideoRef.current?.play().catch(() => {});
+    setTimeout(() => setMusicOn(true), 600);
   };
 
   useEffect(() => {
@@ -671,7 +656,7 @@ const ViewInvite = () => {
 
       {/* ── Hero ── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-        <HeroBackground themeId={themeId} />
+        <HeroBackground themeId={themeId} videoRef={heroVideoRef} />
 
         <div className="relative z-20">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
@@ -720,25 +705,33 @@ const ViewInvite = () => {
             <SectionHead eyebrow="Time Until We Say I Do" title="Counting Down" light />
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
-            className="grid grid-cols-4 gap-3 sm:gap-6">
-            {[
-              { value: countdown.days,    label: "Days" },
-              { value: countdown.hours,   label: "Hours" },
-              { value: countdown.minutes, label: "Minutes" },
-              { value: countdown.seconds, label: "Seconds" },
-            ].map(({ value, label }) => (
-              <div key={label} className="flex flex-col items-center justify-center rounded-2xl py-6 sm:py-8"
-                style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
-                <span className="font-display font-bold leading-none mb-2"
-                  style={{ fontSize: "clamp(2rem, 8vw, 3.5rem)", color: C.white }}>
-                  {String(value).padStart(2, "0")}
-                </span>
-                <span className="font-body tracking-[0.18em] uppercase" style={{ fontSize: "0.6rem", color: "hsl(42 28% 60%)" }}>
-                  {label}
-                </span>
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
+            {countdown === null ? (
+              <div className="text-center py-8 px-5 rounded-2xl" style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
+                <p className="font-handwritten text-3xl mb-1" style={{ color: C.white }}>The celebration has begun!</p>
+                <p className="font-body text-sm" style={{ color: "hsl(42 28% 60%)" }}>Thank you for being part of our special day ♡</p>
               </div>
-            ))}
+            ) : (
+              <div className="grid grid-cols-4 gap-3 sm:gap-6">
+                {[
+                  { value: countdown.days,    label: "Days" },
+                  { value: countdown.hours,   label: "Hours" },
+                  { value: countdown.minutes, label: "Minutes" },
+                  { value: countdown.seconds, label: "Seconds" },
+                ].map(({ value, label }) => (
+                  <div key={label} className="flex flex-col items-center justify-center rounded-2xl py-6 sm:py-8"
+                    style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
+                    <span className="font-display font-bold leading-none mb-2"
+                      style={{ fontSize: "clamp(2rem, 8vw, 3.5rem)", color: C.white }}>
+                      {String(value).padStart(2, "0")}
+                    </span>
+                    <span className="font-body tracking-[0.18em] uppercase" style={{ fontSize: "0.6rem", color: "hsl(42 28% 60%)" }}>
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}
@@ -891,9 +884,9 @@ const ViewInvite = () => {
                   <div className={`w-full sm:w-[calc(50%-2rem)] ${isLeft ? "sm:pr-10 sm:text-right" : "sm:pl-10"} pl-6 sm:pl-0`}>
                     <div className="absolute left-0 top-2 w-3 h-3 rounded-full sm:hidden"
                       style={{ background: C.gold }} />
-                    <p className="font-display text-sm font-bold italic mb-1" style={{ color: C.gold }}>{entry.year}</p>
-                    <h3 className="font-handwritten mb-2" style={{ fontSize: "1.5rem", color: C.dark, lineHeight: 1.2 }}>{entry.title}</h3>
-                    <p className="font-body text-sm italic leading-relaxed" style={{ color: C.mid }}>{entry.desc}</p>
+                    {entry.year ? <p className="font-display text-sm font-bold italic mb-1" style={{ color: C.gold }}>{entry.year}</p> : null}
+                    <h3 className="font-handwritten mb-2" style={{ fontSize: "1.5rem", color: C.dark, lineHeight: 1.2 }}>{entry.title || entry.desc}</h3>
+                    {entry.title && entry.desc ? <p className="font-body text-sm italic leading-relaxed" style={{ color: C.mid }}>{entry.desc}</p> : null}
                   </div>
                 </motion.div>
               );

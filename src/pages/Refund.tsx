@@ -12,20 +12,20 @@ const Refund = () => {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground mb-2">Refund Policy</h1>
-        <p className="font-body text-sm text-muted-foreground mb-10">Last updated: June 2026</p>
+        <p className="font-body text-sm text-muted-foreground mb-10">Last updated: August 2026</p>
 
         <section className="space-y-8 font-body text-foreground/85 leading-relaxed">
           <div>
-            <h2 className="font-display text-2xl font-semibold mb-3">1. Digital Letters ($9.99)</h2>
-            <p>We stand behind every letter with a full money-back guarantee. If you are unsatisfied for any reason — or if a technical issue prevents your letter from being delivered or viewed by the recipient — you are eligible for a complete refund, no questions asked.</p>
+            <h2 className="font-display text-2xl font-semibold mb-3">1. Our Guarantee</h2>
+            <p>We stand behind every invitation with a full money-back guarantee. If you are unsatisfied for any reason — or if a technical issue prevents your invitation from being delivered or viewed by your guests — you are eligible for a complete refund, no questions asked.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">2. How to Request a Refund</h2>
-            <p>To request a refund, please email <span className="text-primary">updates@wish4love.com</span> or use our <Link to="/contact" className="text-primary underline">contact form</Link> within 14 days of your purchase. Include:</p>
+            <p>To request a refund, please email <span className="text-primary">hello@wed4love.com</span> or use our <Link to="/contact" className="text-primary underline">contact form</Link> within 14 days of your purchase. Include:</p>
             <ul className="list-disc list-inside mt-3 space-y-1">
               <li>Your account email address</li>
-              <li>The order/letter ID (if applicable)</li>
+              <li>The invitation ID or link (if available)</li>
               <li>A brief description of the issue</li>
             </ul>
           </div>
@@ -37,12 +37,12 @@ const Refund = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">4. Chargebacks</h2>
-            <p>We kindly ask you to contact us before filing a chargeback. Most issues can be resolved quickly through direct communication.</p>
+            <p>We kindly ask you to contact us before filing a chargeback. Most issues can be resolved quickly and fairly through direct communication.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">5. Questions</h2>
-            <p>For any refund-related questions, please <Link to="/contact" className="text-primary underline">reach out to us</Link>. We're here to help.</p>
+            <p>For any refund-related questions, please <Link to="/contact" className="text-primary underline">reach out to us</Link>. We're here to help make your experience perfect.</p>
           </div>
         </section>
       </main>

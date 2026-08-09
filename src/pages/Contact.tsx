@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+const SUPPORT_EMAIL = "hello@wed4love.com";
+
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Please enter a valid email").max(255),
@@ -41,7 +43,7 @@ const Contact = () => {
       console.error(err);
       toast({
         title: "Failed to send",
-        description: err?.message || "Please try again or email updates@wish4love.com directly.",
+        description: err?.message || `Please try again or email ${SUPPORT_EMAIL} directly.`,
         variant: "destructive",
       });
     } finally {
@@ -154,7 +156,7 @@ const Contact = () => {
             </button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
-              Or email us directly at <span className="text-primary">updates@wish4love.com</span>
+              Or email us directly at <span className="text-primary">{SUPPORT_EMAIL}</span>
             </p>
           </form>
         )}

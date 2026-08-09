@@ -16,6 +16,8 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
 import Contact from "./pages/Contact";
+import CustomInquiry from "./pages/CustomInquiry";
+import MyInvitations from "./pages/MyInvitations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,7 +33,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/pricing" element={<InviteTemplates />} />
-            <Route path="/choose-template" element={<ProtectedRoute><ChooseTemplate /></ProtectedRoute>} />
+            <Route path="/choose-template" element={<ChooseTemplate />} />
             <Route path="/create-invite" element={<ProtectedRoute><CreateInvite /></ProtectedRoute>} />
             <Route path="/invite/:id" element={<ViewInvite />} />
             <Route path="/dashboard/:inviteId" element={<ProtectedRoute><RsvpDashboard /></ProtectedRoute>} />
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/refund" element={<Refund />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/custom-inquiry" element={<CustomInquiry />} />
+            <Route path="/my-invitations" element={<ProtectedRoute><MyInvitations /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

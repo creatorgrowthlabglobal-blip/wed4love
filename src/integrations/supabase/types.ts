@@ -92,6 +92,7 @@ export type Database = {
           email: string
           has_letter_access: boolean
           has_premium_features: boolean
+          invite_plan: string | null
           letter_access_expires_at: string | null
           paid_calls: number
           updated_at: string
@@ -102,6 +103,7 @@ export type Database = {
           email: string
           has_letter_access?: boolean
           has_premium_features?: boolean
+          invite_plan?: string | null
           letter_access_expires_at?: string | null
           paid_calls?: number
           updated_at?: string
@@ -112,6 +114,7 @@ export type Database = {
           email?: string
           has_letter_access?: boolean
           has_premium_features?: boolean
+          invite_plan?: string | null
           letter_access_expires_at?: string | null
           paid_calls?: number
           updated_at?: string

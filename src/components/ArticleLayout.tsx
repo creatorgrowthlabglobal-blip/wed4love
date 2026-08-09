@@ -11,8 +11,8 @@ interface ArticleLayoutProps {
 
 const ArticleLayout = ({ title, children }: ArticleLayoutProps) => {
   useEffect(() => {
-    document.title = `${title} — Wish4Love`;
-    return () => { document.title = "Wish4Love — Send a Digital Love Letter With Photos & Music"; };
+    document.title = `${title} — Wed4Love`;
+    return () => { document.title = "Wed4Love — Digital Wedding Invitations"; };
   }, [title]);
 
   return (

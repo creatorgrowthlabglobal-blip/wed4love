@@ -27,6 +27,8 @@ export interface StoredInvite {
   hotels: Array<{ name: string; stars: number; distance: string; note: string }>;
   selectedMusic?: string | null;
   createdAt: string;
+  currentStep?: number;
+  status?: 'draft' | 'published';
 }
 
 export function saveInviteLocal(data: StoredInvite): void {
@@ -40,6 +42,41 @@ export function getInviteLocal(id: string): StoredInvite | null {
   } catch {
     return null;
   }
+}
+
+// ── Draft (in-progress) helpers ────────────────────────────────────────────────
+
+export function saveDraftLocal(data: StoredInvite, userId: string): void {
+  localStorage.setItem(`invite_draft_${userId}`, JSON.stringify({ ...data, status: 'draft' }));
+}
+
+export function loadDraftLocal(userId: string): StoredInvite | null {
+  try {
+    const raw = localStorage.getItem(`invite_draft_${userId}`);
+    return raw ? (JSON.parse(raw) as StoredInvite) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearDraftLocal(userId: string): void {
+  localStorage.removeItem(`invite_draft_${userId}`);
+}
+
+// ── List all published invites from localStorage ───────────────────────────────
+
+export function listPublishedLocal(): StoredInvite[] {
+  const out: StoredInvite[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key?.startsWith('invite_')) continue;
+    if (key.startsWith('invite_draft_') || key === 'invite_invite-preview-draft') continue;
+    try {
+      const item = JSON.parse(localStorage.getItem(key)!) as StoredInvite;
+      if (item?.id && item.id !== 'invite-preview-draft') out.push(item);
+    } catch { /* skip corrupt entries */ }
+  }
+  return out.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function formatDisplayDate(iso: string): string {

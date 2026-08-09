@@ -16,7 +16,7 @@ const ROWS = [
       { name: "Hannah B.", avatar: "🌹", stars: 5, text: "My boyfriend said it was the most thoughtful thing anyone had ever done for him." },
       { name: "Luca S.", avatar: "💞", stars: 5, text: "Absolutely beautiful. The envelope reveal made her gasp out loud." },
       { name: "Emma W.", avatar: "🥹", stars: 5, text: "I didn't expect to cry making it but here we are. 10/10 recommend." },
-      { name: "Carlos D.", avatar: "🎁", stars: 5, text: "She shared it with all her friends. Wish4Love is genuinely special." },
+      { name: "Carlos D.", avatar: "🎁", stars: 5, text: "She shared it with all her friends. Wed4Love is genuinely special." },
       { name: "Yuki T.", avatar: "🌷", stars: 5, text: "Long distance relationship — this made 5,000 miles feel like nothing." },
       { name: "Natalie O.", avatar: "💫", stars: 5, text: "I've sent three letters already. Each one hits different. Worth every penny." },
     ],

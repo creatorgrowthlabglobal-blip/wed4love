@@ -108,9 +108,12 @@ const LanguageSwitcher = () => {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Change language"
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-primary/5 transition-colors"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition-colors"
+        style={{ color: "hsl(30 12% 48%)" }}
+        onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 96%)")}
+        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
       >
-        <Globe className="w-4 h-4 text-muted-foreground" />
+        <Globe className="w-4 h-4" />
         <span className="text-base leading-none">{current.flag}</span>
       </button>
 
@@ -121,17 +124,21 @@ const LanguageSwitcher = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.96 }}
             transition={{ duration: 0.18 }}
-            className="absolute right-0 mt-2 w-56 max-h-[70vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-2xl border border-primary/10 shadow-xl py-2 z-50"
+            className="absolute right-0 mt-2 w-56 max-h-[70vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl py-2 z-50"
+            style={{ border: "1px solid hsl(38 40% 88%)" }}
           >
             {LANGUAGES.map((l) => (
               <button
                 key={l.code}
                 onClick={() => choose(l.code)}
-                className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-primary/5 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors text-left"
+                style={{ color: "hsl(30 20% 25%)" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 96%)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <span className="text-lg leading-none">{l.flag}</span>
-                <span className="flex-1 font-body text-foreground">{l.label}</span>
-                {active === l.code && <Check className="w-4 h-4 text-primary" />}
+                <span className="flex-1 font-body">{l.label}</span>
+                {active === l.code && <Check className="w-4 h-4" style={{ color: "hsl(38 72% 44%)" }} />}
               </button>
             ))}
           </motion.div>

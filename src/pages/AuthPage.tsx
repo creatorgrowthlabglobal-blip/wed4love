@@ -68,6 +68,7 @@ export default function AuthPage() {
   const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const dest = (location.state as { from?: string })?.from ?? "/pricing";
 
   const reset = () => { setError(null); setInfo(null); };
 
@@ -75,8 +76,6 @@ export default function AuthPage() {
     e.preventDefault();
     reset();
     setBusy(true);
-
-    const dest = (location.state as { from?: string })?.from ?? "/choose-template";
 
     if (tab === "signin") {
       const { error } = await signInWithEmail(email, password);
@@ -110,7 +109,7 @@ export default function AuthPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block font-display font-bold text-2xl tracking-tight" style={{ color: GOLD }}>
-            Invitely
+            Wed4Love
           </Link>
           <p className="mt-2 font-body text-sm" style={{ color: "hsl(30 12% 48%)" }}>
             {tab === "signin" ? "Welcome back" : "Create your account"}
@@ -137,7 +136,7 @@ export default function AuthPage() {
 
           {/* Google */}
           <button
-            onClick={signInWithGoogle}
+            onClick={() => signInWithGoogle(`${window.location.origin}${dest}`)}
             className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border font-body text-sm font-semibold transition-all hover:bg-gray-50 active:scale-[0.98]"
             style={{ borderColor: "hsl(38 30% 85%)", color: "hsl(30 20% 25%)" }}
           >

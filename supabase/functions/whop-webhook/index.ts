@@ -40,6 +40,14 @@ function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
 const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
+// Wed4Love invite plans
+const INVITE_PLANS: Record<string, string> = {
+  "plan_FsfUSAeOIoKZt": "starter",
+  "plan_OizfizAnMNsVO": "premium",
+  "plan_tLQmC1O2O9DmN": "custom",
+};
+const INVITE_TIER: Record<string, number> = { starter: 1, premium: 2, custom: 3 };
+
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -159,6 +167,13 @@ Deno.serve(async (req) => {
       row.letter_access_expires_at = new Date(base + THIRTY_DAYS_MS).toISOString();
     } else if (planId === EXTRA_CALL_PLAN) {
       row.paid_calls = (row.paid_calls || 0) + 1;
+    } else if (INVITE_PLANS[planId]) {
+      const purchased = INVITE_PLANS[planId];
+      const existing = row.invite_plan || null;
+      // Only upgrade, never downgrade (e.g. buying starter after premium keeps premium)
+      if (!existing || (INVITE_TIER[purchased] ?? 0) > (INVITE_TIER[existing] ?? 0)) {
+        row.invite_plan = purchased;
+      }
     } else {
       console.warn("[whop-webhook] unknown plan_id:", planId);
     }
@@ -169,6 +184,7 @@ Deno.serve(async (req) => {
       paid_calls: row.paid_calls,
       used_calls: row.used_calls,
       letter_access_expires_at: row.letter_access_expires_at,
+      invite_plan: row.invite_plan ?? null,
       updated_at: new Date().toISOString(),
     }, { onConflict: "email" });
     if (upErr) throw upErr;

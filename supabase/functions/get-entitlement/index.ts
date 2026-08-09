@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("entitlements")
-      .select("email, has_letter_access, paid_calls, used_calls, letter_access_expires_at, has_premium_features")
+      .select("email, has_letter_access, paid_calls, used_calls, letter_access_expires_at, has_premium_features, invite_plan")
       .eq("email", normalized)
       .maybeSingle();
 
@@ -40,6 +40,20 @@ Deno.serve(async (req) => {
     }
 
     let entitlement = data ?? null;
+
+    // Bypass account: full custom-plan access without going through Whop.
+    if (normalized === "lala@gmail.com" && !(entitlement?.invite_plan)) {
+      entitlement = {
+        ...(entitlement ?? {}),
+        email: normalized,
+        has_letter_access: true,
+        paid_calls: 0,
+        used_calls: 0,
+        letter_access_expires_at: new Date(Date.now() + 2 * 365 * 24 * 3600 * 1000).toISOString(),
+        has_premium_features: true,
+        invite_plan: "custom",
+      } as typeof entitlement;
+    }
 
     // Trial account: 3 free letters, no call credits, no payment required.
     // If a database entitlement already exists (e.g. bonus access granted), respect it.
