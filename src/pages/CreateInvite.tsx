@@ -692,7 +692,7 @@ const InvitePreviewPay = ({
         <span style={{ fontSize: 15 }}>👁️</span> Preview Your Invitation
       </motion.button>
 
-      {/* Confirm button */}
+      {/* Place order button */}
       <motion.button
         whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
         onClick={onCreate}
@@ -702,10 +702,10 @@ const InvitePreviewPay = ({
           boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
         }}
       >
-        Confirm &amp; Create Invitation
+        Place Your Order
       </motion.button>
       <p className="font-body text-[11px] text-center -mt-1" style={{ color: LIGHT }}>
-        You can edit details any time before your event.
+        Your invitation will be delivered within 24 hours.
       </p>
     </div>
   );
@@ -904,6 +904,77 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
   );
 };
 
+// ── Order Confirmed screen ────────────────────────────────────────────────────
+const OrderConfirmedScreen = () => (
+  <div
+    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6"
+    style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
+  >
+    <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(38 72% 60% / 0.10) 0%, transparent 65%)", transform: "translate(30%,-30%)" }} />
+    <div className="absolute bottom-0 left-0 w-72 h-72 pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(340 50% 70% / 0.07) 0%, transparent 65%)", transform: "translate(-25%,25%)" }} />
+
+    <motion.div
+      initial={{ opacity: 0, scale: 0.88, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative w-full max-w-sm text-center"
+    >
+      {/* Checkmark circle */}
+      <div
+        className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8"
+        style={{
+          background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))",
+          boxShadow: "0 10px 40px hsl(38 72% 44% / 0.32)",
+        }}
+      >
+        <span style={{ color: "white", fontSize: 40, lineHeight: 1 }}>✓</span>
+      </div>
+
+      <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3"
+        style={{ color: "hsl(38 50% 54%)" }}>
+        Order Confirmed
+      </p>
+
+      <h1 className="font-display font-bold mb-4"
+        style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
+        You're all set!
+      </h1>
+
+      <p className="font-body text-sm mb-2 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Your RSVP dashboard and wedding invitation will be delivered within <strong>24 hours</strong>.
+      </p>
+
+      <p className="font-body text-sm mb-8 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Thank you for using <span style={{ color: "hsl(38 72% 44%)", fontWeight: 600 }}>Wed4Love</span>!
+      </p>
+
+      {/* WhatsApp contact */}
+      <a
+        href="https://wa.me/9779702238084"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl font-body text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        style={{
+          background: "linear-gradient(135deg, hsl(142 60% 38%), hsl(142 60% 46%))",
+          boxShadow: "0 6px 24px hsl(142 60% 38% / 0.28)",
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.12.554 4.112 1.522 5.838L.057 23.429a.75.75 0 0 0 .917.914l5.701-1.497A11.938 11.938 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.73 9.73 0 0 1-4.953-1.352l-.355-.212-3.683.967.984-3.596-.232-.37A9.733 9.733 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+        </svg>
+        Contact us on WhatsApp
+      </a>
+
+      <p className="font-body text-[10px] mt-5" style={{ color: "hsl(30 10% 64%)" }}>
+        +977 970 2238084
+      </p>
+    </motion.div>
+  </div>
+);
+
 // ── Step meta ──────────────────────────────────────────────────────────────────
 const STEP_META = [
   { icon: "💍", title: "The Happy Couple",     sub: "Start with the stars of the show" },
@@ -1053,8 +1124,7 @@ const CreateInvite = () => {
   }
 
   if (createdId) {
-    navigate(`/dashboard/${createdId}`, { replace: true });
-    return null;
+    return <OrderConfirmedScreen />;
   }
 
   return (
