@@ -275,7 +275,7 @@ const CustomTemplateCard = ({ plan, onSelect }: { plan: string; onSelect: () => 
 const ChooseTemplate = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const plan = params.get("plan") ?? "starter";
   const justPaid = params.get("paid") === "true";
   const isStarterOnly = plan === "starter";
@@ -343,6 +343,12 @@ const ChooseTemplate = () => {
         </motion.div>
       </div>
     );
+  }
+
+  // ── Not logged in after payment — send to login then back here ───────────
+  if (justPaid && !authLoading && !user) {
+    navigate(`/login`, { state: { from: `/choose-template?plan=${plan}&paid=true` }, replace: true });
+    return null;
   }
 
   // ── No access (direct URL without payment) ───────────────────────────────

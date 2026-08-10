@@ -31,7 +31,7 @@ const POLL_MAX_ATTEMPTS = 18; // 18 × 2.5 s = 45 s
  * (covers the race where Whop's webhook fires after the post-payment redirect).
  */
 export function useInviteEntitlement(poll = false): EntitlementState {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [state, setState] = useState<EntitlementState>({
     plan: null,
     loading: true,
@@ -55,6 +55,7 @@ export function useInviteEntitlement(poll = false): EntitlementState {
   }, [user?.email]);
 
   useEffect(() => {
+    if (authLoading) return; // wait for session to resolve before concluding no user
     if (!user) {
       setState({ plan: null, loading: false, error: false, timeout: false });
       return;
@@ -89,7 +90,7 @@ export function useInviteEntitlement(poll = false): EntitlementState {
     tick();
     const id = setInterval(tick, POLL_INTERVAL_MS);
     return () => clearInterval(id);
-  }, [user, poll, fetchPlan]);
+  }, [user, authLoading, poll, fetchPlan]);
 
   return state;
 }
