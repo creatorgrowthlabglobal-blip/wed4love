@@ -18,6 +18,7 @@ import Refund from "./pages/Refund";
 import Contact from "./pages/Contact";
 import CustomInquiry from "./pages/CustomInquiry";
 import MyInvitations from "./pages/MyInvitations";
+import Demo from "./pages/Demo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/custom-inquiry" element={<CustomInquiry />} />
             <Route path="/my-invitations" element={<ProtectedRoute><MyInvitations /></ProtectedRoute>} />
+            <Route path="/demo" element={<Demo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

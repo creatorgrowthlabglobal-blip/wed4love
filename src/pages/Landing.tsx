@@ -113,7 +113,7 @@ const GetStartedLink = ({ className, style, children }: { className: string; sty
 };
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
-const Nav = ({ onOpenDemoPicker }: { onOpenDemoPicker: () => void }) => {
+const Nav = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -151,7 +151,7 @@ const Nav = ({ onOpenDemoPicker }: { onOpenDemoPicker: () => void }) => {
             Pricing
           </Link>
           <Link
-            to="/choose-template"
+            to="/demo"
             className="font-body text-sm transition-colors duration-200"
             style={navLinkSt}
             onMouseEnter={onEnter}
@@ -221,7 +221,7 @@ const HERO_AVATARS = [
   { i: "EM", bg: "hsl(270 52% 56%)" },
 ];
 
-const Hero = ({ onOpenDemoPicker }: { onOpenDemoPicker: () => void }) => (
+const Hero = () => (
   <section
     className="relative flex flex-col items-center pt-28 pb-0 overflow-hidden"
     style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)", minHeight: "100vh" }}
@@ -269,13 +269,13 @@ const Hero = ({ onOpenDemoPicker }: { onOpenDemoPicker: () => void }) => (
           >
             Create Your Invitation <ArrowRight className="w-4 h-4" />
           </GetStartedLink>
-          <button
-            onClick={onOpenDemoPicker}
+          <Link
+            to="/demo"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-body text-sm font-semibold transition-all hover:opacity-80"
             style={{ background: "white", color: "hsl(30 18% 32%)", border: "1.5px solid hsl(38 40% 86%)", boxShadow: "0 2px 12px hsl(38 30% 70% / 0.18)" }}
           >
             <Play className="w-3.5 h-3.5" style={{ color: GOLD }} /> Watch Demo
-          </button>
+          </Link>
         </div>
 
         {/* ── Social proof trust bar ── */}
@@ -1208,12 +1208,10 @@ const DemoPickerModal = ({ open, onClose }: { open: boolean; onClose: () => void
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 const Landing = () => {
-  const [demoPickerOpen, setDemoPickerOpen] = useState(false);
   return (
   <div>
-    <DemoPickerModal open={demoPickerOpen} onClose={() => setDemoPickerOpen(false)} />
-    <Nav onOpenDemoPicker={() => setDemoPickerOpen(true)} />
-    <Hero onOpenDemoPicker={() => setDemoPickerOpen(true)} />
+    <Nav />
+    <Hero />
     <StatsBar />
     <Templates />
     <HowItWorks />

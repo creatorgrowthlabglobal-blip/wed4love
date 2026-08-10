@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const GOLD      = "hsl(38 72% 44%)";
@@ -74,14 +74,12 @@ export default function AuthPage() {
       navigate(dest, { replace: true });
     } else {
       if (!name.trim()) { setError("Please enter your name."); setBusy(false); return; }
-      const { error, session } = await signUpWithEmail(email, password, name.trim());
+      const { error } = await signUpWithEmail(email, password, name.trim());
       if (error) { setError(error); setBusy(false); return; }
-      if (session) {
-        navigate(dest, { replace: true });
-        return;
-      }
-      setInfo("Check your email to confirm your account, then sign in.");
-      setTab("signin");
+      const { error: signInError } = await signInWithEmail(email, password);
+      if (signInError) { setError(signInError); setBusy(false); return; }
+      navigate(dest, { replace: true });
+      return;
     }
     setBusy(false);
   };
@@ -97,6 +95,15 @@ export default function AuthPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-md"
       >
+        {/* Back button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 mb-6 font-body text-sm font-semibold transition-opacity hover:opacity-60"
+          style={{ color: "hsl(30 12% 48%)" }}
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block font-display font-bold text-2xl tracking-tight" style={{ color: GOLD }}>
