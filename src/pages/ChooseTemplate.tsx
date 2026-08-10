@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Play, Lock, Zap, Crown, Palette, Video, Sparkles, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Play, Lock, Zap, Crown, Palette, Video, Sparkles, CheckCircle2 } from "lucide-react";
 import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail from "@/assets/rustic-bloom-thumbnail.png";
 import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
@@ -281,69 +281,14 @@ const ChooseTemplate = () => {
   const isStarterOnly = plan === "starter";
   const isBypassUser = user?.email?.toLowerCase() === "lala@gmail.com";
 
-  // Poll when coming straight from Whop (webhook may not have fired yet)
-  const { plan: userPlan, loading, timeout } = useInviteEntitlement(justPaid);
-  const hasAccess = isBypassUser || hasInviteAccess(userPlan, plan);
+  // justPaid skips entitlement check — user already paid, manual delivery model
+  const { plan: userPlan, loading, timeout } = useInviteEntitlement(false);
+  const hasAccess = isBypassUser || justPaid || hasInviteAccess(userPlan, plan);
 
   const handleSelect = (id: string) => {
     if (!user) { navigate(`/login?next=/create-invite?plan=${plan}%26template=${id}`); return; }
     navigate(`/create-invite?plan=${plan}&template=${id}`);
   };
-
-  // ── Verifying payment (polling state) ────────────────────────────────────
-  if (justPaid && loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6"
-        style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(350 40% 97%) 60%, hsl(225 30% 97%))" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-sm"
-        >
-          <Loader2 className="w-12 h-12 mx-auto mb-5 animate-spin" style={{ color: GOLD }} />
-          <h2 className="font-display text-2xl font-bold text-foreground mb-2">Confirming your payment…</h2>
-          <p className="font-body text-sm text-muted-foreground">
-            This only takes a moment. Please don't close this tab.
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // ── Payment timeout ───────────────────────────────────────────────────────
-  if (justPaid && timeout) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6"
-        style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(350 40% 97%) 60%, hsl(225 30% 97%))" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-sm"
-        >
-          <AlertCircle className="w-12 h-12 mx-auto mb-5 text-amber-500" />
-          <h2 className="font-display text-2xl font-bold text-foreground mb-2">Taking longer than expected</h2>
-          <p className="font-body text-sm text-muted-foreground mb-6">
-            Your payment was received but verification is delayed. Please wait a minute then refresh — or contact us and we'll sort it immediately.
-          </p>
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => window.location.reload()}
-              className="w-full py-3 rounded-2xl font-body text-sm font-bold text-white transition-all hover:opacity-90"
-              style={{ background: GOLD_GRAD }}
-            >
-              Try again
-            </button>
-            <a
-              href="mailto:hello@wed4love.com"
-              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
-            >
-              Contact support
-            </a>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   // ── Not logged in after payment — send to login then back here ───────────
   if (justPaid && !authLoading && !user) {
