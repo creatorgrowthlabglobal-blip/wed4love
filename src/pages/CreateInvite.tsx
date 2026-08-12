@@ -9,6 +9,9 @@ import type { MusicPreset } from "@/lib/musicPresets";
 import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
+import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
+
+const CHECKOUT_URL = "https://whop.com/checkout/plan_FsfUSAeOIoKZt";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
 const TOTAL_STEPS = 7;
@@ -1174,6 +1177,23 @@ const CreateInvite = () => {
 
   const handleCreate = () => setIsPreparing(true);
 
+  const handlePay = () => {
+    saveDraft(STEP_META.length);
+    setAwaitingPayment(true);
+    const url = user?.email
+      ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
+      : `${CHECKOUT_URL}?d2c=true`;
+    window.open(url, "_blank", "noopener");
+  };
+
+  // Auto-publish as soon as the payment webhook grants access
+  useEffect(() => {
+    if (awaitingPayment && hasPaid) {
+      setAwaitingPayment(false);
+      setIsPreparing(true);
+    }
+  }, [awaitingPayment, hasPaid]);
+
   const finaliseCreate = () => {
     const id = `invite-${Date.now()}`;
     const stored: StoredInvite = {
@@ -1207,7 +1227,7 @@ const CreateInvite = () => {
   }
 
   if (createdId) {
-    return <OrderConfirmedScreen />;
+    return <OrderConfirmedScreen inviteId={createdId} />;
   }
 
   return (
@@ -1315,7 +1335,18 @@ const CreateInvite = () => {
               {step === 5 && <StepDetails form={form} set={set} />}
               {step === 6 && <StepPhotos  images={images} setImages={setImages} />}
               {step === 7 && <StepMusic   selectedMusic={form.selectedMusic} onSelect={id => set("selectedMusic", id)} />}
-              {step === 8 && <InvitePreviewPay form={form} onCreate={handleCreate} templateId={templateId} photoCount={images.length} />}
+              {step === 8 && (
+                <InvitePreviewPay
+                  form={form}
+                  onCreate={handleCreate}
+                  onPay={handlePay}
+                  templateId={templateId}
+                  photoCount={images.length}
+                  hasPaid={hasPaid}
+                  entLoading={entLoading}
+                  awaitingPayment={awaitingPayment}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
 
