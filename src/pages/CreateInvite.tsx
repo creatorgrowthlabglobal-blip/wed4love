@@ -1082,7 +1082,11 @@ const CreateInvite = () => {
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [awaitingPayment, setAwaitingPayment] = useState(false);
   const { user } = useAuth();
+  const { plan: userPlan, loading: entLoading } = useInviteEntitlement(awaitingPayment);
+  const hasPaid = !!userPlan;
+
 
   const draftIdRef = useRef<string>(`${DRAFT_PREFIX}-${Date.now()}`);
 
