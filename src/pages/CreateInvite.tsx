@@ -696,21 +696,67 @@ const InvitePreviewPay = ({
         <span style={{ fontSize: 15 }}>👁️</span> Preview Your Invitation
       </motion.button>
 
-      {/* Place order button */}
+      {/* ── Single unlock package — $49 ── */}
+      {!hasPaid && (
+        <div
+          className="rounded-3xl px-6 py-6 flex flex-col gap-4"
+          style={{ background: "white", border: "1.5px solid hsl(38 45% 82%)", boxShadow: "0 10px 34px hsl(38 40% 55% / 0.12)" }}
+        >
+          <div className="text-center">
+            <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-2" style={{ color: "hsl(38 55% 48%)" }}>
+              One package · Everything included
+            </p>
+            <div className="flex items-baseline justify-center gap-1.5">
+              <span className="font-body text-xs" style={{ color: LIGHT }}>$</span>
+              <span className="font-display text-4xl font-bold" style={{ color: DARK }}>49</span>
+              <span className="font-body text-xs" style={{ color: LIGHT }}>one-time</span>
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-2">
+            {[
+              "Your live invitation link, published instantly",
+              "All 5 cinematic templates",
+              "Unlimited guest invites & RSVP tracking",
+              "Private RSVP dashboard with check-in & QR code",
+              "Photos, music, countdown, venue map & love story",
+            ].map(f => (
+              <li key={f} className="flex items-start gap-2">
+                <span style={{ color: "var(--tg)", fontSize: 12, lineHeight: "18px" }}>✓</span>
+                <span className="font-body text-xs leading-snug" style={{ color: MID }}>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Pay / publish button */}
       <motion.button
         whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
-        onClick={onCreate}
-        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white"
+        onClick={hasPaid ? onCreate : onPay}
+        disabled={entLoading || awaitingPayment}
+        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white disabled:opacity-60"
         style={{
           background: "linear-gradient(135deg, var(--tg), var(--tgg))",
           boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
         }}
       >
-        Place Your Order
+        {entLoading
+          ? "Checking your access…"
+          : awaitingPayment
+          ? "Waiting for payment confirmation…"
+          : hasPaid
+          ? "Publish My Invitation ✨"
+          : "Pay $49 & Publish →"}
       </motion.button>
       <p className="font-body text-[11px] text-center -mt-1" style={{ color: LIGHT }}>
-        Your invitation will be delivered within 24 hours.
+        {awaitingPayment
+          ? "Complete the payment in the new tab — this page unlocks automatically."
+          : hasPaid
+          ? "Your invitation and RSVP dashboard go live right away."
+          : "Secure one-time payment · Your invitation goes live the moment you pay."}
       </p>
+
     </div>
   );
 };
