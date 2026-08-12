@@ -1,4 +1,4 @@
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Play, Lock } from "lucide-react";
 import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
@@ -133,7 +133,7 @@ const Card = ({ t, index, delay, height, locked, onSelect }: CardProps) => (
             <Play className="w-2.5 h-2.5" /> View demo
           </button>
           <Link
-            to="/pricing"
+            to="/choose-template"
             onClick={e => e.stopPropagation()}
             className="flex-1 py-1.5 rounded-lg font-body text-xs font-semibold text-center transition-all hover:opacity-90 active:scale-95"
             style={{ background: GOLD_GRAD, color: "white" }}
