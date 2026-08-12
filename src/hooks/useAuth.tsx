@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithGoogle = async (redirectTo?: string) => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: redirectTo ?? `${window.location.origin}/pricing` },
+      options: { redirectTo: redirectTo ?? `${window.location.origin}/choose-template` },
     });
   };
 

@@ -938,13 +938,8 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
           style={{ background: "rgba(255,255,255,0.84)", backdropFilter: "blur(5px)" }}>
           <span style={{ fontSize: 20 }}>🔒</span>
-          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Premium Feature</p>
-          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Use your own music with Premium</p>
-          <a href="/pricing" target="_blank" rel="noopener noreferrer"
-            className="mt-1 px-5 py-2 rounded-xl font-body text-xs font-bold text-white transition-opacity hover:opacity-80"
-            style={{ background: "linear-gradient(135deg, var(--tg), var(--tgg))", boxShadow: "0 4px 14px var(--tglow)" }}>
-            Upgrade to Premium
-          </a>
+          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Coming Soon</p>
+          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Custom music uploads land soon — pick a preset for now</p>
         </div>
       </div>
 

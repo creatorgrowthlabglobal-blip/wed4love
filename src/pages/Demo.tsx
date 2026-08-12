@@ -105,7 +105,7 @@ export default function Demo() {
             Ready to create yours?
           </p>
           <a
-            href="/pricing"
+            href="/choose-template"
             className="inline-block px-8 py-3.5 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
             style={{
               background: `linear-gradient(135deg, ${GOLD}, hsl(38 80% 52%))`,
