@@ -954,10 +954,10 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
   );
 };
 
-// ── Order Confirmed screen ────────────────────────────────────────────────────
-const OrderConfirmedScreen = () => (
+// ── Invitation live screen ────────────────────────────────────────────────────
+const OrderConfirmedScreen = ({ inviteId }: { inviteId: string }) => (
   <div
-    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6"
+    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6 overflow-y-auto py-10"
     style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
   >
     <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
@@ -984,21 +984,50 @@ const OrderConfirmedScreen = () => (
 
       <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3"
         style={{ color: "hsl(38 50% 54%)" }}>
-        Order Confirmed
+        Payment Confirmed
       </p>
 
       <h1 className="font-display font-bold mb-4"
         style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
-        You're all set!
+        Your invitation is live!
       </h1>
 
-      <p className="font-body text-sm mb-2 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
-        Your RSVP dashboard and wedding invitation will be delivered within <strong>24 hours</strong>.
+      <p className="font-body text-sm mb-6 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Share the link with your guests — every RSVP lands in your dashboard instantly.
       </p>
+
+      <div className="flex flex-col gap-3 mb-6">
+        <a
+          href={`/invite/${inviteId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
+          style={{ background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))", boxShadow: "0 8px 26px hsl(38 72% 44% / 0.28)" }}
+        >
+          View My Invitation →
+        </a>
+        <a
+          href={`/dashboard/${inviteId}`}
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold transition-opacity hover:opacity-80"
+          style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
+        >
+          Open RSVP Dashboard
+        </a>
+        <button
+          onClick={() => {
+            void navigator.clipboard.writeText(`${window.location.origin}/invite/${inviteId}`);
+          }}
+          className="w-full py-3 rounded-2xl font-body text-xs font-semibold transition-opacity hover:opacity-70"
+          style={{ background: "hsl(38 40% 95%)", color: "hsl(30 14% 38%)" }}
+        >
+          Copy shareable link
+        </button>
+      </div>
 
       <p className="font-body text-sm mb-8 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
         Thank you for using <span style={{ color: "hsl(38 72% 44%)", fontWeight: 600 }}>Wed4Love</span>!
       </p>
+
 
       {/* WhatsApp contact */}
       <a
