@@ -10,360 +10,61 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
       rsvps: {
         Row: {
-          id: string
-          invite_id: string
-          event_name: string | null
-          event_date: string | null
-          event_venue: string | null
-          event_location: string | null
-          name: string
-          email: string
           attendance: string
-          guests_count: number
-          message: string | null
           checked_in: boolean
           checked_in_at: string | null
-          host_notes: string | null
           created_at: string
+          email: string | null
+          event_date: string | null
+          event_location: string | null
+          event_name: string | null
+          event_venue: string | null
+          guests_count: number
+          host_notes: string | null
+          id: string
+          invite_id: string
+          message: string | null
+          name: string
         }
         Insert: {
+          attendance?: string
+          checked_in?: boolean
+          checked_in_at?: string | null
+          created_at?: string
+          email?: string | null
+          event_date?: string | null
+          event_location?: string | null
+          event_name?: string | null
+          event_venue?: string | null
+          guests_count?: number
+          host_notes?: string | null
           id?: string
           invite_id: string
-          event_name?: string | null
-          event_date?: string | null
-          event_venue?: string | null
-          event_location?: string | null
-          name: string
-          email: string
-          attendance: string
-          guests_count?: number
           message?: string | null
-          checked_in?: boolean
-          checked_in_at?: string | null
-          host_notes?: string | null
-          created_at?: string
+          name: string
         }
         Update: {
+          attendance?: string
+          checked_in?: boolean
+          checked_in_at?: string | null
+          created_at?: string
+          email?: string | null
+          event_date?: string | null
+          event_location?: string | null
+          event_name?: string | null
+          event_venue?: string | null
+          guests_count?: number
+          host_notes?: string | null
           id?: string
           invite_id?: string
-          event_name?: string | null
-          event_date?: string | null
-          event_venue?: string | null
-          event_location?: string | null
-          name?: string
-          email?: string
-          attendance?: string
-          guests_count?: number
           message?: string | null
-          checked_in?: boolean
-          checked_in_at?: string | null
-          host_notes?: string | null
-          created_at?: string
-        }
-        Relationships: []
-      }
-      claimed_whop_events: {
-        Row: {
-          app_email: string
-          claimed_at: string
-          event_id: string
-        }
-        Insert: {
-          app_email: string
-          claimed_at?: string
-          event_id: string
-        }
-        Update: {
-          app_email?: string
-          claimed_at?: string
-          event_id?: string
-        }
-        Relationships: []
-      }
-      entitlements: {
-        Row: {
-          created_at: string
-          email: string
-          has_letter_access: boolean
-          has_premium_features: boolean
-          invite_plan: string | null
-          letter_access_expires_at: string | null
-          paid_calls: number
-          updated_at: string
-          used_calls: number
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          has_letter_access?: boolean
-          has_premium_features?: boolean
-          invite_plan?: string | null
-          letter_access_expires_at?: string | null
-          paid_calls?: number
-          updated_at?: string
-          used_calls?: number
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          has_letter_access?: boolean
-          has_premium_features?: boolean
-          invite_plan?: string | null
-          letter_access_expires_at?: string | null
-          paid_calls?: number
-          updated_at?: string
-          used_calls?: number
-        }
-        Relationships: []
-      }
-      letter_reactions: {
-        Row: {
-          created_at: string
-          id: string
-          letter_id: string
-          video_url: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          letter_id: string
-          video_url: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          letter_id?: string
-          video_url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "letter_reactions_letter_id_fkey"
-            columns: ["letter_id"]
-            isOneToOne: false
-            referencedRelation: "letters"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      letters: {
-        Row: {
-          created_at: string
-          data: Json
-          id: string
-          opened_at: string | null
-          unlock_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          data: Json
-          id: string
-          opened_at?: string | null
-          unlock_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          id?: string
-          opened_at?: string | null
-          unlock_at?: string | null
-        }
-        Relationships: []
-      }
-      otp_attempts: {
-        Row: {
-          created_at: string
-          email: string
-          id: number
-          ip: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: number
-          ip: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: number
-          ip?: string
-        }
-        Relationships: []
-      }
-      pending_orders: {
-        Row: {
-          amount: number | null
-          app_email: string
-          created_at: string
-          id: string
-          letter_id: string | null
-          product: string
-          status: string
-          updated_at: string
-          whop_event_id: string | null
-        }
-        Insert: {
-          amount?: number | null
-          app_email: string
-          created_at?: string
-          id: string
-          letter_id?: string | null
-          product: string
-          status?: string
-          updated_at?: string
-          whop_event_id?: string | null
-        }
-        Update: {
-          amount?: number | null
-          app_email?: string
-          created_at?: string
-          id?: string
-          letter_id?: string | null
-          product?: string
-          status?: string
-          updated_at?: string
-          whop_event_id?: string | null
-        }
-        Relationships: []
-      }
-      ph_payment_orders: {
-        Row: {
-          amount: number
-          approved_at: string | null
-          created_at: string
-          email: string
-          email_sent_at: string | null
-          letter_id: string
-          letter_type: string | null
-          letter_url: string
-          order_id: string
-          receiver_name: string | null
-          rejected_at: string | null
-          sender_name: string | null
-          status: string
-          telegram_chat_id: string | null
-          telegram_message_id: number | null
-          updated_at: string
-        }
-        Insert: {
-          amount?: number
-          approved_at?: string | null
-          created_at?: string
-          email: string
-          email_sent_at?: string | null
-          letter_id: string
-          letter_type?: string | null
-          letter_url: string
-          order_id: string
-          receiver_name?: string | null
-          rejected_at?: string | null
-          sender_name?: string | null
-          status?: string
-          telegram_chat_id?: string | null
-          telegram_message_id?: number | null
-          updated_at?: string
-        }
-        Update: {
-          amount?: number
-          approved_at?: string | null
-          created_at?: string
-          email?: string
-          email_sent_at?: string | null
-          letter_id?: string
-          letter_type?: string | null
-          letter_url?: string
-          order_id?: string
-          receiver_name?: string | null
-          rejected_at?: string | null
-          sender_name?: string | null
-          status?: string
-          telegram_chat_id?: string | null
-          telegram_message_id?: number | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      scheduled_calls: {
-        Row: {
-          attempts: number
-          audio_base64: string | null
-          audio_mime: string | null
-          call_id: string | null
-          created_at: string
-          id: string
-          last_error: string | null
-          mode: string
-          occasion: string | null
-          phone: string
-          recipient_name: string
-          scheduled_at: string
-          status: string
-          text_message: string | null
-          updated_at: string
-          user_email: string | null
-          voice: string | null
-        }
-        Insert: {
-          attempts?: number
-          audio_base64?: string | null
-          audio_mime?: string | null
-          call_id?: string | null
-          created_at?: string
-          id?: string
-          last_error?: string | null
-          mode: string
-          occasion?: string | null
-          phone: string
-          recipient_name: string
-          scheduled_at: string
-          status?: string
-          text_message?: string | null
-          updated_at?: string
-          user_email?: string | null
-          voice?: string | null
-        }
-        Update: {
-          attempts?: number
-          audio_base64?: string | null
-          audio_mime?: string | null
-          call_id?: string | null
-          created_at?: string
-          id?: string
-          last_error?: string | null
-          mode?: string
-          occasion?: string | null
-          phone?: string
-          recipient_name?: string
-          scheduled_at?: string
-          status?: string
-          text_message?: string | null
-          updated_at?: string
-          user_email?: string | null
-          voice?: string | null
-        }
-        Relationships: []
-      }
-      whop_events: {
-        Row: {
-          created_at: string
-          event_id: string
-          payload: Json
-        }
-        Insert: {
-          created_at?: string
-          event_id: string
-          payload: Json
-        }
-        Update: {
-          created_at?: string
-          event_id?: string
-          payload?: Json
+          name?: string
         }
         Relationships: []
       }
@@ -372,7 +73,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      consume_call_credit: { Args: { _email: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
