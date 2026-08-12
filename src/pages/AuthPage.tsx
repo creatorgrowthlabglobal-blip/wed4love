@@ -59,7 +59,7 @@ export default function AuthPage() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const dest = (location.state as { from?: string })?.from ?? "/pricing";
+  const dest = (location.state as { from?: string })?.from ?? "/choose-template";
 
   const reset = () => { setError(null); setInfo(null); };
 

@@ -9,6 +9,9 @@ import type { MusicPreset } from "@/lib/musicPresets";
 import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
+import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
+
+const CHECKOUT_URL = "https://whop.com/checkout/plan_FsfUSAeOIoKZt";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
 const TOTAL_STEPS = 7;
@@ -521,12 +524,16 @@ const TEMPLATE_NAMES: Record<string, string> = {
 };
 
 const InvitePreviewPay = ({
-  form, onCreate, templateId, photoCount,
+  form, onCreate, onPay, templateId, photoCount, hasPaid, entLoading, awaitingPayment,
 }: {
   form: FormState;
   onCreate: () => void;
+  onPay: () => void;
   templateId: string;
   photoCount: number;
+  hasPaid: boolean;
+  entLoading: boolean;
+  awaitingPayment: boolean;
 }) => {
   useEffect(() => {
     const draft: StoredInvite = {
@@ -692,21 +699,67 @@ const InvitePreviewPay = ({
         <span style={{ fontSize: 15 }}>👁️</span> Preview Your Invitation
       </motion.button>
 
-      {/* Place order button */}
+      {/* ── Single unlock package — $49 ── */}
+      {!hasPaid && (
+        <div
+          className="rounded-3xl px-6 py-6 flex flex-col gap-4"
+          style={{ background: "white", border: "1.5px solid hsl(38 45% 82%)", boxShadow: "0 10px 34px hsl(38 40% 55% / 0.12)" }}
+        >
+          <div className="text-center">
+            <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-2" style={{ color: "hsl(38 55% 48%)" }}>
+              One package · Everything included
+            </p>
+            <div className="flex items-baseline justify-center gap-1.5">
+              <span className="font-body text-xs" style={{ color: LIGHT }}>$</span>
+              <span className="font-display text-4xl font-bold" style={{ color: DARK }}>49</span>
+              <span className="font-body text-xs" style={{ color: LIGHT }}>one-time</span>
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-2">
+            {[
+              "Your live invitation link, published instantly",
+              "All 5 cinematic templates",
+              "Unlimited guest invites & RSVP tracking",
+              "Private RSVP dashboard with check-in & QR code",
+              "Photos, music, countdown, venue map & love story",
+            ].map(f => (
+              <li key={f} className="flex items-start gap-2">
+                <span style={{ color: "var(--tg)", fontSize: 12, lineHeight: "18px" }}>✓</span>
+                <span className="font-body text-xs leading-snug" style={{ color: MID }}>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Pay / publish button */}
       <motion.button
         whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
-        onClick={onCreate}
-        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white"
+        onClick={hasPaid ? onCreate : onPay}
+        disabled={entLoading || awaitingPayment}
+        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white disabled:opacity-60"
         style={{
           background: "linear-gradient(135deg, var(--tg), var(--tgg))",
           boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
         }}
       >
-        Place Your Order
+        {entLoading
+          ? "Checking your access…"
+          : awaitingPayment
+          ? "Waiting for payment confirmation…"
+          : hasPaid
+          ? "Publish My Invitation ✨"
+          : "Pay $49 & Publish →"}
       </motion.button>
       <p className="font-body text-[11px] text-center -mt-1" style={{ color: LIGHT }}>
-        Your invitation will be delivered within 24 hours.
+        {awaitingPayment
+          ? "Complete the payment in the new tab — this page unlocks automatically."
+          : hasPaid
+          ? "Your invitation and RSVP dashboard go live right away."
+          : "Secure one-time payment · Your invitation goes live the moment you pay."}
       </p>
+
     </div>
   );
 };
@@ -885,13 +938,8 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
           style={{ background: "rgba(255,255,255,0.84)", backdropFilter: "blur(5px)" }}>
           <span style={{ fontSize: 20 }}>🔒</span>
-          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Premium Feature</p>
-          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Use your own music with Premium</p>
-          <a href="/pricing" target="_blank" rel="noopener noreferrer"
-            className="mt-1 px-5 py-2 rounded-xl font-body text-xs font-bold text-white transition-opacity hover:opacity-80"
-            style={{ background: "linear-gradient(135deg, var(--tg), var(--tgg))", boxShadow: "0 4px 14px var(--tglow)" }}>
-            Upgrade to Premium
-          </a>
+          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Coming Soon</p>
+          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Custom music uploads land soon — pick a preset for now</p>
         </div>
       </div>
 
@@ -904,10 +952,10 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
   );
 };
 
-// ── Order Confirmed screen ────────────────────────────────────────────────────
-const OrderConfirmedScreen = () => (
+// ── Invitation live screen ────────────────────────────────────────────────────
+const OrderConfirmedScreen = ({ inviteId }: { inviteId: string }) => (
   <div
-    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6"
+    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6 overflow-y-auto py-10"
     style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
   >
     <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
@@ -934,21 +982,50 @@ const OrderConfirmedScreen = () => (
 
       <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3"
         style={{ color: "hsl(38 50% 54%)" }}>
-        Order Confirmed
+        Payment Confirmed
       </p>
 
       <h1 className="font-display font-bold mb-4"
         style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
-        You're all set!
+        Your invitation is live!
       </h1>
 
-      <p className="font-body text-sm mb-2 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
-        Your RSVP dashboard and wedding invitation will be delivered within <strong>24 hours</strong>.
+      <p className="font-body text-sm mb-6 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Share the link with your guests — every RSVP lands in your dashboard instantly.
       </p>
+
+      <div className="flex flex-col gap-3 mb-6">
+        <a
+          href={`/invite/${inviteId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
+          style={{ background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))", boxShadow: "0 8px 26px hsl(38 72% 44% / 0.28)" }}
+        >
+          View My Invitation →
+        </a>
+        <a
+          href={`/dashboard/${inviteId}`}
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold transition-opacity hover:opacity-80"
+          style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
+        >
+          Open RSVP Dashboard
+        </a>
+        <button
+          onClick={() => {
+            void navigator.clipboard.writeText(`${window.location.origin}/invite/${inviteId}`);
+          }}
+          className="w-full py-3 rounded-2xl font-body text-xs font-semibold transition-opacity hover:opacity-70"
+          style={{ background: "hsl(38 40% 95%)", color: "hsl(30 14% 38%)" }}
+        >
+          Copy shareable link
+        </button>
+      </div>
 
       <p className="font-body text-sm mb-8 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
         Thank you for using <span style={{ color: "hsl(38 72% 44%)", fontWeight: 600 }}>Wed4Love</span>!
       </p>
+
 
       {/* WhatsApp contact */}
       <a
@@ -1003,7 +1080,11 @@ const CreateInvite = () => {
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [awaitingPayment, setAwaitingPayment] = useState(false);
   const { user } = useAuth();
+  const { plan: userPlan, loading: entLoading } = useInviteEntitlement(awaitingPayment);
+  const hasPaid = !!userPlan;
+
 
   const draftIdRef = useRef<string>(`${DRAFT_PREFIX}-${Date.now()}`);
 
@@ -1091,6 +1172,23 @@ const CreateInvite = () => {
 
   const handleCreate = () => setIsPreparing(true);
 
+  const handlePay = () => {
+    saveDraft(STEP_META.length);
+    setAwaitingPayment(true);
+    const url = user?.email
+      ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
+      : `${CHECKOUT_URL}?d2c=true`;
+    window.open(url, "_blank", "noopener");
+  };
+
+  // Auto-publish as soon as the payment webhook grants access
+  useEffect(() => {
+    if (awaitingPayment && hasPaid) {
+      setAwaitingPayment(false);
+      setIsPreparing(true);
+    }
+  }, [awaitingPayment, hasPaid]);
+
   const finaliseCreate = () => {
     const id = `invite-${Date.now()}`;
     const stored: StoredInvite = {
@@ -1124,7 +1222,7 @@ const CreateInvite = () => {
   }
 
   if (createdId) {
-    return <OrderConfirmedScreen />;
+    return <OrderConfirmedScreen inviteId={createdId} />;
   }
 
   return (
@@ -1232,7 +1330,18 @@ const CreateInvite = () => {
               {step === 5 && <StepDetails form={form} set={set} />}
               {step === 6 && <StepPhotos  images={images} setImages={setImages} />}
               {step === 7 && <StepMusic   selectedMusic={form.selectedMusic} onSelect={id => set("selectedMusic", id)} />}
-              {step === 8 && <InvitePreviewPay form={form} onCreate={handleCreate} templateId={templateId} photoCount={images.length} />}
+              {step === 8 && (
+                <InvitePreviewPay
+                  form={form}
+                  onCreate={handleCreate}
+                  onPay={handlePay}
+                  templateId={templateId}
+                  photoCount={images.length}
+                  hasPaid={hasPaid}
+                  entLoading={entLoading}
+                  awaitingPayment={awaitingPayment}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
 

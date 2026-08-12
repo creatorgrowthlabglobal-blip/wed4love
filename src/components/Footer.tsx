@@ -37,7 +37,7 @@ const Footer = () => {
             <p className="font-display text-sm font-bold text-foreground mb-1">Product</p>
             <Link to="/choose-template" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Create Invitation</Link>
             <Link to="/invite/demo-wedding?theme=golden-hour" target="_blank" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">View Demo</Link>
-            <Link to="/pricing" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+            <Link to="/choose-template" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing — $49</Link>
           </div>
 
           {/* Support */}

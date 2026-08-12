@@ -26,7 +26,7 @@ const Header = () => (
       {/* Right actions */}
       <div className="flex items-center gap-3">
         <Link
-          to="/pricing"
+          to="/choose-template"
           className="font-body text-sm transition-colors"
           style={{ color: "hsl(30 12% 48%)" }}
         >
