@@ -521,12 +521,16 @@ const TEMPLATE_NAMES: Record<string, string> = {
 };
 
 const InvitePreviewPay = ({
-  form, onCreate, templateId, photoCount,
+  form, onCreate, onPay, templateId, photoCount, hasPaid, entLoading, awaitingPayment,
 }: {
   form: FormState;
   onCreate: () => void;
+  onPay: () => void;
   templateId: string;
   photoCount: number;
+  hasPaid: boolean;
+  entLoading: boolean;
+  awaitingPayment: boolean;
 }) => {
   useEffect(() => {
     const draft: StoredInvite = {
