@@ -166,6 +166,10 @@ const Card = ({ t, index, delay, height, locked, onSelect }: CardProps) => (
         </div>
       </div>
     )}
+  </motion.div>
+);
+
+
 
 const ChooseTemplate = () => {
   const navigate = useNavigate();
