@@ -63,6 +63,17 @@ export default function AuthPage() {
 
   const reset = () => { setError(null); setInfo(null); };
 
+  const friendly = (msg: string) => {
+    const m = msg.toLowerCase();
+    if (m.includes("pwned") || m.includes("weak") || m.includes("compromised") || m.includes("easy to guess"))
+      return "Please choose a password with at least 6 characters.";
+    if (m.includes("email not confirmed") || m.includes("confirm your email"))
+      return "Something went wrong. Please try again.";
+    if (m.includes("invalid login credentials"))
+      return "Incorrect email or password.";
+    return msg;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     reset();
