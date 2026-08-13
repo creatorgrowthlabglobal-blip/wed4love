@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithEmail = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error) notify("signin", { email, method: "email" });
     return { error: error?.message ?? null };
   };
 
@@ -53,6 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       password,
       options: { data: { full_name: name } },
     });
+    if (!error) notify("signup", { email, name });
     return { error: error?.message ?? null, session: data.session };
   };
 
