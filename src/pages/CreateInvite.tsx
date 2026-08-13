@@ -10,6 +10,7 @@ import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, forma
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
+import { notify } from "@/lib/notify";
 
 const CHECKOUT_URL = "https://whop.com/checkout/plan_FsfUSAeOIoKZt";
 
@@ -1175,6 +1176,7 @@ const CreateInvite = () => {
   const handlePay = () => {
     saveDraft(STEP_META.length);
     setAwaitingPayment(true);
+    notify("checkout_started", { email: user?.email, template: templateId, couple: `${form.partner1} & ${form.partner2}` });
     const url = user?.email
       ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
       : `${CHECKOUT_URL}?d2c=true`;
@@ -1210,6 +1212,7 @@ const CreateInvite = () => {
       status: 'published',
     };
     saveInviteLocal(stored);
+    notify("invite_published", { id, template: templateId, couple: `${form.partner1} & ${form.partner2}`, date: stored.date, venue: form.venueName, email: user?.email ?? form.email });
     if (user) clearDraftLocal(user.id);
     setIsPreparing(false);
     setCreatedId(id);

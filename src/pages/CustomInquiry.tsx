@@ -9,6 +9,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { notify } from "@/lib/notify";
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -367,6 +368,7 @@ const CustomInquiry = () => {
         },
       });
       if (error) throw error;
+      notify("custom_inquiry", { couple: `${form.yourName} & ${form.partnerName}`, email: form.email });
       setDone(true);
     } catch (err: any) {
       toast({
