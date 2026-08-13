@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+
 import { motion } from "framer-motion";
 import { ArrowLeft, Play, Lock } from "lucide-react";
 import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
