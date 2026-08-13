@@ -7,6 +7,7 @@ import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import goldenHourThumbnail  from "@/assets/golden-hour-thumbnail.png";
 import softLoveThumbnail    from "@/assets/soft-love-thumbnail.jpg";
 import { useAuth } from "@/hooks/useAuth";
+import { notify } from "@/lib/notify";
 
 const GOLD      = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -176,6 +177,7 @@ const ChooseTemplate = () => {
   const { user } = useAuth();
 
   const handleSelect = (id: string) => {
+    notify("template_selected", { template: id, email: user?.email });
     if (!user) { navigate(`/login`, { state: { from: `/create-invite?template=${id}` } }); return; }
     navigate(`/create-invite?template=${id}`);
   };

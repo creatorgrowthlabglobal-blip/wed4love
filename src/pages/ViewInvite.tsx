@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { notify } from "@/lib/notify";
 import {
   MapPin, Calendar, Music, VolumeX, ChevronDown, Check, Mail, Phone,
   Clock, Users, Wine, Utensils, Heart, PartyPopper, Car, Train,
@@ -637,6 +638,15 @@ const ViewInvite = () => {
       guests_count: parseInt(fd.get("guests_count") as string) || 1,
       message: (fd.get("message") as string) || null,
     }).then(() => {});
+
+    notify("rsvp_submitted", {
+      invite_id: id ?? "demo-wedding",
+      name: fd.get("name"),
+      email: fd.get("email"),
+      attendance,
+      guests: fd.get("guests_count"),
+      message: fd.get("message") || undefined,
+    });
 
     setCelebrating(true);
     setTimeout(() => { setCelebrating(false); setRsvpDone(true); }, 3800);
