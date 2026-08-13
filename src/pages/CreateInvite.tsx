@@ -6,7 +6,7 @@ import ProgressBar from "@/components/invite/ProgressBar";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 import VenueMapPicker from "@/components/invite/VenueMapPicker";
 import type { MusicPreset } from "@/lib/musicPresets";
-import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
+import { saveInviteLocal, getInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
