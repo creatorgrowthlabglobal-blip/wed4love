@@ -6,7 +6,7 @@ import ProgressBar from "@/components/invite/ProgressBar";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 import VenueMapPicker from "@/components/invite/VenueMapPicker";
 import type { MusicPreset } from "@/lib/musicPresets";
-import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
+import { saveInviteLocal, getInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
@@ -1173,8 +1173,23 @@ const CreateInvite = () => {
 
   const handleCreate = () => setIsPreparing(true);
 
+  const pendingKey = user ? `pending_checkout_${user.id}` : null;
+  const lastInviteKey = user ? `last_invite_${user.id}` : null;
+
+  // Restore state after a reload / redirect back from the checkout tab
+  useEffect(() => {
+    if (!user) return;
+    const lastId = localStorage.getItem(`last_invite_${user.id}`);
+    if (lastId && getInviteLocal(lastId)) { setCreatedId(lastId); return; }
+    if (localStorage.getItem(`pending_checkout_${user.id}`)) {
+      setAwaitingPayment(true);
+      setStep(STEP_META.length);
+    }
+  }, [user]);
+
   const handlePay = () => {
     saveDraft(STEP_META.length);
+    if (pendingKey) localStorage.setItem(pendingKey, templateId);
     setAwaitingPayment(true);
     notify("checkout_started", { email: user?.email, template: templateId, couple: `${form.partner1} & ${form.partner2}` });
     const url = user?.email
@@ -1212,11 +1227,14 @@ const CreateInvite = () => {
       status: 'published',
     };
     saveInviteLocal(stored);
+    if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
+    if (pendingKey) localStorage.removeItem(pendingKey);
     notify("invite_published", { id, template: templateId, couple: `${form.partner1} & ${form.partner2}`, date: stored.date, venue: form.venueName, email: user?.email ?? form.email });
     if (user) clearDraftLocal(user.id);
     setIsPreparing(false);
     setCreatedId(id);
   };
+
 
   if (isPreparing) {
     const coupleName = [form.partner1, form.partner2].filter(Boolean).join(" & ");

@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+
 import { motion } from "framer-motion";
 import { ArrowLeft, Play, Lock } from "lucide-react";
 import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
@@ -176,11 +178,20 @@ const ChooseTemplate = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // If the user was sent here after paying (Whop redirect), take them back to
+  // their invite so it can be published instead of restarting the flow.
+  useEffect(() => {
+    if (!user) return;
+    const pending = localStorage.getItem(`pending_checkout_${user.id}`);
+    if (pending) navigate(`/create-invite?template=${pending}`, { replace: true });
+  }, [user, navigate]);
+
   const handleSelect = (id: string) => {
     notify("template_selected", { template: id, email: user?.email });
     if (!user) { navigate(`/login`, { state: { from: `/create-invite?template=${id}` } }); return; }
     navigate(`/create-invite?template=${id}`);
   };
+
 
   const top3 = TEMPLATES.slice(0, 3);
   const bot2 = TEMPLATES.slice(3);
