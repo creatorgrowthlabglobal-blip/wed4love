@@ -1082,6 +1082,7 @@ const CreateInvite = () => {
   const [isPreparing, setIsPreparing] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
   const [awaitingPayment, setAwaitingPayment] = useState(false);
+  const [orderPending, setOrderPending] = useState(false);
   const { user } = useAuth();
   const { plan: userPlan, loading: entLoading } = useInviteEntitlement(awaitingPayment);
   const hasPaid = !!userPlan;
