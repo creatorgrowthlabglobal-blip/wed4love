@@ -646,6 +646,8 @@ const ViewInvite = () => {
       attendance,
       guests: fd.get("guests_count"),
       message: fd.get("message") || undefined,
+      invitation_letter_link: `${window.location.origin}/invite/${id ?? "demo-wedding"}`,
+      rsvp_dashboard_link: `${window.location.origin}/dashboard/${id ?? "demo-wedding"}`,
     });
 
     setCelebrating(true);

@@ -1053,6 +1053,72 @@ const OrderConfirmedScreen = ({ inviteId }: { inviteId: string }) => (
   </div>
 );
 
+// ── Order placed / delivery pending screen ────────────────────────────────────
+const OrderPendingScreen = ({ email, onDone }: { email?: string; onDone: () => void }) => (
+  <div
+    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6 overflow-y-auto py-10"
+    style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
+  >
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative w-full max-w-sm text-center"
+    >
+      <div
+        className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8"
+        style={{
+          background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))",
+          boxShadow: "0 10px 40px hsl(38 72% 44% / 0.32)",
+        }}
+      >
+        <span style={{ fontSize: 38, lineHeight: 1 }}>💌</span>
+      </div>
+
+      <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3" style={{ color: "hsl(38 50% 54%)" }}>
+        Order Received
+      </p>
+
+      <h1 className="font-display font-bold mb-4" style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
+        Thank you — we're preparing your invitation
+      </h1>
+
+      <p className="font-body text-sm mb-4 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Your wedding invitation and your RSVP dashboard will be delivered
+        <strong> within 24 hours</strong>
+        {email ? <> to <strong>{email}</strong></> : null}.
+      </p>
+
+      <p className="font-body text-xs mb-8 leading-relaxed" style={{ color: "hsl(30 12% 50%)" }}>
+        Our team is reviewing your details and finishing the design by hand. If anything is missing, we'll reach out to you directly.
+      </p>
+
+      <div className="flex flex-col gap-3">
+        <a
+          href="https://wa.me/9779702238084"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl font-body text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ background: "linear-gradient(135deg, hsl(142 60% 38%), hsl(142 60% 46%))", boxShadow: "0 6px 24px hsl(142 60% 38% / 0.28)" }}
+        >
+          Contact us on WhatsApp
+        </a>
+        <button
+          onClick={onDone}
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold transition-opacity hover:opacity-80"
+          style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
+        >
+          Back to Wed4Love
+        </button>
+      </div>
+
+      <p className="font-body text-[10px] mt-5" style={{ color: "hsl(30 10% 64%)" }}>
+        +977 970 2238084
+      </p>
+    </motion.div>
+  </div>
+);
+
 // ── Step meta ──────────────────────────────────────────────────────────────────
 const STEP_META = [
   { icon: "💍", title: "The Happy Couple",     sub: "Start with the stars of the show" },
@@ -1082,6 +1148,7 @@ const CreateInvite = () => {
   const [isPreparing, setIsPreparing] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
   const [awaitingPayment, setAwaitingPayment] = useState(false);
+  const [orderPending, setOrderPending] = useState(false);
   const { user } = useAuth();
   const { plan: userPlan, loading: entLoading } = useInviteEntitlement(awaitingPayment);
   const hasPaid = !!userPlan;
@@ -1173,59 +1240,70 @@ const CreateInvite = () => {
 
   const handleCreate = () => setIsPreparing(true);
 
-  const pendingKey = user ? `pending_checkout_${user.id}` : null;
+  const pendingKey = user ? `order_pending_${user.id}` : null;
   const lastInviteKey = user ? `last_invite_${user.id}` : null;
 
-  // Restore state after a reload / redirect back from the checkout tab
+  // Restore the "order placed" state after returning from the checkout tab / reload
   useEffect(() => {
     if (!user) return;
-    const lastId = localStorage.getItem(`last_invite_${user.id}`);
-    if (lastId && getInviteLocal(lastId)) { setCreatedId(lastId); return; }
-    if (localStorage.getItem(`pending_checkout_${user.id}`)) {
-      setAwaitingPayment(true);
-      setStep(STEP_META.length);
-    }
+    if (localStorage.getItem(`order_pending_${user.id}`)) setOrderPending(true);
   }, [user]);
+
+  const buildStored = (id: string): StoredInvite => ({
+    id, template: templateId,
+    partner1: form.partner1, partner2: form.partner2,
+    hashtag: form.hashtag, email: form.email, phone: form.phone,
+    date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
+    time: formatDisplayTime(form.timeRaw),
+    rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
+    venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
+    venueLat: form.venueLat, venueLng: form.venueLng,
+    story: form.story.filter(s => s.title.trim() || s.desc.trim()),
+    schedule: form.schedule.filter(s => s.event.trim()),
+    dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
+    transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
+    hotels: form.hotels.filter(h => h.name.trim()),
+    selectedMusic: form.selectedMusic,
+    createdAt: new Date().toISOString(),
+    status: 'published',
+  });
 
   const handlePay = () => {
     saveDraft(STEP_META.length);
-    if (pendingKey) localStorage.setItem(pendingKey, templateId);
-    setAwaitingPayment(true);
-    notify("checkout_started", { email: user?.email, template: templateId, couple: `${form.partner1} & ${form.partner2}` });
+
+    // Build + store the invitation now so the admin gets the real links
+    const id = `invite-${Date.now()}`;
+    const stored = buildStored(id);
+    saveInviteLocal(stored);
+    if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
+    if (pendingKey) localStorage.setItem(pendingKey, id);
+
+    const origin = window.location.origin;
+    notify("order_placed", {
+      amount: "$49",
+      customer_email: user?.email ?? form.email,
+      couple: `${form.partner1} & ${form.partner2}`,
+      template: TEMPLATE_NAMES[templateId] ?? templateId,
+      wedding_date: stored.date,
+      time: stored.time,
+      venue: [form.venueName, form.venueCity].filter(Boolean).join(", "),
+      rsvp_deadline: stored.rsvpDeadline,
+      phone: form.phone,
+      invitation_letter_link: `${origin}/invite/${id}`,
+      rsvp_dashboard_link: `${origin}/dashboard/${id}`,
+    });
+
+    setOrderPending(true);
+
     const url = user?.email
       ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
       : `${CHECKOUT_URL}?d2c=true`;
     window.open(url, "_blank", "noopener");
   };
 
-  // Auto-publish as soon as the payment webhook grants access
-  useEffect(() => {
-    if (awaitingPayment && hasPaid) {
-      setAwaitingPayment(false);
-      setIsPreparing(true);
-    }
-  }, [awaitingPayment, hasPaid]);
-
   const finaliseCreate = () => {
     const id = `invite-${Date.now()}`;
-    const stored: StoredInvite = {
-      id, template: templateId,
-      partner1: form.partner1, partner2: form.partner2,
-      hashtag: form.hashtag, email: form.email, phone: form.phone,
-      date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
-      time: formatDisplayTime(form.timeRaw),
-      rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
-      venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
-      venueLat: form.venueLat, venueLng: form.venueLng,
-      story: form.story.filter(s => s.title.trim() || s.desc.trim()),
-      schedule: form.schedule.filter(s => s.event.trim()),
-      dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
-      transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
-      hotels: form.hotels.filter(h => h.name.trim()),
-      selectedMusic: form.selectedMusic,
-      createdAt: new Date().toISOString(),
-      status: 'published',
-    };
+    const stored = buildStored(id);
     saveInviteLocal(stored);
     if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
     if (pendingKey) localStorage.removeItem(pendingKey);
@@ -1240,6 +1318,19 @@ const CreateInvite = () => {
     const coupleName = [form.partner1, form.partner2].filter(Boolean).join(" & ");
     const tName = TEMPLATE_NAMES[templateId] ?? templateId;
     return <PreparingScreen onDone={finaliseCreate} coupleName={coupleName} templateName={tName} />;
+  }
+
+  if (orderPending) {
+    return (
+      <OrderPendingScreen
+        email={user?.email ?? form.email}
+        onDone={() => {
+          if (user) localStorage.removeItem(`order_pending_${user.id}`);
+          setOrderPending(false);
+          navigate("/");
+        }}
+      />
+    );
   }
 
   if (createdId) {
