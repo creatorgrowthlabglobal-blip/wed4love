@@ -1173,59 +1173,70 @@ const CreateInvite = () => {
 
   const handleCreate = () => setIsPreparing(true);
 
-  const pendingKey = user ? `pending_checkout_${user.id}` : null;
+  const pendingKey = user ? `order_pending_${user.id}` : null;
   const lastInviteKey = user ? `last_invite_${user.id}` : null;
 
-  // Restore state after a reload / redirect back from the checkout tab
+  // Restore the "order placed" state after returning from the checkout tab / reload
   useEffect(() => {
     if (!user) return;
-    const lastId = localStorage.getItem(`last_invite_${user.id}`);
-    if (lastId && getInviteLocal(lastId)) { setCreatedId(lastId); return; }
-    if (localStorage.getItem(`pending_checkout_${user.id}`)) {
-      setAwaitingPayment(true);
-      setStep(STEP_META.length);
-    }
+    if (localStorage.getItem(`order_pending_${user.id}`)) setOrderPending(true);
   }, [user]);
+
+  const buildStored = (id: string): StoredInvite => ({
+    id, template: templateId,
+    partner1: form.partner1, partner2: form.partner2,
+    hashtag: form.hashtag, email: form.email, phone: form.phone,
+    date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
+    time: formatDisplayTime(form.timeRaw),
+    rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
+    venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
+    venueLat: form.venueLat, venueLng: form.venueLng,
+    story: form.story.filter(s => s.title.trim() || s.desc.trim()),
+    schedule: form.schedule.filter(s => s.event.trim()),
+    dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
+    transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
+    hotels: form.hotels.filter(h => h.name.trim()),
+    selectedMusic: form.selectedMusic,
+    createdAt: new Date().toISOString(),
+    status: 'published',
+  });
 
   const handlePay = () => {
     saveDraft(STEP_META.length);
-    if (pendingKey) localStorage.setItem(pendingKey, templateId);
-    setAwaitingPayment(true);
-    notify("checkout_started", { email: user?.email, template: templateId, couple: `${form.partner1} & ${form.partner2}` });
+
+    // Build + store the invitation now so the admin gets the real links
+    const id = `invite-${Date.now()}`;
+    const stored = buildStored(id);
+    saveInviteLocal(stored);
+    if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
+    if (pendingKey) localStorage.setItem(pendingKey, id);
+
+    const origin = window.location.origin;
+    notify("order_placed", {
+      amount: "$49",
+      customer_email: user?.email ?? form.email,
+      couple: `${form.partner1} & ${form.partner2}`,
+      template: TEMPLATE_NAMES[templateId] ?? templateId,
+      wedding_date: stored.date,
+      time: stored.time,
+      venue: [form.venueName, form.venueCity].filter(Boolean).join(", "),
+      rsvp_deadline: stored.rsvpDeadline,
+      phone: form.phone,
+      invitation_letter_link: `${origin}/invite/${id}`,
+      rsvp_dashboard_link: `${origin}/dashboard/${id}`,
+    });
+
+    setOrderPending(true);
+
     const url = user?.email
       ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
       : `${CHECKOUT_URL}?d2c=true`;
     window.open(url, "_blank", "noopener");
   };
 
-  // Auto-publish as soon as the payment webhook grants access
-  useEffect(() => {
-    if (awaitingPayment && hasPaid) {
-      setAwaitingPayment(false);
-      setIsPreparing(true);
-    }
-  }, [awaitingPayment, hasPaid]);
-
   const finaliseCreate = () => {
     const id = `invite-${Date.now()}`;
-    const stored: StoredInvite = {
-      id, template: templateId,
-      partner1: form.partner1, partner2: form.partner2,
-      hashtag: form.hashtag, email: form.email, phone: form.phone,
-      date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
-      time: formatDisplayTime(form.timeRaw),
-      rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
-      venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
-      venueLat: form.venueLat, venueLng: form.venueLng,
-      story: form.story.filter(s => s.title.trim() || s.desc.trim()),
-      schedule: form.schedule.filter(s => s.event.trim()),
-      dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
-      transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
-      hotels: form.hotels.filter(h => h.name.trim()),
-      selectedMusic: form.selectedMusic,
-      createdAt: new Date().toISOString(),
-      status: 'published',
-    };
+    const stored = buildStored(id);
     saveInviteLocal(stored);
     if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
     if (pendingKey) localStorage.removeItem(pendingKey);
@@ -1240,6 +1251,19 @@ const CreateInvite = () => {
     const coupleName = [form.partner1, form.partner2].filter(Boolean).join(" & ");
     const tName = TEMPLATE_NAMES[templateId] ?? templateId;
     return <PreparingScreen onDone={finaliseCreate} coupleName={coupleName} templateName={tName} />;
+  }
+
+  if (orderPending) {
+    return (
+      <OrderPendingScreen
+        email={user?.email ?? form.email}
+        onDone={() => {
+          if (user) localStorage.removeItem(`order_pending_${user.id}`);
+          setOrderPending(false);
+          navigate("/");
+        }}
+      />
+    );
   }
 
   if (createdId) {
