@@ -206,9 +206,10 @@ function useCountdown(dateISO: string) {
 }
 
 // ── Envelope Reveal ───────────────────────────────────────────────────────────
-const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
+const EnvelopeReveal = ({ onOpen, groom, bride, date }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
+  const [ready, setReady] = useState(false); // video has a paintable frame
   const tappedRef = useRef(false); // ref so async callbacks can check without stale closure
 
   // Show first frame on mobile: muted autoplay → pause at 0
@@ -226,8 +227,12 @@ const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: 
         if (!tappedRef.current) v.currentTime = 0.001;
       }
       v.muted = false;
+      setReady(true);
     };
     v.readyState >= 2 ? show() : v.addEventListener('loadeddata', show, { once: true });
+    // Safety net: never leave the guest staring at an empty screen
+    const t = setTimeout(() => setReady(true), 2500);
+    return () => clearTimeout(t);
   }, []);
 
   const tap = () => {
@@ -245,22 +250,51 @@ const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: 
     <motion.div
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: "easeIn" }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black cursor-pointer select-none"
+      className="fixed inset-0 z-[100] flex items-center justify-center cursor-pointer select-none overflow-hidden"
+      style={{ background: "linear-gradient(160deg, hsl(35 30% 12%), hsl(28 25% 8%))" }}
       onClick={tap}
     >
+      {/* Elegant placeholder shown until the envelope video can paint a frame */}
+      <AnimatePresence>
+        {!ready && (
+          <motion.div
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center"
+            style={{ background: "linear-gradient(160deg, hsl(38 40% 96%), hsl(35 35% 90%))" }}
+          >
+            <p className="font-body tracking-[0.3em] uppercase mb-4" style={{ fontSize: "0.6rem", color: "hsl(38 45% 42%)" }}>
+              You are invited
+            </p>
+            <p className="font-handwritten leading-tight" style={{ fontSize: "clamp(2rem, 9vw, 3.4rem)", color: "hsl(30 22% 18%)" }}>
+              {groom} &amp; {bride}
+            </p>
+            <p className="font-body text-sm mt-3" style={{ color: "hsl(30 14% 40%)" }}>{date}</p>
+            <div className="mt-8 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "hsl(38 60% 50%)" }} />
+              <span className="font-body text-[11px]" style={{ color: "hsl(30 14% 48%)" }}>Preparing your invitation…</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <video
         ref={videoRef}
         src="/envelope.mp4"
         playsInline
         preload="auto"
+        poster="/envelope-preview.png"
+        onLoadedData={() => setReady(true)}
         onEnded={() => setTimeout(onOpen, 500)}
-        className="w-full h-full object-cover"
-        style={{ pointerEvents: "none" }}
+        onError={() => { setReady(true); onOpen(); }}
+        className="w-full h-full object-cover transition-opacity duration-500"
+        style={{ pointerEvents: "none", opacity: ready ? 1 : 0 }}
       />
 
       <AnimatePresence>
-        {!started && (
+        {ready && !started && (
           <motion.p
+            initial={{ opacity: 0 }}
             exit={{ opacity: 0 }}
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
