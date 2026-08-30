@@ -53,11 +53,14 @@ const Header = () => {
 
         {/* Right actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <CurrencySwitcher />
-          <LanguageSwitcher />
+          {/* Desktop-only utility switchers */}
+          <div className="hidden md:flex items-center gap-2 sm:gap-3">
+            <CurrencySwitcher />
+            <LanguageSwitcher />
+          </div>
           <Link
             to="/pricing"
-            className="hidden sm:inline-block font-body text-sm font-semibold px-5 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95"
+            className="hidden md:inline-block font-body text-sm font-semibold px-5 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
             style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(38 80% 55% / 0.26)" }}
           >
             Get Started
@@ -65,6 +68,7 @@ const Header = () => {
           <button
             onClick={() => setOpen(v => !v)}
             aria-label="Toggle menu"
+            aria-expanded={open}
             className="md:hidden p-2 rounded-xl"
             style={{ color: "hsl(30 12% 40%)" }}
           >
@@ -80,7 +84,8 @@ const Header = () => {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg p-3 flex flex-col"
+            transition={{ duration: 0.2 }}
+            className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg p-3 flex flex-col gap-1"
             style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
           >
             {LINKS.map(l => (
@@ -94,6 +99,16 @@ const Header = () => {
                 {l.label}
               </Link>
             ))}
+
+            {/* Divider */}
+            <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
+
+            {/* Utility switchers */}
+            <div className="flex items-center gap-2 px-2 py-1">
+              <CurrencySwitcher />
+              <LanguageSwitcher />
+            </div>
+
             <Link
               to="/pricing"
               onClick={() => setOpen(false)}

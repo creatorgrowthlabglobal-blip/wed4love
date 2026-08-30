@@ -5,7 +5,7 @@ import {
   Sparkles, QrCode, LayoutDashboard, CheckCircle2,
   Play, ArrowRight, ChevronDown, ChevronUp,
   Clock, Heart, Users, Smartphone, Shield, Music2, LogOut, PlusCircle, BookOpen,
-  FileText, Printer, Mail, Truck, X, Bell, Send, Check,
+  FileText, Printer, Mail, Truck, X, Bell, Send, Check, Menu,
 } from "lucide-react";
 import gardenRoseThumbnail   from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail  from "@/assets/rustic-bloom-thumbnail.png";
@@ -116,10 +116,19 @@ const GetStartedLink = ({ className, style, children }: { className: string; sty
 };
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
+const NAV_LINKS = [
+  { to: "/#how-it-works", label: "How It Works", hash: "how-it-works" as const },
+  { to: "/pricing",       label: "Pricing" },
+  { to: "/blog",          label: "Blog" },
+  { to: "/demo",          label: "Demo" },
+  { to: "/contact",       label: "Contact" },
+];
+
 const Nav = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navLinkSt: React.CSSProperties = { color: "hsl(30 12% 48%)" };
   const onEnter = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = GOLD);
@@ -127,6 +136,7 @@ const Nav = () => {
 
   const onHowItWorks = (e: React.MouseEvent) => {
     e.preventDefault();
+    setMenuOpen(false);
     if (location.pathname === "/") {
       document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
@@ -152,54 +162,34 @@ const Nav = () => {
           </span>
         </Link>
 
-        {/* Center Nav */}
-        <nav className="hidden sm:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-          <a
-            href="/#how-it-works"
-            onClick={onHowItWorks}
-            className="font-body text-sm transition-colors duration-200"
-            style={navLinkSt}
-            onMouseEnter={onEnter}
-            onMouseLeave={onLeave}
-          >
-            How It Works
-          </a>
-          <Link
-            to="/choose-template"
-            className="font-body text-sm transition-colors duration-200"
-            style={navLinkSt}
-            onMouseEnter={onEnter}
-            onMouseLeave={onLeave}
-          >
-            Pricing
-          </Link>
-          <Link
-            to="/blog"
-            className="font-body text-sm transition-colors duration-200"
-            style={navLinkSt}
-            onMouseEnter={onEnter}
-            onMouseLeave={onLeave}
-          >
-            Blog
-          </Link>
-          <Link
-            to="/demo"
-            className="font-body text-sm transition-colors duration-200"
-            style={navLinkSt}
-            onMouseEnter={onEnter}
-            onMouseLeave={onLeave}
-          >
-            Demo
-          </Link>
-          <Link
-            to="/contact"
-            className="font-body text-sm transition-colors duration-200"
-            style={navLinkSt}
-            onMouseEnter={onEnter}
-            onMouseLeave={onLeave}
-          >
-            Contact
-          </Link>
+        {/* Center Nav — desktop only */}
+        <nav className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+          {NAV_LINKS.map(l =>
+            l.hash ? (
+              <a
+                key={l.label}
+                href={l.to}
+                onClick={onHowItWorks}
+                className="font-body text-sm transition-colors duration-200"
+                style={navLinkSt}
+                onMouseEnter={onEnter}
+                onMouseLeave={onLeave}
+              >
+                {l.label}
+              </a>
+            ) : (
+              <Link
+                key={l.label}
+                to={l.to}
+                className="font-body text-sm transition-colors duration-200"
+                style={navLinkSt}
+                onMouseEnter={onEnter}
+                onMouseLeave={onLeave}
+              >
+                {l.label}
+              </Link>
+            )
+          )}
           {!loading && user && (
             <button
               onClick={() => navigate("/my-invitations")}
@@ -216,8 +206,13 @@ const Nav = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3 z-10">
-          <CurrencySwitcher />
-          <LanguageSwitcher />
+          {/* Utility switchers — desktop only */}
+          <div className="hidden md:flex items-center gap-2 sm:gap-3">
+            <CurrencySwitcher />
+            <LanguageSwitcher />
+          </div>
+
+          {/* Desktop-only auth buttons */}
           {!loading && (
             user ? (
               <UserMenu />
@@ -225,14 +220,14 @@ const Nav = () => {
               <>
                 <Link
                   to="/login"
-                  className="font-body text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-70"
+                  className="hidden md:inline-block font-body text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-70"
                   style={{ color: "hsl(30 18% 38%)" }}
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/login"
-                  className="font-body text-sm font-semibold px-5 py-2.5 rounded-xl transition-all hover:opacity-90 active:scale-95"
+                  className="font-body text-sm font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
                   style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 18px hsl(38 80% 55% / 0.28)" }}
                 >
                   Get Started
@@ -240,8 +235,88 @@ const Nav = () => {
               </>
             )
           )}
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMenuOpen(v => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            className="md:hidden p-2 rounded-xl transition-colors"
+            style={{ color: "hsl(30 12% 40%)" }}
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg p-3 flex flex-col gap-1"
+            style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
+          >
+            {NAV_LINKS.map(l =>
+              l.hash ? (
+                <a
+                  key={l.label}
+                  href={l.to}
+                  onClick={onHowItWorks}
+                  className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50"
+                  style={{ color: "hsl(30 12% 40%)" }}
+                >
+                  {l.label}
+                </a>
+              ) : (
+                <Link
+                  key={l.label}
+                  to={l.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50"
+                  style={{ color: "hsl(30 12% 40%)" }}
+                >
+                  {l.label}
+                </Link>
+              )
+            )}
+            {!loading && user && (
+              <button
+                onClick={() => { setMenuOpen(false); navigate("/my-invitations"); }}
+                className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50 text-left flex items-center gap-1.5"
+                style={{ color: "hsl(30 12% 40%)" }}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                My Invitations
+              </button>
+            )}
+
+            {/* Divider */}
+            <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
+
+            {/* Utility switchers */}
+            <div className="flex items-center gap-2 px-2 py-1">
+              <CurrencySwitcher />
+              <LanguageSwitcher />
+            </div>
+
+            {/* Auth buttons */}
+            {!loading && !user && (
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="mt-1 font-body text-sm font-medium px-3 py-2.5 rounded-xl hover:bg-amber-50"
+                style={{ color: "hsl(30 18% 38%)" }}
+              >
+                Sign In
+              </Link>
+            )}
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };
