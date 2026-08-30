@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { ArrowLeft, Check, Star, Zap, Flame, Clock, Crown, X, Phone, Mail, Calendar, MessageSquare, User, CheckCircle2 } from "lucide-react";
 
 const GOLD = "hsl(38 72% 44%)";
@@ -80,7 +81,7 @@ const PLANS = [
       "Valid for 1 year",
     ],
     disabled: [],
-    cta: "Claim $50 Off →",
+    cta: "Claim Launch Discount →",
     href: "https://whop.com/checkout/plan_OizfizAnMNsVO",
     external: true,
   },
@@ -156,6 +157,7 @@ const InviteTemplates = () => {
   const [deadline] = useState(getSaleDeadline);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { format, showUsdNote, usdNote } = useCurrency();
   const isBypassUser = user?.email?.toLowerCase() === "lala@gmail.com";
 
   return (
@@ -258,19 +260,24 @@ const InviteTemplates = () => {
 
                   <div className="flex items-baseline gap-2 mb-1">
                     {plan.originalPrice && (
-                      <span className="font-body text-sm line-through text-muted-foreground">${plan.originalPrice}</span>
+                      <span className="font-body text-sm line-through text-muted-foreground">{format(plan.originalPrice)}</span>
                     )}
-                    <span className="font-body text-xs" style={{ color: "hsl(30 12% 52%)" }}>$</span>
                     <span
                       className="font-display text-4xl font-bold"
                       style={{ color: plan.highlight ? "hsl(0 60% 44%)" : "hsl(30 20% 18%)" }}
                     >
-                      {plan.price}
+                      {format(plan.price)}
                     </span>
                     <span className="font-body text-xs" style={{ color: "hsl(30 12% 52%)" }}>
                       one-time
                     </span>
                   </div>
+
+                  {showUsdNote && (
+                    <p className="font-body text-[10px] mt-1" style={{ color: "hsl(30 12% 55%)" }}>
+                      charged as {usdNote(plan.price)}
+                    </p>
+                  )}
 
                   {plan.originalPrice && (
                     <div className="flex items-center gap-2 mt-1.5">
@@ -278,7 +285,7 @@ const InviteTemplates = () => {
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-body text-[10px] font-bold"
                         style={{ background: "hsl(0 72% 51% / 0.1)", color: "hsl(0 60% 40%)" }}
                       >
-                        <Flame className="w-2.5 h-2.5" /> Save $50 — launch price
+                        <Flame className="w-2.5 h-2.5" /> Save {format(plan.originalPrice - plan.price)} — launch price
                       </span>
                     </div>
                   )}

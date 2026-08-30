@@ -15,6 +15,7 @@ const ICONS: Record<string, string> = {
   contact_message: '✉️',
   checkout_started: '🛒',
   reply_letter_started: '🔁',
+  custom_inquiry: '👑',
 };
 
 const esc = (s: unknown) =>

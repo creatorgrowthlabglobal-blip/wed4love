@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import InviteTemplates from "./pages/InviteTemplates";
@@ -19,6 +20,8 @@ import Contact from "./pages/Contact";
 import CustomInquiry from "./pages/CustomInquiry";
 import MyInvitations from "./pages/MyInvitations";
 import Demo from "./pages/Demo";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +33,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <CurrencyProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<AuthPage />} />
@@ -45,8 +49,11 @@ const App = () => (
             <Route path="/custom-inquiry" element={<CustomInquiry />} />
             <Route path="/my-invitations" element={<ProtectedRoute><MyInvitations /></ProtectedRoute>} />
             <Route path="/demo" element={<Demo />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </CurrencyProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

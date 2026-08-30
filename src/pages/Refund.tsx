@@ -22,7 +22,7 @@ const Refund = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">2. How to Request a Refund</h2>
-            <p>To request a refund, please email <span className="text-primary">hello@wed4love.com</span> or use our <Link to="/contact" className="text-primary underline">contact form</Link> within 14 days of your purchase. Include:</p>
+            <p>To request a refund, please email <span className="text-primary">wed4loveglobal@gmail.com</span> or use our <Link to="/contact" className="text-primary underline">contact form</Link> within 14 days of your purchase. Include:</p>
             <ul className="list-disc list-inside mt-3 space-y-1">
               <li>Your account email address</li>
               <li>The invitation ID or link (if available)</li>

@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, CheckCircle2, Loader2,
-  User, Heart, Calendar, Clock, Palette, Phone, Mail,
-  MapPin, Users, Sparkles, MessageSquare,
+  User, Palette, MapPin, Sparkles, Mail, Phone,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,27 +24,12 @@ const STYLES = [
 
 const GUEST_OPTIONS = ["Under 50", "50–100", "100–200", "200–300", "300+"];
 
-const PLATFORMS = [
-  { id: "google-meet", label: "Google Meet", icon: "🎥" },
-  { id: "zoom", label: "Zoom", icon: "💻" },
-  { id: "whatsapp", label: "WhatsApp Call", icon: "📱" },
-  { id: "facebook", label: "Facebook Messenger", icon: "💬" },
-  { id: "telegram", label: "Telegram", icon: "✈️" },
-  { id: "other", label: "Other / No preference", icon: "🔗" },
-];
+const STEPS = ["About You", "Your Wedding", "Design Vision"];
 
-const TIMEZONES = [
-  "Asia/Manila", "Asia/Singapore", "Asia/Kuala_Lumpur", "Asia/Jakarta",
-  "Asia/Bangkok", "Asia/Tokyo", "Asia/Seoul", "Asia/Kolkata",
-  "Asia/Dubai", "Asia/Karachi", "Asia/Dhaka",
-  "Europe/London", "Europe/Paris", "Europe/Berlin", "Europe/Moscow",
-  "Africa/Nairobi", "Africa/Lagos", "Africa/Johannesburg",
-  "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
-  "America/Toronto", "America/Sao_Paulo", "America/Mexico_City",
-  "Pacific/Auckland", "Australia/Sydney", "Australia/Melbourne",
-];
-
-const STEPS = ["About You", "Your Wedding", "Design Vision", "Schedule a Call"];
+const CONTACT_EMAIL = "wed4loveglobal@gmail.com";
+const CONTACT_WHATSAPP = "9779702238084";
+const CONTACT_WHATSAPP_DISPLAY = "+977 9702238084";
+const WHATSAPP_LINK = `https://wa.me/${CONTACT_WHATSAPP}?text=${encodeURIComponent("Hi Wed4Love! I just sent a Custom invitation inquiry.")}`;
 
 interface FormData {
   // Step 1
@@ -63,23 +47,12 @@ interface FormData {
   colorPalette: string;
   vibe: string;
   specialElements: string;
-  // Step 4
-  slot1Date: string;
-  slot1Time: string;
-  slot2Date: string;
-  slot2Time: string;
-  slot3Date: string;
-  slot3Time: string;
-  timezone: string;
-  callPlatform: string;
 }
 
 const EMPTY: FormData = {
   yourName: "", partnerName: "", email: "", phone: "",
   weddingDate: "", venue: "", guestCount: "", inviteDeadline: "",
   designStyle: "", colorPalette: "", vibe: "", specialElements: "",
-  slot1Date: "", slot1Time: "", slot2Date: "", slot2Time: "",
-  slot3Date: "", slot3Time: "", timezone: "Asia/Manila", callPlatform: "",
 };
 
 const inputCls =
@@ -222,54 +195,6 @@ const Step3 = ({ f, set }: { f: FormData; set: (k: keyof FormData, v: string) =>
   </div>
 );
 
-const Step4 = ({ f, set }: { f: FormData; set: (k: keyof FormData, v: string) => void }) => (
-  <div className="flex flex-col gap-5">
-    <p className="font-body text-xs text-muted-foreground -mt-1">
-      Give us 2–3 windows when you're free. We'll confirm one within 24 hours.
-    </p>
-
-    {([
-      ["slot1Date", "slot1Time", "Preferred slot 1"],
-      ["slot2Date", "slot2Time", "Preferred slot 2"],
-      ["slot3Date", "slot3Time", "Preferred slot 3 (optional)"],
-    ] as [keyof FormData, keyof FormData, string][]).map(([dk, tk, label]) => (
-      <div key={dk}>
-        <label className={labelCls}>{label}</label>
-        <div className="grid grid-cols-2 gap-3">
-          <input className={inputCls} type="date" min={new Date().toISOString().split("T")[0]} value={f[dk]} onChange={e => set(dk, e.target.value)} />
-          <input className={inputCls} type="time" value={f[tk]} onChange={e => set(tk, e.target.value)} />
-        </div>
-      </div>
-    ))}
-
-    <Field label="Your timezone">
-      <select className={inputCls} value={f.timezone} onChange={e => set("timezone", e.target.value)}>
-        {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz.replace("_", " ")}</option>)}
-      </select>
-    </Field>
-
-    <Field label="Preferred call platform">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">
-        {PLATFORMS.map(p => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => set("callPlatform", p.id)}
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-body text-xs font-semibold border transition-all"
-            style={
-              f.callPlatform === p.id
-                ? { background: "hsl(38 72% 96%)", border: `1.5px solid ${GOLD}`, color: GOLD }
-                : { background: "white", border: "1.5px solid hsl(38 28% 88%)", color: "hsl(30 18% 32%)" }
-            }
-          >
-            <span>{p.icon}</span> {p.label}
-          </button>
-        ))}
-      </div>
-    </Field>
-  </div>
-);
-
 function validateStep(step: number, f: FormData): string | null {
   if (step === 0) {
     if (!f.yourName.trim()) return "Please enter your name.";
@@ -288,20 +213,12 @@ function validateStep(step: number, f: FormData): string | null {
     if (!f.colorPalette.trim()) return "Please describe your preferred colors.";
     if (!f.vibe.trim()) return "Please describe the vibe you're going for.";
   }
-  if (step === 3) {
-    if (!f.slot1Date || !f.slot1Time) return "Please provide at least your first preferred time slot.";
-    if (new Date(`${f.slot1Date}T${f.slot1Time}`) <= new Date()) return "Your first slot must be a future date and time.";
-    if (!f.slot2Date || !f.slot2Time) return "Please provide a second preferred time slot.";
-    if (new Date(`${f.slot2Date}T${f.slot2Time}`) <= new Date()) return "Your second slot must be a future date and time.";
-    if (!f.callPlatform) return "Please select your preferred call platform.";
-  }
   return null;
 }
 
 function buildMessage(f: FormData): string {
   const styleName = STYLES.find(s => s.id === f.designStyle)?.label ?? f.designStyle;
   const fmt = (d: string) => d ? new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—";
-  const slot = (d: string, t: string) => d && t ? `${fmt(d)} at ${t} (${f.timezone})` : "—";
 
   return `
 CUSTOM INVITATION INQUIRY
@@ -323,13 +240,24 @@ Style: ${styleName}
 Color palette: ${f.colorPalette}
 Vibe / mood: ${f.vibe}
 Special elements: ${f.specialElements || "None specified"}
-
-— Availability for Design Call —
-Preferred platform: ${PLATFORMS.find(p => p.id === f.callPlatform)?.label ?? f.callPlatform}
-Slot 1: ${slot(f.slot1Date, f.slot1Time)}
-Slot 2: ${slot(f.slot2Date, f.slot2Time)}
-Slot 3: ${slot(f.slot3Date, f.slot3Time)}
 `.trim();
+}
+
+function buildTelegramData(f: FormData) {
+  const styleName = STYLES.find(s => s.id === f.designStyle)?.label ?? f.designStyle;
+  return {
+    couple: `${f.yourName} & ${f.partnerName}`,
+    email: f.email,
+    phone: f.phone,
+    wedding_date: f.weddingDate,
+    venue: f.venue,
+    guest_count: f.guestCount,
+    invite_deadline: f.inviteDeadline,
+    style: styleName,
+    color_palette: f.colorPalette,
+    vibe: f.vibe,
+    special_elements: f.specialElements || "—",
+  };
 }
 
 const CustomInquiry = () => {
@@ -354,7 +282,7 @@ const CustomInquiry = () => {
   const back = () => { setDirection(-1); setStep(s => s - 1); };
 
   const submit = async () => {
-    const err = validateStep(3, form);
+    const err = validateStep(2, form);
     if (err) { toast({ title: "Missing info", description: err, variant: "destructive" }); return; }
     setLoading(true);
     try {
@@ -367,11 +295,16 @@ const CustomInquiry = () => {
         },
       });
       if (error) throw error;
+
+      supabase.functions
+        .invoke("telegram-notify", { body: { event: "custom_inquiry", data: buildTelegramData(form) } })
+        .catch(e => console.warn("telegram-notify failed", e));
+
       setDone(true);
     } catch (err: any) {
       toast({
         title: "Couldn't send your inquiry",
-        description: err?.message ?? "Please try again or email hello@wed4love.com directly.",
+        description: err?.message ?? `Please try again or email ${CONTACT_EMAIL} directly.`,
         variant: "destructive",
       });
     } finally {
@@ -386,7 +319,7 @@ const CustomInquiry = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-sm"
+          className="text-center max-w-md w-full"
         >
           <div className="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-5"
             style={{ background: GOLD_GRAD, boxShadow: "0 8px 30px hsl(38 80% 55% / 0.35)" }}>
@@ -394,12 +327,54 @@ const CustomInquiry = () => {
           </div>
           <h2 className="font-display text-2xl font-bold text-foreground mb-2">Inquiry received!</h2>
           <p className="font-body text-sm text-muted-foreground mb-2">
-            Thank you, <span className="font-semibold text-foreground">{form.yourName}</span>. We'll review your details
-            and confirm one of your call slots within <strong>24 hours</strong>.
+            Thank you, <span className="font-semibold text-foreground">{form.yourName}</span>. Our creator will
+            personally review your details and reach out within <strong>24 hours</strong>.
           </p>
-          <p className="font-body text-xs text-muted-foreground mb-8">
+          <p className="font-body text-xs text-muted-foreground mb-6">
             A copy has been sent to <span className="font-medium">{form.email}</span>.
           </p>
+
+          <div
+            className="rounded-2xl p-5 mb-6 text-left"
+            style={{ background: "white", border: "1.5px solid hsl(38 28% 90%)", boxShadow: "0 4px 20px hsl(38 28% 55% / 0.08)" }}
+          >
+            <p className="font-body text-[11px] tracking-[0.24em] uppercase font-semibold mb-3 text-center" style={{ color: GOLD }}>
+              Want to reach the creator directly?
+            </p>
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition-all hover:scale-[1.01] active:scale-[0.98]"
+              style={{ background: "hsl(142 55% 96%)", border: "1.5px solid hsl(142 55% 82%)" }}
+            >
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "hsl(142 55% 42%)" }}>
+                <Phone className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-body text-[10px] font-semibold uppercase tracking-wider" style={{ color: "hsl(142 40% 32%)" }}>
+                  WhatsApp
+                </p>
+                <p className="font-body text-sm font-semibold text-foreground truncate">{CONTACT_WHATSAPP_DISPLAY}</p>
+              </div>
+            </a>
+            <a
+              href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Custom Invitation Inquiry follow-up")}`}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:scale-[1.01] active:scale-[0.98]"
+              style={{ background: "hsl(38 60% 96%)", border: "1.5px solid hsl(38 50% 82%)" }}
+            >
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: GOLD_GRAD }}>
+                <Mail className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-body text-[10px] font-semibold uppercase tracking-wider" style={{ color: "hsl(30 40% 32%)" }}>
+                  Email
+                </p>
+                <p className="font-body text-sm font-semibold text-foreground truncate">{CONTACT_EMAIL}</p>
+              </div>
+            </a>
+          </div>
+
           <button
             onClick={() => navigate("/")}
             className="w-full py-3 rounded-2xl font-body text-sm font-bold text-white transition-all hover:opacity-90"
@@ -416,10 +391,9 @@ const CustomInquiry = () => {
     <Step1 key="s1" f={form} set={set} />,
     <Step2 key="s2" f={form} set={set} />,
     <Step3 key="s3" f={form} set={set} />,
-    <Step4 key="s4" f={form} set={set} />,
   ];
 
-  const stepIcons = [User, MapPin, Palette, Calendar];
+  const stepIcons = [User, MapPin, Palette];
   const StepIcon = stepIcons[step];
 
   return (

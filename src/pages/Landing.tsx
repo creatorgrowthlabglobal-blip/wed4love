@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles, QrCode, LayoutDashboard, CheckCircle2,
   Play, ArrowRight, ChevronDown, ChevronUp,
   Clock, Heart, Users, Smartphone, Shield, Music2, LogOut, PlusCircle, BookOpen,
+  FileText, Printer, Mail, Truck, X, Bell, Send, Check,
 } from "lucide-react";
 import gardenRoseThumbnail   from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail  from "@/assets/rustic-bloom-thumbnail.png";
@@ -13,6 +14,8 @@ import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import softLoveThumbnail     from "@/assets/soft-love-thumbnail.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const GOLD       = "hsl(38 72% 44%)";
 const GOLD_LIGHT = "hsl(38 80% 52%)";
@@ -116,10 +119,20 @@ const GetStartedLink = ({ className, style, children }: { className: string; sty
 const Nav = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navLinkSt: React.CSSProperties = { color: "hsl(30 12% 48%)" };
   const onEnter = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = GOLD);
   const onLeave = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = "hsl(30 12% 48%)");
+
+  const onHowItWorks = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      navigate("/#how-it-works");
+    }
+  };
 
   return (
     <motion.header
@@ -141,6 +154,16 @@ const Nav = () => {
 
         {/* Center Nav */}
         <nav className="hidden sm:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+          <a
+            href="/#how-it-works"
+            onClick={onHowItWorks}
+            className="font-body text-sm transition-colors duration-200"
+            style={navLinkSt}
+            onMouseEnter={onEnter}
+            onMouseLeave={onLeave}
+          >
+            How It Works
+          </a>
           <Link
             to="/pricing"
             className="font-body text-sm transition-colors duration-200"
@@ -151,6 +174,15 @@ const Nav = () => {
             Pricing
           </Link>
           <Link
+            to="/blog"
+            className="font-body text-sm transition-colors duration-200"
+            style={navLinkSt}
+            onMouseEnter={onEnter}
+            onMouseLeave={onLeave}
+          >
+            Blog
+          </Link>
+          <Link
             to="/demo"
             className="font-body text-sm transition-colors duration-200"
             style={navLinkSt}
@@ -158,6 +190,15 @@ const Nav = () => {
             onMouseLeave={onLeave}
           >
             Demo
+          </Link>
+          <Link
+            to="/contact"
+            className="font-body text-sm transition-colors duration-200"
+            style={navLinkSt}
+            onMouseEnter={onEnter}
+            onMouseLeave={onLeave}
+          >
+            Contact
           </Link>
           {!loading && user && (
             <button
@@ -175,6 +216,7 @@ const Nav = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3 z-10">
+          <CurrencySwitcher />
           <LanguageSwitcher />
           {!loading && (
             user ? (
@@ -221,7 +263,9 @@ const HERO_AVATARS = [
   { i: "EM", bg: "hsl(270 52% 56%)" },
 ];
 
-const Hero = () => (
+const Hero = () => {
+  const { format } = useCurrency();
+  return (
   <section
     className="relative flex flex-col items-center pt-28 pb-0 overflow-hidden"
     style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)", minHeight: "100vh" }}
@@ -242,7 +286,7 @@ const Hero = () => (
           className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
           style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
         >
-          <Sparkles className="w-3 h-3" /> Digital Wedding Invitations · from $49
+          <Sparkles className="w-3 h-3" /> Digital Wedding Invitations · from {format(49)}
         </div>
 
         <h1
@@ -390,7 +434,218 @@ const Hero = () => (
       </div>
     </motion.div>
   </section>
-);
+  );
+};
+
+// ── Paper vs Digital comparison ──────────────────────────────────────────────
+const Comparison = () => {
+  const { format, showUsdNote, usdNote } = useCurrency();
+  const PAPER = { design: 120, printing: 180, envelopes: 35, shipping: 100 };
+  const paperTotal = PAPER.design + PAPER.printing + PAPER.envelopes + PAPER.shipping;
+  const digital = 49;
+  const savings = paperTotal - digital;
+
+  const PAPER_BG = "hsl(35 22% 96%)";
+  const DIGITAL_BG = "linear-gradient(155deg, hsl(28 32% 15%) 0%, hsl(28 28% 10%) 100%)";
+
+  const nowStamp = new Date().toLocaleString("en-US", {
+    month: "2-digit", day: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+
+  return (
+    <section className="py-24 px-4" style={{ background: "hsl(42 45% 96%)" }}>
+      <div className="max-w-5xl mx-auto">
+        <motion.div {...fade()} className="text-center mb-14">
+          <span
+            className="inline-block px-4 py-1.5 rounded-full font-body text-xs font-semibold mb-5"
+            style={{ background: "hsl(38 40% 88%)", color: "hsl(30 30% 30%)" }}
+          >
+            Comparison
+          </span>
+          <h2
+            className="font-display font-bold leading-tight text-foreground mb-4"
+            style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)" }}
+          >
+            Paper Invitation vs{" "}
+            <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
+              Digital Invitation
+            </span>
+          </h2>
+          <p className="font-body text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
+            See how much you save with digital — while getting far more features.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+          {/* ─── Paper receipt card ─── */}
+          <motion.div {...fade(0.1)} className="relative">
+            <div
+              style={{
+                background: PAPER_BG,
+                boxShadow: "0 12px 40px hsl(30 20% 40% / 0.14)",
+                borderTopLeftRadius: "1.5rem",
+                borderTopRightRadius: "1.5rem",
+              }}
+            >
+              <div className="p-7 sm:p-8 font-mono" style={{ color: "hsl(30 25% 22%)" }}>
+                {/* Receipt header */}
+                <div className="text-center mb-6">
+                  <p className="text-[11px] tracking-widest opacity-60">*** WEDDING COSTS ***</p>
+                  <p className="text-base sm:text-lg font-bold tracking-widest mt-1">PAPER INVITATION</p>
+                  <p className="text-[11px] opacity-50 mt-1 tracking-wider">─────────────────────</p>
+                </div>
+
+                {/* Line items */}
+                <ul className="flex flex-col gap-3 mb-6">
+                  {[
+                    { icon: FileText, label: "DESIGN",         amount: PAPER.design },
+                    { icon: Printer,  label: "PRINTING (100)", amount: PAPER.printing },
+                    { icon: Mail,     label: "ENVELOPES",      amount: PAPER.envelopes },
+                    { icon: Truck,    label: "SHIPPING",       amount: PAPER.shipping },
+                  ].map(item => (
+                    <li key={item.label} className="flex items-center gap-3 pb-2.5"
+                      style={{ borderBottom: "1px dashed hsl(30 20% 78%)" }}
+                    >
+                      <item.icon className="w-4 h-4 shrink-0 opacity-70" />
+                      <span className="flex-1 text-[13px] tracking-wider">{item.label}</span>
+                      <span className="text-[13px] font-bold">{format(item.amount)}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <p className="text-center opacity-40 text-xs mb-3 tracking-widest">══════════════════════</p>
+
+                {/* Total */}
+                <div className="flex items-center justify-between pb-4"
+                  style={{ borderBottom: "1px solid hsl(30 20% 60% / 0.4)" }}
+                >
+                  <span className="text-sm font-bold tracking-wider">TOTAL</span>
+                  <span
+                    className="text-2xl font-bold"
+                    style={{ color: "hsl(0 65% 45%)", textDecoration: "line-through" }}
+                  >
+                    {format(paperTotal)}
+                  </span>
+                </div>
+
+                {/* Footer */}
+                <div className="text-center pt-5">
+                  <p className="inline-flex items-center gap-1.5 text-[12px] tracking-wider font-bold"
+                    style={{ color: "hsl(0 65% 45%)" }}
+                  >
+                    <X className="w-3.5 h-3.5" /> NO TRACKING / NO RSVP
+                  </p>
+                  <p className="text-[11px] opacity-55 mt-3 tracking-wider">THANK YOU FOR YOUR MONEY!</p>
+                  <p className="text-[10px] opacity-35 mt-1 tracking-wider">{nowStamp}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Torn zigzag bottom edge */}
+            <svg
+              viewBox="0 0 100 3"
+              preserveAspectRatio="none"
+              style={{ width: "100%", height: 14, display: "block", marginTop: -1 }}
+            >
+              <polygon
+                points="0,0 100,0 100,1 97,3 94,1 91,3 88,1 85,3 82,1 79,3 76,1 73,3 70,1 67,3 64,1 61,3 58,1 55,3 52,1 49,3 46,1 43,3 40,1 37,3 34,1 31,3 28,1 25,3 22,1 19,3 16,1 13,3 10,1 7,3 4,1 1,3"
+                fill={PAPER_BG}
+              />
+            </svg>
+          </motion.div>
+
+          {/* ─── Digital card ─── */}
+          <motion.div {...fade(0.2)} className="relative rounded-3xl overflow-hidden"
+            style={{
+              background: DIGITAL_BG,
+              boxShadow: "0 12px 40px hsl(28 30% 18% / 0.32)",
+            }}
+          >
+            <div className="p-7 sm:p-8">
+              {/* Badges */}
+              <div className="flex items-start justify-between mb-8 gap-3">
+                <span
+                  className="inline-block px-4 py-1.5 rounded-full font-body text-xs font-bold"
+                  style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(38 80% 55% / 0.35)" }}
+                >
+                  Digital Invitation
+                </span>
+                <span
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-xs font-bold"
+                  style={{ background: "hsl(142 55% 92%)", color: "hsl(142 55% 26%)" }}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Save {format(savings)}
+                </span>
+              </div>
+
+              {/* Featured 3 rows */}
+              <div className="flex flex-col gap-5 mb-7">
+                {[
+                  { icon: Users, label: "Private guest dashboard" },
+                  { icon: Bell,  label: "Real-time RSVP confirmations" },
+                  { icon: Send,  label: "Instant link + WhatsApp delivery" },
+                ].map(row => (
+                  <div key={row.label} className="flex items-center gap-3.5">
+                    <div
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                      style={{ background: "hsl(28 25% 22%)" }}
+                    >
+                      <row.icon className="w-4 h-4" style={{ color: GOLD }} />
+                    </div>
+                    <span
+                      className="flex-1 font-body text-sm font-semibold"
+                      style={{ color: "hsl(38 40% 96%)" }}
+                    >
+                      {row.label}
+                    </span>
+                    <Check className="w-4 h-4 shrink-0" style={{ color: "hsl(142 55% 55%)" }} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Extra features */}
+              <ul className="flex flex-col gap-2 mb-6">
+                {[
+                  "Unlimited edits after send",
+                  "Export guest list to Excel",
+                  "Multi-language & currency support",
+                ].map(f => (
+                  <li key={f} className="flex items-center gap-2 font-body text-sm"
+                    style={{ color: "hsl(38 25% 82%)" }}
+                  >
+                    <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(142 55% 55%)" }} />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Divider */}
+              <div className="my-5" style={{ borderTop: "1px solid hsl(38 25% 25%)" }} />
+
+              {/* Price */}
+              <div className="flex items-end justify-between">
+                <span className="font-body text-sm font-semibold" style={{ color: "hsl(38 30% 80%)" }}>
+                  From only
+                </span>
+                <div className="text-right">
+                  <span className="font-display font-bold text-4xl" style={{ color: GOLD }}>
+                    {format(digital)}
+                  </span>
+                  {showUsdNote && (
+                    <p className="text-[10px] font-body mt-0.5" style={{ color: "hsl(38 20% 62%)" }}>
+                      charged as {usdNote(digital)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 // ── Stats bar ────────────────────────────────────────────────────────────────
 const STATS = [
@@ -535,7 +790,7 @@ const STEPS = [
 ];
 
 const HowItWorks = () => (
-  <section className="py-24 px-4" style={{ background: "hsl(38 45% 95%)" }}>
+  <section id="how-it-works" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(38 45% 95%)" }}>
     <div className="max-w-5xl mx-auto">
       <motion.div {...fade()} className="text-center mb-16">
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -834,7 +1089,9 @@ const Testimonials = () => (
 );
 
 // ── Pricing teaser ───────────────────────────────────────────────────────────
-const PricingTeaser = () => (
+const PricingTeaser = () => {
+  const { format, showUsdNote, usdNote } = useCurrency();
+  return (
   <section className="py-24 px-4" style={{ background: "hsl(38 45% 95%)" }}>
     <div className="max-w-3xl mx-auto text-center">
       <motion.div {...fade()}>
@@ -850,8 +1107,8 @@ const PricingTeaser = () => (
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-10">
           {[
-            { name: "Starter", price: "$49", note: "2 templates · 30 RSVPs · 6 months", highlight: false },
-            { name: "Premium", price: "$99", note: "All templates · Unlimited RSVPs · 1 year", highlight: true },
+            { name: "Starter", usd: 49, note: "2 templates · 30 RSVPs · 6 months", highlight: false },
+            { name: "Premium", usd: 99, note: "All templates · Unlimited RSVPs · 1 year", highlight: true },
           ].map(p => (
             <div key={p.name}
               className="rounded-3xl p-6 text-center"
@@ -861,8 +1118,13 @@ const PricingTeaser = () => (
                 boxShadow: p.highlight ? "0 8px 32px hsl(38 80% 55% / 0.25)" : "0 4px 16px hsl(38 40% 60% / 0.08)",
               }}>
               <p className="font-display font-bold text-base mb-1" style={{ color: p.highlight ? "white" : GOLD }}>{p.name}</p>
-              <p className="font-display font-bold text-4xl mb-2" style={{ color: p.highlight ? "white" : "hsl(30 20% 14%)" }}>{p.price}</p>
-              <p className="font-body text-xs" style={{ color: p.highlight ? "rgba(255,255,255,0.8)" : "hsl(30 12% 48%)" }}>
+              <p className="font-display font-bold text-4xl mb-1" style={{ color: p.highlight ? "white" : "hsl(30 20% 14%)" }}>{format(p.usd)}</p>
+              {showUsdNote && (
+                <p className="font-body text-[10px] mb-1" style={{ color: p.highlight ? "rgba(255,255,255,0.75)" : "hsl(30 12% 55%)" }}>
+                  charged as {usdNote(p.usd)}
+                </p>
+              )}
+              <p className="font-body text-xs mt-1" style={{ color: p.highlight ? "rgba(255,255,255,0.8)" : "hsl(30 12% 48%)" }}>
                 {p.note}
               </p>
             </div>
@@ -882,7 +1144,8 @@ const PricingTeaser = () => (
       </motion.div>
     </div>
   </section>
-);
+  );
+};
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const FAQS = [
@@ -1067,12 +1330,25 @@ const Footer = () => (
             </a>
           </li>
           <li>
-            <a href="mailto:hello@wed4love.com"
+            <a href="mailto:wed4loveglobal@gmail.com"
               className="font-body text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
               </svg>
-              hello@wed4love.com
+              wed4loveglobal@gmail.com
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://wa.me/9779702238084"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-body text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+            >
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              +977 9702238084 (WhatsApp)
             </a>
           </li>
         </ul>
@@ -1208,10 +1484,21 @@ const DemoPickerModal = ({ open, onClose }: { open: boolean; onClose: () => void
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 const Landing = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 80);
+    }
+  }, [location.hash]);
+
   return (
   <div>
     <Nav />
     <Hero />
+    <Comparison />
     <StatsBar />
     <Templates />
     <HowItWorks />

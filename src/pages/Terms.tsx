@@ -67,7 +67,7 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">11. Contact</h2>
-            <p>For questions about these Terms, please <Link to="/contact" className="text-primary underline">contact us</Link> or email <span className="text-primary">hello@wed4love.com</span>.</p>
+            <p>For questions about these Terms, please <Link to="/contact" className="text-primary underline">contact us</Link> or email <span className="text-primary">wed4loveglobal@gmail.com</span>.</p>
           </div>
         </section>
       </main>

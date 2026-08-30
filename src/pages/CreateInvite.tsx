@@ -32,42 +32,49 @@ const BG     = "radial-gradient(ellipse 130% 80% at 15% -10%, hsl(340 48% 95%) 0
 
 // ── Input styles ──────────────────────────────────────────────────────────────
 const labelSt: React.CSSProperties = {
-  fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.18em",
-  textTransform: "uppercase", color: MID, display: "block", marginBottom: 6,
+  fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.06em",
+  color: DARK, display: "block", marginBottom: 8,
 };
 
 const lineInput: React.CSSProperties = {
-  width: "100%", padding: "11px 14px", fontSize: "0.95rem", fontFamily: "inherit",
-  background: "rgba(255,255,255,0.88)",
-  color: DARK, outline: "none", borderRadius: 10,
-  border: `1.5px solid hsl(36 28% 72%)`,
-  transition: "border-color 0.18s, background 0.18s",
+  width: "100%", padding: "14px 16px", fontSize: "0.98rem", fontFamily: "inherit",
+  background: "rgba(255,255,255,0.98)",
+  color: DARK, outline: "none", borderRadius: 14,
+  border: `1.5px solid hsl(36 28% 82%)`,
+  boxShadow: "0 1px 2px hsl(30 20% 40% / 0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
+  transition: "border-color 0.22s, background 0.22s, box-shadow 0.22s, transform 0.22s",
   colorScheme: "light",
 };
 
 const boxArea: React.CSSProperties = {
-  width: "100%", padding: "11px 14px", fontSize: "0.92rem", fontFamily: "inherit",
-  background: "rgba(255,255,255,0.88)",
-  color: DARK, outline: "none", borderRadius: 10, resize: "none",
-  border: `1.5px solid hsl(36 28% 72%)`,
-  transition: "border-color 0.18s, background 0.18s",
+  width: "100%", padding: "14px 16px", fontSize: "0.95rem", fontFamily: "inherit",
+  background: "rgba(255,255,255,0.98)",
+  color: DARK, outline: "none", borderRadius: 14, resize: "none",
+  border: `1.5px solid hsl(36 28% 82%)`,
+  boxShadow: "0 1px 2px hsl(30 20% 40% / 0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
+  transition: "border-color 0.22s, background 0.22s, box-shadow 0.22s",
+  lineHeight: 1.55,
 };
 
 const onLineF = (e: React.FocusEvent<HTMLInputElement>) => {
   e.currentTarget.style.borderColor = "var(--tg)";
-  e.currentTarget.style.background = "rgba(255,255,255,1)";
+  e.currentTarget.style.background = "white";
+  e.currentTarget.style.boxShadow = "0 0 0 4px var(--tglow), 0 4px 16px var(--tglow)";
 };
 const onLineB = (e: React.FocusEvent<HTMLInputElement>) => {
-  e.currentTarget.style.borderColor = "hsl(36 28% 72%)";
-  e.currentTarget.style.background = "rgba(255,255,255,0.88)";
+  e.currentTarget.style.borderColor = "hsl(36 28% 82%)";
+  e.currentTarget.style.background = "rgba(255,255,255,0.98)";
+  e.currentTarget.style.boxShadow = "0 1px 2px hsl(30 20% 40% / 0.04), inset 0 1px 0 rgba(255,255,255,0.6)";
 };
 const onBoxF = (e: React.FocusEvent<HTMLTextAreaElement>) => {
   e.currentTarget.style.borderColor = "var(--tg)";
-  e.currentTarget.style.background = "rgba(255,255,255,1)";
+  e.currentTarget.style.background = "white";
+  e.currentTarget.style.boxShadow = "0 0 0 4px var(--tglow), 0 4px 16px var(--tglow)";
 };
 const onBoxB = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = "hsl(36 28% 72%)";
-  e.currentTarget.style.background = "rgba(255,255,255,0.88)";
+  e.currentTarget.style.borderColor = "hsl(36 28% 82%)";
+  e.currentTarget.style.background = "rgba(255,255,255,0.98)";
+  e.currentTarget.style.boxShadow = "0 1px 2px hsl(30 20% 40% / 0.04), inset 0 1px 0 rgba(255,255,255,0.6)";
 };
 
 // ── Field components ───────────────────────────────────────────────────────────
@@ -96,10 +103,18 @@ const Divider = () => (
 
 // ── Section label ─────────────────────────────────────────────────────────────
 const Section = ({ icon, title }: { icon: string; title: string }) => (
-  <div className="flex items-center gap-2 mb-5">
-    <span style={{ fontSize: 16 }}>{icon}</span>
-    <p className="font-body font-semibold text-sm" style={{ color: MID }}>{title}</p>
-    <div className="flex-1 h-px ml-1" style={{ background: LINE }} />
+  <div className="flex items-center gap-3 mb-6">
+    <div
+      className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
+      style={{
+        background: "linear-gradient(135deg, var(--tg), var(--tgg))",
+        boxShadow: "0 4px 14px var(--tglow)",
+      }}
+    >
+      <span style={{ fontSize: 15, filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.15))" }}>{icon}</span>
+    </div>
+    <p className="font-display font-bold text-base" style={{ color: DARK, letterSpacing: "-0.01em" }}>{title}</p>
+    <div className="flex-1 h-px ml-1" style={{ background: `linear-gradient(90deg, ${LINE}, transparent)` }} />
   </div>
 );
 
@@ -107,33 +122,69 @@ const Section = ({ icon, title }: { icon: string; title: string }) => (
 const EntryCard = ({ index, label, onRemove, showRemove, children }: {
   index: number; label: string; onRemove: () => void; showRemove: boolean; children: React.ReactNode;
 }) => (
-  <div className="flex flex-col gap-4 pt-4"
-    style={{ borderTop: `1px solid hsl(36 28% 82%)` }}>
+  <motion.div
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    className="flex flex-col gap-5 p-5 sm:p-6 rounded-3xl"
+    style={{
+      background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.78) 100%)",
+      border: "1.5px solid hsl(36 28% 86%)",
+      boxShadow: "0 6px 24px hsl(30 20% 50% / 0.08), inset 0 1px 0 rgba(255,255,255,0.6)",
+    }}
+  >
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold shrink-0"
-          style={{ background: "var(--tg)", color: "white", fontSize: 10 }}>{index + 1}</div>
-        <span className="font-body text-xs font-semibold" style={{ color: MID }}>{label}</span>
+      <div className="flex items-center gap-2.5">
+        <div
+          className="w-7 h-7 rounded-xl flex items-center justify-center font-bold shrink-0"
+          style={{
+            background: "linear-gradient(135deg, var(--tg), var(--tgg))",
+            color: "white",
+            fontSize: 12,
+            boxShadow: "0 3px 10px var(--tglow)",
+          }}
+        >
+          {index + 1}
+        </div>
+        <span className="font-body text-xs font-bold uppercase tracking-wider" style={{ color: MID }}>{label}</span>
       </div>
       {showRemove && (
-        <button onClick={onRemove}
-          className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors"
-          style={{ color: "hsl(0 52% 60%)" }}>
+        <button
+          onClick={onRemove}
+          className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+          style={{ color: "hsl(0 55% 55%)", background: "hsl(0 60% 96%)" }}
+          aria-label={`Remove ${label}`}
+        >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       )}
     </div>
     {children}
-  </div>
+  </motion.div>
 );
 
 // ── Add button ────────────────────────────────────────────────────────────────
 const AddBtn = ({ onClick, label }: { onClick: () => void; label: string }) => (
-  <button onClick={onClick}
-    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-body text-sm font-semibold transition-opacity hover:opacity-70"
-    style={{ border: "1.5px dashed var(--tgl)", color: "var(--tg)", background: "transparent" }}>
+  <motion.button
+    whileHover={{ scale: 1.01 }}
+    whileTap={{ scale: 0.98 }}
+    onClick={onClick}
+    className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-body text-sm font-bold transition-all"
+    style={{
+      border: "1.5px dashed var(--tg)",
+      color: "var(--tg)",
+      background: "linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35))",
+      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
+    }}
+    onMouseEnter={e => {
+      e.currentTarget.style.background = "linear-gradient(135deg, var(--tglow), rgba(255,255,255,0.4))";
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.background = "linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35))";
+    }}
+  >
     <Plus className="w-4 h-4" /> {label}
-  </button>
+  </motion.button>
 );
 
 // ── Form state ────────────────────────────────────────────────────────────────
@@ -841,6 +892,30 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
         Pick a song to play when guests open your invite. Press ▶ to preview.
       </p>
 
+      {MUSIC_PRESETS.length === 0 && (
+        <div
+          className="rounded-3xl p-8 text-center"
+          style={{
+            background: "linear-gradient(155deg, hsl(38 60% 97%), hsl(340 40% 97%))",
+            border: "1.5px dashed var(--tgl)",
+          }}
+        >
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            style={{ background: "linear-gradient(135deg, var(--tg), var(--tgg))", boxShadow: "0 6px 20px var(--tglow)" }}
+          >
+            <span style={{ fontSize: 26, filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))" }}>🎼</span>
+          </div>
+          <p className="font-display text-lg font-bold mb-1.5" style={{ color: DARK }}>
+            Wedding music library
+          </p>
+          <p className="font-body text-xs leading-relaxed max-w-xs mx-auto" style={{ color: MID }}>
+            We're hand-picking a fresh collection of wedding songs — coming very soon.
+            You can still publish now and add music later, or skip this step entirely.
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2.5">
         {MUSIC_PRESETS.map(preset => {
           const isSelected = selectedMusic === preset.id;
@@ -1191,27 +1266,53 @@ const CreateInvite = () => {
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="mb-10">
 
-            <div className="text-center">
-              {/* Gold rule */}
-              <div style={{ width: 40, height: 1.5, background: "linear-gradient(90deg, transparent, var(--tgl), transparent)", margin: "0 auto 12px" }} />
+            <div className="text-center relative">
+              {step > 1 && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                  onClick={goBack}
+                  aria-label="Back"
+                  className="absolute left-0 top-2 w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+                  style={{
+                    background: "rgba(255,255,255,0.85)",
+                    border: "1.5px solid hsl(36 28% 82%)",
+                    color: MID,
+                    boxShadow: "0 2px 6px hsl(30 20% 40% / 0.06)",
+                  }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </motion.button>
+              )}
 
-              <div className="flex items-center mb-1">
-                {step > 1 ? (
-                  <motion.button
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    onClick={goBack}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl font-body text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                    style={{ background: "hsl(var(--secondary))" }}>
-                    <ArrowLeft className="w-4 h-4" /> Back
-                  </motion.button>
-                ) : <div className="w-16" />}
-                <h2 className="flex-1 text-center font-display font-bold"
-                  style={{ fontSize: "clamp(1.1rem, 4vw, 1.35rem)", color: DARK }}>
-                  {meta.title}
-                </h2>
-                <div className="w-16" />
-              </div>
-              <p className="font-body text-sm text-center" style={{ color: LIGHT }}>{meta.sub}</p>
+              <motion.div
+                initial={{ scale: 0.85, opacity: 0, y: 8 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="w-[68px] h-[68px] rounded-[22px] flex items-center justify-center mx-auto mb-5 relative"
+                style={{
+                  background: "linear-gradient(135deg, var(--tg), var(--tgg))",
+                  boxShadow: "0 12px 32px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.25)",
+                }}
+              >
+                <span style={{ fontSize: 30, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.22))" }}>{meta.icon}</span>
+              </motion.div>
+
+              <p
+                className="font-body font-bold mb-2"
+                style={{ fontSize: "0.66rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--tg)" }}
+              >
+                Step {step} of {TOTAL_STEPS}
+              </p>
+
+              <h2
+                className="font-display font-bold mb-2"
+                style={{ fontSize: "clamp(1.5rem, 5vw, 1.9rem)", color: DARK, letterSpacing: "-0.015em", lineHeight: 1.15 }}
+              >
+                {meta.title}
+              </h2>
+              <p className="font-body text-sm max-w-sm mx-auto leading-relaxed" style={{ color: MID }}>
+                {meta.sub}
+              </p>
             </div>
             </motion.div>
           </AnimatePresence>

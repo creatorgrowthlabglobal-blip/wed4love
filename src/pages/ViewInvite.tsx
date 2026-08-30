@@ -244,16 +244,30 @@ const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: 
     <motion.div
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: "easeIn" }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black cursor-pointer select-none"
+      className="fixed inset-0 z-[100] flex items-center justify-center cursor-pointer select-none overflow-hidden"
       onClick={tap}
+      style={{
+        background:
+          "radial-gradient(circle at 50% 45%, hsl(28 35% 18%) 0%, hsl(28 30% 10%) 60%, hsl(28 25% 6%) 100%)",
+      }}
     >
+      {/* Poster fallback — visible instantly while the video buffers */}
+      <img
+        src="/envelope-preview.png"
+        alt=""
+        aria-hidden
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ opacity: started ? 0 : 1, transition: "opacity 0.3s ease-out" }}
+      />
+
       <video
         ref={videoRef}
         src="/envelope.mp4"
+        poster="/envelope-preview.png"
         playsInline
         preload="auto"
         onEnded={() => setTimeout(onOpen, 500)}
-        className="w-full h-full object-cover"
+        className="relative w-full h-full object-cover"
         style={{ pointerEvents: "none" }}
       />
 

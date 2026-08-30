@@ -44,8 +44,8 @@ const Footer = () => {
           <div className="flex flex-col gap-3">
             <p className="font-display text-sm font-bold text-foreground mb-1">Support &amp; Contact</p>
             <Link to="/contact" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Help Center</Link>
-            <a href="mailto:hello@wed4love.com" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Support Email</a>
-            <a href="mailto:hello@wed4love.com" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Partnerships</a>
+            <a href="mailto:wed4loveglobal@gmail.com" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Support Email</a>
+            <a href="mailto:wed4loveglobal@gmail.com" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">Partnerships</a>
             <a
               href={INSTAGRAM_URL}
               target="_blank"
@@ -56,11 +56,11 @@ const Footer = () => {
               @wed4love_official
             </a>
             <a
-              href="mailto:hello@wed4love.com"
+              href="mailto:wed4loveglobal@gmail.com"
               className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <Mail className="w-4 h-4 shrink-0" />
-              hello@wed4love.com
+              wed4loveglobal@gmail.com
             </a>
           </div>
 
