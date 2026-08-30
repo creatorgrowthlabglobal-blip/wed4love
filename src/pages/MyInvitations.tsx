@@ -180,7 +180,7 @@ const MyInvitations = () => {
         {(!user || total === 0) && (
           <motion.div {...fade(0.1)} className="text-center">
             <Link
-              to="/pricing"
+              to="/choose-template"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-body text-sm font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.97]"
               style={{ background: GOLD_GRAD, boxShadow: "0 6px 24px hsl(38 80% 55% / 0.28)" }}
             >
@@ -209,7 +209,7 @@ const MyInvitations = () => {
 
             <motion.div {...fade(0.2)} className="text-center mt-8">
               <Link
-                to="/pricing"
+                to="/choose-template"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-body text-sm font-semibold transition-all hover:scale-[1.01] active:scale-[0.97]"
                 style={{ background: "white", color: GOLD, border: `2px solid ${GOLD}` }}
               >

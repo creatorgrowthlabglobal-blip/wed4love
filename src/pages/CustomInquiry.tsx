@@ -8,6 +8,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { notify } from "@/lib/notify";
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -296,9 +297,7 @@ const CustomInquiry = () => {
       });
       if (error) throw error;
 
-      supabase.functions
-        .invoke("telegram-notify", { body: { event: "custom_inquiry", data: buildTelegramData(form) } })
-        .catch(e => console.warn("telegram-notify failed", e));
+      notify("custom_inquiry", buildTelegramData(form));
 
       setDone(true);
     } catch (err: any) {

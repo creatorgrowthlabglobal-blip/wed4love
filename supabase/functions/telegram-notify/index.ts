@@ -16,6 +16,11 @@ const ICONS: Record<string, string> = {
   checkout_started: '🛒',
   reply_letter_started: '🔁',
   custom_inquiry: '👑',
+  order_placed: '🧾',
+  rsvp_submitted: '📝',
+  invite_published: '💍',
+  signup: '🆕',
+  signin: '🔑',
 };
 
 const esc = (s: unknown) =>

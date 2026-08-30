@@ -105,11 +105,11 @@ const UserMenu = () => {
   );
 };
 
-// ── Smart CTA link — /login when logged out, /pricing when logged in ─────────
+// ── Smart CTA link — /login when logged out, /choose-template when logged in ─────────
 const GetStartedLink = ({ className, style, children }: { className: string; style: React.CSSProperties; children: React.ReactNode }) => {
   const { user } = useAuth();
   return (
-    <Link to={user ? "/pricing" : "/login"} className={className} style={style}>
+    <Link to={user ? "/choose-template" : "/login"} className={className} style={style}>
       {children}
     </Link>
   );
@@ -165,7 +165,7 @@ const Nav = () => {
             How It Works
           </a>
           <Link
-            to="/pricing"
+            to="/choose-template"
             className="font-body text-sm transition-colors duration-200"
             style={navLinkSt}
             onMouseEnter={onEnter}
@@ -1132,7 +1132,7 @@ const PricingTeaser = () => {
         </div>
 
         <Link
-          to="/pricing"
+          to="/choose-template"
           className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.97]"
           style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 30px hsl(38 80% 55% / 0.3)" }}
         >
@@ -1289,9 +1289,9 @@ const Footer = () => (
         <p className="font-body text-xs font-bold uppercase tracking-widest text-foreground mb-4">Product</p>
         <ul className="flex flex-col gap-3">
           {[
-            { label: "Create an Invitation", to: "/pricing" },
+            { label: "Create an Invitation", to: "/choose-template" },
             { label: "How It Works", to: "/#how-it-works" },
-            { label: "Pricing", to: "/pricing" },
+            { label: "Pricing — $49", to: "/choose-template" },
             { label: "Demo Invite", to: "/invite/demo-wedding?theme=garden-rose" },
             { label: "Choose Template", to: "/choose-template" },
           ].map(l => (

@@ -59,9 +59,20 @@ export default function AuthPage() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const dest = (location.state as { from?: string })?.from ?? "/pricing";
+  const dest = (location.state as { from?: string })?.from ?? "/choose-template";
 
   const reset = () => { setError(null); setInfo(null); };
+
+  const friendly = (msg: string) => {
+    const m = msg.toLowerCase();
+    if (m.includes("pwned") || m.includes("weak") || m.includes("compromised") || m.includes("easy to guess"))
+      return "Please choose a password with at least 6 characters.";
+    if (m.includes("email not confirmed") || m.includes("confirm your email"))
+      return "Something went wrong. Please try again.";
+    if (m.includes("invalid login credentials"))
+      return "Incorrect email or password.";
+    return msg;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,14 +81,14 @@ export default function AuthPage() {
 
     if (tab === "signin") {
       const { error } = await signInWithEmail(email, password);
-      if (error) { setError(error); setBusy(false); return; }
+      if (error) { setError(friendly(error)); setBusy(false); return; }
       navigate(dest, { replace: true });
     } else {
       if (!name.trim()) { setError("Please enter your name."); setBusy(false); return; }
       const { error } = await signUpWithEmail(email, password, name.trim());
-      if (error) { setError(error); setBusy(false); return; }
+      if (error) { setError(friendly(error)); setBusy(false); return; }
       const { error: signInError } = await signInWithEmail(email, password);
-      if (signInError) { setError(signInError); setBusy(false); return; }
+      if (signInError) { setError(friendly(signInError)); setBusy(false); return; }
       navigate(dest, { replace: true });
       return;
     }

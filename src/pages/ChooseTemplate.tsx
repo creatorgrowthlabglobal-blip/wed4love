@@ -1,13 +1,15 @@
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
 import { motion } from "framer-motion";
-import { ArrowLeft, Play, Lock, Zap, Crown, Palette, Video, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Play, Lock } from "lucide-react";
 import gardenRoseThumbnail  from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail from "@/assets/rustic-bloom-thumbnail.png";
 import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import goldenHourThumbnail  from "@/assets/golden-hour-thumbnail.png";
 import softLoveThumbnail    from "@/assets/soft-love-thumbnail.jpg";
-import { useInviteEntitlement, hasInviteAccess } from "@/hooks/useInviteEntitlement";
 import { useAuth } from "@/hooks/useAuth";
+import { notify } from "@/lib/notify";
 
 const GOLD      = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -134,7 +136,7 @@ const Card = ({ t, index, delay, height, locked, onSelect }: CardProps) => (
             <Play className="w-2.5 h-2.5" /> View demo
           </button>
           <Link
-            to="/pricing"
+            to="/choose-template"
             onClick={e => e.stopPropagation()}
             className="flex-1 py-1.5 rounded-lg font-body text-xs font-semibold text-center transition-all hover:opacity-90 active:scale-95"
             style={{ background: GOLD_GRAD, color: "white" }}
@@ -170,161 +172,26 @@ const Card = ({ t, index, delay, height, locked, onSelect }: CardProps) => (
   </motion.div>
 );
 
-const CustomTemplateCard = ({ plan, onSelect }: { plan: string; onSelect: () => void }) => {
-  const isCustomPlan = plan === "custom";
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="relative rounded-2xl overflow-hidden mt-4"
-      style={{ height: 220, cursor: isCustomPlan ? "pointer" : "default" }}
-      onClick={isCustomPlan ? onSelect : undefined}
-    >
-      {/* Gradient background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: isCustomPlan
-            ? "linear-gradient(135deg, hsl(32 52% 18%) 0%, hsl(38 60% 22%) 40%, hsl(28 48% 16%) 100%)"
-            : "linear-gradient(135deg, hsl(30 15% 20%) 0%, hsl(30 12% 16%) 100%)",
-        }}
-      />
-
-      {/* Decorative shimmer blobs */}
-      <div className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(38 72% 44% / 0.18) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
-      <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(38 80% 52% / 0.12) 0%, transparent 70%)", transform: "translate(-20%, 30%)" }} />
-
-      {/* Top-left badge */}
-      <div className="absolute top-4 left-4 z-10">
-        <span
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-body text-[10px] font-bold uppercase tracking-wider"
-          style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 2px 10px hsl(38 80% 50% / 0.4)" }}
-        >
-          <Crown className="w-3 h-3" /> Custom Plan Only
-        </span>
-      </div>
-
-      {/* Top-right lock */}
-      {!isCustomPlan && (
-        <div className="absolute top-4 right-4 z-10">
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full font-body text-[10px] font-bold"
-            style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.15)" }}>
-            <Lock className="w-2.5 h-2.5" /> Locked
-          </div>
-        </div>
-      )}
-
-      {/* Main content */}
-      <div className="absolute inset-0 z-10 flex items-center px-8 gap-10">
-
-        {/* Left: text */}
-        <div className="flex-1 min-w-0">
-          <p className="font-display font-bold text-white text-xl mb-2">Your Invitation, Your Way</p>
-          <p className="font-body text-sm mb-4" style={{ color: "rgba(255,255,255,0.58)" }}>
-            Bring your own video, choose every color, customize every line of text. Built exclusively for you by our design team.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { icon: Video, label: "Own background video" },
-              { icon: Palette, label: "Custom colors & fonts" },
-              { icon: Sparkles, label: "Fully custom layout" },
-            ].map(({ icon: Icon, label }) => (
-              <span key={label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-body text-[10px] font-semibold"
-                style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.12)" }}>
-                <Icon className="w-2.5 h-2.5" /> {label}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: CTA */}
-        <div className="shrink-0">
-          {isCustomPlan ? (
-            <button
-              onClick={e => { e.stopPropagation(); onSelect(); }}
-              className="px-7 py-3 rounded-xl font-body text-sm font-bold transition-all hover:scale-105 active:scale-95"
-              style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 6px 20px hsl(38 80% 50% / 0.45)" }}
-            >
-              Start Building →
-            </button>
-          ) : (
-            <div className="text-center">
-              <p className="font-body text-xs mb-3" style={{ color: "rgba(255,255,255,0.45)" }}>
-                Custom plan · $399
-              </p>
-              <Link
-                to="/pricing"
-                onClick={e => e.stopPropagation()}
-                className="px-6 py-2.5 rounded-xl font-body text-xs font-bold transition-all hover:scale-105 active:scale-95 inline-block"
-                style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(38 80% 50% / 0.4)" }}
-              >
-                Upgrade to Custom →
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 const ChooseTemplate = () => {
-  const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
-  const plan = params.get("plan") ?? "starter";
-  const justPaid = params.get("paid") === "true";
-  const isStarterOnly = plan === "starter";
-  const isBypassUser = user?.email?.toLowerCase() === "lala@gmail.com";
+  const { user } = useAuth();
 
-  // justPaid skips entitlement check — user already paid, manual delivery model
-  const { plan: userPlan, loading, timeout } = useInviteEntitlement(false);
-  const hasAccess = isBypassUser || justPaid || hasInviteAccess(userPlan, plan);
+  // If the user was sent here after paying (Whop redirect), take them back to
+  // their invite so it can be published instead of restarting the flow.
+  useEffect(() => {
+    if (!user) return;
+    const pending = localStorage.getItem(`pending_checkout_${user.id}`);
+    if (pending) navigate(`/create-invite?template=${pending}`, { replace: true });
+  }, [user, navigate]);
 
   const handleSelect = (id: string) => {
-    if (!user) { navigate(`/login?next=/create-invite?plan=${plan}%26template=${id}`); return; }
-    navigate(`/create-invite?plan=${plan}&template=${id}`);
+    notify("template_selected", { template: id, email: user?.email });
+    if (!user) { navigate(`/login`, { state: { from: `/create-invite?template=${id}` } }); return; }
+    navigate(`/create-invite?template=${id}`);
   };
 
-  // ── Not logged in after payment — send to login then back here ───────────
-  if (justPaid && !authLoading && !user) {
-    navigate(`/login`, { state: { from: `/choose-template?plan=${plan}&paid=true` }, replace: true });
-    return null;
-  }
-
-  // ── No access (direct URL without payment) ───────────────────────────────
-  if (!loading && !hasAccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6"
-        style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(350 40% 97%) 60%, hsl(225 30% 97%))" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-sm"
-        >
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
-            style={{ background: GOLD_GRAD }}>
-            <Lock className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="font-display text-2xl font-bold text-foreground mb-2">Access required</h2>
-          <p className="font-body text-sm text-muted-foreground mb-6">
-            Choose a plan to start building your wedding invitation.
-          </p>
-          <Link
-            to="/pricing"
-            className="inline-block w-full py-3 rounded-2xl font-body text-sm font-bold text-white text-center transition-all hover:opacity-90"
-            style={{ background: GOLD_GRAD }}
-          >
-            View Plans →
-          </Link>
-        </motion.div>
-      </div>
-    );
-  }
 
   const top3 = TEMPLATES.slice(0, 3);
   const bot2 = TEMPLATES.slice(3);
@@ -347,17 +214,6 @@ const ChooseTemplate = () => {
           transition={{ duration: 0.35 }}
           className="text-center pt-8 sm:pt-12 mb-10"
         >
-          {justPaid && hasAccess && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-body text-xs font-semibold mb-6"
-              style={{ background: "hsl(142 50% 94%)", color: "hsl(142 50% 30%)", border: "1.5px solid hsl(142 50% 78%)" }}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              Payment confirmed — you're all set!
-            </motion.div>
-          )}
           <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
             Digital Wedding Invitation
           </p>
@@ -374,61 +230,23 @@ const ChooseTemplate = () => {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-body text-xs font-semibold"
             style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 78%)" }}
           >
-            {isStarterOnly ? (
-              <>
-                <Lock className="w-3 h-3" />
-                Starter — 2 of 5 unlocked ·{" "}
-                <Link to="/pricing" className="underline underline-offset-2 hover:opacity-70">Upgrade</Link>
-              </>
-            ) : plan === "premium" ? (
-              <>
-                <Zap className="w-3 h-3" />
-                Premium — 5 of 5 unlocked · Custom template requires Custom plan
-              </>
-            ) : (
-              <>
-                <Crown className="w-3 h-3" />
-                Custom plan — all 6 templates unlocked
-              </>
-            )}
+            All templates unlocked · Build free, pay $49 only when you publish
           </motion.div>
         </motion.div>
 
         {/* Top row — 3 cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           {top3.map((t, i) => (
-            <Card
-              key={t.id}
-              t={t}
-              index={i}
-              delay={0.08 + i * 0.09}
-              height={400}
-              locked={isStarterOnly && i >= 2}
-              onSelect={() => handleSelect(t.id)}
-            />
+            <Card key={t.id} t={t} index={i} delay={0.08 + i * 0.09} height={400} locked={false} onSelect={() => handleSelect(t.id)} />
           ))}
         </div>
 
         {/* Bottom row — 2 cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:max-w-[66%] mx-auto">
           {bot2.map((t, i) => (
-            <Card
-              key={t.id}
-              t={t}
-              index={3 + i}
-              delay={0.35 + i * 0.09}
-              height={340}
-              locked={isStarterOnly}
-              onSelect={() => handleSelect(t.id)}
-            />
+            <Card key={t.id} t={t} index={3 + i} delay={0.35 + i * 0.09} height={340} locked={false} onSelect={() => handleSelect(t.id)} />
           ))}
         </div>
-
-        {/* Custom template card */}
-        <CustomTemplateCard
-          plan={plan}
-          onSelect={() => handleSelect("custom")}
-        />
       </div>
     </div>
   );

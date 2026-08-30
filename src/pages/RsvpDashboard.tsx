@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeCanvas } from "qrcode.react";
+import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
+import { Link as RouterLink } from "react-router-dom";
 
 interface Rsvp {
   id: string;
@@ -62,6 +64,7 @@ export default function RsvpDashboard() {
   const qrRef = useRef<HTMLCanvasElement>(null);
 
   const inviteUrl = `${window.location.origin}/invite/${inviteId}`;
+  const { plan: userPlan, loading: entLoading } = useInviteEntitlement(false);
 
   // Pull rich data from localStorage (same device) — falls back to rsvp-embedded data
   const stored = inviteId ? getInviteLocal(inviteId) : null;
@@ -169,6 +172,42 @@ export default function RsvpDashboard() {
       (filter === "checked_in"    && r.checked_in);
     return matchSearch && matchFilter;
   });
+
+  // ── Payment gate — dashboard unlocks after the $49 purchase ───────────────
+  if (entLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center"
+        style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(350 40% 97%) 60%, hsl(225 30% 97%))" }}>
+        <RefreshCw className="w-6 h-6 animate-spin" style={{ color: "hsl(38 72% 44%)" }} />
+      </div>
+    );
+  }
+
+  if (!userPlan) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6"
+        style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(350 40% 97%) 60%, hsl(225 30% 97%))" }}>
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
+            style={{ background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))" }}>
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <h2 className="font-display text-2xl font-bold text-foreground mb-2">Dashboard locked</h2>
+          <p className="font-body text-sm text-muted-foreground mb-6">
+            Your RSVP dashboard unlocks with the one-time $49 invitation package.
+          </p>
+          <RouterLink
+            to="/choose-template"
+            className="inline-block w-full py-3 rounded-2xl font-body text-sm font-bold text-white text-center transition-opacity hover:opacity-90"
+            style={{ background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))" }}
+          >
+            Unlock for $49 →
+          </RouterLink>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen" style={{ background: "hsl(44 28% 95%)" }}>

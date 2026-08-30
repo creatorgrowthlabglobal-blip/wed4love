@@ -6,9 +6,13 @@ import ProgressBar from "@/components/invite/ProgressBar";
 import { MUSIC_PRESETS } from "@/lib/musicPresets";
 import VenueMapPicker from "@/components/invite/VenueMapPicker";
 import type { MusicPreset } from "@/lib/musicPresets";
-import { saveInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
+import { saveInviteLocal, getInviteLocal, saveDraftLocal, clearDraftLocal, loadDraftLocal, formatDisplayDate, formatDisplayTime } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
+import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
+import { notify } from "@/lib/notify";
+
+const CHECKOUT_URL = "https://whop.com/checkout/plan_FsfUSAeOIoKZt";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
 const TOTAL_STEPS = 7;
@@ -572,12 +576,16 @@ const TEMPLATE_NAMES: Record<string, string> = {
 };
 
 const InvitePreviewPay = ({
-  form, onCreate, templateId, photoCount,
+  form, onCreate, onPay, templateId, photoCount, hasPaid, entLoading, awaitingPayment,
 }: {
   form: FormState;
   onCreate: () => void;
+  onPay: () => void;
   templateId: string;
   photoCount: number;
+  hasPaid: boolean;
+  entLoading: boolean;
+  awaitingPayment: boolean;
 }) => {
   useEffect(() => {
     const draft: StoredInvite = {
@@ -743,21 +751,67 @@ const InvitePreviewPay = ({
         <span style={{ fontSize: 15 }}>👁️</span> Preview Your Invitation
       </motion.button>
 
-      {/* Place order button */}
+      {/* ── Single unlock package — $49 ── */}
+      {!hasPaid && (
+        <div
+          className="rounded-3xl px-6 py-6 flex flex-col gap-4"
+          style={{ background: "white", border: "1.5px solid hsl(38 45% 82%)", boxShadow: "0 10px 34px hsl(38 40% 55% / 0.12)" }}
+        >
+          <div className="text-center">
+            <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-2" style={{ color: "hsl(38 55% 48%)" }}>
+              One package · Everything included
+            </p>
+            <div className="flex items-baseline justify-center gap-1.5">
+              <span className="font-body text-xs" style={{ color: LIGHT }}>$</span>
+              <span className="font-display text-4xl font-bold" style={{ color: DARK }}>49</span>
+              <span className="font-body text-xs" style={{ color: LIGHT }}>one-time</span>
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-2">
+            {[
+              "Your live invitation link, published instantly",
+              "All 5 cinematic templates",
+              "Unlimited guest invites & RSVP tracking",
+              "Private RSVP dashboard with check-in & QR code",
+              "Photos, music, countdown, venue map & love story",
+            ].map(f => (
+              <li key={f} className="flex items-start gap-2">
+                <span style={{ color: "var(--tg)", fontSize: 12, lineHeight: "18px" }}>✓</span>
+                <span className="font-body text-xs leading-snug" style={{ color: MID }}>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Pay / publish button */}
       <motion.button
         whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}
-        onClick={onCreate}
-        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white"
+        onClick={hasPaid ? onCreate : onPay}
+        disabled={entLoading || awaitingPayment}
+        className="w-full py-4 rounded-2xl font-body text-base font-bold text-white disabled:opacity-60"
         style={{
           background: "linear-gradient(135deg, var(--tg), var(--tgg))",
           boxShadow: "0 8px 28px var(--tglow), inset 0 1px 0 rgba(255,255,255,0.14)",
         }}
       >
-        Place Your Order
+        {entLoading
+          ? "Checking your access…"
+          : awaitingPayment
+          ? "Waiting for payment confirmation…"
+          : hasPaid
+          ? "Publish My Invitation ✨"
+          : "Pay $49 & Publish →"}
       </motion.button>
       <p className="font-body text-[11px] text-center -mt-1" style={{ color: LIGHT }}>
-        Your invitation will be delivered within 24 hours.
+        {awaitingPayment
+          ? "Complete the payment in the new tab — this page unlocks automatically."
+          : hasPaid
+          ? "Your invitation and RSVP dashboard go live right away."
+          : "Secure one-time payment · Your invitation goes live the moment you pay."}
       </p>
+
     </div>
   );
 };
@@ -960,13 +1014,8 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
           style={{ background: "rgba(255,255,255,0.84)", backdropFilter: "blur(5px)" }}>
           <span style={{ fontSize: 20 }}>🔒</span>
-          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Premium Feature</p>
-          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Use your own music with Premium</p>
-          <a href="/pricing" target="_blank" rel="noopener noreferrer"
-            className="mt-1 px-5 py-2 rounded-xl font-body text-xs font-bold text-white transition-opacity hover:opacity-80"
-            style={{ background: "linear-gradient(135deg, var(--tg), var(--tgg))", boxShadow: "0 4px 14px var(--tglow)" }}>
-            Upgrade to Premium
-          </a>
+          <p className="font-body text-sm font-bold" style={{ color: DARK }}>Coming Soon</p>
+          <p className="font-body text-xs text-center px-8" style={{ color: MID }}>Custom music uploads land soon — pick a preset for now</p>
         </div>
       </div>
 
@@ -979,10 +1028,10 @@ const StepMusic = ({ selectedMusic, onSelect }: StepMusicProps) => {
   );
 };
 
-// ── Order Confirmed screen ────────────────────────────────────────────────────
-const OrderConfirmedScreen = () => (
+// ── Invitation live screen ────────────────────────────────────────────────────
+const OrderConfirmedScreen = ({ inviteId }: { inviteId: string }) => (
   <div
-    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6"
+    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6 overflow-y-auto py-10"
     style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
   >
     <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
@@ -1009,21 +1058,50 @@ const OrderConfirmedScreen = () => (
 
       <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3"
         style={{ color: "hsl(38 50% 54%)" }}>
-        Order Confirmed
+        Payment Confirmed
       </p>
 
       <h1 className="font-display font-bold mb-4"
         style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
-        You're all set!
+        Your invitation is live!
       </h1>
 
-      <p className="font-body text-sm mb-2 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
-        Your RSVP dashboard and wedding invitation will be delivered within <strong>24 hours</strong>.
+      <p className="font-body text-sm mb-6 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Share the link with your guests — every RSVP lands in your dashboard instantly.
       </p>
+
+      <div className="flex flex-col gap-3 mb-6">
+        <a
+          href={`/invite/${inviteId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
+          style={{ background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))", boxShadow: "0 8px 26px hsl(38 72% 44% / 0.28)" }}
+        >
+          View My Invitation →
+        </a>
+        <a
+          href={`/dashboard/${inviteId}`}
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold transition-opacity hover:opacity-80"
+          style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
+        >
+          Open RSVP Dashboard
+        </a>
+        <button
+          onClick={() => {
+            void navigator.clipboard.writeText(`${window.location.origin}/invite/${inviteId}`);
+          }}
+          className="w-full py-3 rounded-2xl font-body text-xs font-semibold transition-opacity hover:opacity-70"
+          style={{ background: "hsl(38 40% 95%)", color: "hsl(30 14% 38%)" }}
+        >
+          Copy shareable link
+        </button>
+      </div>
 
       <p className="font-body text-sm mb-8 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
         Thank you for using <span style={{ color: "hsl(38 72% 44%)", fontWeight: 600 }}>Wed4Love</span>!
       </p>
+
 
       {/* WhatsApp contact */}
       <a
@@ -1042,6 +1120,72 @@ const OrderConfirmedScreen = () => (
         </svg>
         Contact us on WhatsApp
       </a>
+
+      <p className="font-body text-[10px] mt-5" style={{ color: "hsl(30 10% 64%)" }}>
+        +977 970 2238084
+      </p>
+    </motion.div>
+  </div>
+);
+
+// ── Order placed / delivery pending screen ────────────────────────────────────
+const OrderPendingScreen = ({ email, onDone }: { email?: string; onDone: () => void }) => (
+  <div
+    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6 overflow-y-auto py-10"
+    style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
+  >
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative w-full max-w-sm text-center"
+    >
+      <div
+        className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8"
+        style={{
+          background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))",
+          boxShadow: "0 10px 40px hsl(38 72% 44% / 0.32)",
+        }}
+      >
+        <span style={{ fontSize: 38, lineHeight: 1 }}>💌</span>
+      </div>
+
+      <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3" style={{ color: "hsl(38 50% 54%)" }}>
+        Order Received
+      </p>
+
+      <h1 className="font-display font-bold mb-4" style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
+        Thank you — we're preparing your invitation
+      </h1>
+
+      <p className="font-body text-sm mb-4 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
+        Your wedding invitation and your RSVP dashboard will be delivered
+        <strong> within 24 hours</strong>
+        {email ? <> to <strong>{email}</strong></> : null}.
+      </p>
+
+      <p className="font-body text-xs mb-8 leading-relaxed" style={{ color: "hsl(30 12% 50%)" }}>
+        Our team is reviewing your details and finishing the design by hand. If anything is missing, we'll reach out to you directly.
+      </p>
+
+      <div className="flex flex-col gap-3">
+        <a
+          href="https://wa.me/9779702238084"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl font-body text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ background: "linear-gradient(135deg, hsl(142 60% 38%), hsl(142 60% 46%))", boxShadow: "0 6px 24px hsl(142 60% 38% / 0.28)" }}
+        >
+          Contact us on WhatsApp
+        </a>
+        <button
+          onClick={onDone}
+          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold transition-opacity hover:opacity-80"
+          style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
+        >
+          Back to Wed4Love
+        </button>
+      </div>
 
       <p className="font-body text-[10px] mt-5" style={{ color: "hsl(30 10% 64%)" }}>
         +977 970 2238084
@@ -1078,7 +1222,12 @@ const CreateInvite = () => {
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [isPreparing, setIsPreparing] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [awaitingPayment, setAwaitingPayment] = useState(false);
+  const [orderPending, setOrderPending] = useState(false);
   const { user } = useAuth();
+  const { plan: userPlan, loading: entLoading } = useInviteEntitlement(awaitingPayment);
+  const hasPaid = !!userPlan;
+
 
   const draftIdRef = useRef<string>(`${DRAFT_PREFIX}-${Date.now()}`);
 
@@ -1166,31 +1315,79 @@ const CreateInvite = () => {
 
   const handleCreate = () => setIsPreparing(true);
 
+  const pendingKey = user ? `order_pending_${user.id}` : null;
+  const lastInviteKey = user ? `last_invite_${user.id}` : null;
+
+  // Restore the "order placed" state after returning from the checkout tab / reload
+  useEffect(() => {
+    if (!user) return;
+    if (localStorage.getItem(`order_pending_${user.id}`)) setOrderPending(true);
+  }, [user]);
+
+  const buildStored = (id: string): StoredInvite => ({
+    id, template: templateId,
+    partner1: form.partner1, partner2: form.partner2,
+    hashtag: form.hashtag, email: form.email, phone: form.phone,
+    date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
+    time: formatDisplayTime(form.timeRaw),
+    rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
+    venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
+    venueLat: form.venueLat, venueLng: form.venueLng,
+    story: form.story.filter(s => s.title.trim() || s.desc.trim()),
+    schedule: form.schedule.filter(s => s.event.trim()),
+    dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
+    transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
+    hotels: form.hotels.filter(h => h.name.trim()),
+    selectedMusic: form.selectedMusic,
+    createdAt: new Date().toISOString(),
+    status: 'published',
+  });
+
+  const handlePay = () => {
+    saveDraft(STEP_META.length);
+
+    // Build + store the invitation now so the admin gets the real links
+    const id = `invite-${Date.now()}`;
+    const stored = buildStored(id);
+    saveInviteLocal(stored);
+    if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
+    if (pendingKey) localStorage.setItem(pendingKey, id);
+
+    const origin = window.location.origin;
+    notify("order_placed", {
+      amount: "$49",
+      customer_email: user?.email ?? form.email,
+      couple: `${form.partner1} & ${form.partner2}`,
+      template: TEMPLATE_NAMES[templateId] ?? templateId,
+      wedding_date: stored.date,
+      time: stored.time,
+      venue: [form.venueName, form.venueCity].filter(Boolean).join(", "),
+      rsvp_deadline: stored.rsvpDeadline,
+      phone: form.phone,
+      invitation_letter_link: `${origin}/invite/${id}`,
+      rsvp_dashboard_link: `${origin}/dashboard/${id}`,
+    });
+
+    setOrderPending(true);
+
+    const url = user?.email
+      ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
+      : `${CHECKOUT_URL}?d2c=true`;
+    window.open(url, "_blank", "noopener");
+  };
+
   const finaliseCreate = () => {
     const id = `invite-${Date.now()}`;
-    const stored: StoredInvite = {
-      id, template: templateId,
-      partner1: form.partner1, partner2: form.partner2,
-      hashtag: form.hashtag, email: form.email, phone: form.phone,
-      date: formatDisplayDate(form.dateISO), dateISO: form.dateISO,
-      time: formatDisplayTime(form.timeRaw),
-      rsvpDeadline: formatDisplayDate(form.rsvpISO), rsvpDeadlineISO: form.rsvpISO,
-      venueName: form.venueName, venueAddress: form.venueAddress, venueCity: form.venueCity,
-      venueLat: form.venueLat, venueLng: form.venueLng,
-      story: form.story.filter(s => s.title.trim() || s.desc.trim()),
-      schedule: form.schedule.filter(s => s.event.trim()),
-      dresscode: form.dresscode, dresscodeNote: form.dresscodeNote, menuNote: form.menuNote,
-      transportCar: form.transportCar, transportTrain: form.transportTrain, transportPlane: form.transportPlane,
-      hotels: form.hotels.filter(h => h.name.trim()),
-      selectedMusic: form.selectedMusic,
-      createdAt: new Date().toISOString(),
-      status: 'published',
-    };
+    const stored = buildStored(id);
     saveInviteLocal(stored);
+    if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
+    if (pendingKey) localStorage.removeItem(pendingKey);
+    notify("invite_published", { id, template: templateId, couple: `${form.partner1} & ${form.partner2}`, date: stored.date, venue: form.venueName, email: user?.email ?? form.email });
     if (user) clearDraftLocal(user.id);
     setIsPreparing(false);
     setCreatedId(id);
   };
+
 
   if (isPreparing) {
     const coupleName = [form.partner1, form.partner2].filter(Boolean).join(" & ");
@@ -1198,8 +1395,21 @@ const CreateInvite = () => {
     return <PreparingScreen onDone={finaliseCreate} coupleName={coupleName} templateName={tName} />;
   }
 
+  if (orderPending) {
+    return (
+      <OrderPendingScreen
+        email={user?.email ?? form.email}
+        onDone={() => {
+          if (user) localStorage.removeItem(`order_pending_${user.id}`);
+          setOrderPending(false);
+          navigate("/");
+        }}
+      />
+    );
+  }
+
   if (createdId) {
-    return <OrderConfirmedScreen />;
+    return <OrderConfirmedScreen inviteId={createdId} />;
   }
 
   return (
@@ -1333,7 +1543,18 @@ const CreateInvite = () => {
               {step === 5 && <StepDetails form={form} set={set} />}
               {step === 6 && <StepPhotos  images={images} setImages={setImages} />}
               {step === 7 && <StepMusic   selectedMusic={form.selectedMusic} onSelect={id => set("selectedMusic", id)} />}
-              {step === 8 && <InvitePreviewPay form={form} onCreate={handleCreate} templateId={templateId} photoCount={images.length} />}
+              {step === 8 && (
+                <InvitePreviewPay
+                  form={form}
+                  onCreate={handleCreate}
+                  onPay={handlePay}
+                  templateId={templateId}
+                  photoCount={images.length}
+                  hasPaid={hasPaid}
+                  entLoading={entLoading}
+                  awaitingPayment={awaitingPayment}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
 

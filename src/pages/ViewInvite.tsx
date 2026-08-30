@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { notify } from "@/lib/notify";
 import {
   MapPin, Calendar, Music, VolumeX, ChevronDown, Check, Mail, Phone,
   Clock, Users, Wine, Utensils, Heart, PartyPopper, Car, Train,
@@ -205,9 +206,10 @@ function useCountdown(dateISO: string) {
 }
 
 // ── Envelope Reveal ───────────────────────────────────────────────────────────
-const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
+const EnvelopeReveal = ({ onOpen, groom, bride, date }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
+  const [ready, setReady] = useState(false); // video has a paintable frame
   const tappedRef = useRef(false); // ref so async callbacks can check without stale closure
 
   // Show first frame on mobile: muted autoplay → pause at 0
@@ -225,8 +227,12 @@ const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: 
         if (!tappedRef.current) v.currentTime = 0.001;
       }
       v.muted = false;
+      setReady(true);
     };
     v.readyState >= 2 ? show() : v.addEventListener('loadeddata', show, { once: true });
+    // Safety net: never leave the guest staring at an empty screen
+    const t = setTimeout(() => setReady(true), 2500);
+    return () => clearTimeout(t);
   }, []);
 
   const tap = () => {
@@ -251,14 +257,29 @@ const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: 
           "radial-gradient(circle at 50% 45%, hsl(28 35% 18%) 0%, hsl(28 30% 10%) 60%, hsl(28 25% 6%) 100%)",
       }}
     >
-      {/* Poster fallback — visible instantly while the video buffers */}
-      <img
-        src="/envelope-preview.png"
-        alt=""
-        aria-hidden
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ opacity: started ? 0 : 1, transition: "opacity 0.3s ease-out" }}
-      />
+      {/* Elegant placeholder shown until the envelope video can paint a frame */}
+      <AnimatePresence>
+        {!ready && (
+          <motion.div
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center"
+            style={{ background: "linear-gradient(160deg, hsl(38 40% 96%), hsl(35 35% 90%))" }}
+          >
+            <p className="font-body tracking-[0.3em] uppercase mb-4" style={{ fontSize: "0.6rem", color: "hsl(38 45% 42%)" }}>
+              You are invited
+            </p>
+            <p className="font-handwritten leading-tight" style={{ fontSize: "clamp(2rem, 9vw, 3.4rem)", color: "hsl(30 22% 18%)" }}>
+              {groom} &amp; {bride}
+            </p>
+            <p className="font-body text-sm mt-3" style={{ color: "hsl(30 14% 40%)" }}>{date}</p>
+            <div className="mt-8 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "hsl(38 60% 50%)" }} />
+              <span className="font-body text-[11px]" style={{ color: "hsl(30 14% 48%)" }}>Preparing your invitation…</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <video
         ref={videoRef}
@@ -266,14 +287,17 @@ const EnvelopeReveal = ({ onOpen }: { onOpen: () => void; groom: string; bride: 
         poster="/envelope-preview.png"
         playsInline
         preload="auto"
+        onLoadedData={() => setReady(true)}
+        onError={() => { setReady(true); onOpen(); }}
         onEnded={() => setTimeout(onOpen, 500)}
-        className="relative w-full h-full object-cover"
-        style={{ pointerEvents: "none" }}
+        className="w-full h-full object-cover transition-opacity duration-500"
+        style={{ pointerEvents: "none", opacity: ready ? 1 : 0 }}
       />
 
       <AnimatePresence>
-        {!started && (
+        {ready && !started && (
           <motion.p
+            initial={{ opacity: 0 }}
             exit={{ opacity: 0 }}
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
@@ -651,6 +675,17 @@ const ViewInvite = () => {
       guests_count: parseInt(fd.get("guests_count") as string) || 1,
       message: (fd.get("message") as string) || null,
     }).then(() => {});
+
+    notify("rsvp_submitted", {
+      invite_id: id ?? "demo-wedding",
+      name: fd.get("name"),
+      email: fd.get("email"),
+      attendance,
+      guests: fd.get("guests_count"),
+      message: fd.get("message") || undefined,
+      invitation_letter_link: `${window.location.origin}/invite/${id ?? "demo-wedding"}`,
+      rsvp_dashboard_link: `${window.location.origin}/dashboard/${id ?? "demo-wedding"}`,
+    });
 
     setCelebrating(true);
     setTimeout(() => { setCelebrating(false); setRsvpDone(true); }, 3800);

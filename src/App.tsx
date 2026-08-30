@@ -2,12 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import PaidRoute from "@/components/PaidRoute";
+import Pricing from "./pages/Pricing";
 import Landing from "./pages/Landing";
-import InviteTemplates from "./pages/InviteTemplates";
 import ChooseTemplate from "./pages/ChooseTemplate";
 import CreateInvite from "./pages/CreateInvite";
 import ViewInvite from "./pages/ViewInvite";
@@ -37,9 +38,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<AuthPage />} />
-            <Route path="/pricing" element={<InviteTemplates />} />
-            <Route path="/choose-template" element={<ChooseTemplate />} />
-            <Route path="/create-invite" element={<ProtectedRoute><CreateInvite /></ProtectedRoute>} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/choose-template" element={<PaidRoute><ChooseTemplate /></PaidRoute>} />
+            <Route path="/create-invite" element={<PaidRoute><CreateInvite /></PaidRoute>} />
             <Route path="/invite/:id" element={<ViewInvite />} />
             <Route path="/dashboard/:inviteId" element={<ProtectedRoute><RsvpDashboard /></ProtectedRoute>} />
             <Route path="/terms" element={<Terms />} />
