@@ -512,6 +512,227 @@ const Hero = () => {
   );
 };
 
+// ── Live phone preview ───────────────────────────────────────────────────────
+const PhoneMockup = () => (
+  <div className="relative mx-auto" style={{ width: "min(280px, 78vw)" }}>
+    {/* Ambient glow behind phone */}
+    <div
+      className="absolute pointer-events-none rounded-full"
+      style={{
+        inset: "-20%",
+        background: "radial-gradient(circle, hsl(38 80% 68% / 0.35) 0%, transparent 60%)",
+        filter: "blur(30px)",
+      }}
+    />
+
+    {/* Phone frame */}
+    <div
+      className="relative rounded-[44px] p-[9px]"
+      style={{
+        background: "linear-gradient(160deg, #2a2a2a 0%, #0f0f0f 100%)",
+        aspectRatio: "9 / 19",
+        boxShadow:
+          "0 40px 90px rgba(0,0,0,0.35), 0 0 0 1.5px #3a3a3a inset, 0 0 0 1px rgba(0,0,0,0.45)",
+      }}
+    >
+      {/* Screen */}
+      <div className="relative w-full h-full rounded-[36px] overflow-hidden bg-black">
+        {/* Wedding background */}
+        <img
+          src={goldenHourThumbnail}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Vignette */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(20,10,0,0.15) 0%, rgba(20,10,0,0.05) 30%, rgba(0,0,0,0.35) 65%, rgba(0,0,0,0.82) 100%)",
+          }}
+        />
+
+        {/* Dynamic-island notch */}
+        <div
+          className="absolute top-[10px] left-1/2 -translate-x-1/2 z-30 rounded-full bg-black"
+          style={{ width: 78, height: 22 }}
+        />
+
+        {/* Top: title block */}
+        <div className="absolute top-[46px] left-0 right-0 px-5 text-center z-20">
+          <p
+            className="font-body uppercase text-white/90 mb-2.5"
+            style={{ fontSize: "0.5rem", letterSpacing: "0.32em" }}
+          >
+            You are invited
+          </p>
+          <p
+            className="font-handwritten text-white leading-none"
+            style={{ fontSize: "2.4rem" }}
+          >
+            Emma &amp; Liam
+          </p>
+          <p
+            className="font-body text-white/90 mt-3 tracking-[0.2em]"
+            style={{ fontSize: "0.62rem" }}
+          >
+            15 · JUNE · 2026
+          </p>
+          <p className="font-body text-[9px] text-white/70 mt-1">
+            Villa Rosa · Como, Italy
+          </p>
+        </div>
+
+        {/* Middle: countdown */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2.5">
+          {[
+            { n: "127", l: "DAYS" },
+            { n: "14",  l: "HRS"  },
+            { n: "36",  l: "MIN"  },
+          ].map(x => (
+            <div
+              key={x.l}
+              className="rounded-xl flex flex-col items-center px-2.5 py-1.5"
+              style={{ background: "rgba(255,255,255,0.14)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.22)" }}
+            >
+              <span className="font-display font-bold text-white leading-none" style={{ fontSize: "1.05rem" }}>{x.n}</span>
+              <span className="text-white/80 mt-0.5" style={{ fontSize: "0.42rem", letterSpacing: "0.24em" }}>{x.l}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Floating music button */}
+        <div
+          className="absolute z-20 rounded-full flex items-center justify-center"
+          style={{
+            bottom: 90,
+            right: 14,
+            width: 40,
+            height: 40,
+            background: GOLD_GRAD,
+            boxShadow: "0 6px 22px hsl(38 80% 55% / 0.55), inset 0 1px 0 rgba(255,255,255,0.18)",
+          }}
+        >
+          <Music2 className="w-[15px] h-[15px] text-white" />
+        </div>
+
+        {/* Bottom: RSVP card */}
+        <div className="absolute bottom-5 left-4 right-4 z-20">
+          <div
+            className="rounded-2xl py-3 px-4 flex items-center justify-center gap-1.5"
+            style={{ background: "rgba(255,255,255,0.98)", boxShadow: "0 8px 26px rgba(0,0,0,0.35)" }}
+          >
+            <span className="font-body font-bold" style={{ color: GOLD, fontSize: "0.72rem", letterSpacing: "0.06em" }}>
+              RSVP now
+            </span>
+            <ArrowRight className="w-3 h-3" style={{ color: GOLD }} />
+          </div>
+          <p className="text-center font-body text-[8.5px] text-white/70 mt-1.5">
+            wed4love.com/emma-and-liam
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Side hardware buttons */}
+    <div className="absolute" style={{ left: -2, top: "18%", width: 3, height: 32, background: "#222", borderTopLeftRadius: 2, borderBottomLeftRadius: 2 }} />
+    <div className="absolute" style={{ left: -2, top: "26%", width: 3, height: 54, background: "#222", borderTopLeftRadius: 2, borderBottomLeftRadius: 2 }} />
+    <div className="absolute" style={{ right: -2, top: "22%", width: 3, height: 72, background: "#222", borderTopRightRadius: 2, borderBottomRightRadius: 2 }} />
+  </div>
+);
+
+const PhonePreview = () => (
+  <section
+    className="py-24 px-4 relative overflow-hidden"
+    style={{ background: "linear-gradient(180deg, hsl(38 50% 96%) 0%, hsl(340 30% 96%) 100%)" }}
+  >
+    {/* Decorative blobs */}
+    <div className="absolute top-20 -left-16 w-72 h-72 rounded-full pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(38 80% 85% / 0.4) 0%, transparent 70%)" }} />
+    <div className="absolute bottom-16 -right-14 w-80 h-80 rounded-full pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(340 60% 88% / 0.32) 0%, transparent 70%)" }} />
+
+    <div className="max-w-6xl mx-auto relative">
+      <motion.div {...fade()} className="text-center mb-14">
+        <span
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-5"
+          style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
+        >
+          <Smartphone className="w-3 h-3" /> Live preview
+        </span>
+        <h2
+          className="font-display font-bold leading-tight text-foreground mb-4"
+          style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)" }}
+        >
+          Every guest opens it{" "}
+          <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
+            on their phone
+          </span>
+        </h2>
+        <p className="font-body text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          No app to download. One link. Guests tap, the envelope opens, and the invitation
+          unfolds with cinematic video, music, and instant RSVP.
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 md:gap-14 items-center">
+        {/* Left features (desktop) */}
+        <div className="hidden md:flex flex-col gap-7 text-right">
+          {[
+            { icon: Play,     title: "Cinematic envelope reveal", desc: "A 3-second 3D envelope opens when guests tap the link." },
+            { icon: Music2,   title: "Ambient wedding music",     desc: "A song of your choice plays softly as they scroll." },
+            { icon: Clock,    title: "Live countdown",            desc: "Days, hours, minutes to the big day — always accurate." },
+          ].map((f, i) => (
+            <motion.div key={f.title} {...fade(0.1 + i * 0.08)} className="flex items-start gap-3 justify-end">
+              <div className="flex-1">
+                <p className="font-display font-bold text-base text-foreground mb-1">{f.title}</p>
+                <p className="font-body text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+              </div>
+              <div
+                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                style={{ background: GOLD_GRAD, boxShadow: "0 6px 20px hsl(38 80% 55% / 0.3)" }}
+              >
+                <f.icon className="w-4 h-4 text-white" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Phone */}
+        <motion.div
+          {...fade(0.1)}
+          className="flex justify-center"
+        >
+          <PhoneMockup />
+        </motion.div>
+
+        {/* Right features (desktop) */}
+        <div className="hidden md:flex flex-col gap-7">
+          {[
+            { icon: Users,          title: "Real-time RSVP",           desc: "Responses appear in your dashboard the moment they tap." },
+            { icon: QrCode,         title: "Share by QR or link",      desc: "One tap on the QR code — the invite opens instantly." },
+            { icon: LayoutDashboard,title: "Private host dashboard",   desc: "See who's coming, meal choices, notes — all in one place." },
+          ].map((f, i) => (
+            <motion.div key={f.title} {...fade(0.1 + i * 0.08)} className="flex items-start gap-3">
+              <div
+                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                style={{ background: GOLD_GRAD, boxShadow: "0 6px 20px hsl(38 80% 55% / 0.3)" }}
+              >
+                <f.icon className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="font-display font-bold text-base text-foreground mb-1">{f.title}</p>
+                <p className="font-body text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 // ── Paper vs Digital comparison ──────────────────────────────────────────────
 const Comparison = () => {
   const { format, showUsdNote, usdNote } = useCurrency();
@@ -1573,6 +1794,7 @@ const Landing = () => {
   <div>
     <Nav />
     <Hero />
+    <PhonePreview />
     <Comparison />
     <StatsBar />
     <Templates />
