@@ -342,8 +342,8 @@ const Hero = () => {
   const { format } = useCurrency();
   return (
   <section
-    className="relative flex flex-col items-center pt-28 pb-0 overflow-hidden"
-    style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)", minHeight: "100vh" }}
+    className="relative overflow-hidden pt-28 pb-0"
+    style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)" }}
   >
     {/* Soft decorative blobs */}
     <div className="absolute top-20 left-10 w-72 h-72 rounded-full pointer-events-none"
@@ -351,91 +351,104 @@ const Hero = () => {
     <div className="absolute top-32 right-8 w-56 h-56 rounded-full pointer-events-none"
       style={{ background: "radial-gradient(circle, hsl(340 60% 88% / 0.28) 0%, transparent 70%)" }} />
 
-    {/* ── Text block ── */}
-    <div className="relative text-center max-w-2xl mx-auto px-6 mb-14">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
-          style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
-        >
-          <Sparkles className="w-3 h-3" /> Digital Wedding Invitations · from {format(49)}
-        </div>
-
-        <h1
-          className="font-display font-bold leading-tight mb-5"
-          style={{ fontSize: "clamp(2.2rem, 5.5vw, 3.8rem)", color: "hsl(30 20% 14%)" }}
-        >
-          Elegant Digital Invitations{" "}
-          <br className="hidden sm:block" />
-          for Modern{" "}
-          <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
-            Weddings
-          </span>
-        </h1>
-
-        <p className="font-body text-base leading-relaxed mb-8 mx-auto" style={{ color: "hsl(30 12% 42%)", maxWidth: 480 }}>
-          Your invitation is the first impression of your big day.
-          Make it unforgettable — cinematic, elegant, and shared in a single link.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <GetStartedLink
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
-            style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 28px hsl(38 80% 50% / 0.35)" }}
-          >
-            Create Your Invitation <ArrowRight className="w-4 h-4" />
-          </GetStartedLink>
-          <Link
-            to="/demo"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-body text-sm font-semibold transition-all hover:opacity-80"
-            style={{ background: "white", color: "hsl(30 18% 32%)", border: "1.5px solid hsl(38 40% 86%)", boxShadow: "0 2px 12px hsl(38 30% 70% / 0.18)" }}
-          >
-            <Play className="w-3.5 h-3.5" style={{ color: GOLD }} /> Watch Demo
-          </Link>
-        </div>
-
-        {/* ── Social proof trust bar ── */}
+    {/* ── Two-column hero: text + phone ── */}
+    <div className="relative max-w-6xl mx-auto px-6 mb-14">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-12 items-center">
         <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mt-6 pt-5"
-          style={{ borderTop: "1px solid hsl(38 38% 88%)" }}
+          initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center lg:text-left order-2 lg:order-1"
         >
-          {/* Avatar stack + count */}
-          <div className="flex items-center gap-2.5">
-            <div className="flex">
-              {HERO_AVATARS.map((a, idx) => (
-                <div
-                  key={a.i}
-                  className="w-7 h-7 rounded-full flex items-center justify-center font-body text-[9px] font-bold text-white border-2 border-white"
-                  style={{ background: a.bg, marginLeft: idx > 0 ? -9 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 1px 4px rgba(0,0,0,0.14)" }}
-                >
-                  {a.i}
-                </div>
-              ))}
-            </div>
-            <span className="font-body text-xs" style={{ color: "hsl(30 12% 42%)" }}>
-              <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
+          <div
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
+            style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
+          >
+            <Sparkles className="w-3 h-3" /> Digital Wedding Invitations · from {format(49)}
+          </div>
+
+          <h1
+            className="font-display font-bold leading-tight mb-5"
+            style={{ fontSize: "clamp(2rem, 5vw, 3.6rem)", color: "hsl(30 20% 14%)" }}
+          >
+            Elegant Digital Invitations{" "}
+            <br className="hidden sm:block" />
+            for Modern{" "}
+            <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
+              Weddings
             </span>
+          </h1>
+
+          <p className="font-body text-base leading-relaxed mb-8 mx-auto lg:mx-0" style={{ color: "hsl(30 12% 42%)", maxWidth: 480 }}>
+            Your invitation is the first impression of your big day.
+            Make it unforgettable — cinematic, elegant, and shared in a single link.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
+            <GetStartedLink
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
+              style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 28px hsl(38 80% 50% / 0.35)" }}
+            >
+              Create Your Invitation <ArrowRight className="w-4 h-4" />
+            </GetStartedLink>
+            <Link
+              to="/demo"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-body text-sm font-semibold transition-all hover:opacity-80"
+              style={{ background: "white", color: "hsl(30 18% 32%)", border: "1.5px solid hsl(38 40% 86%)", boxShadow: "0 2px 12px hsl(38 30% 70% / 0.18)" }}
+            >
+              <Play className="w-3.5 h-3.5" style={{ color: GOLD }} /> Watch Demo
+            </Link>
           </div>
 
-          <div className="hidden sm:block w-px h-4" style={{ background: "hsl(38 28% 82%)" }} />
-
-          {/* Star rating */}
-          <div className="flex items-center gap-1.5">
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i} style={{ color: GOLD, fontSize: 12 }}>★</span>
-              ))}
+          {/* ── Social proof trust bar ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 sm:gap-5 mt-6 pt-5"
+            style={{ borderTop: "1px solid hsl(38 38% 88%)" }}
+          >
+            {/* Avatar stack + count */}
+            <div className="flex items-center gap-2.5">
+              <div className="flex">
+                {HERO_AVATARS.map((a, idx) => (
+                  <div
+                    key={a.i}
+                    className="w-7 h-7 rounded-full flex items-center justify-center font-body text-[9px] font-bold text-white border-2 border-white"
+                    style={{ background: a.bg, marginLeft: idx > 0 ? -9 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 1px 4px rgba(0,0,0,0.14)" }}
+                  >
+                    {a.i}
+                  </div>
+                ))}
+              </div>
+              <span className="font-body text-xs" style={{ color: "hsl(30 12% 42%)" }}>
+                <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
+              </span>
             </div>
-            <span className="font-body text-xs font-bold" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
-            <span className="font-body text-xs" style={{ color: "hsl(30 12% 52%)" }}>· 312 reviews</span>
-          </div>
+
+            <div className="hidden sm:block w-px h-4" style={{ background: "hsl(38 28% 82%)" }} />
+
+            {/* Star rating */}
+            <div className="flex items-center gap-1.5">
+              <div className="flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} style={{ color: GOLD, fontSize: 12 }}>★</span>
+                ))}
+              </div>
+              <span className="font-body text-xs font-bold" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
+              <span className="font-body text-xs" style={{ color: "hsl(30 12% 52%)" }}>· 312 reviews</span>
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+
+        {/* Right column: Phone mockup */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="flex justify-center lg:justify-end order-1 lg:order-2"
+        >
+          <PhoneMockup />
+        </motion.div>
+      </div>
     </div>
 
     {/* ── Cards marquee ── */}
@@ -514,7 +527,7 @@ const Hero = () => {
 
 // ── Live phone preview ───────────────────────────────────────────────────────
 const PhoneMockup = () => (
-  <div className="relative mx-auto" style={{ width: "min(280px, 78vw)" }}>
+  <div className="relative mx-auto" style={{ width: "min(260px, 62vw)" }}>
     {/* Ambient glow behind phone */}
     <div
       className="absolute pointer-events-none rounded-full"
@@ -640,97 +653,6 @@ const PhoneMockup = () => (
     <div className="absolute" style={{ left: -2, top: "26%", width: 3, height: 54, background: "#222", borderTopLeftRadius: 2, borderBottomLeftRadius: 2 }} />
     <div className="absolute" style={{ right: -2, top: "22%", width: 3, height: 72, background: "#222", borderTopRightRadius: 2, borderBottomRightRadius: 2 }} />
   </div>
-);
-
-const PhonePreview = () => (
-  <section
-    className="py-24 px-4 relative overflow-hidden"
-    style={{ background: "linear-gradient(180deg, hsl(38 50% 96%) 0%, hsl(340 30% 96%) 100%)" }}
-  >
-    {/* Decorative blobs */}
-    <div className="absolute top-20 -left-16 w-72 h-72 rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(38 80% 85% / 0.4) 0%, transparent 70%)" }} />
-    <div className="absolute bottom-16 -right-14 w-80 h-80 rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(340 60% 88% / 0.32) 0%, transparent 70%)" }} />
-
-    <div className="max-w-6xl mx-auto relative">
-      <motion.div {...fade()} className="text-center mb-14">
-        <span
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-5"
-          style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
-        >
-          <Smartphone className="w-3 h-3" /> Live preview
-        </span>
-        <h2
-          className="font-display font-bold leading-tight text-foreground mb-4"
-          style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)" }}
-        >
-          Every guest opens it{" "}
-          <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
-            on their phone
-          </span>
-        </h2>
-        <p className="font-body text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          No app to download. One link. Guests tap, the envelope opens, and the invitation
-          unfolds with cinematic video, music, and instant RSVP.
-        </p>
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 md:gap-14 items-center">
-        {/* Left features (desktop) */}
-        <div className="hidden md:flex flex-col gap-7 text-right">
-          {[
-            { icon: Play,     title: "Cinematic envelope reveal", desc: "A 3-second 3D envelope opens when guests tap the link." },
-            { icon: Music2,   title: "Ambient wedding music",     desc: "A song of your choice plays softly as they scroll." },
-            { icon: Clock,    title: "Live countdown",            desc: "Days, hours, minutes to the big day — always accurate." },
-          ].map((f, i) => (
-            <motion.div key={f.title} {...fade(0.1 + i * 0.08)} className="flex items-start gap-3 justify-end">
-              <div className="flex-1">
-                <p className="font-display font-bold text-base text-foreground mb-1">{f.title}</p>
-                <p className="font-body text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-              </div>
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: GOLD_GRAD, boxShadow: "0 6px 20px hsl(38 80% 55% / 0.3)" }}
-              >
-                <f.icon className="w-4 h-4 text-white" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Phone */}
-        <motion.div
-          {...fade(0.1)}
-          className="flex justify-center"
-        >
-          <PhoneMockup />
-        </motion.div>
-
-        {/* Right features (desktop) */}
-        <div className="hidden md:flex flex-col gap-7">
-          {[
-            { icon: Users,          title: "Real-time RSVP",           desc: "Responses appear in your dashboard the moment they tap." },
-            { icon: QrCode,         title: "Share by QR or link",      desc: "One tap on the QR code — the invite opens instantly." },
-            { icon: LayoutDashboard,title: "Private host dashboard",   desc: "See who's coming, meal choices, notes — all in one place." },
-          ].map((f, i) => (
-            <motion.div key={f.title} {...fade(0.1 + i * 0.08)} className="flex items-start gap-3">
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: GOLD_GRAD, boxShadow: "0 6px 20px hsl(38 80% 55% / 0.3)" }}
-              >
-                <f.icon className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="font-display font-bold text-base text-foreground mb-1">{f.title}</p>
-                <p className="font-body text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
 );
 
 // ── Paper vs Digital comparison ──────────────────────────────────────────────
@@ -1794,7 +1716,6 @@ const Landing = () => {
   <div>
     <Nav />
     <Hero />
-    <PhonePreview />
     <Comparison />
     <StatsBar />
     <Templates />
