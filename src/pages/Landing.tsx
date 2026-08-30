@@ -357,7 +357,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center lg:text-left order-2 lg:order-1"
+          className="text-center lg:text-left order-1"
         >
           <div
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
@@ -444,7 +444,7 @@ const Hero = () => {
           initial={{ opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="flex justify-center lg:justify-end order-1 lg:order-2"
+          className="flex justify-center lg:justify-end order-2"
         >
           <PhoneMockup />
         </motion.div>
