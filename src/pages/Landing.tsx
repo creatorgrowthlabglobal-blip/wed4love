@@ -550,20 +550,16 @@ const PhoneMockup = () => (
     >
       {/* Screen */}
       <div className="relative w-full h-full rounded-[36px] overflow-hidden bg-black">
-        {/* Wedding background */}
-        <img
-          src={goldenHourThumbnail}
-          alt=""
-          aria-hidden
+        {/* Envelope opening video */}
+        <video
+          src="/envelope.mp4"
+          poster="/envelope-preview.png"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover"
-        />
-        {/* Vignette */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(20,10,0,0.15) 0%, rgba(20,10,0,0.05) 30%, rgba(0,0,0,0.35) 65%, rgba(0,0,0,0.82) 100%)",
-          }}
         />
 
         {/* Dynamic-island notch */}
@@ -571,80 +567,6 @@ const PhoneMockup = () => (
           className="absolute top-[10px] left-1/2 -translate-x-1/2 z-30 rounded-full bg-black"
           style={{ width: 78, height: 22 }}
         />
-
-        {/* Top: title block */}
-        <div className="absolute top-[46px] left-0 right-0 px-5 text-center z-20">
-          <p
-            className="font-body uppercase text-white/90 mb-2.5"
-            style={{ fontSize: "0.5rem", letterSpacing: "0.32em" }}
-          >
-            You are invited
-          </p>
-          <p
-            className="font-handwritten text-white leading-none"
-            style={{ fontSize: "2.4rem" }}
-          >
-            Emma &amp; Liam
-          </p>
-          <p
-            className="font-body text-white/90 mt-3 tracking-[0.2em]"
-            style={{ fontSize: "0.62rem" }}
-          >
-            15 · JUNE · 2026
-          </p>
-          <p className="font-body text-[9px] text-white/70 mt-1">
-            Villa Rosa · Como, Italy
-          </p>
-        </div>
-
-        {/* Middle: countdown */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2.5">
-          {[
-            { n: "127", l: "DAYS" },
-            { n: "14",  l: "HRS"  },
-            { n: "36",  l: "MIN"  },
-          ].map(x => (
-            <div
-              key={x.l}
-              className="rounded-xl flex flex-col items-center px-2.5 py-1.5"
-              style={{ background: "rgba(255,255,255,0.14)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.22)" }}
-            >
-              <span className="font-display font-bold text-white leading-none" style={{ fontSize: "1.05rem" }}>{x.n}</span>
-              <span className="text-white/80 mt-0.5" style={{ fontSize: "0.42rem", letterSpacing: "0.24em" }}>{x.l}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Floating music button */}
-        <div
-          className="absolute z-20 rounded-full flex items-center justify-center"
-          style={{
-            bottom: 90,
-            right: 14,
-            width: 40,
-            height: 40,
-            background: GOLD_GRAD,
-            boxShadow: "0 6px 22px hsl(38 80% 55% / 0.55), inset 0 1px 0 rgba(255,255,255,0.18)",
-          }}
-        >
-          <Music2 className="w-[15px] h-[15px] text-white" />
-        </div>
-
-        {/* Bottom: RSVP card */}
-        <div className="absolute bottom-5 left-4 right-4 z-20">
-          <div
-            className="rounded-2xl py-3 px-4 flex items-center justify-center gap-1.5"
-            style={{ background: "rgba(255,255,255,0.98)", boxShadow: "0 8px 26px rgba(0,0,0,0.35)" }}
-          >
-            <span className="font-body font-bold" style={{ color: GOLD, fontSize: "0.72rem", letterSpacing: "0.06em" }}>
-              RSVP now
-            </span>
-            <ArrowRight className="w-3 h-3" style={{ color: GOLD }} />
-          </div>
-          <p className="text-center font-body text-[8.5px] text-white/70 mt-1.5">
-            wed4love.com/emma-and-liam
-          </p>
-        </div>
       </div>
     </div>
 
