@@ -5,92 +5,106 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
   <url>
-    <loc>https://wish4love.com/</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/demo</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/pricing</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wed4love.com/demo</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/articles</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/blog</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/articles/handwritten-letters-digital-age</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/blog/digital-vs-paper-wedding-invitations</loc>
+    <lastmod>2026-08-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/articles/how-to-write-an-anniversary-letter</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/blog/wedding-rsvp-timeline-every-deadline</loc>
+    <lastmod>2026-08-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/articles/just-because-notes-intimacy</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/blog/five-must-have-details-digital-invitation</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/articles/overcoming-writers-block-emotions</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/blog/style-guide-for-every-wedding-aesthetic</loc>
+    <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/articles/personalize-digital-messages</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/blog/wedding-invitation-etiquette-2026</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/auth</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/custom-inquiry</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/contact</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/contact</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/terms</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/login</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://wed4love.com/terms</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/privacy</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/privacy</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://wish4love.com/refund</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://wed4love.com/refund</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

@@ -4,6 +4,22 @@ import { motion } from "framer-motion";
 import { ArrowRight, Clock, Sparkles, Search, Mail } from "lucide-react";
 import Header from "@/components/Header";
 import { BLOG_POSTS, CATEGORIES, BlogPost } from "@/data/blogPosts";
+import { Seo } from "@/components/Seo";
+
+const BLOG_LIST_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "The Wed4Love Journal",
+  "url": "https://wed4love.com/blog",
+  "description": "Wedding planning, invitation design, RSVP strategy, and modern etiquette — from the Wed4Love team.",
+  "blogPost": BLOG_POSTS.map(p => ({
+    "@type": "BlogPosting",
+    "headline": p.title,
+    "url": `https://wed4love.com/blog/${p.slug}`,
+    "datePublished": p.date,
+    "author": { "@type": "Person", "name": p.author }
+  }))
+};
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -177,6 +193,12 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen" style={{ background: BG }}>
+      <Seo
+        title="Wedding Planning & Invitation Ideas — The Wed4Love Journal"
+        description="Practical wedding planning guides, invitation design ideas, RSVP strategy, and modern etiquette from the Wed4Love team."
+        path="/blog"
+        structuredData={BLOG_LIST_SCHEMA}
+      />
       <Header />
 
       {/* Hero */}

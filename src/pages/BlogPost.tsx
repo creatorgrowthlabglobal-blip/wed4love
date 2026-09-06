@@ -4,6 +4,43 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Clock, Share2, Check, Sparkles } from "lucide-react";
 import Header from "@/components/Header";
 import { getPostBySlug, getRelatedPosts, BlogBlock, BlogPost as BlogPostType } from "@/data/blogPosts";
+import { Seo } from "@/components/Seo";
+
+function buildArticleSchema(post: BlogPostType) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt,
+    "image": `https://wed4love.com/og-image.png`,
+    "datePublished": post.date,
+    "dateModified": post.date,
+    "author": {
+      "@type": "Person",
+      "name": post.author,
+      "jobTitle": post.authorRole
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Wed4Love",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://wed4love.com/favicon.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://wed4love.com/blog/${post.slug}`
+    },
+    "articleSection": post.category,
+    "wordCount": post.content.reduce((n, b) => {
+      if (b.type === "p" || b.type === "h2" || b.type === "h3" || b.type === "quote") return n + b.text.split(" ").length;
+      if (b.type === "callout") return n + b.title.split(" ").length + b.text.split(" ").length;
+      if (b.type === "ul" || b.type === "ol") return n + b.items.reduce((m, i) => m + i.split(" ").length, 0);
+      return n;
+    }, 0)
+  };
+}
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -153,6 +190,12 @@ const BlogPost = () => {
   if (!post) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: BG }}>
+        <Seo
+          title="Article not found — Wed4Love"
+          description="We couldn't find that story. Browse the Wed4Love Journal for wedding planning guides and invitation ideas."
+          path={`/blog/${slug ?? ""}`}
+          noindex
+        />
         <Header />
         <div className="text-center max-w-md">
           <p className="font-display text-5xl font-bold mb-3 text-foreground">404</p>
@@ -188,6 +231,19 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen" style={{ background: BG }}>
+      <Seo
+        title={`${post.title} — Wed4Love`}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        type="article"
+        article={{
+          publishedTime: post.date,
+          author: post.author,
+          section: post.category,
+          tags: [post.category, "wedding", "invitations"],
+        }}
+        structuredData={buildArticleSchema(post)}
+      />
       <Header />
 
       {/* Reading progress bar */}

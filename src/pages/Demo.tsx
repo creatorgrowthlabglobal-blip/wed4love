@@ -1,6 +1,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { Seo } from "@/components/Seo";
 import gardenRoseThumbnail   from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail  from "@/assets/rustic-bloom-thumbnail.png";
 import goldenHourThumbnail   from "@/assets/golden-hour-thumbnail.png";
@@ -25,6 +26,11 @@ export default function Demo() {
       className="min-h-screen px-5 py-10"
       style={{ background: "linear-gradient(155deg, hsl(42 80% 97%) 0%, hsl(350 50% 96%) 50%, hsl(38 60% 95%) 100%)" }}
     >
+      <Seo
+        title="See a Live Demo — Wed4Love Wedding Invitation Templates"
+        description="Preview real Wed4Love wedding invitations across five signature aesthetics: Golden Hour, Garden Rose, Midnight Luxe, Rustic Bloom, and Soft Love."
+        path="/demo"
+      />
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}

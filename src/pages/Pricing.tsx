@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
 import { notify } from "@/lib/notify";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { Seo } from "@/components/Seo";
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -202,6 +203,11 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 98%), hsl(38 45% 96%))" }}>
+      <Seo
+        title="Pricing — Wed4Love Digital Wedding Invitations from $49"
+        description="Simple, one-time pricing. Essential $49, Premium $99, Custom $399. Unlimited guests, live RSVP dashboard, and cinematic templates included."
+        path="/pricing"
+      />
       <Header />
 
       <main className="pt-32 pb-20 px-4">

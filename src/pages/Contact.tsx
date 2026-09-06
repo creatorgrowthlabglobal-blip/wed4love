@@ -5,6 +5,7 @@ import { Mail, Send, Loader2, CheckCircle2, ArrowLeft, Phone } from "lucide-reac
 import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Seo } from "@/components/Seo";
 
 const SUPPORT_EMAIL = "wed4loveglobal@gmail.com";
 const SUPPORT_WHATSAPP = "9779702238084";
@@ -56,6 +57,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/10 to-background">
+      <Seo
+        title="Contact — Wed4Love Wedding Invitation Support"
+        description="Questions about your Wed4Love invitation? Reach us on WhatsApp, email, or via this form. We reply within a few hours."
+        path="/contact"
+      />
       <Header />
       <main className="max-w-2xl mx-auto px-6 pt-28 pb-20">
         <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">

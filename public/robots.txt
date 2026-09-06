@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
 Disallow: /payment-debug
+Disallow: /choose-template
+Disallow: /create-invite
+Disallow: /dashboard/
+Disallow: /my-invitations
+Disallow: /invite/
 
-Sitemap: https://wish4love.com/sitemap.xml
+Sitemap: https://wed4love.com/sitemap.xml

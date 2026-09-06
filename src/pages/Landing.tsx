@@ -16,6 +16,54 @@ import { useAuth } from "@/hooks/useAuth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { Seo } from "@/components/Seo";
+
+const LANDING_FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does it take to create a digital wedding invitation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most couples finish their invitation in about 10 minutes. Pick a template, add your details, upload a couple of photos, and share the link."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can guests RSVP directly through the invitation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Every Wed4Love invitation includes a live RSVP form. Responses appear instantly in your dashboard — no separate tools required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Wed4Love a one-time payment or a subscription?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Wed4Love is a one-time payment. Pricing starts at $49 for the Essential package with no recurring charges."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I share my invitation on WhatsApp?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. Every invitation is a single link with an optimised preview card designed for WhatsApp, iMessage, and Instagram."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many guests can I invite?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Unlimited. You send one link to as many guests as you want — there's no per-guest fee."
+      }
+    }
+  ]
+};
 
 const GOLD       = "hsl(38 72% 44%)";
 const GOLD_LIGHT = "hsl(38 80% 52%)";
@@ -553,7 +601,6 @@ const PhoneMockup = () => (
         {/* Envelope opening video */}
         <video
           src="/envelope.mp4"
-          poster="/envelope-preview.png"
           autoPlay
           muted
           loop
@@ -1636,6 +1683,12 @@ const Landing = () => {
 
   return (
   <div>
+    <Seo
+      title="Wed4Love — Elegant Digital Wedding Invitations with Live RSVP"
+      description="Cinematic digital wedding invitations shared in a single link. Animated templates, live RSVP tracking, WhatsApp-ready. From $49 — set up in 10 minutes."
+      path="/"
+      structuredData={LANDING_FAQ_SCHEMA}
+    />
     <Nav />
     <Hero />
     <Comparison />
