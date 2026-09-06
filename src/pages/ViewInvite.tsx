@@ -284,7 +284,6 @@ const EnvelopeReveal = ({ onOpen, groom, bride, date }: { onOpen: () => void; gr
       <video
         ref={videoRef}
         src="/envelope.mp4"
-        poster="/envelope-preview.png"
         playsInline
         preload="auto"
         onLoadedData={() => setReady(true)}
