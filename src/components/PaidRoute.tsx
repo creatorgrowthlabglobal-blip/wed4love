@@ -23,7 +23,14 @@ const PaidRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-  if (!plan) return <Navigate to="/pricing" replace />;
+  if (!plan) {
+    // If the user just kicked off a checkout, don't dump them on /pricing —
+    // that looks like the payment failed. Send them to /payment-success,
+    // which polls the entitlement and shows real feedback.
+    const paymentInFlight =
+      typeof window !== "undefined" && !!localStorage.getItem("selected_package");
+    return <Navigate to={paymentInFlight ? "/payment-success" : "/pricing"} replace />;
+  }
 
   return <>{children}</>;
 };

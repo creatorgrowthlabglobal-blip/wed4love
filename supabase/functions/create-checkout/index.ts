@@ -8,6 +8,13 @@ const corsHeaders = {
 const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
+// Wed4Love invite plans. Kept in sync with INVITE_PLANS in whop-webhook.
+const INVITE_PLAN_IDS: Record<string, string> = {
+  starter: "plan_FsfUSAeOIoKZt",
+  premium: "plan_OizfizAnMNsVO",
+  custom:  "plan_tLQmC1O2O9DmN",
+};
+
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -35,7 +42,7 @@ Deno.serve(async (req) => {
     }
     const planId = product === "letter" ? LETTER_PLAN
       : product === "call" ? EXTRA_CALL_PLAN
-      : null;
+      : (INVITE_PLAN_IDS[product] ?? null);
     if (!planId) {
       return new Response(JSON.stringify({ error: `unknown product: ${product}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

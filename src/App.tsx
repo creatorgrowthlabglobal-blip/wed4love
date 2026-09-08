@@ -8,6 +8,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PaidRoute from "@/components/PaidRoute";
 import Pricing from "./pages/Pricing";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import Landing from "./pages/Landing";
 import ChooseTemplate from "./pages/ChooseTemplate";
 import CreateInvite from "./pages/CreateInvite";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/choose-template" element={<PaidRoute><ChooseTemplate /></PaidRoute>} />
             <Route path="/create-invite" element={<PaidRoute><CreateInvite /></PaidRoute>} />
             <Route path="/invite/:id" element={<ViewInvite />} />

@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check, X, Crown, Sparkles, Palette, ArrowRight, ShieldCheck, Clock, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
-import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
 import { notify } from "@/lib/notify";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Seo } from "@/components/Seo";
+import { supabase } from "@/integrations/supabase/client";
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -177,28 +177,49 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
 const Pricing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [awaiting, setAwaiting] = useState(false);
-  const { plan } = useInviteEntitlement(awaiting);
+  const [pending, setPending] = useState<string | null>(null);
 
-  // Once the payment lands, send them straight into the builder.
-  useEffect(() => {
-    if (awaiting && plan) navigate("/choose-template", { replace: true });
-  }, [awaiting, plan, navigate]);
-
-  const choose = (pkg: PackageDef) => {
+  const choose = async (pkg: PackageDef) => {
     notify("package_selected", { package: pkg.id, price: pkg.price, email: user?.email });
 
     if (!user) {
       navigate("/login", { state: { from: "/pricing" } });
       return;
     }
+    if (!user.email) {
+      // Shouldn't happen — Supabase always gives us an email — but guard
+      // anyway so we don't create a bogus pending_orders row.
+      navigate("/login", { state: { from: "/pricing" } });
+      return;
+    }
 
+    setPending(pkg.id);
     localStorage.setItem("selected_package", pkg.id);
-    const url = user.email
-      ? `${pkg.checkout}?d2c=true&email=${encodeURIComponent(user.email)}`
-      : `${pkg.checkout}?d2c=true`;
-    window.open(url, "_blank", "noopener");
-    setAwaiting(true);
+
+    // Route the checkout through create-checkout so the webhook can match
+    // this purchase back to `user.email` via metadata.order_id — no more
+    // "wrong email at checkout" or "webhook can't resolve email" failures.
+    const redirectUrl = `${window.location.origin}/payment-success?plan=${pkg.id}`;
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { product: pkg.id, app_email: user.email, redirect_url: redirectUrl },
+      });
+      if (error || !data?.purchase_url) throw error ?? new Error("no purchase_url");
+      window.open(data.purchase_url, "_blank", "noopener");
+      navigate(`/payment-success?plan=${pkg.id}`);
+    } catch (e) {
+      console.error("[Pricing] create-checkout failed, falling back to raw Whop URL", e);
+      // Fallback: if the edge function is down (or hasn't been deployed
+      // yet), don't leave the user stranded — open Whop directly. The
+      // webhook may still resolve the email via user_email in the payload.
+      const fallback = user.email
+        ? `${pkg.checkout}?d2c=true&email=${encodeURIComponent(user.email)}`
+        : `${pkg.checkout}?d2c=true`;
+      window.open(fallback, "_blank", "noopener");
+      navigate(`/payment-success?plan=${pkg.id}`);
+    } finally {
+      setPending(null);
+    }
   };
 
   return (
@@ -225,25 +246,9 @@ const Pricing = () => {
             </p>
           </div>
 
-          {awaiting && (
-            <div
-              className="max-w-xl mx-auto mb-10 rounded-2xl px-5 py-4 flex items-start gap-3 bg-card"
-              style={{ border: "1.5px solid hsl(38 50% 82%)" }}
-            >
-              <Loader2 className="w-4 h-4 mt-0.5 animate-spin" style={{ color: GOLD }} />
-              <div>
-                <p className="font-body text-sm font-semibold text-foreground">Waiting for your payment…</p>
-                <p className="font-body text-xs text-muted-foreground mt-1">
-                  Finish the checkout in the new tab. This page unlocks the builder automatically —
-                  keep it open.
-                </p>
-              </div>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {PACKAGES.map((p, i) => (
-              <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={awaiting} />
+              <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={pending === p.id} />
             ))}
           </div>
 
