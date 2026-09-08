@@ -7,50 +7,50 @@
 @layer base {
   :root {
     color-scheme: light;
-    /* Wish4Love Bright Romantic Palette */
-    --background: 24 100% 97%;
-    --foreground: 0 20% 20%;
+    /* Wed4Love Cream + Gold Palette */
+    --background: 42 60% 97%;
+    --foreground: 30 20% 14%;
 
-    --card: 30 60% 96%;
-    --card-foreground: 0 20% 20%;
+    --card: 42 60% 96%;
+    --card-foreground: 30 20% 14%;
 
-    --popover: 30 60% 96%;
-    --popover-foreground: 0 20% 20%;
+    --popover: 42 60% 97%;
+    --popover-foreground: 30 20% 14%;
 
-    --primary: 340 100% 76%;
+    --primary: 38 72% 44%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 80% 94%;
-    --secondary-foreground: 0 20% 20%;
+    --secondary: 38 55% 92%;
+    --secondary-foreground: 30 20% 14%;
 
-    --muted: 30 40% 92%;
-    --muted-foreground: 0 10% 40%;
+    --muted: 38 30% 90%;
+    --muted-foreground: 30 12% 42%;
 
-    --accent: 40 90% 71%;
+    --accent: 38 80% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 340 40% 88%;
-    --input: 30 50% 92%;
-    --ring: 340 100% 76%;
+    --border: 38 45% 88%;
+    --input: 38 45% 92%;
+    --ring: 38 72% 44%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
-    --rose-gold: 340 60% 82%;
-    --blush: 350 100% 91%;
-    --cream-warm: 24 100% 97%;
-    --vintage-beige: 30 60% 94%;
-    --elegant-gold: 40 90% 71%;
-    --deep-rose: 340 40% 60%;
-    --lavender: 280 50% 90%;
-    --warm-brown: 0 20% 20%;
+    /* Custom tokens (values re-tuned to gold family; names kept for compat) */
+    --rose-gold: 38 55% 76%;
+    --blush: 42 60% 94%;
+    --cream-warm: 42 60% 97%;
+    --vintage-beige: 38 55% 92%;
+    --elegant-gold: 38 80% 52%;
+    --deep-rose: 38 60% 40%;
+    --lavender: 38 40% 90%;
+    --warm-brown: 30 20% 14%;
     --charcoal: 0 0% 23%;
-    --soft-pink: 350 100% 92%;
-    --bright-rose: 340 100% 76%;
-    --soft-purple: 290 50% 89%;
+    --soft-pink: 42 60% 94%;
+    --bright-rose: 38 72% 44%;
+    --soft-purple: 38 50% 90%;
 
     /* Vault theme tokens */
     --vault-navy: 225 40% 12%;
@@ -63,30 +63,30 @@
     --vault-text: 36 30% 88%;
     --vault-text-muted: 36 15% 58%;
 
-    /* Gradients */
-    --gradient-romantic: linear-gradient(135deg, hsl(24 100% 97%) 0%, hsl(350 100% 92%) 50%, hsl(340 100% 76% / 0.3) 100%);
-    --gradient-paper: linear-gradient(170deg, hsl(30 60% 97%) 0%, hsl(350 80% 96%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(40 90% 71%) 0%, hsl(38 80% 78%) 100%);
-    --gradient-blush: linear-gradient(180deg, hsl(24 100% 97%) 0%, hsl(350 100% 95%) 100%);
+    /* Gradients (retuned to cream + gold) */
+    --gradient-romantic: linear-gradient(135deg, hsl(42 60% 97%) 0%, hsl(38 55% 92%) 50%, hsl(38 72% 44% / 0.15) 100%);
+    --gradient-paper: linear-gradient(170deg, hsl(42 60% 97%) 0%, hsl(38 55% 94%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(38 72% 44%) 0%, hsl(38 80% 52%) 100%);
+    --gradient-blush: linear-gradient(180deg, hsl(42 60% 97%) 0%, hsl(38 55% 94%) 100%);
 
-    /* Shadows */
-    --shadow-romantic: 0 8px 32px -8px hsl(340 100% 76% / 0.2), 0 4px 16px -4px hsl(40 90% 71% / 0.12);
-    --shadow-glow: 0 0 24px hsl(340 100% 76% / 0.2), 0 0 48px hsl(40 90% 71% / 0.1);
-    --shadow-card: 0 4px 24px -4px hsl(0 20% 20% / 0.06), 0 2px 8px -2px hsl(340 100% 76% / 0.08);
-    --shadow-gold-glow: 0 0 24px hsl(40 90% 71% / 0.3), 0 4px 16px hsl(40 90% 71% / 0.15);
+    /* Shadows (gold-tinted) */
+    --shadow-romantic: 0 8px 32px -8px hsl(38 72% 44% / 0.18), 0 4px 16px -4px hsl(38 80% 52% / 0.10);
+    --shadow-glow: 0 0 24px hsl(38 72% 44% / 0.22), 0 0 48px hsl(38 80% 52% / 0.12);
+    --shadow-card: 0 4px 24px -4px hsl(30 20% 14% / 0.06), 0 2px 8px -2px hsl(38 72% 44% / 0.10);
+    --shadow-gold-glow: 0 0 24px hsl(38 80% 52% / 0.30), 0 4px 16px hsl(38 80% 52% / 0.15);
 
     --font-display: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
     --font-heading: 'Poppins', sans-serif;
 
-    --sidebar-background: 30 60% 96%;
-    --sidebar-foreground: 0 20% 20%;
-    --sidebar-primary: 340 100% 76%;
+    --sidebar-background: 42 60% 96%;
+    --sidebar-foreground: 30 20% 14%;
+    --sidebar-primary: 38 72% 44%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 60% 94%;
-    --sidebar-accent-foreground: 0 20% 20%;
-    --sidebar-border: 340 40% 88%;
-    --sidebar-ring: 340 100% 76%;
+    --sidebar-accent: 38 55% 94%;
+    --sidebar-accent-foreground: 30 20% 14%;
+    --sidebar-border: 38 45% 88%;
+    --sidebar-ring: 38 72% 44%;
   }
 
   .dark {

@@ -9,7 +9,12 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import PaidRoute from "@/components/PaidRoute";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentStatus from "./pages/PaymentStatus";
 import Landing from "./pages/Landing";
+import CreatePicker from "./pages/CreatePicker";
+import CreateLetter from "./pages/CreateLetter";
+import LetterReady from "./pages/LetterReady";
+import ViewLetter from "./pages/ViewLetter";
 import ChooseTemplate from "./pages/ChooseTemplate";
 import CreateInvite from "./pages/CreateInvite";
 import ViewInvite from "./pages/ViewInvite";
@@ -38,9 +43,14 @@ const App = () => (
           <CurrencyProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/create" element={<CreatePicker />} />
+            <Route path="/create-letter" element={<CreateLetter />} />
+            <Route path="/letter-ready/:id" element={<LetterReady />} />
+            <Route path="/view/:id" element={<ViewLetter />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-status" element={<PaymentStatus />} />
             <Route path="/choose-template" element={<PaidRoute><ChooseTemplate /></PaidRoute>} />
             <Route path="/create-invite" element={<PaidRoute><CreateInvite /></PaidRoute>} />
             <Route path="/invite/:id" element={<ViewInvite />} />

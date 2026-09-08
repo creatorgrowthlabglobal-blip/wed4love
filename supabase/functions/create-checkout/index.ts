@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
+const LETTER_PLAN = "plan_5Icg0QNzjjCEZ";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
 // Wed4Love invite plans. Kept in sync with INVITE_PLANS in whop-webhook.

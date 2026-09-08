@@ -5,7 +5,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
+const LETTER_PLAN = "plan_5Icg0QNzjjCEZ";
+const LETTER_PLAN_LEGACY = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
 const supabase = createClient(
@@ -71,8 +72,8 @@ Deno.serve(async (req) => {
     const candidate = events.find((e) => {
       if (claimedSet.has(e.event_id)) return false;
       const planId = e.payload?.data?.plan?.id;
-      if (product === "letter") return planId === LETTER_PLAN;
-      if (product === "call") return planId === EXTRA_CALL_PLAN || planId === LETTER_PLAN;
+      if (product === "letter") return planId === LETTER_PLAN || planId === LETTER_PLAN_LEGACY;
+      if (product === "call") return planId === EXTRA_CALL_PLAN || planId === LETTER_PLAN || planId === LETTER_PLAN_LEGACY;
       return true;
     });
 
@@ -95,7 +96,7 @@ Deno.serve(async (req) => {
       letter_access_expires_at: null,
     };
 
-    if (planId === LETTER_PLAN) {
+    if (planId === LETTER_PLAN || planId === LETTER_PLAN_LEGACY) {
       row.has_letter_access = true;
       row.paid_calls = (row.paid_calls || 0) + 2;
       const current = row.letter_access_expires_at ? new Date(row.letter_access_expires_at).getTime() : 0;

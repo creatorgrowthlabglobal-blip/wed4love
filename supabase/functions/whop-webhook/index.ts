@@ -37,7 +37,8 @@ function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
 }
 
 
-const LETTER_PLAN = "plan_5Krc5hUT3FZGa";
+const LETTER_PLAN = "plan_5Icg0QNzjjCEZ";
+const LETTER_PLAN_LEGACY = "plan_5Krc5hUT3FZGa";
 const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
 
 // Wed4Love invite plans
@@ -158,7 +159,7 @@ Deno.serve(async (req) => {
 
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-    if (planId === LETTER_PLAN) {
+    if (planId === LETTER_PLAN || planId === LETTER_PLAN_LEGACY) {
       row.has_letter_access = true;
       row.paid_calls = (row.paid_calls || 0) + 1; // 1 free call included with each letter
       // Extend access by 30 days from the later of (now, current expiry)

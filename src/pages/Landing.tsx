@@ -153,15 +153,12 @@ const UserMenu = () => {
   );
 };
 
-// ── Smart CTA link — /login when logged out, /choose-template when logged in ─────────
-const GetStartedLink = ({ className, style, children }: { className: string; style: React.CSSProperties; children: React.ReactNode }) => {
-  const { user } = useAuth();
-  return (
-    <Link to={user ? "/choose-template" : "/login"} className={className} style={style}>
-      {children}
-    </Link>
-  );
-};
+// ── Smart CTA — routes to the /create picker page ─────────
+const GetStartedLink = ({ className, style, children }: { className: string; style: React.CSSProperties; children: React.ReactNode }) => (
+  <Link to="/create" className={className} style={style}>
+    {children}
+  </Link>
+);
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
@@ -411,24 +408,24 @@ const Hero = () => {
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
             style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
           >
-            <Sparkles className="w-3 h-3" /> Digital Wedding Invitations · from {format(49)}
+            <Sparkles className="w-3 h-3" /> Love Letters & Wedding Invitations · from {format(9.99)}
           </div>
 
           <h1
             className="font-display font-bold leading-tight mb-5"
             style={{ fontSize: "clamp(2rem, 5vw, 3.6rem)", color: "hsl(30 20% 14%)" }}
           >
-            Elegant Digital Invitations{" "}
+            Love Letters &{" "}
             <br className="hidden sm:block" />
-            for Modern{" "}
+            Wedding{" "}
             <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
-              Weddings
+              Invitations
             </span>
           </h1>
 
           <p className="font-body text-base leading-relaxed mb-8 mx-auto lg:mx-0" style={{ color: "hsl(30 12% 42%)", maxWidth: 480 }}>
-            Your invitation is the first impression of your big day.
-            Make it unforgettable — cinematic, elegant, and shared in a single link.
+            Whether you're pouring your heart into a letter for someone you love or setting the tone for your big day —
+            make it unforgettable, cinematic, and shared in a single link.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
@@ -436,7 +433,7 @@ const Hero = () => {
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
               style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 28px hsl(38 80% 50% / 0.35)" }}
             >
-              Create Your Invitation <ArrowRight className="w-4 h-4" />
+              Create Your Letter <ArrowRight className="w-4 h-4" />
             </GetStartedLink>
             <Link
               to="/demo"
@@ -1401,14 +1398,14 @@ const FinalCTA = () => (
           ))}
         </div>
         <h2 className="font-display font-bold mb-5 leading-tight" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", color: "white" }}>
-          Your guests deserve a{" "}
+          Say it{" "}
           <span className="font-handwritten italic font-normal" style={{ color: "rgba(255,255,255,0.9)", fontSize: "1.08em" }}>
-            beautiful
+            beautifully
           </span>{" "}
-          invitation
+          — a letter or an invitation
         </h2>
         <p className="font-body text-sm mb-10 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.75)" }}>
-          Join couples who chose to make their first impression unforgettable. Takes less than 10 minutes to set up.
+          Whether it's a heartfelt love letter or a cinematic wedding invitation, make the moment unforgettable. Takes less than 10 minutes.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <GetStartedLink
@@ -1455,7 +1452,7 @@ const Footer = () => (
           <span className="font-display font-bold text-base text-foreground">Wed4Love</span>
         </div>
         <p className="font-body text-xs text-muted-foreground leading-relaxed mb-4">
-          Beautiful digital wedding invitations with live RSVP tracking — shared in one link.
+          Heartfelt love letters and cinematic digital wedding invitations — shared in one link.
         </p>
         <a
           href="https://instagram.com/wed4love_official"
@@ -1476,11 +1473,11 @@ const Footer = () => (
         <p className="font-body text-xs font-bold uppercase tracking-widest text-foreground mb-4">Product</p>
         <ul className="flex flex-col gap-3">
           {[
+            { label: "Write a Love Letter", to: "/create-letter" },
             { label: "Create an Invitation", to: "/choose-template" },
             { label: "How It Works", to: "/#how-it-works" },
             { label: "Pricing — $49", to: "/choose-template" },
             { label: "Demo Invite", to: "/invite/demo-wedding?theme=garden-rose" },
-            { label: "Choose Template", to: "/choose-template" },
           ].map(l => (
             <li key={l.label}>
               <Link to={l.to} className="font-body text-xs text-muted-foreground hover:text-foreground transition-colors">
@@ -1684,8 +1681,8 @@ const Landing = () => {
   return (
   <div>
     <Seo
-      title="Wed4Love — Elegant Digital Wedding Invitations with Live RSVP"
-      description="Cinematic digital wedding invitations shared in a single link. Animated templates, live RSVP tracking, WhatsApp-ready. From $49 — set up in 10 minutes."
+      title="Wed4Love — Love Letters & Digital Wedding Invitations"
+      description="Send a heartfelt love letter or a cinematic digital wedding invitation — shared in a single link. Photos, music, envelope reveal, live RSVP. Set up in 10 minutes."
       path="/"
       structuredData={LANDING_FAQ_SCHEMA}
     />
