@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      entitlements: {
+        Row: {
+          created_at: string
+          email: string
+          has_letter_access: boolean
+          has_premium_features: boolean
+          invite_plan: string | null
+          letter_access_expires_at: string | null
+          paid_calls: number
+          updated_at: string
+          used_calls: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          has_letter_access?: boolean
+          has_premium_features?: boolean
+          invite_plan?: string | null
+          letter_access_expires_at?: string | null
+          paid_calls?: number
+          updated_at?: string
+          used_calls?: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          has_letter_access?: boolean
+          has_premium_features?: boolean
+          invite_plan?: string | null
+          letter_access_expires_at?: string | null
+          paid_calls?: number
+          updated_at?: string
+          used_calls?: number
+        }
+        Relationships: []
+      }
+      pending_orders: {
+        Row: {
+          amount: number | null
+          app_email: string
+          created_at: string
+          id: string
+          letter_id: string | null
+          product: string
+          status: string
+          updated_at: string
+          whop_event_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          app_email: string
+          created_at?: string
+          id: string
+          letter_id?: string | null
+          product: string
+          status?: string
+          updated_at?: string
+          whop_event_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          app_email?: string
+          created_at?: string
+          id?: string
+          letter_id?: string | null
+          product?: string
+          status?: string
+          updated_at?: string
+          whop_event_id?: string | null
+        }
+        Relationships: []
+      }
       rsvps: {
         Row: {
           attendance: string
@@ -65,6 +137,24 @@ export type Database = {
           invite_id?: string
           message?: string | null
           name?: string
+        }
+        Relationships: []
+      }
+      whop_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          payload: Json | null
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          payload?: Json | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          payload?: Json | null
         }
         Relationships: []
       }
