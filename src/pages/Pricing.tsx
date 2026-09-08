@@ -209,18 +209,18 @@ const Pricing = () => {
         body: { product: pkg.id, app_email: user.email, redirect_url: redirectUrl },
       });
       if (error || !data?.purchase_url) throw error ?? new Error("no purchase_url");
-      window.open(data.purchase_url, "_blank", "noopener");
-      navigate(`/payment-success?plan=${pkg.id}`);
+      // Same-tab navigation: Whop's post-payment redirect then brings the
+      // buyer straight back to /payment-success instead of stranding them
+      // on the Whop dashboard in a second tab.
+      window.location.href = data.purchase_url;
     } catch (e) {
       console.error("[Pricing] create-checkout failed, falling back to raw Whop URL", e);
       // Fallback: if the edge function is down (or hasn't been deployed
       // yet), don't leave the user stranded — open Whop directly. The
       // webhook may still resolve the email via user_email in the payload.
-      const fallback = user.email
-        ? `${pkg.checkout}?d2c=true&email=${encodeURIComponent(user.email)}`
-        : `${pkg.checkout}?d2c=true`;
-      window.open(fallback, "_blank", "noopener");
-      navigate(`/payment-success?plan=${pkg.id}`);
+      const params = new URLSearchParams({ d2c: "true", redirect_url: redirectUrl });
+      if (user.email) params.set("email", user.email);
+      window.location.href = `${pkg.checkout}?${params.toString()}`;
     } finally {
       setPending(null);
     }
