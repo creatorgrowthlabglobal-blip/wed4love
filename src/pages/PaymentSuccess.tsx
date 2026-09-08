@@ -8,6 +8,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { PACKAGES, type PackageDef } from "./Pricing";
 import { Seo } from "@/components/Seo";
 import { notify } from "@/lib/notify";
+import { supabase } from "@/integrations/supabase/client";
 
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -26,6 +27,37 @@ const PaymentSuccess = () => {
 
   // Poll entitlement until Whop's webhook lands (up to 45s)
   const { plan, loading, timeout } = useInviteEntitlement(true);
+
+  // Belt-and-braces verification: even when the webhook is late, misfires,
+  // or is skipped entirely (Whop can skip webhooks on $0 promo checkouts),
+  // ask Whop's API directly whether this user has a valid invite membership
+  // and, if so, write the entitlement. The polling above will then pick it
+  // up on the next tick without any additional state coordination.
+  useEffect(() => {
+    if (!user?.email || plan) return;
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const { error } = await supabase.functions.invoke(
+          "verify-invite-payment",
+          { body: { app_email: user.email } },
+        );
+        if (cancelled) return;
+        if (error) throw error;
+      } catch (e) {
+        console.warn("[PaymentSuccess] verify-invite-payment failed", e);
+      }
+    };
+    // Fire immediately, then again after 8s in case Whop took a moment to
+    // record the membership. If both pass without finding anything we let
+    // the 45s useInviteEntitlement timeout take over.
+    run();
+    const t = setTimeout(run, 8000);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [user?.email, plan]);
 
   // Prefer the plan we've *confirmed* from the DB. Fall back to the URL
   // query (?plan=premium) or the last selected package in localStorage so
