@@ -105,6 +105,10 @@ Deno.serve(async (req) => {
     try {
       const u = new URL(purchaseUrl);
       u.searchParams.set("email", email);
+      // d2c keeps the buyer on the direct-to-consumer checkout so Whop honours
+      // our redirect_url after payment instead of dropping them on the Whop hub.
+      u.searchParams.set("d2c", "true");
+      if (redirect_url) u.searchParams.set("redirect_url", String(redirect_url));
       purchaseUrl = u.toString();
     } catch (_) { /* leave as-is */ }
     return new Response(
