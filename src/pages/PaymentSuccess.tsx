@@ -31,8 +31,13 @@ const PaymentSuccess = () => {
   // query (?plan=premium) or the last selected package in localStorage so
   // we can show something meaningful while polling.
   const queryPlan = searchParams.get("plan");
+  // Namespaced by user id so we don't inherit a "checkout in flight" flag
+  // from whoever used this browser last (fresh signups were getting stuck
+  // on this page because of that leaked state).
   const storedPlan =
-    typeof window !== "undefined" ? localStorage.getItem("selected_package") : null;
+    typeof window !== "undefined" && user
+      ? localStorage.getItem(`selected_package_${user.id}`)
+      : null;
   const hintedPlan: PlanId | null = useMemo(() => {
     if (isPlanId(plan)) return plan;
     if (isPlanId(queryPlan)) return queryPlan;
@@ -52,6 +57,8 @@ const PaymentSuccess = () => {
   useEffect(() => {
     if (!plan) return;
     notify("payment_confirmed", { plan, email: user?.email });
+    if (user) localStorage.removeItem(`selected_package_${user.id}`);
+    // Also clean the legacy un-namespaced key if it's still around.
     localStorage.removeItem("selected_package");
     setAutoForwardIn(Math.ceil(AUTO_FORWARD_MS / 1000));
     const forward = setTimeout(() => navigate("/choose-template"), AUTO_FORWARD_MS);

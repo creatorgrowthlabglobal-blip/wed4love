@@ -194,7 +194,11 @@ const Pricing = () => {
     }
 
     setPending(pkg.id);
-    localStorage.setItem("selected_package", pkg.id);
+    // Namespace by user id so leftover state from a previous session on
+    // this browser doesn't make a fresh signup look like a paying user.
+    localStorage.setItem(`selected_package_${user.id}`, pkg.id);
+    // Clean up the old un-namespaced key from earlier builds.
+    localStorage.removeItem("selected_package");
 
     // Route the checkout through create-checkout so the webhook can match
     // this purchase back to `user.email` via metadata.order_id — no more

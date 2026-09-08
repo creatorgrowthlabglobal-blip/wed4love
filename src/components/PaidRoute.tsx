@@ -27,8 +27,11 @@ const PaidRoute = ({ children }: { children: React.ReactNode }) => {
     // If the user just kicked off a checkout, don't dump them on /pricing —
     // that looks like the payment failed. Send them to /payment-success,
     // which polls the entitlement and shows real feedback.
+    // Namespaced by user id so leftover state from another account on the
+    // same browser doesn't bounce fresh signups into the polling loop.
     const paymentInFlight =
-      typeof window !== "undefined" && !!localStorage.getItem("selected_package");
+      typeof window !== "undefined" &&
+      !!localStorage.getItem(`selected_package_${user.id}`);
     return <Navigate to={paymentInFlight ? "/payment-success" : "/pricing"} replace />;
   }
 
