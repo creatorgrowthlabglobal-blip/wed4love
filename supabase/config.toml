@@ -6,6 +6,12 @@ verify_jwt = false
 [functions.get-entitlement]
 verify_jwt = false
 
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.verify-invite-payment]
+verify_jwt = false
+
 [functions.consume-call-credit]
 verify_jwt = false
 
