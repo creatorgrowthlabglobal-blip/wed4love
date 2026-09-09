@@ -17,10 +17,9 @@ import { filesToBase64, saveLetter, uploadVoiceMessage, type LetterTemplate } fr
 import { saveDraft, loadDraft, clearDraft, draftImagesToFiles, type LetterDraft } from "@/lib/letterDraft";
 import { getCurrentUser } from "@/lib/auth";
 import {
-  buildWhopCheckoutUrl,
+  createWhopCheckout,
   fetchEntitlement,
   hasActiveLetterAccess,
-  WHOP_LETTER_CHECKOUT,
 } from "@/lib/whop";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -205,12 +204,18 @@ const CreateLetter = () => {
         })
       : Promise.resolve(null);
 
-    // Direct Whop checkout link — email + letter_id forwarded as query hints
-     // (Whop honors ?email and ?redirect_url; metadata is best-effort here).
-    const purchaseUrl = buildWhopCheckoutUrl(WHOP_LETTER_CHECKOUT, {
-      email,
-      redirectTo,
-      metadata: { app_email: email, letter_id: letterId, product: "letter" },
+    // Server-side checkout — bakes metadata (order_id, app_email, letter_id)
+    // into a Whop checkout_configuration so the webhook can reliably match
+    // the payment back to this app account regardless of which email the
+    // buyer types at Whop checkout.
+    const checkoutPromise = createWhopCheckout({
+      product: "letter",
+      app_email: email,
+      letter_id: letterId,
+      redirect_url: redirectTo,
+    }).catch((e) => {
+      console.error("[CreateLetter] create-checkout failed", e);
+      return null;
     });
 
     // Kick off file encoding + save in parallel. We MUST await it before
@@ -267,14 +272,26 @@ const CreateLetter = () => {
       return;
     }
 
-    // Paywall path → make sure the letter is persisted before we navigate to
-    // Whop; payment-status will read it on return.
+    // Paywall path → redirect as soon as Whop URL is ready. saveLetter keeps
+    // running in the background; payment-status will read it on return.
+    const checkout = await checkoutPromise;
+    if (!checkout?.purchase_url) {
+      toast({
+        title: "Couldn't open checkout",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+      setRedirecting(null);
+      return;
+    }
+    // Make sure the letter is persisted before we navigate away — otherwise
+    // a fast Whop response could redirect before localStorage is written.
     await savePromise.catch((e) => console.error("[CreateLetter] save failed", e));
     clearDraft();
     // Same-tab navigation is the most reliable across desktop + mobile +
     // in-app browsers. Avoids popup blockers that bite when the click
     // originated from a modal button (state update breaks the gesture chain).
-    window.location.assign(purchaseUrl);
+    window.location.assign(checkout.purchase_url);
   };
 
 

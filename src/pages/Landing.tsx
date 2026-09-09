@@ -396,13 +396,13 @@ const Hero = () => {
     <div className="absolute top-32 right-8 w-56 h-56 rounded-full pointer-events-none"
       style={{ background: "radial-gradient(circle, hsl(340 60% 88% / 0.28) 0%, transparent 70%)" }} />
 
-    {/* ── Two-column hero: text + phone ── */}
-    <div className="relative max-w-6xl mx-auto px-6 mb-14">
-      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-12 items-center">
+    {/* ── Hero — centered text, phone mockup retired since we sell both letters + invitations ── */}
+    <div className="relative max-w-3xl mx-auto px-6 mb-14">
+      <div>
         <motion.div
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center lg:text-left order-1"
+          className="text-center"
         >
           <div
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
@@ -423,12 +423,12 @@ const Hero = () => {
             </span>
           </h1>
 
-          <p className="font-body text-base leading-relaxed mb-8 mx-auto lg:mx-0" style={{ color: "hsl(30 12% 42%)", maxWidth: 480 }}>
+          <p className="font-body text-base leading-relaxed mb-8 mx-auto" style={{ color: "hsl(30 12% 42%)", maxWidth: 520 }}>
             Whether you're pouring your heart into a letter for someone you love or setting the tone for your big day —
             make it unforgettable, cinematic, and shared in a single link.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <GetStartedLink
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
               style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 28px hsl(38 80% 50% / 0.35)" }}
@@ -448,7 +448,7 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 sm:gap-5 mt-6 pt-5"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mt-6 pt-5"
             style={{ borderTop: "1px solid hsl(38 38% 88%)" }}
           >
             {/* Avatar stack + count */}
@@ -482,16 +482,6 @@ const Hero = () => {
               <span className="font-body text-xs" style={{ color: "hsl(30 12% 52%)" }}>· 312 reviews</span>
             </div>
           </motion.div>
-        </motion.div>
-
-        {/* Right column: Phone mockup */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="flex justify-center lg:justify-end order-2"
-        >
-          <PhoneMockup />
         </motion.div>
       </div>
     </div>
@@ -595,9 +585,9 @@ const PhoneMockup = () => (
     >
       {/* Screen */}
       <div className="relative w-full h-full rounded-[36px] overflow-hidden bg-black">
-        {/* Envelope opening video */}
+        {/* Golden Hour template scene — the moment after the envelope opens */}
         <video
-          src="/envelope.mp4"
+          src="/wedding-bg-golden-hour.mp4"
           autoPlay
           muted
           loop
@@ -605,6 +595,25 @@ const PhoneMockup = () => (
           preload="auto"
           className="absolute inset-0 w-full h-full object-cover"
         />
+
+        {/* Soft bottom gradient so the couple names read clearly */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 100%)" }}
+        />
+
+        {/* Invitation overlay */}
+        <div className="absolute inset-x-0 bottom-8 z-20 text-center px-4">
+          <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-2" style={{ color: "rgba(255,255,255,0.85)" }}>
+            You're invited
+          </p>
+          <p className="font-handwritten italic leading-none" style={{ color: "white", fontSize: 34, textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}>
+            Ana <span style={{ color: "hsl(38 80% 68%)" }}>&</span> Elias
+          </p>
+          <p className="font-body text-[10px] tracking-[0.18em] uppercase mt-2" style={{ color: "rgba(255,255,255,0.7)" }}>
+            15 June 2026 · Tuscany
+          </p>
+        </div>
 
         {/* Dynamic-island notch */}
         <div
