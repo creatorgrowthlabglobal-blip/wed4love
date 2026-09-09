@@ -34,19 +34,22 @@ interface WhopMembership {
  * $0 promo checkout — the source of truth becomes Whop's API, not the
  * event delivery.
  */
-async function findBestInvitePlan(
+interface RawMembership {
+  id: string;
+  plan: string;
+  email: string | null;
+  valid: boolean;
+  status: string;
+  created_at: number;
+  metadata?: Record<string, unknown> | null;
+}
+
+async function fetchRecentMemberships(
   whopKey: string,
-  email: string,
-): Promise<{ tier: number; plan: string; membershipId: string } | null> {
-  const target = email.trim().toLowerCase();
-  if (!target) return null;
-
-  let best: { tier: number; plan: string; membershipId: string } | null = null;
-
-  // Whop's ?user_email= filter is not reliable — paginate a small number of
-  // recent memberships and filter client-side. 500 rows is plenty for any
-  // realistic post-payment lookup window.
-  for (let page = 1; page <= 5; page++) {
+  maxPages = 5,
+): Promise<RawMembership[]> {
+  const all: RawMembership[] = [];
+  for (let page = 1; page <= maxPages; page++) {
     const url = `https://api.whop.com/api/v2/memberships?per=100&page=${page}`;
     const r = await fetch(url, {
       headers: { Authorization: `Bearer ${whopKey}`, Accept: "application/json" },
@@ -56,21 +59,52 @@ async function findBestInvitePlan(
       throw new Error(`whop api ${r.status}: ${text.slice(0, 200)}`);
     }
     const body = await r.json();
-    const rows: WhopMembership[] = body?.data ?? [];
-    if (rows.length === 0) break;
+    const rows: RawMembership[] = body?.data ?? [];
+    all.push(...rows);
+    if (rows.length === 0 || rows.length < 100) break;
+  }
+  return all;
+}
 
-    for (const m of rows) {
-      if (!m.valid) continue;
-      if ((m.email || "").trim().toLowerCase() !== target) continue;
-      const slug = INVITE_PLANS[m.plan];
-      if (!slug) continue;
-      const tier = INVITE_TIER[slug] ?? 0;
-      if (!best || tier > best.tier) {
-        best = { tier, plan: slug, membershipId: m.id };
-      }
+/**
+ * Find the best invite plan for `email`. Matches in two ways:
+ *  1) by Whop account email (m.email), and
+ *  2) by metadata.order_id, cross-referenced against the user's
+ *     pending_orders rows — the reliable path when the buyer's Whop
+ *     account email differs from their Wed4Love signup email.
+ */
+async function findBestInvitePlan(
+  whopKey: string,
+  email: string,
+  orderIds: string[],
+): Promise<{ tier: number; plan: string; membershipId: string } | null> {
+  const target = email.trim().toLowerCase();
+  if (!target) return null;
+
+  const memberships = await fetchRecentMemberships(whopKey);
+
+  let best: { tier: number; plan: string; membershipId: string } | null = null;
+  const orderSet = new Set(orderIds.map(o => o.toLowerCase()));
+
+  for (const m of memberships) {
+    if (!m.valid) continue;
+
+    // Match by email...
+    const byEmail = (m.email || "").trim().toLowerCase() === target;
+    // ...or by metadata.order_id belonging to this user's pending orders.
+    const metaOrderId = typeof m.metadata?.order_id === "string"
+      ? String(m.metadata.order_id).toLowerCase()
+      : null;
+    const byOrder = metaOrderId && orderSet.has(metaOrderId);
+
+    if (!byEmail && !byOrder) continue;
+
+    const slug = INVITE_PLANS[m.plan];
+    if (!slug) continue;
+    const tier = INVITE_TIER[slug] ?? 0;
+    if (!best || tier > best.tier) {
+      best = { tier, plan: slug, membershipId: m.id };
     }
-
-    if (rows.length < 100) break;
   }
 
   return best;
