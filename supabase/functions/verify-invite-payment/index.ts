@@ -18,14 +18,6 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-interface WhopMembership {
-  id: string;
-  plan: string;
-  email: string | null;
-  valid: boolean;
-  status: string;
-  created_at: number;
-}
 
 /**
  * Look up a valid Wed4Love invite membership for `email` on Whop and grant
