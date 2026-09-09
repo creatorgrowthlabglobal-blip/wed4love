@@ -117,6 +117,9 @@ Deno.serve(async (req) => {
     const whopKey = Deno.env.get("WHOP_API_KEY");
     if (!whopKey) throw new Error("WHOP_API_KEY not configured");
 
+    const url = new URL(req.url);
+    const isDebug = url.searchParams.get("debug") === "1";
+
     const { app_email } = await req.json();
     const email = String(app_email || "").trim().toLowerCase();
     if (!email) {
@@ -135,8 +138,35 @@ Deno.serve(async (req) => {
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Collect this user's pending order ids — the reliable match key when
+    // the buyer's Whop account email differs from their Wed4Love signup email.
+    const { data: pendingRows } = await supabase
+      .from("pending_orders").select("id").eq("app_email", email);
+    const orderIds = (pendingRows ?? []).map((r: any) => String(r.id));
+
+    // Debug: return a sanitized view of recent Whop memberships + the user's
+    // pending order ids so we can see why a match is (or isn't) happening.
+    if (isDebug) {
+      const memberships = await fetchRecentMemberships(whopKey);
+      const sanitized = memberships.slice(0, 25).map(m => ({
+        id: m.id,
+        plan: m.plan,
+        email: m.email ?? null,
+        valid: m.valid,
+        status: m.status,
+        created_at: m.created_at,
+        order_id: (m.metadata as any)?.order_id ?? null,
+      }));
+      return new Response(JSON.stringify({
+        email,
+        orderIds,
+        membershipCount: memberships.length,
+        memberships: sanitized,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // Ask Whop directly.
-    const best = await findBestInvitePlan(whopKey, email);
+    const best = await findBestInvitePlan(whopKey, email, orderIds);
     if (!best) {
       return new Response(JSON.stringify({ ok: false, reason: "no_valid_membership" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
