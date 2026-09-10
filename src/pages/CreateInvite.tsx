@@ -1381,11 +1381,24 @@ const CreateInvite = () => {
     const stored = buildStored(id);
     saveInviteLocal(stored);
     if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
-    if (pendingKey) localStorage.removeItem(pendingKey);
-    notify("invite_published", { id, template: templateId, couple: `${form.partner1} & ${form.partner2}`, date: stored.date, venue: form.venueName, email: user?.email ?? form.email });
+    if (pendingKey) localStorage.setItem(pendingKey, id);
+    const origin = window.location.origin;
+    notify("invite_published", {
+      id,
+      template: TEMPLATE_NAMES[templateId] ?? templateId,
+      couple: `${form.partner1} & ${form.partner2}`,
+      wedding_date: stored.date,
+      time: stored.time,
+      venue: [form.venueName, form.venueCity].filter(Boolean).join(", "),
+      rsvp_deadline: stored.rsvpDeadline,
+      phone: form.phone,
+      email: user?.email ?? form.email,
+      invitation_letter_link: `${origin}/invite/${id}`,
+      rsvp_dashboard_link: `${origin}/dashboard/${id}`,
+    });
     if (user) clearDraftLocal(user.id);
     setIsPreparing(false);
-    setCreatedId(id);
+    setOrderPending(true);
   };
 
 
