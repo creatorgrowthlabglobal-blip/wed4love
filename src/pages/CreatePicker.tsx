@@ -40,7 +40,7 @@ const CreatePicker = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6">
             {/* Love Letter */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -50,34 +50,33 @@ const CreatePicker = () => {
             >
               <Link
                 to="/create-letter"
-                className="group relative rounded-3xl overflow-hidden p-7 sm:p-8 flex flex-col h-full"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden p-4 sm:p-8 flex flex-col h-full"
                 style={{
                   background: "linear-gradient(160deg, hsl(340 60% 96%) 0%, hsl(345 55% 92%) 100%)",
                   border: "1.5px solid hsl(340 45% 84%)",
                   boxShadow: "0 12px 32px hsl(340 40% 70% / 0.22)",
-                  minHeight: 320,
                 }}
               >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-5"
                 style={{ background: "white", boxShadow: "0 6px 18px hsl(340 40% 70% / 0.32)" }}
               >
-                <Heart className="w-7 h-7" style={{ color: "hsl(340 65% 52%)" }} />
+                <Heart className="w-5 h-5 sm:w-7 sm:h-7" style={{ color: "hsl(340 65% 52%)" }} />
               </div>
-              <p className="font-body text-[10px] tracking-[0.22em] uppercase font-semibold mb-1.5" style={{ color: "hsl(340 55% 45%)" }}>
+              <p className="font-body text-[9px] sm:text-[10px] tracking-[0.22em] uppercase font-semibold mb-1.5" style={{ color: "hsl(340 55% 45%)" }}>
                 For someone you love
               </p>
-              <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3" style={{ color: "hsl(30 20% 14%)" }}>
+              <h2 className="font-display font-bold text-lg sm:text-3xl mb-2 sm:mb-3" style={{ color: "hsl(30 20% 14%)" }}>
                 Love Letter
               </h2>
-              <p className="font-body text-sm sm:text-base mb-8 leading-relaxed" style={{ color: "hsl(30 12% 42%)" }}>
+              <p className="font-body text-xs sm:text-base mb-5 sm:mb-8 leading-relaxed" style={{ color: "hsl(30 12% 42%)" }}>
                 A personal letter with photos, music, and a keepsake envelope reveal — share it in a single link.
               </p>
               <div
-                className="mt-auto inline-flex items-center gap-1.5 font-body text-sm font-semibold transition-transform group-hover:translate-x-1"
+                className="mt-auto inline-flex items-center gap-1.5 font-body text-xs sm:text-sm font-semibold transition-transform group-hover:translate-x-1"
                 style={{ color: "hsl(340 65% 45%)" }}
               >
-                Start writing <ArrowRight className="w-4 h-4" />
+                Start writing <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               </Link>
             </motion.div>
@@ -91,34 +90,33 @@ const CreatePicker = () => {
             >
               <Link
                 to={invitationHref}
-                className="group relative rounded-3xl overflow-hidden p-7 sm:p-8 flex flex-col h-full"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden p-4 sm:p-8 flex flex-col h-full"
                 style={{
                   background: "linear-gradient(160deg, hsl(42 60% 96%) 0%, hsl(38 55% 90%) 100%)",
                   border: "1.5px solid hsl(38 50% 82%)",
                   boxShadow: "0 12px 32px hsl(38 45% 65% / 0.26)",
-                  minHeight: 320,
                 }}
               >
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                  className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-5"
                   style={{ background: "white", boxShadow: "0 6px 18px hsl(38 45% 60% / 0.32)" }}
                 >
-                  <Mail className="w-7 h-7" style={{ color: GOLD }} />
+                  <Mail className="w-5 h-5 sm:w-7 sm:h-7" style={{ color: GOLD }} />
                 </div>
-                <p className="font-body text-[10px] tracking-[0.22em] uppercase font-semibold mb-1.5" style={{ color: GOLD }}>
+                <p className="font-body text-[9px] sm:text-[10px] tracking-[0.22em] uppercase font-semibold mb-1.5" style={{ color: GOLD }}>
                   For your big day
                 </p>
-                <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3" style={{ color: "hsl(30 20% 14%)" }}>
+                <h2 className="font-display font-bold text-lg sm:text-3xl mb-2 sm:mb-3" style={{ color: "hsl(30 20% 14%)" }}>
                   Marriage Invitation
                 </h2>
-                <p className="font-body text-sm sm:text-base mb-8 leading-relaxed" style={{ color: "hsl(30 12% 42%)" }}>
+                <p className="font-body text-xs sm:text-base mb-5 sm:mb-8 leading-relaxed" style={{ color: "hsl(30 12% 42%)" }}>
                   A cinematic digital wedding invitation with live RSVP tracking — from $49.
                 </p>
                 <div
-                  className="mt-auto inline-flex items-center gap-1.5 font-body text-sm font-semibold transition-transform group-hover:translate-x-1"
+                  className="mt-auto inline-flex items-center gap-1.5 font-body text-xs sm:text-sm font-semibold transition-transform group-hover:translate-x-1"
                   style={{ color: GOLD }}
                 >
-                  Choose a template <ArrowRight className="w-4 h-4" />
+                  Choose a template <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </Link>
             </motion.div>

@@ -52,12 +52,10 @@ const Header = () => {
         </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Desktop-only utility switchers */}
-          <div className="hidden md:flex items-center gap-2 sm:gap-3">
-            <CurrencySwitcher />
-            <LanguageSwitcher />
-          </div>
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Utility switchers (always visible) */}
+          <CurrencySwitcher />
+          <LanguageSwitcher />
           <Link
             to="/pricing"
             className="hidden md:inline-block font-body text-sm font-semibold px-5 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
@@ -69,7 +67,7 @@ const Header = () => {
             onClick={() => setOpen(v => !v)}
             aria-label="Toggle menu"
             aria-expanded={open}
-            className="md:hidden p-2 rounded-xl"
+            className="md:hidden p-1.5 rounded-xl"
             style={{ color: "hsl(30 12% 40%)" }}
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -100,19 +98,10 @@ const Header = () => {
               </Link>
             ))}
 
-            {/* Divider */}
-            <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
-
-            {/* Utility switchers */}
-            <div className="flex items-center gap-2 px-2 py-1">
-              <CurrencySwitcher />
-              <LanguageSwitcher />
-            </div>
-
             <Link
               to="/pricing"
               onClick={() => setOpen(false)}
-              className="mt-1 font-body text-sm font-semibold px-3 py-2.5 rounded-xl text-center"
+              className="mt-2 font-body text-sm font-semibold px-3 py-2.5 rounded-xl text-center"
               style={{ background: GOLD_GRAD, color: "white" }}
             >
               Get Started
