@@ -50,6 +50,59 @@ export type Database = {
         }
         Relationships: []
       }
+      letter_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          letter_id: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          letter_id: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          letter_id?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "letter_reactions_letter_id_fkey"
+            columns: ["letter_id"]
+            isOneToOne: false
+            referencedRelation: "letters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      letters: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          opened_at: string | null
+          unlock_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id: string
+          opened_at?: string | null
+          unlock_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          opened_at?: string | null
+          unlock_at?: string | null
+        }
+        Relationships: []
+      }
       pending_orders: {
         Row: {
           amount: number | null
