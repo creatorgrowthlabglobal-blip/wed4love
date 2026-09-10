@@ -2,14 +2,15 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Heart, Mail } from "lucide-react";
 import Header from "@/components/Header";
-import { useAuth } from "@/hooks/useAuth";
 import { Seo } from "@/components/Seo";
 
 const GOLD = "hsl(38 72% 44%)";
 
 const CreatePicker = () => {
-  const { user } = useAuth();
-  const invitationHref = user ? "/choose-template" : "/login";
+  // Route the wedding side through /pricing?product=invitation so the user
+  // sees only the wedding tiers (no love-letter price bleed) before picking
+  // a template and hitting checkout.
+  const invitationHref = "/pricing?product=invitation";
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)" }}>

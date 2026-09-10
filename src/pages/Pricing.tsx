@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check, X, Crown, Sparkles, Palette, Heart, Mail, ArrowRight, ArrowLeft, ShieldCheck, Clock, Loader2, Play } from "lucide-react";
 import Header from "@/components/Header";
@@ -295,6 +295,13 @@ const Pricing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [pending, setPending] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  // Focused mode: when the user came in via the "Marriage Invitation" picker,
+  // hide the love-letter section entirely so wedding pricing is the only thing
+  // on the page. `?product=letter` mirrors the reverse for symmetry.
+  const productFocus = searchParams.get("product");
+  const showLetter = productFocus !== "invitation";
+  const showInvitation = productFocus !== "letter";
 
   const choose = async (pkg: PackageDef) => {
     notify("package_selected", { package: pkg.id, price: pkg.price, email: user?.email });
@@ -364,46 +371,63 @@ const Pricing = () => {
           </button>
           <div className="text-center mb-10">
             <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
-              Pricing
+              {productFocus === "invitation" ? "Wedding Invitation Pricing"
+               : productFocus === "letter"   ? "Love Letter Pricing"
+               :                                "Pricing"}
             </p>
             <h1 className="font-display text-3xl sm:text-5xl font-bold text-foreground mb-4">
-              Choose what to send
+              {productFocus === "invitation" ? "Choose your wedding package"
+               : productFocus === "letter"   ? "Send your love letter"
+               :                                "Choose what to send"}
             </h1>
             <p className="font-body text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              We do two things — a personal love letter for one person, or a full wedding invitation for your guests.
-              Pay once for either, no subscriptions.
+              {productFocus === "invitation"
+                ? "A cinematic digital invitation with live RSVP tracking. Pay once, no subscriptions, your link stays live for a full year."
+                : productFocus === "letter"
+                ? "A private keepsake letter with photos, music, and a cinematic mailbox reveal — one-time payment, one shareable link."
+                : "We do two things — a personal love letter for one person, or a full wedding invitation for your guests. Pay once for either, no subscriptions."}
             </p>
           </div>
 
-          {/* ─── Love Letter (a separate product) ─── */}
-          <LoveLetterSection />
+          {/* ─── Love Letter (hidden in wedding-focused mode) ─── */}
+          {showLetter && <LoveLetterSection />}
 
           {/* ─── Divider ─── */}
-          <div className="flex items-center gap-4 my-12">
-            <div className="flex-1 h-px" style={{ background: "hsl(38 40% 86%)" }} />
-            <div
-              className="flex items-center gap-2 px-4 py-1.5 rounded-full font-body text-[11px] font-bold uppercase tracking-widest"
-              style={{ background: "hsl(38 60% 93%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
-            >
-              <Mail className="w-3 h-3" /> Or planning a wedding?
+          {showLetter && showInvitation && (
+            <div className="flex items-center gap-4 my-12">
+              <div className="flex-1 h-px" style={{ background: "hsl(38 40% 86%)" }} />
+              <div
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full font-body text-[11px] font-bold uppercase tracking-widest"
+                style={{ background: "hsl(38 60% 93%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
+              >
+                <Mail className="w-3 h-3" /> Or planning a wedding?
+              </div>
+              <div className="flex-1 h-px" style={{ background: "hsl(38 40% 86%)" }} />
             </div>
-            <div className="flex-1 h-px" style={{ background: "hsl(38 40% 86%)" }} />
-          </div>
+          )}
 
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
-              Wedding Invitation packages
-            </h2>
-            <p className="font-body text-sm text-muted-foreground max-w-lg mx-auto">
-              A cinematic digital invitation for your guest list — with live RSVP tracking, guest dashboard, and shareable link.
-            </p>
-          </div>
+          {showInvitation && (
+            <>
+              {/* Only show the wedding sub-header when both products are on the
+                  page — in focused mode the top hero already introduces it. */}
+              {showLetter && (
+                <div className="text-center mb-8">
+                  <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+                    Wedding Invitation packages
+                  </h2>
+                  <p className="font-body text-sm text-muted-foreground max-w-lg mx-auto">
+                    A cinematic digital invitation for your guest list — with live RSVP tracking, guest dashboard, and shareable link.
+                  </p>
+                </div>
+              )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {PACKAGES.map((p, i) => (
-              <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={pending === p.id} />
-            ))}
-          </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                {PACKAGES.map((p, i) => (
+                  <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={pending === p.id} />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Trust row */}
           <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
