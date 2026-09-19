@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -147,6 +147,26 @@
   .font-display { font-family: var(--font-display); }
   .font-body { font-family: var(--font-body); }
   .font-heading { font-family: var(--font-heading); }
+  .font-azura-serif { font-family: 'Cormorant Garamond', serif; }
+  .font-azura-body  { font-family: 'Montserrat', sans-serif; }
+  .font-azura-script { font-family: 'Great Vibes', cursive; }
+}
+
+/* Rustic Bloom (Azura) — override display + handwritten fonts inside the invite */
+[data-theme="rustic-bloom"] .font-display {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+[data-theme="rustic-bloom"] .font-handwritten {
+  font-family: 'Great Vibes', cursive;
+  font-weight: 400;
+}
+[data-theme="rustic-bloom"] .font-body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+@layer utilities {
 
   /* Paper texture */
   .paper-texture {

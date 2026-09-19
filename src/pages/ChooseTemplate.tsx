@@ -18,10 +18,10 @@ const TEMPLATES = [
   {
     id: "golden-hour",
     name: "Golden Hour",
-    description: "Warm sunset hues that capture a forever kind of love.",
+    description: "Warm cream, copper accents, and deep olive greens for an elegant timeless celebration.",
     thumb: goldenHourThumbnail,
     previewHref: "/invite/demo-wedding?theme=golden-hour",
-    accent: "hsl(32 90% 55%)",
+    accent: "hsl(27 58% 59%)",
   },
   {
     id: "garden-rose",
@@ -34,10 +34,10 @@ const TEMPLATES = [
   {
     id: "rustic-bloom",
     name: "Rustic Bloom",
-    description: "Earthy botanicals and warm textures for a natural celebration.",
+    description: "Warm sand, copper, and sage — coastal elegance for a timeless celebration.",
     thumb: rusticBloomThumbnail,
     previewHref: "/invite/demo-wedding?theme=rustic-bloom",
-    accent: "hsl(95 35% 48%)",
+    accent: "hsl(27 58% 59%)",
   },
   {
     id: "midnight-luxe",

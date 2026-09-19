@@ -6,15 +6,21 @@ import { notify } from "@/lib/notify";
 import {
   MapPin, Calendar, Music, VolumeX, ChevronDown, Check, Mail, Phone,
   Clock, Users, Wine, Utensils, Heart, PartyPopper, Car, Train,
-  Plane, ChevronUp, Gift, Camera, Shirt, Hotel, LayoutDashboard
+  Plane, ChevronUp, Gift, Camera, Shirt, Hotel, LayoutDashboard, Send
 } from "lucide-react";
 import couplePhoto from "@/assets/photo1.jpg";
 import photo2 from "@/assets/photo2.jpg";
 import photo3 from "@/assets/photo3.jpg";
+import storyWreath from "@/assets/story-wreath.jpeg";
+import rsvpFountain from "@/assets/rsvp-fountain.jpeg";
+import gallery1 from "@/assets/gallery-1.jpeg";
+import gallery2 from "@/assets/gallery-2.jpeg";
+import gallery3 from "@/assets/gallery-3.jpeg";
 import { getInviteLocal } from "@/lib/inviteStorage";
 import type { StoredInvite } from "@/lib/inviteStorage";
 import { THEMES } from "@/lib/themes";
 import type { Theme } from "@/lib/themes";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 // ── Theme context ──────────────────────────────────────────────────────────────
 const ThemeCtx = createContext<Theme>(THEMES["garden-rose"]);
@@ -343,6 +349,28 @@ const CelebrationOverlay = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
+// ── Floating language box (top-right) ─────────────────────────────────────────
+const LanguageBox = () => {
+  const C = useTheme();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1 }}
+      className="fixed top-4 right-4 sm:top-5 sm:right-5 z-50 rounded-full notranslate"
+      translate="no"
+      style={{
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(10px)",
+        border: `1px solid ${C.primaryBorder}33`,
+        boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
+      }}
+    >
+      <LanguageSwitcher />
+    </motion.div>
+  );
+};
+
 // ── Music button ──────────────────────────────────────────────────────────────
 const MusicBtn = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => {
   const C = useTheme();
@@ -362,13 +390,13 @@ const SectionHead = ({ eyebrow, title, subtitle, light = false }: { eyebrow: str
   const C = useTheme();
   return (
     <div className="text-center mb-12 sm:mb-16">
-      <p className="font-body font-semibold tracking-[0.3em] uppercase mb-3" style={{ fontSize: "0.65rem", color: light ? C.goldLight : C.gold }}>
+      <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: light ? C.goldLight : C.gold }}>
         {eyebrow}
       </p>
-      <h2 className="font-display font-bold leading-tight" style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: light ? C.creamCard : C.dark }}>
+      <h2 className="font-azura-serif italic leading-tight" style={{ fontSize: "clamp(2.5rem, 5.5vw, 3.75rem)", color: light ? C.creamCard : C.green, fontWeight: 500, letterSpacing: "0.005em" }}>
         {title}
       </h2>
-      {subtitle && <p className="font-body text-sm mt-3 max-w-md mx-auto" style={{ color: light ? "hsl(44 20% 70%)" : C.mid }}>{subtitle}</p>}
+      {subtitle && <p className="font-azura-body text-sm sm:text-base mt-4 max-w-lg mx-auto leading-relaxed" style={{ color: light ? "hsl(44 20% 72%)" : C.mid }}>{subtitle}</p>}
     </div>
   );
 };
@@ -383,7 +411,7 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between gap-4 py-5 text-left"
       >
-        <span className="font-body text-sm font-semibold" style={{ color: C.dark }}>{q}</span>
+        <span className="font-azura-body text-sm font-semibold" style={{ color: C.dark }}>{q}</span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }} className="shrink-0">
           <ChevronUp className="w-4 h-4" style={{ color: C.gold }} />
         </motion.span>
@@ -398,7 +426,7 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "hidden" }}
           >
-            <p className="font-body text-sm leading-relaxed pb-5" style={{ color: C.mid }}>{a}</p>
+            <p className="font-azura-body text-sm leading-relaxed pb-5" style={{ color: C.mid }}>{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -692,7 +720,7 @@ const ViewInvite = () => {
 
   return (
     <ThemeCtx.Provider value={C}>
-    <div className="min-h-screen" style={{ background: C.cream }}>
+    <div className="min-h-screen" data-theme={themeId} style={{ background: C.cream }}>
       <audio ref={audioRef} src="/music/birds-of-a-feather.mp3" loop preload="auto" />
       <AnimatePresence>
         {!opened && <EnvelopeReveal onOpen={handleEnvelopeOpen} groom={INVITE.groom} bride={INVITE.bride} date={INVITE.date} />}
@@ -701,6 +729,7 @@ const ViewInvite = () => {
         {celebrating && <CelebrationOverlay onDone={() => { setCelebrating(false); setRsvpDone(true); }} />}
       </AnimatePresence>
       <MusicBtn on={musicOn} onToggle={() => setMusicOn(!musicOn)} />
+      <LanguageBox />
 
       {/* ── Hero ── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
@@ -708,7 +737,7 @@ const ViewInvite = () => {
 
         <div className="relative z-20">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-body tracking-[0.32em] uppercase mb-6" style={{ fontSize: "0.62rem", color: C.goldLight }}>
+            className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-6" style={{ fontSize: "0.7rem", color: C.goldLight }}>
             You are cordially invited to the wedding of
           </motion.p>
 
@@ -732,14 +761,14 @@ const ViewInvite = () => {
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1 }}
             className="flex flex-col items-center gap-1.5">
-            <p className="font-display text-xl sm:text-2xl font-semibold text-white">{INVITE.date}</p>
-            <p className="font-body text-sm tracking-widest" style={{ color: "hsl(42 40% 78%)" }}>{INVITE.time} · {INVITE.venue.name}</p>
+            <p className="font-azura-serif italic text-2xl sm:text-3xl text-white" style={{ fontWeight: 500, letterSpacing: "0.01em" }}>{INVITE.date}</p>
+            <p className="font-azura-body text-sm tracking-widest" style={{ color: "hsl(42 40% 82%)" }}>{INVITE.time} · {INVITE.venue.name}</p>
           </motion.div>
         </div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/60 z-20">
-          <p className="font-body tracking-[0.22em] uppercase" style={{ fontSize: "0.58rem" }}>Scroll</p>
+          <p className="font-azura-body font-semibold tracking-[0.28em] uppercase" style={{ fontSize: "0.6rem" }}>Scroll</p>
           <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             <ChevronDown className="w-4 h-4" />
           </motion.div>
@@ -749,31 +778,49 @@ const ViewInvite = () => {
       {/* ── Countdown ── */}
       <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: C.green }}>
         <div className="max-w-3xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Time Until We Say I Do" title="Counting Down" light />
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-10 sm:mb-14">
+            <h2 className="font-handwritten leading-none mb-4"
+              style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: "hsl(38 55% 80%)" }}>
+              Counting Down
+            </h2>
+            <p className="font-body text-sm sm:text-base" style={{ color: "hsl(42 22% 78%)" }}>
+              Time until we say I do
+            </p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
             {countdown === null ? (
-              <div className="text-center py-8 px-5 rounded-2xl" style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
-                <p className="font-handwritten text-3xl mb-1" style={{ color: C.white }}>The celebration has begun!</p>
-                <p className="font-body text-sm" style={{ color: "hsl(42 28% 60%)" }}>Thank you for being part of our special day ♡</p>
+              <div className="text-center py-8 px-5 rounded-2xl" style={{ background: "rgba(255,255,255,0.06)", border: `1px solid ${C.gold}55`, backdropFilter: "blur(6px)" }}>
+                <p className="font-handwritten text-3xl mb-1" style={{ color: "hsl(38 55% 80%)" }}>The celebration has begun!</p>
+                <p className="font-body text-sm" style={{ color: "hsl(42 22% 78%)" }}>Thank you for being part of our special day ♡</p>
               </div>
             ) : (
-              <div className="grid grid-cols-4 gap-3 sm:gap-6">
+              <div className="grid grid-cols-4 gap-3 sm:gap-5">
                 {[
                   { value: countdown.days,    label: "Days" },
                   { value: countdown.hours,   label: "Hours" },
                   { value: countdown.minutes, label: "Minutes" },
                   { value: countdown.seconds, label: "Seconds" },
                 ].map(({ value, label }) => (
-                  <div key={label} className="flex flex-col items-center justify-center rounded-2xl py-6 sm:py-8"
-                    style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
-                    <span className="font-display font-bold leading-none mb-2"
-                      style={{ fontSize: "clamp(2rem, 8vw, 3.5rem)", color: C.white }}>
+                  <div key={label} className="relative flex flex-col items-center justify-center rounded-2xl py-6 sm:py-8 px-2"
+                    style={{
+                      background: "white",
+                      border: `1px solid ${C.gold}55`,
+                      boxShadow: "0 10px 28px rgba(0,0,0,0.18)",
+                    }}>
+                    {/* Corner brackets */}
+                    <span className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t border-l" style={{ borderColor: C.gold }} />
+                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-t border-r" style={{ borderColor: C.gold }} />
+                    <span className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-b border-l" style={{ borderColor: C.gold }} />
+                    <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b border-r" style={{ borderColor: C.gold }} />
+
+                    <span className="font-display italic leading-none mb-2 sm:mb-3"
+                      style={{ fontSize: "clamp(2.25rem, 8vw, 4rem)", color: C.green, fontWeight: 500 }}>
                       {String(value).padStart(2, "0")}
                     </span>
-                    <span className="font-body tracking-[0.18em] uppercase" style={{ fontSize: "0.6rem", color: "hsl(42 28% 60%)" }}>
+                    <span className="font-body tracking-[0.28em] uppercase"
+                      style={{ fontSize: "0.6rem", color: C.gold, fontWeight: 600 }}>
                       {label}
                     </span>
                   </div>
@@ -789,132 +836,24 @@ const ViewInvite = () => {
         </div>
       </section>
 
-      {/* ── Boarding Pass ── */}
-      <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: C.cream }}>
-        <div className="max-w-2xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Your Invitation" title="Boarding Pass" subtitle="Present this at the entrance on the day of our celebration." />
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
-            className="rounded-3xl overflow-hidden relative"
-            style={{ boxShadow: "0 16px 48px hsl(28 20% 40% / 0.18)", border: "1.5px solid hsl(38 30% 82%)" }}>
-            {/* Main ticket body */}
-            <div className="flex flex-col sm:flex-row" style={{ background: C.creamCard }}>
-              {/* Left/Top — route info */}
-              <div className="flex-1 p-8 sm:p-10">
-                {/* Airline-style header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-5 h-5" style={{ color: C.gold }} />
-                    <span className="font-body font-bold tracking-[0.22em] uppercase" style={{ fontSize: "0.65rem", color: C.mid }}>
-                      Wedding Air
-                    </span>
-                  </div>
-                  <span className="font-body font-bold tracking-[0.18em] uppercase rounded-full px-3 py-1"
-                    style={{ fontSize: "0.6rem", background: C.green, color: "hsl(42 40% 85%)" }}>
-                    First Class
-                  </span>
-                </div>
-
-                {/* Route */}
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="text-center">
-                    <p className="font-display font-bold" style={{ fontSize: "2.2rem", color: C.dark, lineHeight: 1 }}>♡</p>
-                    <p className="font-body text-[10px] tracking-widest uppercase mt-1" style={{ color: C.mid }}>Heart</p>
-                  </div>
-                  <div className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full flex items-center gap-1">
-                      <div style={{ flex: 1, height: 1, background: "hsl(38 28% 78%)" }} />
-                      <Plane className="w-4 h-4 rotate-90 sm:rotate-0" style={{ color: C.gold }} />
-                      <div style={{ flex: 1, height: 1, background: "hsl(38 28% 78%)" }} />
-                    </div>
-                    <p className="font-body tracking-[0.14em] uppercase" style={{ fontSize: "0.58rem", color: C.light }}>
-                      {INVITE.date}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-display font-bold" style={{ fontSize: "2.2rem", color: C.dark, lineHeight: 1 }}>∞</p>
-                    <p className="font-body text-[10px] tracking-widest uppercase mt-1" style={{ color: C.mid }}>Forever</p>
-                  </div>
-                </div>
-
-                {/* Details grid */}
-                <div className="grid grid-cols-2 gap-5">
-                  {[
-                    { label: "Passenger",  value: "Honoured Guest" },
-                    { label: "Flight",     value: `${INVITE.groom} & ${INVITE.bride}` },
-                    { label: "Departure",  value: INVITE.time },
-                    { label: "Gate",       value: INVITE.venue.name },
-                    { label: "Seat",       value: "Reserved for You" },
-                    { label: "Date",       value: INVITE.date },
-                  ].map(({ label, value }) => (
-                    <div key={label}>
-                      <p className="font-body tracking-[0.18em] uppercase mb-1" style={{ fontSize: "0.55rem", color: C.light }}>{label}</p>
-                      <p className="font-body text-sm font-semibold" style={{ color: C.dark }}>{value}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Perforation */}
-              <div className="flex sm:flex-col items-center" style={{ position: "relative" }}>
-                <div className="hidden sm:block w-px h-full border-l-2 border-dashed" style={{ borderColor: "hsl(38 28% 78%)" }} />
-                <div className="sm:hidden w-full h-px border-t-2 border-dashed" style={{ borderColor: "hsl(38 28% 78%)" }} />
-                {/* Scallop cuts */}
-                {[-1, 1].map((_, i) => (
-                  <div key={i} className="absolute w-6 h-6 rounded-full"
-                    style={{
-                      background: C.cream,
-                      ...(i === 0
-                        ? { top: -12, left: "50%", transform: "translateX(-50%)" }
-                        : { bottom: -12, left: "50%", transform: "translateX(-50%)" }),
-                    }} />
-                ))}
-              </div>
-
-              {/* Right/Bottom — stub */}
-              <div className="p-7 sm:p-8 flex flex-col items-center justify-center gap-5 min-w-[140px]"
-                style={{ background: C.cream }}>
-                {/* Barcode-style decoration */}
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 18 }).map((_, i) => (
-                    <div key={i} style={{
-                      width: i % 3 === 0 ? 3 : 1.5,
-                      height: i % 5 === 0 ? 40 : i % 2 === 0 ? 32 : 28,
-                      background: C.dark,
-                      opacity: 0.7 + (i % 3) * 0.1,
-                    }} />
-                  ))}
-                </div>
-                <p className="font-body text-center" style={{ fontSize: "0.58rem", color: C.mid, letterSpacing: "0.12em" }}>
-                  {INVITE.hashtag}
-                </p>
-                <div className="text-center">
-                  <p className="font-handwritten" style={{ fontSize: "1.6rem", color: C.dark, lineHeight: 1.1 }}>
-                    {INVITE.groom}<br />&amp; {INVITE.bride}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── Our Story ── */}
       {INVITE.story.length > 0 && <section style={{ background: C.creamAlt }}>
         {themeId === "garden-rose" && <GoldenCurtainTop />}
         <div className={`max-w-3xl mx-auto px-5 sm:px-8 ${themeId === "garden-rose" ? "pt-6 pb-24 sm:pb-32" : "py-24 sm:py-32"}`}>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            {themeId === "garden-rose" ? (
-              <div className="text-center mb-12 sm:mb-16">
-                <p className="font-body font-semibold tracking-[0.3em] uppercase mb-3" style={{ fontSize: "0.65rem", color: C.gold }}>Our Journey</p>
-                <h2 className="font-handwritten" style={{ fontSize: "clamp(2.5rem, 7vw, 4.5rem)", color: C.dark, lineHeight: 1.1 }}>Our Story</h2>
-                <OrnamentalDivider color={C.gold} />
-              </div>
-            ) : (
-              <SectionHead eyebrow="Our Journey" title="Our Story" />
-            )}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-14 sm:mb-20">
+            <p className="font-handwritten mb-2" style={{ fontSize: "clamp(1.25rem, 2.6vw, 1.75rem)", color: C.gold, lineHeight: 1 }}>
+              Our Journey
+            </p>
+            <h2 className="font-handwritten mb-4"
+              style={{ fontSize: "clamp(3.25rem, 8.5vw, 6rem)", color: C.green, lineHeight: 1.05 }}>
+              Our Love Story
+            </h2>
+            <div className="flex items-center justify-center gap-3">
+              <div style={{ height: 1, width: 56, background: C.gold, opacity: 0.7 }} />
+              <Heart className="w-4 h-4" style={{ color: C.gold }} />
+              <div style={{ height: 1, width: 56, background: C.gold, opacity: 0.7 }} />
+            </div>
           </motion.div>
 
           <div className="relative">
@@ -941,29 +880,35 @@ const ViewInvite = () => {
             })}
           </div>
 
-          {/* Tree of life illustration — closing flourish */}
+          {/* Decorative wreath — closing flourish, all templates */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}
             className="flex justify-center mt-10 mb-4">
             <img
-              src="/botanical-tree.png"
+              src={storyWreath}
               alt=""
-              className="w-40 sm:w-52 opacity-90"
-              style={{ filter: "drop-shadow(0 8px 28px rgba(100,80,40,0.14))" }}
+              className="w-64 sm:w-80 md:w-96 rounded-2xl"
+              style={{
+                mixBlendMode: "multiply",
+                filter: "drop-shadow(0 8px 28px rgba(100,80,40,0.14))",
+              }}
             />
           </motion.div>
         </div>
       </section>}
 
       {/* ── Day Program / Timeline ── */}
-      <section className="py-24 sm:py-32 px-5 sm:px-8 relative overflow-hidden" style={{ background: C.green }}>
-        {/* Botanical pattern background */}
-        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
-          <img src="/botanical-pattern.png" alt="" className="w-full h-full object-cover" style={{ opacity: 0.07 }} />
-        </div>
-        <div className="max-w-5xl mx-auto" style={{ position: "relative", zIndex: 1 }}>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="What we have prepared for you" title="Day Program" light />
+      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.green }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-14 sm:mb-20">
+            <h2 className="font-handwritten leading-none mb-4"
+              style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: "hsl(38 55% 80%)" }}>
+              Day Program
+            </h2>
+            <p className="font-body text-sm sm:text-base" style={{ color: "hsl(42 22% 78%)" }}>
+              What we have prepared for you
+            </p>
           </motion.div>
 
           <div className="overflow-x-auto pb-4 -mx-5 px-5 sm:mx-0 sm:px-0">
@@ -992,172 +937,98 @@ const ViewInvite = () => {
         </div>
       </section>
 
-      {/* ── Venue & Map ── */}
+      {/* ── Event Details ── */}
       <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.cream }}>
         <div className="max-w-2xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Join Us" title="Venue & Map" subtitle="We can't wait to celebrate this special day with you. Here's everything you need to know." />
-          </motion.div>
-
-          {/* Fountain illustration */}
-          <motion.div initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }} transition={{ duration: 0.75 }}
-            className="flex justify-center mb-10">
-            <img
-              src="/botanical-fountain.png"
-              alt=""
-              className="w-44 sm:w-56 opacity-90"
-              style={{ filter: "drop-shadow(0 10px 32px rgba(100,80,40,0.18))" }}
-            />
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-12 sm:mb-16">
+            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.gold }}>
+              Join Us
+            </p>
+            <h2 className="font-azura-serif italic leading-tight mb-4"
+              style={{ fontSize: "clamp(2.5rem, 5.5vw, 3.75rem)", color: C.green, fontWeight: 500, letterSpacing: "0.005em" }}>
+              Event Details
+            </h2>
+            <p className="font-azura-body text-sm sm:text-base mt-4 max-w-lg mx-auto leading-relaxed" style={{ color: C.mid }}>
+              We can't wait to celebrate this special day with you. Here's everything you need to know.
+            </p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
-            className="rounded-2xl overflow-hidden mb-6"
-            style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)", boxShadow: "0 4px 24px hsl(28 20% 50% / 0.08)" }}>
+            className="rounded-3xl overflow-hidden mb-6"
+            style={{ background: C.creamAlt, border: `1px solid ${C.primaryBorder}22`, boxShadow: "0 4px 24px hsl(28 20% 50% / 0.08)" }}>
             <div className="px-7 pt-8 pb-5 text-center">
               <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
-                style={{ background: "hsl(38 45% 88%)" }}>
-                <span style={{ fontSize: 20 }}>✦</span>
+                style={{ background: `${C.gold}22` }}>
+                <span style={{ fontSize: 20, color: C.gold }}>✦</span>
               </div>
-              <h3 className="font-display text-xl font-semibold mb-3" style={{ color: C.dark }}>Wedding Ceremony</h3>
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <Clock className="w-3.5 h-3.5" style={{ color: C.gold }} />
-                <p className="font-body text-sm" style={{ color: C.mid }}>{INVITE.time}</p>
+              <h3 className="font-azura-serif mb-4" style={{ fontSize: "1.75rem", fontWeight: 500, color: C.dark, letterSpacing: "0.01em" }}>Wedding Ceremony</h3>
+              <div className="flex items-center justify-center gap-2 mb-1.5">
+                <Clock className="w-3.5 h-3.5" style={{ color: C.dark }} />
+                <p className="font-azura-body text-sm" style={{ color: C.mid }}>{INVITE.time}</p>
               </div>
               <div className="flex items-center justify-center gap-2 mb-0.5">
-                <MapPin className="w-3.5 h-3.5" style={{ color: C.gold }} />
-                <p className="font-body text-sm font-medium" style={{ color: C.dark }}>{INVITE.venue.name}</p>
+                <MapPin className="w-3.5 h-3.5" style={{ color: C.dark }} />
+                <p className="font-azura-body text-sm font-medium" style={{ color: C.dark }}>{INVITE.venue.name}</p>
               </div>
-              <p className="font-body text-sm mt-0.5" style={{ color: C.mid }}>{INVITE.venue.address}</p>
-              <p className="font-body text-sm" style={{ color: C.mid }}>{INVITE.venue.city}</p>
+              <p className="font-azura-body text-sm mt-0.5" style={{ color: C.mid }}>{INVITE.venue.address}</p>
+              <p className="font-azura-body text-sm mb-6" style={{ color: C.mid }}>{INVITE.venue.city}</p>
+
+              <div className="w-full rounded-2xl overflow-hidden" style={{ height: 260, border: `1px solid ${C.primaryBorder}22` }}>
+                <iframe
+                  src={INVITE.venue.embedUrl}
+                  width="100%" height="100%"
+                  style={{ border: 0, display: "block" }}
+                  allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Wedding venue map"
+                />
+              </div>
             </div>
 
-            <div className="w-full" style={{ height: 280 }}>
-              <iframe
-                src={INVITE.venue.embedUrl}
-                width="100%" height="100%"
-                style={{ border: 0, display: "block" }}
-                allowFullScreen loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Wedding venue map"
-              />
-            </div>
-
-            <div className="px-7 py-5 grid grid-cols-2 gap-3">
+            <div className="px-7 pb-7 grid grid-cols-2 gap-3">
               <a href={INVITE.venue.mapsUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-body text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ background: C.green, color: "hsl(42 35% 88%)" }}>
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-azura-body text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ background: C.gold, color: "white" }}>
                 <MapPin className="w-3.5 h-3.5" /> Open in Maps
               </a>
               <a href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${INVITE.groom}+%26+${INVITE.bride}+Wedding&dates=${INVITE.dateISO.replace(/-/g,"")}T163000/${INVITE.dateISO.replace(/-/g,"")}T020000&location=${encodeURIComponent(INVITE.venue.address)}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-body text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ background: "hsl(38 30% 88%)", color: C.dark }}>
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-azura-body text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ background: C.creamCard, color: C.dark, border: `1px solid ${C.primaryBorder}55` }}>
                 <Calendar className="w-3.5 h-3.5" /> Add to Calendar
               </a>
             </div>
           </motion.div>
+
+          <p className="text-center font-azura-body text-sm italic max-w-md mx-auto" style={{ color: C.mid }}>
+            Join us as we exchange our vows in an intimate ceremony surrounded by our loved ones.
+          </p>
         </div>
       </section>
 
       {/* ── Dress Code ── */}
-      <section className="pb-20 sm:pb-28 px-5 sm:px-8" style={{ background: C.cream }}>
-        <div className="max-w-2xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="What to Wear" title="Dress Code" />
-          </motion.div>
-
+      <section className="pb-20 sm:pb-28 pt-8 sm:pt-12 px-5 sm:px-8" style={{ background: C.cream }}>
+        <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
-            className="rounded-2xl overflow-hidden"
+            className="rounded-3xl px-8 py-10 sm:py-14 text-center"
             style={{ background: C.green }}>
-            <div className="px-8 pt-10 pb-6 text-center">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5"
-                style={{ background: C.primaryCard }}>
-                <Shirt className="w-5 h-5" style={{ color: C.goldLight }} />
-              </div>
-              <h3 className="font-display text-xl font-semibold mb-2" style={{ color: "hsl(42 40% 85%)" }}>{INVITE.dresscode}</h3>
-              <p className="font-body text-sm mb-8" style={{ color: C.primaryMuted }}>{INVITE.dresscodeNote}</p>
-
-              <p className="font-body tracking-[0.18em] uppercase mb-4" style={{ fontSize: "0.6rem", color: "hsl(42 28% 60%)" }}>
-                Suggested Palette
-              </p>
-              <div className="flex items-center justify-center gap-2 flex-wrap">
-                {[
-                  "hsl(44 40% 94%)",   // ivory
-                  "hsl(38 45% 80%)",   // champagne
-                  "hsl(100 20% 27%)",  // forest green
-                  "hsl(220 30% 24%)",  // deep navy
-                  "hsl(18 52% 82%)",   // blush
-                ].map((color, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full border-2"
-                      style={{ background: color, borderColor: C.primaryBorder }} />
-                    <span className="font-body" style={{ fontSize: "0.55rem", color: "hsl(42 22% 58%)" }}>
-                      {INVITE.dresscodeColors[i]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.goldLight }}>
+              What to Wear
+            </p>
+            <h3 className="font-azura-serif italic mb-5"
+              style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)", color: "hsl(42 45% 92%)", lineHeight: 1.1, fontWeight: 500, letterSpacing: "0.005em" }}>
+              Dress Code
+            </h3>
+            <p className="font-azura-serif italic text-lg sm:text-xl mb-4" style={{ color: "hsl(42 40% 88%)", fontWeight: 400 }}>
+              {INVITE.dresscode}
+            </p>
+            <p className="font-azura-body text-sm sm:text-base max-w-md mx-auto leading-relaxed" style={{ color: "hsl(42 22% 78%)" }}>
+              {INVITE.dresscodeNote}
+            </p>
           </motion.div>
         </div>
       </section>
-
-      {/* ── Menu ── */}
-      {(INVITE.menu.note || INVITE.menu.starter.length > 0) && (
-      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.creamAlt }}>
-        <div className="max-w-2xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Culinary Experience" title="Wedding Menu" />
-          </motion.div>
-
-          {/* Full menu (demo) — show course cards */}
-          {INVITE.menu.starter.length > 0 && [
-            { label: "Starters",  emoji: "🥗", items: INVITE.menu.starter },
-            { label: "Mains",     emoji: "🍽️", items: INVITE.menu.main },
-            { label: "Desserts",  emoji: "🎂", items: INVITE.menu.dessert },
-          ].map((course, ci) => (
-            <motion.div key={course.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.55, delay: ci * 0.1 }}
-              className="mb-5 rounded-2xl overflow-hidden"
-              style={{ background: C.white, border: "1px solid hsl(38 28% 84%)" }}>
-              <div className="px-6 py-4 flex items-center gap-3" style={{ background: C.green }}>
-                <span className="text-lg">{course.emoji}</span>
-                <h3 className="font-body font-bold tracking-[0.18em] uppercase" style={{ fontSize: "0.7rem", color: "hsl(42 35% 82%)" }}>
-                  {course.label}
-                </h3>
-              </div>
-              <div className="divide-y" style={{ borderColor: "hsl(38 24% 90%)" }}>
-                {course.items.map((item) => (
-                  <div key={item.name} className="px-6 py-4">
-                    <p className="font-body text-sm font-semibold mb-0.5" style={{ color: C.dark }}>{item.name}</p>
-                    <p className="font-body text-xs italic" style={{ color: C.light }}>{item.note}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-
-          {/* Simple note card (user-created invites) */}
-          {INVITE.menu.starter.length === 0 && INVITE.menu.note && (
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.55 }}
-              className="rounded-2xl overflow-hidden"
-              style={{ background: C.white, border: "1px solid hsl(38 28% 84%)" }}>
-              <div className="px-6 py-4 flex items-center gap-3" style={{ background: C.green }}>
-                <span className="text-lg">🍽️</span>
-                <h3 className="font-body font-bold tracking-[0.18em] uppercase" style={{ fontSize: "0.7rem", color: "hsl(42 35% 82%)" }}>
-                  Menu
-                </h3>
-              </div>
-              <div className="px-7 py-6 text-center">
-                <p className="font-body text-sm leading-relaxed" style={{ color: C.mid }}>{INVITE.menu.note}</p>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </section>
-      )}
 
       {/* ── Transport ── */}
       {INVITE.transport.length > 0 && <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.green }}>
@@ -1171,14 +1042,14 @@ const ViewInvite = () => {
               <motion.div key={t.label} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="rounded-2xl p-6 flex gap-5 items-start"
-                style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
+                style={{ background: "white", border: `1px solid ${C.primaryBorder}44`, boxShadow: "0 4px 18px rgba(0,0,0,0.12)" }}>
                 <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                  style={{ background: C.primaryCardDark, border: `1px solid ${C.primaryBorder}` }}>
-                  <t.Icon className="w-5 h-5" style={{ color: C.goldLight }} />
+                  style={{ background: `${C.gold}18`, border: `1px solid ${C.gold}55` }}>
+                  <t.Icon className="w-5 h-5" style={{ color: C.gold }} />
                 </div>
                 <div>
-                  <p className="font-body font-bold mb-1.5" style={{ color: "hsl(42 38% 88%)" }}>{t.label}</p>
-                  <p className="font-body text-sm leading-relaxed" style={{ color: C.primaryMuted }}>{t.desc}</p>
+                  <p className="font-azura-serif italic mb-1.5" style={{ fontSize: "1.2rem", color: C.dark, fontWeight: 500 }}>{t.label}</p>
+                  <p className="font-azura-body text-sm leading-relaxed" style={{ color: C.mid }}>{t.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -1186,37 +1057,42 @@ const ViewInvite = () => {
         </div>
       </section>}
 
-      {/* ── Hotels ── */}
+      {/* ── Travel & Accommodation ── */}
       {INVITE.hotels.length > 0 && <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.cream }}>
-        <div className="max-w-2xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Stay Nearby" title="Recommended Hotels" subtitle="We've handpicked a selection of hotels for different budgets, all within walking distance of the venue." />
+        <div className="max-w-6xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-12 sm:mb-16">
+            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.gold }}>
+              Plan Your Visit
+            </p>
+            <h2 className="font-azura-serif italic leading-tight mb-4"
+              style={{ fontSize: "clamp(2.5rem, 5.5vw, 3.75rem)", color: C.green, fontWeight: 500, letterSpacing: "0.005em" }}>
+              Travel &amp; Accommodation
+            </h2>
+            <p className="font-azura-body text-sm sm:text-base mt-4 max-w-lg mx-auto leading-relaxed" style={{ color: C.mid }}>
+              We want to make your visit as comfortable as possible. Here are some recommendations.
+            </p>
           </motion.div>
 
-          <div className="flex flex-col gap-4">
+          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="flex items-center gap-2.5 mb-5 px-1">
+            <Hotel className="w-4 h-4" style={{ color: C.gold }} />
+            <h3 className="font-azura-serif italic" style={{ fontSize: "1.4rem", color: C.dark, fontWeight: 500 }}>Where to Stay</h3>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {INVITE.hotels.map((hotel, i) => (
               <motion.div key={hotel.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="rounded-2xl p-6 flex gap-4 items-start relative"
-                style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)" }}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: "hsl(38 36% 88%)" }}>
-                  <Hotel className="w-5 h-5" style={{ color: C.gold }} />
+                viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="rounded-2xl p-6"
+                style={{ background: C.white, border: `1px solid ${C.primaryBorder}22`, boxShadow: "0 2px 12px hsl(28 20% 50% / 0.06)" }}>
+                <p className="font-azura-serif italic mb-1" style={{ fontSize: "1.35rem", color: C.dark, fontWeight: 500 }}>{hotel.name}</p>
+                <p className="font-azura-body text-sm mb-2" style={{ color: C.gold, fontWeight: 500 }}>{hotel.stars} Star</p>
+                <div className="flex items-center gap-1.5 mb-3">
+                  <MapPin className="w-3.5 h-3.5" style={{ color: C.mid }} />
+                  <p className="font-azura-body text-sm" style={{ color: C.mid }}>{hotel.distance}</p>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <p className="font-body font-bold" style={{ color: C.dark }}>{hotel.name}</p>
-                    {hotel.tag && (
-                      <span className="font-body rounded-full px-2 py-0.5"
-                        style={{ fontSize: "0.58rem", fontWeight: 700, background: C.green, color: "hsl(42 40% 85%)" }}>
-                        {hotel.tag}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mb-1"><Stars n={hotel.stars} /></div>
-                  <p className="font-body text-xs mb-1" style={{ color: C.gold }}>{hotel.distance}</p>
-                  <p className="font-body text-sm" style={{ color: C.mid }}>{hotel.note}</p>
-                </div>
+                <p className="font-azura-body text-sm leading-relaxed" style={{ color: C.dark }}>{hotel.note}</p>
               </motion.div>
             ))}
           </div>
@@ -1225,37 +1101,6 @@ const ViewInvite = () => {
 
       {/* ── Demo-only sections ── */}
       {isDemo && (<>
-      <section className="py-24 sm:py-32 px-5 sm:px-8 relative overflow-hidden" style={{ background: C.greenMid }}>
-        {/* Decorative large text */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-          <span className="font-handwritten opacity-[0.04]" style={{ fontSize: "clamp(8rem, 28vw, 20rem)", color: "white", lineHeight: 1 }}>
-            {INVITE.destination.city}
-          </span>
-        </div>
-
-        <div className="max-w-2xl mx-auto relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow={`${INVITE.destination.city}, ${INVITE.destination.country}`} title={INVITE.destination.tagline} light />
-          </motion.div>
-
-          <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
-            className="font-body text-sm sm:text-base leading-relaxed text-center mb-10"
-            style={{ color: "hsl(44 20% 72%)" }}>
-            {INVITE.destination.desc}
-          </motion.p>
-
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap justify-center gap-2.5">
-            {INVITE.destination.highlights.map((h) => (
-              <span key={h} className="font-body text-xs font-semibold rounded-full px-4 py-2"
-                style={{ background: C.primaryCard, color: "hsl(42 32% 80%)", border: `1px solid ${C.primaryBorder}` }}>
-                {h}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── Things To Do ── */}
       <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.cream }}>
         <div className="max-w-3xl mx-auto">
@@ -1270,8 +1115,8 @@ const ViewInvite = () => {
                 className="rounded-2xl p-6"
                 style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)" }}>
                 <span className="text-2xl mb-3 block">{item.emoji}</span>
-                <p className="font-body font-bold mb-1.5" style={{ color: C.dark }}>{item.title}</p>
-                <p className="font-body text-sm leading-relaxed" style={{ color: C.mid }}>{item.desc}</p>
+                <p className="font-azura-serif italic mb-1.5" style={{ fontSize: "1.25rem", color: C.dark, fontWeight: 500 }}>{item.title}</p>
+                <p className="font-azura-body text-sm leading-relaxed" style={{ color: C.mid }}>{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -1286,7 +1131,7 @@ const ViewInvite = () => {
           </motion.div>
 
           <motion.p initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }}
-            className="font-body text-sm text-center leading-relaxed mb-10"
+            className="font-azura-body text-sm text-center leading-relaxed mb-10"
             style={{ color: "hsl(44 20% 68%)" }}>
             {INVITE.giftRegistry.note}
           </motion.p>
@@ -1296,18 +1141,18 @@ const ViewInvite = () => {
               <motion.div key={opt.label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="rounded-2xl p-6 flex gap-4 items-center"
-                style={{ background: C.primaryCard, border: `1px solid ${C.primaryBorder}` }}>
+                style={{ background: "white", border: `1px solid ${C.primaryBorder}44`, boxShadow: "0 4px 18px rgba(0,0,0,0.12)" }}>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: C.primaryCardDark }}>
-                  <Gift className="w-5 h-5" style={{ color: C.goldLight }} />
+                  style={{ background: `${C.gold}18`, border: `1px solid ${C.gold}55` }}>
+                  <Gift className="w-5 h-5" style={{ color: C.gold }} />
                 </div>
                 <div className="flex-1">
-                  <p className="font-body font-bold mb-0.5" style={{ color: "hsl(42 38% 88%)" }}>{opt.label}</p>
-                  <p className="font-body text-xs leading-relaxed" style={{ color: C.primaryMuted }}>{opt.detail}</p>
+                  <p className="font-azura-serif italic mb-0.5" style={{ fontSize: "1.15rem", color: C.dark, fontWeight: 500 }}>{opt.label}</p>
+                  <p className="font-azura-body text-xs leading-relaxed" style={{ color: C.mid }}>{opt.detail}</p>
                 </div>
                 {opt.link && (
-                  <a href={opt.link} className="font-body text-xs font-bold rounded-full px-4 py-2 shrink-0 transition-opacity hover:opacity-80"
-                    style={{ background: "hsl(42 40% 84%)", color: C.dark }}>
+                  <a href={opt.link} className="font-azura-body text-xs font-bold rounded-full px-4 py-2 shrink-0 transition-opacity hover:opacity-80"
+                    style={{ background: C.green, color: "white" }}>
                     View
                   </a>
                 )}
@@ -1326,9 +1171,9 @@ const ViewInvite = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {[
-              { src: couplePhoto, alt: "Walking together at sunset", span: "col-span-2 sm:col-span-1 row-span-2" },
-              { src: photo2,      alt: "Love letter with roses",      span: "" },
-              { src: photo3,      alt: "Together",                    span: "" },
+              { src: gallery1, alt: "A winter wedding moment", span: "col-span-2 sm:col-span-1 row-span-2" },
+              { src: gallery2, alt: "A tender moment",           span: "" },
+              { src: gallery3, alt: "Romantic mini wedding",     span: "" },
             ].map((img, i) => (
               <motion.div key={i} initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }} transition={{ duration: 0.55, delay: i * 0.1 }}
@@ -1342,7 +1187,7 @@ const ViewInvite = () => {
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
             className="flex items-center justify-center gap-3 mt-8">
             <Camera className="w-4 h-4" style={{ color: C.gold }} />
-            <p className="font-body text-sm" style={{ color: C.mid }}>Share your photos with us using {INVITE.hashtag}</p>
+            <p className="font-azura-body text-sm" style={{ color: C.mid }}>Share your photos with us using {INVITE.hashtag}</p>
           </motion.div>
         </div>
       </section>
@@ -1368,16 +1213,16 @@ const ViewInvite = () => {
       <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: C.green }}>
         <div className="max-w-xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <p className="font-body font-semibold tracking-[0.3em] uppercase mb-4" style={{ fontSize: "0.65rem", color: C.goldLight }}>
+            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.goldLight }}>
               From the Couple
             </p>
-            <h2 className="font-display font-bold leading-tight mb-8" style={{ fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: C.creamCard }}>
+            <h2 className="font-azura-serif italic leading-tight mb-8" style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", color: C.creamCard, fontWeight: 500, letterSpacing: "0.005em" }}>
               {INVITE.customText.title}
             </h2>
 
             <div style={{ height: 1, background: C.primaryLine, maxWidth: 60, margin: "0 auto 28px" }} />
 
-            <p className="font-body text-sm sm:text-base leading-loose mb-8" style={{ color: "hsl(44 20% 70%)" }}>
+            <p className="font-azura-body text-sm sm:text-base leading-loose mb-8" style={{ color: "hsl(44 20% 78%)" }}>
               {INVITE.customText.body}
             </p>
 
@@ -1391,114 +1236,106 @@ const ViewInvite = () => {
       </>)}
 
       {/* ── RSVP ── */}
-      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.creamAlt }}>
-        <div className="max-w-md mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            {themeId === "garden-rose" ? (
-              <div className="text-center mb-10">
-                <p className="font-body tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.62rem", color: C.gold }}>
-                  Be Our Guest
-                </p>
-                <h2 className="font-handwritten mb-2" style={{ fontSize: "clamp(4rem, 14vw, 6rem)", color: C.dark, lineHeight: 1 }}>
-                  RSVP
-                </h2>
-                <OrnamentalDivider color={C.gold} />
-                <p className="font-body text-sm italic leading-relaxed mt-2 max-w-xs mx-auto" style={{ color: C.mid }}>
-                  Kindly RSVP by {INVITE.rsvpDeadline}. Due to limited capacity, each reservation is limited to two guests, with exceptions for immediate family.
-                </p>
-              </div>
-            ) : (
+      <section className="relative py-24 sm:py-32 px-5 sm:px-8 overflow-hidden" style={{ background: C.cream }}>
+        {/* Background fountain image */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none select-none"
+          style={{
+            backgroundImage: `url(${rsvpFountain})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        {/* Cream tint overlay for readability */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `${C.cream}d9` }}
+        />
+        <div className="relative max-w-lg mx-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="rounded-2xl p-7 sm:p-10"
+            style={{ background: "white", border: `1px solid ${C.primaryBorder}33`, boxShadow: "0 10px 36px hsl(28 20% 40% / 0.14)" }}>
+            <div className="mb-6 sm:mb-8">
               <SectionHead eyebrow="Confirm Attendance" title="Will You Join Us?" subtitle={`Please RSVP by ${INVITE.rsvpDeadline}`} />
-            )}
-          </motion.div>
+            </div>
 
           <AnimatePresence mode="wait">
             {rsvpDone ? (
               <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
-                className="text-center py-14 px-8 rounded-2xl"
-                style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)" }}>
+                className="text-center py-8">
                 <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-                  style={{ background: "hsl(38 36% 88%)" }}>
-                  <Check className="w-7 h-7" style={{ color: C.gold }} />
+                  style={{ background: `${C.green}22` }}>
+                  <Check className="w-7 h-7" style={{ color: C.green }} />
                 </div>
-                <h3 className="font-handwritten text-3xl mb-2" style={{ color: C.dark }}>Can't wait to see you!</h3>
+                <h3 className="font-display text-2xl font-semibold mb-2" style={{ color: C.dark }}>Can't wait to see you!</h3>
                 <p className="font-body text-sm" style={{ color: C.mid }}>Your RSVP has been received. See you on {INVITE.date}.</p>
               </motion.div>
             ) : (
               <motion.form key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
                 onSubmit={handleRsvp}
-                className="rounded-2xl p-7 sm:p-8 flex flex-col gap-5"
-                style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)" }}>
+                className="flex flex-col gap-6">
 
                 {[
-                  { label: "Full Name", type: "text",  name: "name",  placeholder: "Your full name" },
-                  { label: "Email",     type: "email", name: "email", placeholder: "your@email.com" },
+                  { label: "Full Name", type: "text",  name: "name",  placeholder: "Your full name", required: true },
+                  { label: "Email Address", type: "email", name: "email", placeholder: "your@email.com", required: true },
                 ].map((f) => (
                   <div key={f.label}>
-                    <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-2 block" style={{ color: C.light }}>
-                      {f.label}
+                    <label className="font-azura-body text-[15px] font-semibold mb-2 block" style={{ color: C.dark }}>
+                      {f.label} {f.required && <span style={{ color: "#c94a3a" }}>*</span>}
                     </label>
-                    <input type={f.type} name={f.name} required placeholder={f.placeholder}
-                      className="w-full rounded-xl px-4 py-3 font-body text-sm outline-none transition-colors"
-                      style={{ background: "white", border: "1px solid hsl(38 26% 84%)", color: C.dark }}
-                      onFocus={e => (e.currentTarget.style.borderColor = C.gold)}
-                      onBlur={e => (e.currentTarget.style.borderColor = "hsl(38 26% 84%)")} />
+                    <input type={f.type} name={f.name} required={f.required} placeholder={f.placeholder}
+                      className="w-full rounded-lg px-4 py-3 font-azura-body text-sm outline-none transition-colors"
+                      style={{ background: C.creamAlt, border: `1.5px solid ${C.primaryBorder}`, color: C.dark }}
+                      onFocus={e => (e.currentTarget.style.borderColor = C.green)}
+                      onBlur={e => (e.currentTarget.style.borderColor = C.primaryBorder)} />
                   </div>
                 ))}
 
                 <div>
-                  <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-3 block" style={{ color: C.light }}>
-                    Attendance
+                  <label className="font-azura-body text-[15px] font-semibold mb-3 block" style={{ color: C.dark }}>
+                    Will you be attending? <span style={{ color: "#c94a3a" }}>*</span>
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["Joyfully accepts", "Regretfully declines"].map((opt) => (
-                      <label key={opt} className="flex items-center gap-2.5 rounded-xl px-4 py-3 cursor-pointer"
-                        style={{ border: "1.5px solid hsl(38 26% 84%)", background: "white" }}>
-                        <input type="radio" name="attendance" required value={opt} style={{ accentColor: C.gold }} />
-                        <span className="font-body text-xs" style={{ color: C.mid }}>{opt}</span>
+                  <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+                    {[
+                      { value: "Joyfully accepts",   text: "Joyfully Accept" },
+                      { value: "Regretfully declines", text: "Regretfully Decline" },
+                    ].map((opt) => (
+                      <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+                        <input type="radio" name="attendance" required value={opt.value}
+                          className="w-4 h-4"
+                          style={{ accentColor: C.green }} />
+                        <span className="font-azura-body text-sm" style={{ color: C.dark }}>{opt.text}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-2 block" style={{ color: C.light }}>
-                    Number of Guests
+                  <label className="font-azura-body text-[15px] font-semibold mb-2 block" style={{ color: C.dark }}>
+                    Message for the Couple
                   </label>
-                  <select
-                    name="guests_count"
-                    defaultValue="1"
-                    className="w-full rounded-xl px-4 py-3 font-body text-sm outline-none appearance-none"
-                    style={{ background: "white", border: "1px solid hsl(38 26% 84%)", color: C.dark }}
-                    onFocus={e => (e.currentTarget.style.borderColor = C.gold)}
-                    onBlur={e => (e.currentTarget.style.borderColor = "hsl(38 26% 84%)")}
-                  >
-                    {[1, 2, 3, 4, 5, 6].map(n => (
-                      <option key={n} value={n}>{n} {n === 1 ? "person (just me)" : "people"}</option>
-                    ))}
-                  </select>
+                  <textarea rows={4} name="message" placeholder="Share your well wishes…"
+                    className="w-full rounded-lg px-4 py-3 font-azura-body text-sm outline-none resize-none transition-colors"
+                    style={{ background: C.creamAlt, border: `1.5px solid ${C.primaryBorder}`, color: C.dark, minHeight: 120 }}
+                    onFocus={e => (e.currentTarget.style.borderColor = C.green)}
+                    onBlur={e => (e.currentTarget.style.borderColor = C.primaryBorder)} />
                 </div>
 
-                <div>
-                  <label className="font-body text-[10px] font-bold uppercase tracking-[0.18em] mb-2 block" style={{ color: C.light }}>
-                    Message <span style={{ color: C.light, textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>(optional)</span>
-                  </label>
-                  <textarea rows={3} name="message" placeholder="Leave a warm wish for the couple…"
-                    className="w-full rounded-xl px-4 py-3 font-body text-sm outline-none resize-none transition-colors"
-                    style={{ background: "white", border: "1px solid hsl(38 26% 84%)", color: C.dark }}
-                    onFocus={e => (e.currentTarget.style.borderColor = C.gold)}
-                    onBlur={e => (e.currentTarget.style.borderColor = "hsl(38 26% 84%)")} />
-                </div>
+                <input type="hidden" name="guests_count" value="1" />
 
                 <button type="submit"
-                  className="w-full py-4 rounded-xl font-body text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                  style={{ background: C.green, color: "hsl(42 35% 88%)" }}>
-                  Confirm Attendance
+                  className="w-full py-4 rounded-lg font-azura-body text-base font-semibold transition-all duration-200 hover:opacity-90 active:scale-[0.99] flex items-center justify-center gap-2.5 mt-1"
+                  style={{ background: C.green, color: "white" }}>
+                  <Send className="w-4 h-4" /> Send RSVP
                 </button>
               </motion.form>
             )}
           </AnimatePresence>
+          </motion.div>
         </div>
+
       </section>
 
       {/* ── Questions ── */}
@@ -1507,18 +1344,18 @@ const ViewInvite = () => {
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
             className="rounded-2xl px-8 py-8 text-center"
             style={{ background: C.blush }}>
-            <h3 className="font-display text-xl font-semibold mb-2" style={{ color: C.dark }}>Still Have Questions?</h3>
-            <p className="font-body text-sm mb-5" style={{ color: C.mid }}>
+            <h3 className="font-azura-serif italic mb-3" style={{ fontSize: "clamp(1.5rem, 3vw, 1.9rem)", color: C.dark, fontWeight: 500 }}>Still Have Questions?</h3>
+            <p className="font-azura-body text-sm sm:text-base mb-6 leading-relaxed" style={{ color: C.mid }}>
               Don't hesitate to reach out — we're happy to help you plan your journey.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a href={`mailto:${INVITE.email}`}
-                className="inline-flex items-center gap-2 font-body text-sm font-medium transition-opacity hover:opacity-70"
+                className="inline-flex items-center gap-2 font-azura-body text-sm font-medium transition-opacity hover:opacity-70"
                 style={{ color: C.gold }}>
                 <Mail className="w-4 h-4" /> {INVITE.email}
               </a>
               <a href={`tel:${INVITE.phone}`}
-                className="inline-flex items-center gap-2 font-body text-sm font-medium transition-opacity hover:opacity-70"
+                className="inline-flex items-center gap-2 font-azura-body text-sm font-medium transition-opacity hover:opacity-70"
                 style={{ color: C.gold }}>
                 <Phone className="w-4 h-4" /> {INVITE.phone}
               </a>
