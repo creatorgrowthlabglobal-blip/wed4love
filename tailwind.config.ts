@@ -12,10 +12,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Playfair Display', 'serif'],
-        body: ['Inter', 'sans-serif'],
-        heading: ['Poppins', 'sans-serif'],
-        handwritten: ['Dancing Script', 'cursive'],
+        display: ['Cormorant Garamond', 'serif'],
+        body: ['Montserrat', 'sans-serif'],
+        heading: ['Cormorant Garamond', 'serif'],
+        handwritten: ['Great Vibes', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",

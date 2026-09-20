@@ -162,32 +162,20 @@ const GetStartedLink = ({ className, style, children }: { className: string; sty
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
-  { to: "/#how-it-works", label: "How It Works", hash: "how-it-works" as const },
-  { to: "/pricing",       label: "Pricing" },
-  { to: "/blog",          label: "Blog" },
-  { to: "/demo",          label: "Demo" },
-  { to: "/contact",       label: "Contact" },
+  { to: "/pricing", label: "Pricing" },
+  { to: "/blog",    label: "Blog" },
+  { to: "/demo",    label: "Demo" },
+  { to: "/contact", label: "Contact" },
 ];
 
 const Nav = () => {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const navLinkSt: React.CSSProperties = { color: "hsl(30 12% 48%)" };
+  const NAV_INK = "hsl(30 20% 18%)";
+  const navLinkSt: React.CSSProperties = { color: NAV_INK };
   const onEnter = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = GOLD);
-  const onLeave = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = "hsl(30 12% 48%)");
-
-  const onHowItWorks = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setMenuOpen(false);
-    if (location.pathname === "/") {
-      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      navigate("/#how-it-works");
-    }
-  };
+  const onLeave = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = NAV_INK);
 
   return (
     <motion.header
@@ -202,51 +190,25 @@ const Nav = () => {
       >
         {/* Logo */}
         <Link to="/" className="z-10">
-          <span className="font-display font-bold text-lg tracking-tight" style={{ color: GOLD }}>
+          <span className="font-display font-bold text-2xl sm:text-3xl tracking-tight leading-none" style={{ color: GOLD }}>
             Wed4Love
           </span>
         </Link>
 
         {/* Center Nav — desktop only */}
         <nav className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-          {NAV_LINKS.map(l =>
-            l.hash ? (
-              <a
-                key={l.label}
-                href={l.to}
-                onClick={onHowItWorks}
-                className="font-body text-sm transition-colors duration-200"
-                style={navLinkSt}
-                onMouseEnter={onEnter}
-                onMouseLeave={onLeave}
-              >
-                {l.label}
-              </a>
-            ) : (
-              <Link
-                key={l.label}
-                to={l.to}
-                className="font-body text-sm transition-colors duration-200"
-                style={navLinkSt}
-                onMouseEnter={onEnter}
-                onMouseLeave={onLeave}
-              >
-                {l.label}
-              </Link>
-            )
-          )}
-          {!loading && user && (
-            <button
-              onClick={() => navigate("/my-invitations")}
-              className="font-body text-sm transition-colors duration-200 flex items-center gap-1.5"
+          {NAV_LINKS.map(l => (
+            <Link
+              key={l.label}
+              to={l.to}
+              className="font-body text-sm font-semibold tracking-wide transition-colors duration-200"
               style={navLinkSt}
               onMouseEnter={onEnter}
               onMouseLeave={onLeave}
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              My Invitations
-            </button>
-          )}
+              {l.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Right Actions */}
@@ -305,39 +267,17 @@ const Nav = () => {
             className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg p-3 flex flex-col gap-1"
             style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
           >
-            {NAV_LINKS.map(l =>
-              l.hash ? (
-                <a
-                  key={l.label}
-                  href={l.to}
-                  onClick={onHowItWorks}
-                  className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50"
-                  style={{ color: "hsl(30 12% 40%)" }}
-                >
-                  {l.label}
-                </a>
-              ) : (
-                <Link
-                  key={l.label}
-                  to={l.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50"
-                  style={{ color: "hsl(30 12% 40%)" }}
-                >
-                  {l.label}
-                </Link>
-              )
-            )}
-            {!loading && user && (
-              <button
-                onClick={() => { setMenuOpen(false); navigate("/my-invitations"); }}
-                className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50 text-left flex items-center gap-1.5"
-                style={{ color: "hsl(30 12% 40%)" }}
+            {NAV_LINKS.map(l => (
+              <Link
+                key={l.label}
+                to={l.to}
+                onClick={() => setMenuOpen(false)}
+                className="font-body text-sm font-semibold tracking-wide px-3 py-2.5 rounded-xl hover:bg-amber-50"
+                style={{ color: "hsl(30 20% 18%)" }}
               >
-                <BookOpen className="w-3.5 h-3.5" />
-                My Invitations
-              </button>
-            )}
+                {l.label}
+              </Link>
+            ))}
 
             {/* Divider */}
             <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
