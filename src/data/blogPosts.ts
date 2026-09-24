@@ -3,7 +3,6 @@ import gardenRose from "@/assets/garden-rose-thumbnail.png";
 import midnightLuxe from "@/assets/midnight-luxe-thumbnail.png";
 import rusticBloom from "@/assets/rustic-bloom-thumbnail.png";
 import softLove from "@/assets/soft-love-thumbnail.jpg";
-import eleganceMailbox from "@/assets/elegance-mailbox-closed.jpeg";
 
 export type BlogBlock =
   | { type: "p"; text: string }
@@ -19,7 +18,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   cover: string;
-  category: "Planning" | "Design" | "RSVP" | "Digital" | "Etiquette" | "Love Letters";
+  category: "Planning" | "Design" | "RSVP" | "Digital" | "Etiquette";
   author: string;
   authorRole: string;
   authorInitials: string;
@@ -30,70 +29,9 @@ export interface BlogPost {
   content: BlogBlock[];
 }
 
-export const CATEGORIES = ["All", "Love Letters", "Planning", "Design", "RSVP", "Digital", "Etiquette"] as const;
+export const CATEGORIES = ["All", "Planning", "Design", "RSVP", "Digital", "Etiquette"] as const;
 
 export const BLOG_POSTS: BlogPost[] = [
-  {
-    slug: "how-to-write-a-love-letter-that-actually-lands",
-    title: "How to Write a Love Letter That Actually Lands (and Doesn't Feel Cringey)",
-    excerpt:
-      "A love letter isn't a Hallmark card. It's the one gift you can't buy at a shop — but most people freeze at the first sentence. Here's a simple framework to write one that feels honest, specific, and impossible to forget.",
-    cover: eleganceMailbox,
-    category: "Love Letters",
-    author: "Ananya Kapoor",
-    authorRole: "Content Lead, Wed4Love",
-    authorInitials: "AK",
-    authorColor: "hsl(340 60% 55%)",
-    date: "2026-09-08",
-    readTime: 6,
-    content: [
-      { type: "p", text: "A love letter is one of the few gifts that gets more valuable the longer someone owns it. And yet — most people, sat in front of a blank page, freeze. They write \"I love you so much,\" then delete it, then write \"words can't describe,\" then close the tab." },
-      { type: "p", text: "Here's the thing: the reason most love letters feel cringey is that they aim for poetry when they should aim for precision. The letters people re-read years later aren't the flowery ones. They're the specific ones." },
-
-      { type: "h2", text: "1. Skip the grand opening" },
-      { type: "p", text: "Don't start with \"My dearest love\" if it's not how you actually talk. Start with the smallest, most ordinary detail you can think of. \"I was making coffee this morning and thought of the way you laughed at that dog on the beach.\" That's a first sentence they'll remember." },
-      { type: "callout", title: "The one-line test", text: "If your opening line could belong in someone else's letter to someone else's partner, rewrite it. Your love is specific. So is your letter." },
-
-      { type: "h2", text: "2. Use the \"three moments\" framework" },
-      { type: "p", text: "This is the whole trick. Instead of trying to summarise your entire relationship, name three small moments — real ones, with detail — and let each one carry its own paragraph." },
-      { type: "ol", items: [
-        "One moment when you first knew you loved them (skip the meet-cute — pick the boring afternoon three months in).",
-        "One small ritual that only the two of you have (a joke, a phrase, a Sunday habit).",
-        "One thing you're grateful they do that they might not even realise they do.",
-      ] },
-      { type: "p", text: "Three concrete moments will beat three pages of adjectives every time. The specificity is what makes the reader cry." },
-
-      { type: "h2", text: "3. Write one line they'll want to screenshot" },
-      { type: "p", text: "Not the whole letter — one line. It's usually a sentence that names something you've never quite said out loud. \"You are the first thing I want to tell everything to.\" \"You're the person I already miss on Sunday nights.\" One line, load-bearing, unforgettable." },
-      { type: "quote", text: "He said the second paragraph broke him. It was three sentences about how I make his tea. Not the 'I love you' part — the tea part.", cite: "Rhea, Wed4Love writer" },
-
-      { type: "h2", text: "4. Say the hard thing, gently" },
-      { type: "p", text: "The best love letters have a note of the difficult — an apology, a fear, a promise you haven't quite kept. Don't make the whole letter about it. But name it once, plainly. \"I know I've been quiet this month. I'm working on it, and I love you the whole time.\" That single honest line is often what makes the letter feel real instead of performative." },
-
-      { type: "h2", text: "5. End with a small future, not a big forever" },
-      { type: "p", text: "\"I'll love you forever\" is generic. \"I want to make you tea on Sunday for the next fifty Sundays\" is a promise. End the letter with one concrete, near-future thing you're looking forward to together. It grounds the whole letter." },
-
-      { type: "callout", title: "How long should it be?", text: "Between 200 and 500 words. Long enough to breathe, short enough that they read it in one sitting and go back to the start immediately." },
-
-      { type: "h2", text: "Making it land — the delivery matters too" },
-      { type: "p", text: "A folded piece of paper in a drawer is romantic. A screenshot of a Notes app is not. If you're not printing, use something that feels like a gift — a shared link that opens with music, photos, and their name in your handwriting. That's the entire reason Wed4Love's love letters exist." },
-      { type: "p", text: "Whatever format you choose, don't send it in the middle of a busy Wednesday. Send it on a Sunday morning, or the night before their birthday, or after a good long dinner. The timing is part of the letter." },
-
-      { type: "quote", text: "I opened it on the bus to work. Cried through my mascara. Best commute of my life.", cite: "Sofia R., Wed4Love recipient" },
-
-      { type: "h2", text: "A small template you can steal" },
-      { type: "p", text: "If you're really stuck, this scaffolding works almost every time:" },
-      { type: "ul", items: [
-        "Line 1: A tiny, specific detail from this week.",
-        "Paragraph 2: The three-moments framework.",
-        "Paragraph 3: The one line they'll screenshot.",
-        "Paragraph 4: The hard thing, said gently.",
-        "Line last: A small future you're looking forward to.",
-        "Sign-off: Just your name — no \"forever yours\" needed.",
-      ] },
-      { type: "p", text: "You'll notice this isn't a poetry template. It's a structure for saying real things clearly. That's what makes a letter land. That's what makes them keep it in a drawer, or reopen the link ten years later, still crying at the same paragraph." },
-    ],
-  },
   {
     slug: "digital-vs-paper-wedding-invitations",
     title: "Digital vs. Paper Wedding Invitations: An Honest Comparison",

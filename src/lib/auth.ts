@@ -44,7 +44,7 @@ export async function signUp(
   const { data, error } = await supabase.auth.signUp({
     email: normalized,
     password,
-    options: { emailRedirectTo: `${window.location.origin}/create-letter` },
+    options: { emailRedirectTo: `${window.location.origin}/choose-template` },
   });
   if (error) return { error: error.message };
   if (!data.user) return { error: "Sign up failed. Please try again." };

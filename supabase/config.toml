@@ -12,25 +12,7 @@ verify_jwt = false
 [functions.verify-invite-payment]
 verify_jwt = false
 
-[functions.consume-call-credit]
-verify_jwt = false
-
 [functions.telegram-notify]
-verify_jwt = false
-
-[functions.submit-gcash-payment]
-verify_jwt = false
-
-[functions.telegram-payment-webhook]
-verify_jwt = false
-
-[functions.search-youtube-music]
-verify_jwt = false
-
-[functions.mark-letter-opened]
-verify_jwt = false
-
-[functions.notify-reaction]
 verify_jwt = false
 
 [functions.get-localized-price]

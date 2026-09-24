@@ -37,10 +37,6 @@ function notifyTelegram(event: string, data: Record<string, unknown> = {}) {
 }
 
 
-const LETTER_PLAN = "plan_5Icg0QNzjjCEZ";
-const LETTER_PLAN_LEGACY = "plan_5Krc5hUT3FZGa";
-const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
-
 // Wed4Love invite plans
 const INVITE_PLANS: Record<string, string> = {
   "plan_FsfUSAeOIoKZt": "starter",
@@ -149,26 +145,9 @@ Deno.serve(async (req) => {
     const { data: cur } = await supabase
       .from("entitlements").select("*").eq("email", email).maybeSingle();
 
-    let row: any = cur || {
-      email,
-      has_letter_access: false,
-      paid_calls: 0,
-      used_calls: 0,
-      letter_access_expires_at: null as string | null,
-    };
+    let row: any = cur || { email };
 
-    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
-    if (planId === LETTER_PLAN || planId === LETTER_PLAN_LEGACY) {
-      row.has_letter_access = true;
-      row.paid_calls = (row.paid_calls || 0) + 1; // 1 free call included with each letter
-      // Extend access by 30 days from the later of (now, current expiry)
-      const current = row.letter_access_expires_at ? new Date(row.letter_access_expires_at).getTime() : 0;
-      const base = Math.max(current, Date.now());
-      row.letter_access_expires_at = new Date(base + THIRTY_DAYS_MS).toISOString();
-    } else if (planId === EXTRA_CALL_PLAN) {
-      row.paid_calls = (row.paid_calls || 0) + 1;
-    } else if (INVITE_PLANS[planId]) {
+    if (INVITE_PLANS[planId]) {
       const purchased = INVITE_PLANS[planId];
       const existing = row.invite_plan || null;
       // Only upgrade, never downgrade (e.g. buying starter after premium keeps premium)
@@ -181,10 +160,6 @@ Deno.serve(async (req) => {
 
     const { error: upErr } = await supabase.from("entitlements").upsert({
       email: row.email,
-      has_letter_access: row.has_letter_access,
-      paid_calls: row.paid_calls,
-      used_calls: row.used_calls,
-      letter_access_expires_at: row.letter_access_expires_at,
       invite_plan: row.invite_plan ?? null,
       updated_at: new Date().toISOString(),
     }, { onConflict: "email" });

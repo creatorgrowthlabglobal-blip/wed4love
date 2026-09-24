@@ -145,13 +145,7 @@ Deno.serve(async (req) => {
     // matching the webhook's behavior.
     const { data: cur } = await supabase
       .from("entitlements").select("*").eq("email", email).maybeSingle();
-    const row: Record<string, unknown> = cur ?? {
-      email,
-      has_letter_access: false,
-      paid_calls: 0,
-      used_calls: 0,
-      letter_access_expires_at: null,
-    };
+    const row: Record<string, unknown> = cur ?? { email };
 
     const existingSlug = (cur?.invite_plan as string | null) ?? null;
     const existingTier = existingSlug ? (INVITE_TIER[existingSlug] ?? 0) : 0;
@@ -159,10 +153,6 @@ Deno.serve(async (req) => {
 
     const { error: upErr } = await supabase.from("entitlements").upsert({
       email: row.email,
-      has_letter_access: row.has_letter_access ?? false,
-      paid_calls: row.paid_calls ?? 0,
-      used_calls: row.used_calls ?? 0,
-      letter_access_expires_at: row.letter_access_expires_at ?? null,
       invite_plan: row.invite_plan ?? existingSlug ?? null,
       updated_at: new Date().toISOString(),
     }, { onConflict: "email" });

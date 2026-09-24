@@ -8,13 +8,11 @@ interface NotifyBody {
 const ICONS: Record<string, string> = {
   otp_sent: '📩',
   otp_verified: '✅',
-  letter_created: '💌',
   payment_success: '💰',
   payment_failed: '❌',
   whatsapp_click: '📱',
   contact_message: '✉️',
   checkout_started: '🛒',
-  reply_letter_started: '🔁',
   custom_inquiry: '👑',
   order_placed: '🧾',
   rsvp_submitted: '📝',

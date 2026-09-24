@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("entitlements")
-      .select("email, has_letter_access, paid_calls, used_calls, letter_access_expires_at, has_premium_features, invite_plan")
+      .select("email, invite_plan")
       .eq("email", normalized)
       .maybeSingle();
 
@@ -46,31 +46,7 @@ Deno.serve(async (req) => {
       entitlement = {
         ...(entitlement ?? {}),
         email: normalized,
-        has_letter_access: true,
-        paid_calls: 0,
-        used_calls: 0,
-        letter_access_expires_at: new Date(Date.now() + 2 * 365 * 24 * 3600 * 1000).toISOString(),
-        has_premium_features: true,
         invite_plan: "custom",
-      } as typeof entitlement;
-    }
-
-    // Trial account: 3 free letters, no call credits, no payment required.
-    // If a database entitlement already exists (e.g. bonus access granted), respect it.
-    if (normalized === "trial@gmail.com" && !(entitlement && entitlement.has_letter_access)) {
-      const { count } = await supabase
-        .from("letters")
-        .select("id", { count: "exact", head: true })
-        .eq("data->>email", "trial@gmail.com");
-      const used = count ?? 0;
-      const allowed = used < 3;
-      entitlement = {
-        email: normalized,
-        has_letter_access: allowed,
-        paid_calls: 0,
-        used_calls: 0,
-        letter_access_expires_at: allowed ? new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString() : null,
-        has_premium_features: false,
       } as typeof entitlement;
     }
 

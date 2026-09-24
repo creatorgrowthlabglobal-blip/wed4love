@@ -153,9 +153,9 @@ const UserMenu = () => {
   );
 };
 
-// ── Smart CTA — routes to the /create picker page ─────────
+// ── Smart CTA — routes straight to the invitation template chooser ─────────
 const GetStartedLink = ({ className, style, children }: { className: string; style: React.CSSProperties; children: React.ReactNode }) => (
-  <Link to="/create" className={className} style={style}>
+  <Link to="/choose-template" className={className} style={style}>
     {children}
   </Link>
 );
@@ -336,7 +336,7 @@ const Hero = () => {
     <div className="absolute top-32 right-8 w-56 h-56 rounded-full pointer-events-none"
       style={{ background: "radial-gradient(circle, hsl(340 60% 88% / 0.28) 0%, transparent 70%)" }} />
 
-    {/* ── Hero — centered text, phone mockup retired since we sell both letters + invitations ── */}
+    {/* ── Hero — centered text, phone mockup retired ── */}
     <div className="relative max-w-3xl mx-auto px-6 mb-14">
       <div>
         <motion.div
@@ -348,24 +348,22 @@ const Hero = () => {
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
             style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
           >
-            <Sparkles className="w-3 h-3" /> Love Letters & Wedding Invitations · from {format(9.99)}
+            <Sparkles className="w-3 h-3" /> Cinematic Wedding Invitations · from {format(49)}
           </div>
 
           <h1
             className="font-display font-bold leading-tight mb-5"
             style={{ fontSize: "clamp(2rem, 5vw, 3.6rem)", color: "hsl(30 20% 14%)" }}
           >
-            Love Letters &{" "}
-            <br className="hidden sm:block" />
-            Wedding{" "}
+            Cinematic Wedding{" "}
             <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
               Invitations
             </span>
           </h1>
 
           <p className="font-body text-base leading-relaxed mb-8 mx-auto" style={{ color: "hsl(30 12% 42%)", maxWidth: 520 }}>
-            Whether you're pouring your heart into a letter for someone you love or setting the tone for your big day —
-            make it unforgettable, cinematic, and shared in a single link.
+            Set the tone for your big day with a video-backed digital invitation — a cinematic envelope reveal,
+            live RSVP tracking, and one shareable link for every guest.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -373,7 +371,7 @@ const Hero = () => {
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
               style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 28px hsl(38 80% 50% / 0.35)" }}
             >
-              Create Your Letter <ArrowRight className="w-4 h-4" />
+              Create Your Invitation <ArrowRight className="w-4 h-4" />
             </GetStartedLink>
             <Link
               to="/demo"
@@ -496,118 +494,6 @@ const Hero = () => {
         })}
       </div>
     </motion.div>
-  </section>
-  );
-};
-
-// ── Two products intro — sits right below the hero so first-time visitors
-// immediately understand this is TWO products (love letter + wedding invite),
-// not a single confusing bundle.
-const TwoProducts = () => {
-  const { format } = useCurrency();
-  return (
-  <section className="pt-4 pb-20 px-4" style={{ background: "linear-gradient(180deg, hsl(38 50% 95%) 0%, hsl(42 45% 96%) 100%)" }}>
-    <div className="max-w-5xl mx-auto">
-      <motion.div {...fade()} className="text-center mb-10">
-        <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
-          Two products, one home
-        </p>
-        <h2 className="font-display text-2xl sm:text-4xl font-bold mb-3 text-foreground">
-          What are you here to make?
-        </h2>
-        <p className="font-body text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-          Wed4Love does two things well — pick the one that fits your moment.
-        </p>
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Love Letter */}
-        <motion.div {...fade(0.06)}>
-          <Link
-            to="/create-letter"
-            className="group relative rounded-3xl overflow-hidden p-6 sm:p-7 flex flex-col h-full"
-            style={{
-              background: "linear-gradient(160deg, hsl(340 60% 97%) 0%, hsl(345 55% 93%) 100%)",
-              border: "1.5px solid hsl(340 45% 86%)",
-              boxShadow: "0 10px 28px hsl(340 40% 70% / 0.18)",
-              minHeight: 240,
-            }}
-          >
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: "white", boxShadow: "0 6px 16px hsl(340 40% 70% / 0.28)" }}>
-                <Heart className="w-6 h-6" style={{ color: "hsl(340 65% 52%)" }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-body text-[10px] tracking-[0.22em] uppercase font-bold mb-1" style={{ color: "hsl(340 55% 45%)" }}>
-                  For one person you love
-                </p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-display font-bold text-xl sm:text-2xl text-foreground">Love Letter</h3>
-                  <span className="inline-block px-2 py-0.5 rounded-full font-body text-[10px] font-bold"
-                    style={{ background: "white", color: "hsl(340 55% 45%)", border: "1.5px solid hsl(340 45% 82%)" }}>
-                    from {format(7.99)}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <p className="font-body text-sm leading-relaxed mb-5 flex-1" style={{ color: "hsl(30 12% 42%)" }}>
-              A personal keepsake letter with photos, music, and a cinematic mailbox reveal —
-              shared as one private link. For anniversaries, birthdays, apologies, and just because.
-            </p>
-            <div className="inline-flex items-center gap-1.5 font-body text-sm font-semibold transition-transform group-hover:translate-x-1"
-              style={{ color: "hsl(340 65% 45%)" }}>
-              Write a letter <ArrowRight className="w-4 h-4" />
-            </div>
-          </Link>
-        </motion.div>
-
-        {/* Wedding Invitation */}
-        <motion.div {...fade(0.14)}>
-          <Link
-            to="/choose-template"
-            className="group relative rounded-3xl overflow-hidden p-6 sm:p-7 flex flex-col h-full"
-            style={{
-              background: "linear-gradient(160deg, hsl(42 60% 97%) 0%, hsl(38 55% 91%) 100%)",
-              border: "1.5px solid hsl(38 50% 82%)",
-              boxShadow: "0 10px 28px hsl(38 45% 65% / 0.20)",
-              minHeight: 240,
-            }}
-          >
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: "white", boxShadow: "0 6px 16px hsl(38 45% 60% / 0.28)" }}>
-                <Mail className="w-6 h-6" style={{ color: GOLD }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-body text-[10px] tracking-[0.22em] uppercase font-bold mb-1" style={{ color: GOLD }}>
-                  For your whole guest list
-                </p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-display font-bold text-xl sm:text-2xl text-foreground">Wedding Invitation</h3>
-                  <span className="inline-block px-2 py-0.5 rounded-full font-body text-[10px] font-bold"
-                    style={{ background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 80%)" }}>
-                    from {format(49)}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <p className="font-body text-sm leading-relaxed mb-5 flex-1" style={{ color: "hsl(30 12% 42%)" }}>
-              A cinematic, video-backed wedding invitation with a 3D envelope reveal, live RSVP dashboard,
-              and QR sharing — one link for everyone you love.
-            </p>
-            <div className="inline-flex items-center gap-1.5 font-body text-sm font-semibold transition-transform group-hover:translate-x-1"
-              style={{ color: GOLD }}>
-              Choose a template <ArrowRight className="w-4 h-4" />
-            </div>
-          </Link>
-        </motion.div>
-      </div>
-
-      <p className="text-center font-body text-xs text-muted-foreground mt-6">
-        Different products, different journeys — you can create both from the same account.
-      </p>
-    </div>
   </section>
   );
 };
@@ -1013,23 +899,11 @@ const Templates = () => (
 );
 
 // ── How it works ─────────────────────────────────────────────────────────────
-// Two clearly separated tracks so no one confuses a personal love letter with
-// a full wedding invitation — different products, different journeys.
-const LETTER_STEPS = [
-  { n: "01", title: "Write from the heart",   desc: "Add your names, a personal message, favourite photos, and a song that means something to the two of you.", icon: Heart },
-  { n: "02", title: "Choose a reveal",        desc: "Pick a mailbox or envelope theme — 3D Mailbox, Elegance Arrives, Seaside Whispers, or Premium Envelope.",     icon: Sparkles },
-  { n: "03", title: "Send a single link",     desc: "Share the link on WhatsApp or iMessage. They open it, the envelope unfolds, and your words appear.",         icon: Send },
-];
-
 const INVITE_STEPS = [
   { n: "01", title: "Pick a cinematic theme", desc: "Five video-backed templates — from Golden Hour to Midnight Luxe — each with a 3D envelope reveal.",           icon: Sparkles },
   { n: "02", title: "Add your day details",   desc: "Names, wedding date, venue map, timings, dress code, music, and photo gallery in one clean form.",             icon: Mail },
   { n: "03", title: "Share & track RSVPs",    desc: "Send the link or QR code. Watch guest responses land live in your private RSVP dashboard.",                    icon: Users },
 ];
-
-const ROSE       = "hsl(340 65% 52%)";
-const ROSE_LIGHT = "hsl(340 60% 62%)";
-const ROSE_GRAD  = "linear-gradient(135deg, hsl(340 65% 52%), hsl(340 60% 62%))";
 
 const StepCard = ({
   s, i, accent, softBg,
@@ -1091,119 +965,64 @@ const HowItWorks = () => {
   const { format } = useCurrency();
   return (
   <section id="how-it-works" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(38 45% 95%)" }}>
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <motion.div {...fade()} className="text-center mb-14">
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
           How It Works
         </p>
         <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-          Two ways to say something{" "}
+          Say it{" "}
           <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
-            unforgettable
+            unforgettably
           </span>
         </h2>
         <p className="font-body text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
-          Whether you're writing a heartfelt love letter to one person, or inviting your whole family to your wedding —
-          here's how each one works. Same 10 minutes. Different journeys.
+          A cinematic wedding invitation for your whole guest list — ready in about 10 minutes.
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-        {/* ─── Love Letter track ─── */}
-        <motion.div
-          {...fade(0.05)}
-          className="relative rounded-3xl p-6 sm:p-8"
-          style={{
-            background: "linear-gradient(160deg, hsl(340 60% 97%) 0%, hsl(345 55% 94%) 100%)",
-            border: "1.5px solid hsl(340 45% 86%)",
-            boxShadow: "0 12px 32px hsl(340 40% 70% / 0.16)",
-          }}
-        >
-          <TrackHeader
-            eyebrow="For one person you love"
-            title="Love Letter"
-            blurb="A private, keepsake letter with photos, music, and a cinematic mailbox reveal — shared as a single link."
-            accent={ROSE}
-            accentGrad={ROSE_GRAD}
-            icon={Heart}
-            price={`from ${format(7.99)}`}
-          />
+      <motion.div
+        {...fade(0.05)}
+        className="relative rounded-3xl p-6 sm:p-8"
+        style={{
+          background: "linear-gradient(160deg, hsl(42 60% 97%) 0%, hsl(38 55% 92%) 100%)",
+          border: "1.5px solid hsl(38 50% 84%)",
+          boxShadow: "0 12px 32px hsl(38 45% 65% / 0.18)",
+        }}
+      >
+        <TrackHeader
+          eyebrow="For your whole guest list"
+          title="Wedding Invitation"
+          blurb="A cinematic, video-backed invitation with live RSVP tracking, guest dashboard, and QR sharing."
+          accent={GOLD}
+          accentGrad={GOLD_GRAD}
+          icon={Mail}
+          price={`from ${format(49)}`}
+        />
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {LETTER_STEPS.map((s, i) => (
-              <StepCard key={s.n} s={s} i={i} accent={ROSE} softBg="hsl(340 55% 93%)" />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {INVITE_STEPS.map((s, i) => (
+            <StepCard key={s.n} s={s} i={i} accent={GOLD} softBg="hsl(38 60% 93%)" />
+          ))}
+        </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6">
-            <Link
-              to="/create-letter"
-              className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl font-body text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
-              style={{ background: ROSE_GRAD, boxShadow: "0 6px 18px hsl(340 60% 55% / 0.28)" }}
-            >
-              Write a Love Letter <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              to="/demo#love-letter"
-              className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-body text-sm font-semibold transition-opacity hover:opacity-70"
-              style={{ background: "white", color: ROSE, border: "1.5px solid hsl(340 45% 84%)" }}
-            >
-              <Play className="w-3.5 h-3.5" /> See letter demo
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* ─── Wedding Invitation track ─── */}
-        <motion.div
-          {...fade(0.12)}
-          className="relative rounded-3xl p-6 sm:p-8"
-          style={{
-            background: "linear-gradient(160deg, hsl(42 60% 97%) 0%, hsl(38 55% 92%) 100%)",
-            border: "1.5px solid hsl(38 50% 84%)",
-            boxShadow: "0 12px 32px hsl(38 45% 65% / 0.18)",
-          }}
-        >
-          <TrackHeader
-            eyebrow="For your whole guest list"
-            title="Wedding Invitation"
-            blurb="A cinematic, video-backed invitation with live RSVP tracking, guest dashboard, and QR sharing."
-            accent={GOLD}
-            accentGrad={GOLD_GRAD}
-            icon={Mail}
-            price={`from ${format(49)}`}
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {INVITE_STEPS.map((s, i) => (
-              <StepCard key={s.n} s={s} i={i} accent={GOLD} softBg="hsl(38 60% 93%)" />
-            ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6">
-            <Link
-              to="/choose-template"
-              className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl font-body text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
-              style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.3)" }}
-            >
-              Create an Invitation <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              to="/demo"
-              className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-body text-sm font-semibold transition-opacity hover:opacity-70"
-              style={{ background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 82%)" }}
-            >
-              <Play className="w-3.5 h-3.5" /> See invitation demo
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-
-      <motion.p {...fade(0.25)} className="text-center font-body text-sm text-muted-foreground mt-10">
-        Not sure which one fits?{" "}
-        <Link to="/create" className="font-semibold" style={{ color: GOLD }}>
-          Compare them side by side →
-        </Link>
-      </motion.p>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6">
+          <Link
+            to="/choose-template"
+            className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl font-body text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.3)" }}
+          >
+            Create an Invitation <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            to="/demo"
+            className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-body text-sm font-semibold transition-opacity hover:opacity-70"
+            style={{ background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 82%)" }}
+          >
+            <Play className="w-3.5 h-3.5" /> See invitation demo
+          </Link>
+        </div>
+      </motion.div>
     </div>
   </section>
   );
@@ -1591,14 +1410,13 @@ const FinalCTA = () => (
           ))}
         </div>
         <h2 className="font-display font-bold mb-5 leading-tight" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", color: "white" }}>
-          Say it{" "}
+          Send an invitation{" "}
           <span className="font-handwritten italic font-normal" style={{ color: "rgba(255,255,255,0.9)", fontSize: "1.08em" }}>
-            beautifully
-          </span>{" "}
-          — a letter or an invitation
+            they'll never forget
+          </span>
         </h2>
         <p className="font-body text-sm mb-10 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.75)" }}>
-          Whether it's a heartfelt love letter or a cinematic wedding invitation, make the moment unforgettable. Takes less than 10 minutes.
+          A cinematic digital wedding invitation with a 3D envelope reveal and live RSVP tracking. Takes less than 10 minutes.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <GetStartedLink
@@ -1645,7 +1463,7 @@ const Footer = () => (
           <span className="font-display font-bold text-base text-foreground">Wed4Love</span>
         </div>
         <p className="font-body text-xs text-muted-foreground leading-relaxed mb-4">
-          Heartfelt love letters and cinematic digital wedding invitations — shared in one link.
+          Cinematic digital wedding invitations — shared in one link.
         </p>
         <a
           href="https://instagram.com/wed4love_official"
@@ -1666,7 +1484,6 @@ const Footer = () => (
         <p className="font-body text-xs font-bold uppercase tracking-widest text-foreground mb-4">Product</p>
         <ul className="flex flex-col gap-3">
           {[
-            { label: "Write a Love Letter", to: "/create-letter" },
             { label: "Create an Invitation", to: "/choose-template" },
             { label: "How It Works", to: "/#how-it-works" },
             { label: "Pricing — $49", to: "/choose-template" },
@@ -1874,14 +1691,13 @@ const Landing = () => {
   return (
   <div>
     <Seo
-      title="Wed4Love — Love Letters & Digital Wedding Invitations"
-      description="Send a heartfelt love letter or a cinematic digital wedding invitation — shared in a single link. Photos, music, envelope reveal, live RSVP. Set up in 10 minutes."
+      title="Wed4Love — Cinematic Digital Wedding Invitations"
+      description="Send a cinematic digital wedding invitation — shared in a single link. 3D envelope reveal, live RSVP tracking, guest dashboard. Set up in 10 minutes."
       path="/"
       structuredData={LANDING_FAQ_SCHEMA}
     />
     <Nav />
     <Hero />
-    <TwoProducts />
     <Comparison />
     <StatsBar />
     <Templates />

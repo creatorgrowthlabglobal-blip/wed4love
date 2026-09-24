@@ -5,9 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LETTER_PLAN = "plan_5Icg0QNzjjCEZ";
-const EXTRA_CALL_PLAN = "plan_cVyzHy6DwWOtK";
-
 // Wed4Love invite plans. Kept in sync with INVITE_PLANS in whop-webhook.
 const INVITE_PLAN_IDS: Record<string, string> = {
   starter: "plan_FsfUSAeOIoKZt",
@@ -22,7 +19,7 @@ const supabase = createClient(
 
 /**
  * Creates a Whop checkout_configuration via API so that we can attach
- * server-controlled metadata (order_id, app_email, product, letter_id).
+ * server-controlled metadata (order_id, app_email, product).
  * Whop echoes this metadata back on the payment webhook, which makes
  * matching reliable regardless of which email the user types at checkout.
  */
@@ -33,16 +30,14 @@ Deno.serve(async (req) => {
     const WHOP_API_KEY = Deno.env.get("WHOP_API_KEY");
     if (!WHOP_API_KEY) throw new Error("WHOP_API_KEY not configured");
 
-    const { product, app_email, letter_id, redirect_url } = await req.json();
+    const { product, app_email, redirect_url } = await req.json();
     const email = String(app_email || "").trim().toLowerCase();
     if (!product || !email) {
       return new Response(JSON.stringify({ error: "product and app_email required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const planId = product === "letter" ? LETTER_PLAN
-      : product === "call" ? EXTRA_CALL_PLAN
-      : (INVITE_PLAN_IDS[product] ?? null);
+    const planId = INVITE_PLAN_IDS[product] ?? null;
     if (!planId) {
       return new Response(JSON.stringify({ error: `unknown product: ${product}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -57,20 +52,14 @@ Deno.serve(async (req) => {
         order_id: orderId,
         app_email: email,
         product,
-        letter_id: letter_id || "",
       },
     };
     if (redirect_url) body.redirect_url = redirect_url;
 
-    // Fire the pending_orders insert and the Whop API call IN PARALLEL.
-    // The DB insert (~50-150ms) used to block the Whop call (~600-1500ms)
-    // unnecessarily — they don't depend on each other. We still await both
-    // before responding so the webhook always finds the pending row.
     const insertPromise = supabase.from("pending_orders").insert({
       id: orderId,
       product,
       app_email: email,
-      letter_id: letter_id || null,
       status: "pending",
     });
 
