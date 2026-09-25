@@ -307,14 +307,6 @@ const Nav = () => {
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
-const HERO_CARDS = [
-  { src: goldenHourThumbnail,   theme: "golden-hour"   },
-  { src: gardenRoseThumbnail,   theme: "garden-rose"   },
-  { src: rusticBloomThumbnail,  theme: "rustic-bloom"  },
-  { src: midnightLuxeThumbnail, theme: "midnight-luxe" },
-  { src: softLoveThumbnail,     theme: "soft-love"     },
-];
-
 const HERO_AVATARS = [
   { i: "PS", bg: "hsl(340 60% 55%)" },
   { i: "AK", bg: "hsl(200 65% 48%)" },
@@ -424,76 +416,6 @@ const Hero = () => {
       </div>
     </div>
 
-    {/* ── Cards marquee ── */}
-    <style>{`
-      @keyframes marquee-rtl {
-        0%   { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-      .marquee-track {
-        animation: marquee-rtl 32s linear infinite;
-        will-change: transform;
-      }
-      .marquee-wrap:hover .marquee-track {
-        animation-play-state: paused;
-      }
-      .marquee-card {
-        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                    filter 0.45s ease;
-      }
-      .marquee-card:hover {
-        transform: translateY(-18px) scale(1.04);
-        filter: brightness(1.06);
-      }
-    `}</style>
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="marquee-wrap relative w-full overflow-hidden"
-      style={{ paddingBottom: 32 }}
-    >
-      {/* Left fade */}
-      <div className="absolute left-0 top-0 bottom-0 w-28 z-10 pointer-events-none"
-        style={{ background: "linear-gradient(to right, hsl(42 60% 97%) 0%, transparent 100%)" }} />
-      {/* Right fade */}
-      <div className="absolute right-0 top-0 bottom-0 w-28 z-10 pointer-events-none"
-        style={{ background: "linear-gradient(to left, hsl(38 50% 95%) 0%, transparent 100%)" }} />
-
-      <div className="marquee-track flex items-end gap-5 w-max py-6 px-6">
-        {[...HERO_CARDS, ...HERO_CARDS].map((card, i) => {
-          const isEven = i % 2 === 0;
-          return (
-            <Link
-              key={`${card.theme}-${i}`}
-              to={`/invite/demo-wedding?theme=${card.theme}`}
-              target="_blank"
-              className="shrink-0"
-              style={{ width: 180, marginBottom: isEven ? 0 : 24 }}
-            >
-              <div
-                className="marquee-card overflow-hidden w-full"
-                style={{
-                  aspectRatio: "9/14",
-                  borderRadius: 20,
-                  boxShadow: isEven
-                    ? "0 28px 60px rgba(0,0,0,0.18), 0 6px 16px rgba(0,0,0,0.10)"
-                    : "0 16px 40px rgba(0,0,0,0.13), 0 3px 10px rgba(0,0,0,0.07)",
-                  border: "2.5px solid rgba(255,255,255,0.98)",
-                }}
-              >
-                <img
-                  src={card.src}
-                  alt={card.theme}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }}
-                />
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    </motion.div>
   </section>
   );
 };
