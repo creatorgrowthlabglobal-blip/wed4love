@@ -230,7 +230,7 @@ const ChooseTemplate = () => {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-body text-xs font-semibold"
             style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 78%)" }}
           >
-            All templates unlocked · Build free, pay $49 only when you publish
+            All templates unlocked · Build free, pay $20 only when you publish
           </motion.div>
         </motion.div>
 

@@ -751,7 +751,7 @@ const InvitePreviewPay = ({
         <span style={{ fontSize: 15 }}>👁️</span> Preview Your Invitation
       </motion.button>
 
-      {/* ── Single unlock package — $49 ── */}
+      {/* ── Single unlock package — $20 ── */}
       {!hasPaid && (
         <div
           className="rounded-3xl px-6 py-6 flex flex-col gap-4"
@@ -763,7 +763,7 @@ const InvitePreviewPay = ({
             </p>
             <div className="flex items-baseline justify-center gap-1.5">
               <span className="font-body text-xs" style={{ color: LIGHT }}>$</span>
-              <span className="font-display text-4xl font-bold" style={{ color: DARK }}>49</span>
+              <span className="font-display text-4xl font-bold" style={{ color: DARK }}>20</span>
               <span className="font-body text-xs" style={{ color: LIGHT }}>one-time</span>
             </div>
           </div>
@@ -802,7 +802,7 @@ const InvitePreviewPay = ({
           ? "Waiting for payment confirmation…"
           : hasPaid
           ? "Publish My Invitation ✨"
-          : "Pay $49 & Publish →"}
+          : "Pay $20 & Publish →"}
       </motion.button>
       <p className="font-body text-[11px] text-center -mt-1" style={{ color: LIGHT }}>
         {awaitingPayment
@@ -1355,7 +1355,7 @@ const CreateInvite = () => {
 
     const origin = window.location.origin;
     notify("order_placed", {
-      amount: "$49",
+      amount: "$20",
       customer_email: user?.email ?? form.email,
       couple: `${form.partner1} & ${form.partner2}`,
       template: TEMPLATE_NAMES[templateId] ?? templateId,

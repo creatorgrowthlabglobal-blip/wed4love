@@ -371,7 +371,7 @@ const BlogPost = () => {
             </h3>
             <p className="font-body text-sm text-muted-foreground mb-5 max-w-md mx-auto">
               Cinematic digital wedding invitations with RSVP tracking, live dashboard, and a 3D
-              envelope reveal — from $49.
+              envelope reveal — from $20.
             </p>
             <Link
               to="/pricing"

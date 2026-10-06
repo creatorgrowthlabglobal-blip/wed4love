@@ -42,7 +42,7 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">6. Payments</h2>
-            <p>Digital wedding invitations are offered at $9.99 each (one-time payment). This includes all 5 colour themes, a cinematic 3D envelope reveal, live countdown timer, full RSVP tracking dashboard, and a shareable link that never expires. All payments are processed securely through our payment partners. Prices are subject to change with notice.</p>
+            <p>Digital wedding invitations start at $20 (one-time payment) for the Starter package. The Premium package at $50 unlocks all 5 colour themes, the cinematic 3D envelope reveal, live countdown timer, full RSVP tracking dashboard, and a shareable link that stays live for a year. All payments are processed securely through our payment partners. Prices are subject to change with notice.</p>
           </div>
 
           <div>

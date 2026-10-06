@@ -31,7 +31,8 @@ export const PACKAGES: PackageDef[] = [
   {
     id: "starter",
     name: "Starter",
-    price: 49,
+    price: 20,
+    oldPrice: 49,
     tagline: "Perfect for a simple, elegant digital invitation.",
     checkout: "https://whop.com/checkout/plan_FsfUSAeOIoKZt",
     icon: Sparkles,
@@ -47,8 +48,8 @@ export const PACKAGES: PackageDef[] = [
   {
     id: "premium",
     name: "Premium",
-    price: 99,
-    oldPrice: 149,
+    price: 50,
+    oldPrice: 99,
     tagline: "Everything you need for a truly unforgettable invitation.",
     checkout: "https://whop.com/checkout/plan_OizfizAnMNsVO",
     icon: Crown,
@@ -215,8 +216,8 @@ const Pricing = () => {
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 98%), hsl(38 45% 96%))" }}>
       <Seo
-        title="Pricing — Wed4Love Wedding Invitations from $49"
-        description="Simple, one-time pricing for cinematic digital wedding invitations. Starter $49, Premium $99, Custom $299. No subscriptions."
+        title="Pricing — Wed4Love Wedding Invitations from $20"
+        description="Simple, one-time pricing for cinematic digital wedding invitations. Starter $20, Premium $50, Custom $299. No subscriptions."
         path="/pricing"
       />
       <Header />

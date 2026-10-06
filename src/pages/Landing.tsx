@@ -43,7 +43,7 @@ const LANDING_FAQ_SCHEMA = {
       "name": "Is Wed4Love a one-time payment or a subscription?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Wed4Love is a one-time payment. Pricing starts at $49 for the Essential package with no recurring charges."
+        "text": "Wed4Love is a one-time payment. Pricing starts at $20 for the Essential package with no recurring charges."
       }
     },
     {
@@ -340,7 +340,7 @@ const Hero = () => {
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
             style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
           >
-            <Sparkles className="w-3 h-3" /> Cinematic Wedding Invitations · from {format(49)}
+            <Sparkles className="w-3 h-3" /> Cinematic Wedding Invitations · from {format(20)}
           </div>
 
           <h1
@@ -495,7 +495,7 @@ const Comparison = () => {
   const { format, showUsdNote, usdNote } = useCurrency();
   const PAPER = { design: 120, printing: 180, envelopes: 35, shipping: 100 };
   const paperTotal = PAPER.design + PAPER.printing + PAPER.envelopes + PAPER.shipping;
-  const digital = 49;
+  const digital = 20;
   const savings = paperTotal - digital;
 
   const PAPER_BG = "hsl(35 22% 96%)";
@@ -919,7 +919,7 @@ const HowItWorks = () => {
           accent={GOLD}
           accentGrad={GOLD_GRAD}
           icon={Mail}
-          price={`from ${format(49)}`}
+          price={`from ${format(20)}`}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1225,8 +1225,8 @@ const PricingTeaser = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-10">
           {[
-            { name: "Starter", usd: 49, note: "2 templates · 30 RSVPs · 6 months", highlight: false },
-            { name: "Premium", usd: 99, note: "All templates · Unlimited RSVPs · 1 year", highlight: true },
+            { name: "Starter", usd: 20, note: "2 templates · 30 RSVPs · 6 months", highlight: false },
+            { name: "Premium", usd: 50, note: "All templates · Unlimited RSVPs · 1 year", highlight: true },
           ].map(p => (
             <div key={p.name}
               className="rounded-3xl p-6 text-center"
@@ -1408,7 +1408,7 @@ const Footer = () => (
           {[
             { label: "Create an Invitation", to: "/choose-template" },
             { label: "How It Works", to: "/#how-it-works" },
-            { label: "Pricing — $49", to: "/choose-template" },
+            { label: "Pricing — $20", to: "/choose-template" },
             { label: "Demo Invite", to: "/invite/demo-wedding?theme=garden-rose" },
           ].map(l => (
             <li key={l.label}>

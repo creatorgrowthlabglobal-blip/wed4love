@@ -173,7 +173,7 @@ export default function RsvpDashboard() {
     return matchSearch && matchFilter;
   });
 
-  // ── Payment gate — dashboard unlocks after the $49 purchase ───────────────
+  // ── Payment gate — dashboard unlocks after the $20 purchase ───────────────
   if (entLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center"
@@ -194,14 +194,14 @@ export default function RsvpDashboard() {
           </div>
           <h2 className="font-display text-2xl font-bold text-foreground mb-2">Dashboard locked</h2>
           <p className="font-body text-sm text-muted-foreground mb-6">
-            Your RSVP dashboard unlocks with the one-time $49 invitation package.
+            Your RSVP dashboard unlocks with the one-time $20 invitation package.
           </p>
           <RouterLink
             to="/choose-template"
             className="inline-block w-full py-3 rounded-2xl font-body text-sm font-bold text-white text-center transition-opacity hover:opacity-90"
             style={{ background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))" }}
           >
-            Unlock for $49 →
+            Unlock for $20 →
           </RouterLink>
         </div>
       </div>

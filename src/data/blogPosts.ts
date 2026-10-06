@@ -51,7 +51,7 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "Below is the comparison we wish someone had shown us when we started. Real numbers, real trade-offs, no sales pitch." },
       { type: "h2", text: "The cost, side by side" },
       { type: "p", text: "A typical mid-range paper suite (invite, RSVP card, envelope, stamp, and return-stamp) costs $6–$14 per household. For 150 households that's between $900 and $2,100 — before you factor in reprints for typos and lost cards in the mail." },
-      { type: "p", text: "A well-designed digital invitation runs $49–$99 as a one-time fee, no matter how many guests you're sending it to. Unlimited resends. Live RSVP tracking included." },
+      { type: "p", text: "A well-designed digital invitation runs $20–$50 as a one-time fee, no matter how many guests you're sending it to. Unlimited resends. Live RSVP tracking included." },
       { type: "callout", title: "The real saving", text: "For a 200-guest wedding, couples who switch to digital save an average of $1,600 — roughly the cost of two-thirds of a photographer." },
       { type: "h2", text: "The speed nobody talks about" },
       { type: "p", text: "Paper: 3–5 weeks from design to mailbox. Then another 2–3 weeks waiting for RSVPs to trickle back. Then chasing." },

@@ -135,7 +135,7 @@ export default function Demo() {
               style={{ borderTop: "1px solid hsl(38 40% 86%)" }}
             >
               <p className="font-body text-sm text-center sm:text-left" style={{ color: "hsl(30 12% 48%)" }}>
-                Wedding invitations start at <b>$49</b> — one-time.
+                Wedding invitations start at <b>$20</b> — one-time.
               </p>
               <Link
                 to="/choose-template"
