@@ -17,6 +17,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Seo } from "@/components/Seo";
+import ScarcityBar from "@/components/ScarcityBar";
 
 const LANDING_FAQ_SCHEMA = {
   "@context": "https://schema.org",
@@ -60,6 +61,14 @@ const LANDING_FAQ_SCHEMA = {
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Unlimited. You send one link to as many guests as you want — there's no per-guest fee."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you offer a money-back guarantee?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Every Wed4Love purchase is backed by a 30-day money-back guarantee. If you're not happy for any reason, email us within 30 days of your purchase for a full refund, no questions asked."
       }
     }
   ]
@@ -1273,6 +1282,7 @@ const FAQS = [
   { q: "What's the difference between Starter and Premium?", a: "Starter covers one template with up to 30 RSVP responses and is valid for 6 months. Premium unlocks all templates, unlimited RSVPs, music, photo gallery, QR sharing, and 1-year validity." },
   { q: "Can I use my own music?", a: "Premium plan includes a curated music library and the ability to upload your own audio file. Starter uses preset background music." },
   { q: "Is my data secure?", a: "Yes. All invite data and RSVP responses are stored securely with Supabase (PostgreSQL). We don't sell your data to third parties." },
+  { q: "Do you offer a money-back guarantee?", a: "Yes — every purchase is backed by our 30-day money-back guarantee. If you're not happy for any reason, email us within 30 days of your purchase for a full refund, no questions asked." },
 ];
 
 const FAQ = () => {
@@ -1356,7 +1366,11 @@ const FinalCTA = () => (
             <Play className="w-3.5 h-3.5" /> See Rustic Bloom Demo
           </Link>
         </div>
-        <div className="flex items-center justify-center gap-6 mt-8">
+        <div className="inline-flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)" }}>
+          <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "white" }} />
+          <span className="font-body text-xs font-semibold" style={{ color: "white" }}>30-day money-back guarantee</span>
+        </div>
+        <div className="flex items-center justify-center gap-6 mt-6 flex-wrap">
           {[
             { icon: Shield, text: "Secure & private" },
             { icon: Clock, text: "Ready in 10 min" },
@@ -1630,6 +1644,7 @@ const Landing = () => {
     <FAQ />
     <FinalCTA />
     <Footer />
+    <ScarcityBar />
   </div>
   );
 };

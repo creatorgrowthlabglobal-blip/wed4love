@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, X, Crown, Sparkles, Palette, ArrowRight, ArrowLeft, ShieldCheck, Clock, Loader2 } from "lucide-react";
+import { Check, X, Crown, Sparkles, Palette, ArrowRight, ArrowLeft, ShieldCheck, Clock, Loader2, BadgeCheck } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -242,6 +242,18 @@ const Pricing = () => {
             <p className="font-body text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
               A cinematic digital invitation with live RSVP tracking. Pay once, no subscriptions, your link stays live for a full year.
             </p>
+            <div
+              className="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full"
+              style={{
+                background: "hsl(38 60% 94%)",
+                border: "1.5px solid hsl(38 55% 78%)",
+              }}
+            >
+              <BadgeCheck className="w-4 h-4" style={{ color: GOLD }} />
+              <span className="font-body text-xs sm:text-sm font-semibold" style={{ color: "hsl(30 20% 20%)" }}>
+                30-day money-back guarantee · no questions asked
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -250,8 +262,9 @@ const Pricing = () => {
             ))}
           </div>
 
-          <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             {[
+              { icon: BadgeCheck, title: "30-day money back", desc: "Not happy? Email us within 30 days of purchase for a full, no-questions-asked refund." },
               { icon: ShieldCheck, title: "Secure checkout", desc: "Payments processed securely — we never store your card details." },
               { icon: Clock, title: "Build immediately", desc: "The invitation builder unlocks the moment your payment is confirmed." },
               { icon: Sparkles, title: "Real human support", desc: "Message us on WhatsApp any time — we reply the same day." },

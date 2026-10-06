@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 const Refund = () => {
   const navigate = useNavigate();
@@ -12,17 +12,33 @@ const Refund = () => {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground mb-2">Refund Policy</h1>
-        <p className="font-body text-sm text-muted-foreground mb-10">Last updated: August 2026</p>
+        <p className="font-body text-sm text-muted-foreground mb-6">Last updated: October 2026</p>
+
+        <div
+          className="flex items-start gap-4 rounded-2xl px-5 py-4 mb-10"
+          style={{
+            background: "linear-gradient(135deg, hsl(38 72% 94%), hsl(42 70% 97%))",
+            border: "1.5px solid hsl(38 60% 78%)",
+          }}
+        >
+          <ShieldCheck className="w-6 h-6 shrink-0 mt-0.5" style={{ color: "hsl(38 72% 44%)" }} />
+          <div>
+            <p className="font-display font-bold text-foreground text-base mb-0.5">30-day money-back guarantee</p>
+            <p className="font-body text-sm text-muted-foreground">
+              Try Wed4Love risk-free. If you're not happy within 30 days of purchase, email us for a full refund — no questions asked.
+            </p>
+          </div>
+        </div>
 
         <section className="space-y-8 font-body text-foreground/85 leading-relaxed">
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">1. Our Guarantee</h2>
-            <p>We stand behind every invitation with a full money-back guarantee. If you are unsatisfied for any reason — or if a technical issue prevents your invitation from being delivered or viewed by your guests — you are eligible for a complete refund, no questions asked.</p>
+            <p>We stand behind every invitation with a full 30-day money-back guarantee. If you are unsatisfied for any reason — or if a technical issue prevents your invitation from being delivered or viewed by your guests — you are eligible for a complete refund, no questions asked.</p>
           </div>
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">2. How to Request a Refund</h2>
-            <p>To request a refund, please email <span className="text-primary">wed4loveglobal@gmail.com</span> or use our <Link to="/contact" className="text-primary underline">contact form</Link> within 14 days of your purchase. Include:</p>
+            <p>To request a refund, please email <span className="text-primary">wed4loveglobal@gmail.com</span> or use our <Link to="/contact" className="text-primary underline">contact form</Link> within 30 days of your purchase. Include:</p>
             <ul className="list-disc list-inside mt-3 space-y-1">
               <li>Your account email address</li>
               <li>The invitation ID or link (if available)</li>
