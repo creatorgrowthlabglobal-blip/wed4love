@@ -684,6 +684,19 @@ const ViewInvite = () => {
     else audio.pause();
   }, [musicOn]);
 
+  useEffect(() => {
+    const w = window as any;
+    const hide = () => w.Tawk_API?.hideWidget?.();
+    hide();
+    const poll = window.setInterval(hide, 500);
+    const stop = window.setTimeout(() => window.clearInterval(poll), 10000);
+    return () => {
+      window.clearInterval(poll);
+      window.clearTimeout(stop);
+      w.Tawk_API?.showWidget?.();
+    };
+  }, []);
+
   const handleRsvp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
