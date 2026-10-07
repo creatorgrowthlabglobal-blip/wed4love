@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 const GOLD      = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
@@ -54,7 +53,6 @@ const Header = () => {
         {/* Right actions */}
         <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Utility switchers (always visible) */}
-          <CurrencySwitcher />
           <LanguageSwitcher />
           <Link
             to="/pricing"

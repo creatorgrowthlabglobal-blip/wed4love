@@ -12,6 +12,11 @@ import rusticBloomThumbnail  from "@/assets/rustic-bloom-thumbnail.png";
 import goldenHourThumbnail   from "@/assets/golden-hour-thumbnail.png";
 import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import softLoveThumbnail     from "@/assets/soft-love-thumbnail.jpg";
+import coupleAvatar1 from "@/assets/gallery-3.jpeg";
+import coupleAvatar2 from "@/assets/hero-couple.jpg";
+import coupleAvatar3 from "@/assets/photo1.jpg";
+import coupleAvatar4 from "@/assets/gallery-1.jpeg";
+import coupleAvatar5 from "@/assets/photo3.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
@@ -317,11 +322,11 @@ const Nav = () => {
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
 const HERO_AVATARS = [
-  { i: "PS", bg: "hsl(340 60% 55%)" },
-  { i: "AK", bg: "hsl(200 65% 48%)" },
-  { i: "MR", bg: "hsl(38 72% 44%)" },
-  { i: "SJ", bg: "hsl(150 48% 42%)" },
-  { i: "EM", bg: "hsl(270 52% 56%)" },
+  { src: coupleAvatar1, alt: "Priya & Sameer" },
+  { src: coupleAvatar2, alt: "Anika & Kabir" },
+  { src: coupleAvatar3, alt: "Meera & Rohan" },
+  { src: coupleAvatar4, alt: "Sanya & Jay" },
+  { src: coupleAvatar5, alt: "Esha & Mihir" },
 ];
 
 const Hero = () => {
@@ -394,13 +399,13 @@ const Hero = () => {
             <div className="flex items-center gap-2.5">
               <div className="flex">
                 {HERO_AVATARS.map((a, idx) => (
-                  <div
-                    key={a.i}
-                    className="w-7 h-7 rounded-full flex items-center justify-center font-body text-[9px] font-bold text-white border-2 border-white"
-                    style={{ background: a.bg, marginLeft: idx > 0 ? -9 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 1px 4px rgba(0,0,0,0.14)" }}
-                  >
-                    {a.i}
-                  </div>
+                  <img
+                    key={a.alt}
+                    src={a.src}
+                    alt={a.alt}
+                    className="w-7 h-7 rounded-full object-cover border-2 border-white"
+                    style={{ marginLeft: idx > 0 ? -9 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 1px 4px rgba(0,0,0,0.14)" }}
+                  />
                 ))}
               </div>
               <span className="font-body text-xs" style={{ color: "hsl(30 12% 42%)" }}>
@@ -741,9 +746,9 @@ const TEMPLATES = [
 
 const TemplateCard = ({ t, i }: { t: typeof TEMPLATES[0]; i: number }) => (
   <motion.div
-    {...fade(0.08 + i * 0.09)}
-    className="relative rounded-3xl overflow-hidden group cursor-pointer"
-    style={{ height: i < 3 ? 420 : 360 }}
+    {...fade(0.05 + i * 0.06)}
+    className="relative rounded-2xl overflow-hidden group cursor-pointer"
+    style={{ height: 230 }}
   >
     <img
       src={t.src} alt={t.name}
@@ -754,49 +759,21 @@ const TemplateCard = ({ t, i }: { t: typeof TEMPLATES[0]; i: number }) => (
       style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.58) 68%, rgba(0,0,0,0.88) 100%)" }}
     />
 
-    {/* Number + Live badge row */}
-    <div className="absolute top-4 inset-x-4 flex items-center justify-between z-10">
-      <span
-        className="flex items-center justify-center w-7 h-7 rounded-full font-body text-[11px] font-bold"
-        style={{ background: "rgba(0,0,0,0.38)", backdropFilter: "blur(8px)", color: "rgba(255,255,255,0.9)", border: "1px solid rgba(255,255,255,0.18)" }}
-      >
-        {String(i + 1).padStart(2, "0")}
-      </span>
-      <span
-        className="flex items-center gap-1 px-2.5 py-1 rounded-full font-body text-[10px] font-bold uppercase tracking-wider"
-        style={{ background: "rgba(0,0,0,0.42)", backdropFilter: "blur(6px)", color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }}
-      >
-        <Sparkles className="w-2.5 h-2.5" /> Live
-      </span>
-    </div>
-
     {/* Accent dot */}
-    <div className="absolute top-[54px] right-4 w-2 h-2 rounded-full ring-2 ring-white/20" style={{ background: t.accent }} />
+    <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full ring-2 ring-white/20" style={{ background: t.accent }} />
 
-    <div className="absolute bottom-0 inset-x-0 p-5">
-      <div className="flex items-center gap-2 mb-1">
-        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: t.accent }} />
-        <p className="font-display font-bold text-white text-lg">{t.name}</p>
-      </div>
-      <p className="font-body text-xs mb-4 pl-4" style={{ color: "rgba(255,255,255,0.58)" }}>{t.tag}</p>
-      <div className="flex gap-2">
-        <Link
-          to={`/invite/demo-wedding?theme=${t.theme}`}
-          target="_blank"
-          onClick={e => e.stopPropagation()}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-body text-xs font-semibold transition-all hover:scale-105 active:scale-95"
-          style={{ background: "rgba(255,255,255,0.14)", backdropFilter: "blur(6px)", color: "white", border: "1px solid rgba(255,255,255,0.22)" }}
-        >
-          <Play className="w-2.5 h-2.5" /> Preview
-        </Link>
-        <Link
-          to="/choose-template"
-          className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-center transition-all hover:opacity-90 active:scale-[0.98]"
-          style={{ background: GOLD_GRAD, color: "white" }}
-        >
-          Use This Theme
-        </Link>
-      </div>
+    <div className="absolute bottom-0 inset-x-0 p-3">
+      <p className="font-display font-bold text-white text-sm leading-tight mb-0.5">{t.name}</p>
+      <p className="font-body text-[10px] leading-snug mb-2 line-clamp-2" style={{ color: "rgba(255,255,255,0.6)" }}>{t.tag}</p>
+      <Link
+        to={`/invite/demo-wedding?theme=${t.theme}`}
+        target="_blank"
+        onClick={e => e.stopPropagation()}
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-body text-[10px] font-semibold transition-all hover:scale-105 active:scale-95"
+        style={{ background: "rgba(255,255,255,0.16)", backdropFilter: "blur(6px)", color: "white", border: "1px solid rgba(255,255,255,0.24)" }}
+      >
+        <Play className="w-2 h-2" /> Demo
+      </Link>
     </div>
   </motion.div>
 );
@@ -816,14 +793,9 @@ const Templates = () => (
         </p>
       </motion.div>
 
-      {/* Top row — 3 cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        {TEMPLATES.slice(0, 3).map((t, i) => <TemplateCard key={t.theme} t={t} i={i} />)}
-      </div>
-
-      {/* Bottom row — 2 cards, centered */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:max-w-[66%] mx-auto">
-        {TEMPLATES.slice(3).map((t, i) => <TemplateCard key={t.theme} t={t} i={3 + i} />)}
+      {/* 5 cards in a single row */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {TEMPLATES.map((t, i) => <TemplateCard key={t.theme} t={t} i={i} />)}
       </div>
     </div>
   </section>
