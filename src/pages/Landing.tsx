@@ -403,8 +403,8 @@ const Hero = () => {
                     key={a.alt}
                     src={a.src}
                     alt={a.alt}
-                    className="w-7 h-7 rounded-full object-cover border-2 border-white"
-                    style={{ marginLeft: idx > 0 ? -9 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 1px 4px rgba(0,0,0,0.14)" }}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                    style={{ marginLeft: idx > 0 ? -12 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 6px rgba(0,0,0,0.18)" }}
                   />
                 ))}
               </div>
