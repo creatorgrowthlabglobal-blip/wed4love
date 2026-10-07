@@ -73,13 +73,13 @@ const ScarcityBar = () => {
 
               <div className="flex items-baseline gap-1.5">
                 <span className="font-body text-xs sm:text-sm line-through text-muted-foreground">
-                  {format(49)}
+                  {format(99)}
                 </span>
                 <span
                   className="font-display font-bold text-base sm:text-lg"
                   style={{ color: "hsl(30 20% 14%)" }}
                 >
-                  {format(20)}
+                  {format(50)}
                 </span>
               </div>
 
