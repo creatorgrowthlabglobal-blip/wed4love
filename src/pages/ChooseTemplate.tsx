@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import { motion } from "framer-motion";
@@ -177,14 +176,6 @@ const Card = ({ t, index, delay, height, locked, onSelect }: CardProps) => (
 const ChooseTemplate = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  // If the user was sent here after paying (Whop redirect), take them back to
-  // their invite so it can be published instead of restarting the flow.
-  useEffect(() => {
-    if (!user) return;
-    const pending = localStorage.getItem(`pending_checkout_${user.id}`);
-    if (pending) navigate(`/create-invite?template=${pending}`, { replace: true });
-  }, [user, navigate]);
 
   const handleSelect = (id: string) => {
     notify("template_selected", { template: id, email: user?.email });

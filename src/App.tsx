@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import PaidRoute from "@/components/PaidRoute";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Landing from "./pages/Landing";
@@ -38,12 +37,12 @@ const App = () => (
           <CurrencyProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/create" element={<Navigate to="/pricing" replace />} />
+            <Route path="/create" element={<Navigate to="/choose-template" replace />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/choose-template" element={<PaidRoute><ChooseTemplate /></PaidRoute>} />
-            <Route path="/create-invite" element={<PaidRoute><CreateInvite /></PaidRoute>} />
+            <Route path="/choose-template" element={<ProtectedRoute><ChooseTemplate /></ProtectedRoute>} />
+            <Route path="/create-invite" element={<ProtectedRoute><CreateInvite /></ProtectedRoute>} />
             <Route path="/invite/:id" element={<ViewInvite />} />
             <Route path="/dashboard/:inviteId" element={<ProtectedRoute><RsvpDashboard /></ProtectedRoute>} />
             <Route path="/terms" element={<Terms />} />
