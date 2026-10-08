@@ -79,7 +79,7 @@ const ScarcityBar = () => {
                   className="font-display font-bold text-base sm:text-lg"
                   style={{ color: "hsl(30 20% 14%)" }}
                 >
-                  {format(50)}
+                  {format(20)}
                 </span>
               </div>
 

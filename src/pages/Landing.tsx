@@ -333,70 +333,114 @@ const Hero = () => {
   const { format } = useCurrency();
   return (
   <section
-    className="relative overflow-hidden pt-28 pb-0"
+    className="relative overflow-hidden pt-24 lg:pt-28 pb-16 lg:pb-24"
     style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)" }}
   >
-    {/* Soft decorative blobs */}
-    <div className="absolute top-20 left-10 w-72 h-72 rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(38 80% 85% / 0.35) 0%, transparent 70%)" }} />
-    <div className="absolute top-32 right-8 w-56 h-56 rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(340 60% 88% / 0.28) 0%, transparent 70%)" }} />
+    {/* ── Decorative layer ── */}
+    <div className="absolute top-24 left-[-6%] w-[32rem] h-[32rem] rounded-full pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(38 80% 82% / 0.42) 0%, transparent 65%)", filter: "blur(10px)" }} />
+    <div className="absolute top-40 right-[-8%] w-[30rem] h-[30rem] rounded-full pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(340 65% 86% / 0.32) 0%, transparent 70%)", filter: "blur(10px)" }} />
+    <div className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+      style={{ background: "linear-gradient(to bottom, transparent, hsl(42 50% 96%))" }} />
 
-    {/* ── Hero — centered text, phone mockup retired ── */}
-    <div className="relative max-w-3xl mx-auto px-6 mb-14">
-      <div>
+    {/* Subtle grain overlay for a printed-paper feel */}
+    <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
+      style={{ backgroundImage: "radial-gradient(hsl(30 20% 14%) 1px, transparent 1px)", backgroundSize: "3px 3px" }} />
+
+    <div className="relative max-w-7xl mx-auto px-6">
+      <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
+
+        {/* ── LEFT — copy ── */}
         <motion.div
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center"
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center lg:text-left"
         >
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-body text-xs font-semibold mb-6"
-            style={{ background: "hsl(38 60% 92%)", color: GOLD, border: "1.5px solid hsl(38 55% 82%)" }}
+          {/* Premium badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-body text-[11px] tracking-[0.18em] uppercase font-semibold mb-7 shadow-sm"
+            style={{ background: "white", color: GOLD, border: "1px solid hsl(38 55% 82%)" }}
           >
-            <Sparkles className="w-3 h-3" /> Cinematic Wedding Invitations · from {format(20)}
-          </div>
+            <Sparkles className="w-3 h-3" />
+            <span>The Luxury Digital Invitation</span>
+            <span className="h-3 w-px" style={{ background: "hsl(38 45% 80%)" }} />
+            <span style={{ color: "hsl(30 20% 20%)" }}>from {format(20)}</span>
+          </motion.div>
 
+          {/* Headline */}
           <h1
-            className="font-display font-bold leading-tight mb-5"
-            style={{ fontSize: "clamp(2rem, 5vw, 3.6rem)", color: "hsl(30 20% 14%)" }}
+            className="font-display font-bold leading-[1.02] mb-6 tracking-tight"
+            style={{ fontSize: "clamp(2.75rem, 6.4vw, 5.25rem)", color: "hsl(30 22% 12%)" }}
           >
-            Cinematic Wedding{" "}
-            <span className="font-handwritten italic font-normal" style={{ color: GOLD, fontSize: "1.06em" }}>
-              Invitations
+            Your love story,{" "}
+            <span className="relative inline-block">
+              <span
+                className="font-handwritten italic font-normal"
+                style={{
+                  background: `linear-gradient(120deg, ${GOLD} 0%, hsl(38 85% 58%) 50%, ${GOLD} 100%)`,
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontSize: "1.1em",
+                }}
+              >
+                beautifully
+              </span>
+              <svg className="absolute left-0 right-0 -bottom-2 w-full" height="10" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M2 7 Q 100 1, 198 6" stroke={GOLD} strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.55" />
+              </svg>
             </span>
+            {" "}invited.
           </h1>
 
-          <p className="font-body text-base leading-relaxed mb-8 mx-auto" style={{ color: "hsl(30 12% 42%)", maxWidth: 520 }}>
-            Set the tone for your big day with a video-backed digital invitation — a cinematic envelope reveal,
-            live RSVP tracking, and one shareable link for every guest.
+          {/* Subhead */}
+          <p
+            className="font-display italic leading-relaxed mb-8 mx-auto lg:mx-0"
+            style={{ fontSize: "clamp(1.05rem, 1.55vw, 1.3rem)", color: "hsl(30 14% 36%)", maxWidth: 560 }}
+          >
+            Cinematic, video-backed wedding invitations your guests will screenshot.
+            One elegant link — live RSVPs, countdowns, gallery and all.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-10">
             <GetStartedLink
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
-              style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 28px hsl(38 80% 50% / 0.35)" }}
+              className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
+              style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 14px 36px hsl(38 80% 50% / 0.38)" }}
             >
-              Create Your Invitation <ArrowRight className="w-4 h-4" />
+              Design Your Invitation
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </GetStartedLink>
             <Link
               to="/demo"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-body text-sm font-semibold transition-all hover:opacity-80"
-              style={{ background: "white", color: "hsl(30 18% 32%)", border: "1.5px solid hsl(38 40% 86%)", boxShadow: "0 2px 12px hsl(38 30% 70% / 0.18)" }}
+              className="inline-flex items-center gap-2 px-7 py-4 rounded-2xl font-body text-sm font-semibold transition-all hover:bg-white"
+              style={{ background: "rgba(255,255,255,0.6)", color: "hsl(30 18% 24%)", border: "1.5px solid hsl(38 40% 84%)", backdropFilter: "blur(6px)" }}
             >
-              <Play className="w-3.5 h-3.5" style={{ color: GOLD }} /> Watch Demo
+              <span className="relative flex items-center justify-center w-6 h-6 rounded-full" style={{ background: GOLD_GRAD }}>
+                <Play className="w-3 h-3 text-white fill-white ml-[1px]" />
+              </span>
+              Watch 30-sec demo
             </Link>
           </div>
 
-          {/* ── Social proof trust bar ── */}
+          {/* Micro-reassurance strip */}
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 mb-8 font-body text-[12px]" style={{ color: "hsl(30 14% 38%)" }}>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: GOLD }} /> One-time payment</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: GOLD }} /> Ready in 10 minutes</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: GOLD }} /> 30-day money-back</span>
+          </div>
+
+          {/* Social proof trust bar */}
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mt-6 pt-5"
-            style={{ borderTop: "1px solid hsl(38 38% 88%)" }}
+            className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 sm:gap-6 pt-6"
+            style={{ borderTop: "1px solid hsl(38 38% 86%)" }}
           >
-            {/* Avatar stack + count */}
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3">
               <div className="flex">
                 {HERO_AVATARS.map((a, idx) => (
                   <img
@@ -404,32 +448,79 @@ const Hero = () => {
                     src={a.src}
                     alt={a.alt}
                     className="w-10 h-10 rounded-full object-cover border-2 border-white"
-                    style={{ marginLeft: idx > 0 ? -12 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 6px rgba(0,0,0,0.18)" }}
+                    style={{ marginLeft: idx > 0 ? -12 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 8px rgba(0,0,0,0.18)" }}
                   />
                 ))}
               </div>
-              <span className="font-body text-xs" style={{ color: "hsl(30 12% 42%)" }}>
-                <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
-              </span>
+              <div className="text-left">
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} style={{ color: GOLD, fontSize: 13 }}>★</span>
+                  ))}
+                  <span className="font-body text-xs font-bold ml-1" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
+                </div>
+                <p className="font-body text-xs mt-0.5" style={{ color: "hsl(30 12% 40%)" }}>
+                  Loved by <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
+                </p>
+              </div>
             </div>
 
-            <div className="hidden sm:block w-px h-4" style={{ background: "hsl(38 28% 82%)" }} />
+            <div className="hidden sm:block w-px h-10" style={{ background: "hsl(38 28% 82%)" }} />
 
-            {/* Star rating */}
-            <div className="flex items-center gap-1.5">
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} style={{ color: GOLD, fontSize: 12 }}>★</span>
-                ))}
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "white", border: "1px solid hsl(38 45% 82%)" }}>
+                <Shield className="w-4 h-4" style={{ color: GOLD }} />
               </div>
-              <span className="font-body text-xs font-bold" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
-              <span className="font-body text-xs" style={{ color: "hsl(30 12% 52%)" }}>· 312 reviews</span>
+              <div className="text-left">
+                <p className="font-body text-[11px] font-bold uppercase tracking-wider" style={{ color: "hsl(30 20% 16%)" }}>30-Day Guarantee</p>
+                <p className="font-body text-[11px]" style={{ color: "hsl(30 12% 40%)" }}>Full refund, no questions</p>
+              </div>
             </div>
           </motion.div>
         </motion.div>
+
+        {/* ── RIGHT — phone mockup ── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex justify-center lg:justify-end"
+        >
+          {/* Floating "live" badge */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="hidden md:flex absolute -left-2 lg:left-4 top-10 z-20 items-center gap-2 px-3.5 py-2 rounded-2xl shadow-xl"
+            style={{ background: "white", border: "1px solid hsl(38 45% 86%)" }}
+          >
+            <span className="relative flex w-2 h-2">
+              <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping" style={{ background: GOLD }} />
+              <span className="relative inline-flex w-2 h-2 rounded-full" style={{ background: GOLD }} />
+            </span>
+            <span className="font-body text-[11px] font-semibold" style={{ color: "hsl(30 20% 16%)" }}>
+              12 guests just RSVP'd
+            </span>
+          </motion.div>
+
+          {/* Floating "sent" badge */}
+          <motion.div
+            initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 1.1 }}
+            className="hidden md:flex absolute -right-2 lg:right-0 bottom-28 z-20 items-center gap-2.5 px-3.5 py-2.5 rounded-2xl shadow-xl"
+            style={{ background: "white", border: "1px solid hsl(38 45% 86%)" }}
+          >
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: GOLD_GRAD }}>
+              <Heart className="w-3.5 h-3.5 text-white fill-white" />
+            </div>
+            <div>
+              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(30 20% 16%)" }}>Shared on WhatsApp</p>
+              <p className="font-body text-[10px] leading-none mt-0.5" style={{ color: "hsl(30 12% 44%)" }}>Preview looks stunning ♡</p>
+            </div>
+          </motion.div>
+
+          <PhoneMockup />
+        </motion.div>
       </div>
     </div>
-
   </section>
   );
 };
@@ -718,7 +809,7 @@ const Comparison = () => {
 const STATS = [
   { value: "3D", label: "Envelope reveal" },
   { value: "5", label: "Cinematic themes" },
-  { value: "∞", label: "Guest invites (Premium)" },
+  { value: "∞", label: "Unlimited guest invites" },
   { value: "1 link", label: "Share anywhere" },
 ];
 
@@ -1188,6 +1279,15 @@ const Testimonials = () => (
 );
 
 // ── Pricing teaser ───────────────────────────────────────────────────────────
+const PRICING_FEATURES = [
+  "All 5 cinematic templates",
+  "Unlimited guests & RSVPs",
+  "Live dashboard + CSV export",
+  "Custom music & photo gallery",
+  "Shareable link + QR code",
+  "Priority WhatsApp support",
+];
+
 const PricingTeaser = () => {
   const { format, showUsdNote, usdNote } = useCurrency();
   return (
@@ -1198,47 +1298,75 @@ const PricingTeaser = () => {
           Simple Pricing
         </p>
         <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-          One payment. Yours forever.
+          One plan. Everything included.
         </h2>
         <p className="font-body text-sm mb-10 max-w-md mx-auto text-muted-foreground">
-          No subscriptions. No per-RSVP fees. Pay once and your invitation stays live for up to a year.
+          No tiers, no upsells, no per-RSVP fees. $20 unlocks every template, every feature, unlimited guests — forever.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-10">
-          {[
-            { name: "Starter", usd: 20, note: "2 templates · 30 RSVPs · 6 months", highlight: false },
-            { name: "Premium", usd: 50, note: "All templates · Unlimited RSVPs · 1 year", highlight: true },
-          ].map(p => (
-            <div key={p.name}
-              className="rounded-3xl p-6 text-center"
-              style={{
-                background: p.highlight ? GOLD_GRAD : "white",
-                border: p.highlight ? "none" : "2px solid hsl(38 55% 80%)",
-                boxShadow: p.highlight ? "0 8px 32px hsl(38 80% 55% / 0.25)" : "0 4px 16px hsl(38 40% 60% / 0.08)",
-              }}>
-              <p className="font-display font-bold text-base mb-1" style={{ color: p.highlight ? "white" : GOLD }}>{p.name}</p>
-              <p className="font-display font-bold text-4xl mb-1" style={{ color: p.highlight ? "white" : "hsl(30 20% 14%)" }}>{format(p.usd)}</p>
-              {showUsdNote && (
-                <p className="font-body text-[10px] mb-1" style={{ color: p.highlight ? "rgba(255,255,255,0.75)" : "hsl(30 12% 55%)" }}>
-                  charged as {usdNote(p.usd)}
-                </p>
-              )}
-              <p className="font-body text-xs mt-1" style={{ color: p.highlight ? "rgba(255,255,255,0.8)" : "hsl(30 12% 48%)" }}>
-                {p.note}
-              </p>
+        <div className="max-w-md mx-auto mb-8">
+          <div
+            className="rounded-3xl p-8 text-left relative overflow-hidden"
+            style={{ background: GOLD_GRAD, boxShadow: "0 18px 50px hsl(38 80% 50% / 0.3)" }}
+          >
+            <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full font-body text-[10px] font-bold uppercase tracking-wider"
+              style={{ background: "rgba(255,255,255,0.22)", color: "white", backdropFilter: "blur(6px)" }}>
+              Most popular
             </div>
-          ))}
+
+            <p className="font-display font-bold text-lg mb-1" style={{ color: "white" }}>Everything Plan</p>
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="font-body text-base line-through" style={{ color: "rgba(255,255,255,0.7)" }}>{format(99)}</span>
+              <span className="font-display font-bold" style={{ color: "white", fontSize: "3.4rem", lineHeight: 1 }}>{format(20)}</span>
+              <span className="font-body text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>one-time</span>
+            </div>
+            {showUsdNote && (
+              <p className="font-body text-[11px] mb-4" style={{ color: "rgba(255,255,255,0.75)" }}>
+                charged as {usdNote(20)}
+              </p>
+            )}
+            <p className="font-body text-sm mb-5" style={{ color: "rgba(255,255,255,0.9)" }}>
+              Every feature. Unlimited everything. No subscriptions.
+            </p>
+
+            <ul className="flex flex-col gap-2 mb-6">
+              {PRICING_FEATURES.map(f => (
+                <li key={f} className="flex items-start gap-2 font-body text-sm" style={{ color: "white" }}>
+                  <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "white" }} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <GetStartedLink
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-95 active:scale-[0.98]"
+              style={{ background: "white", color: GOLD, boxShadow: "0 6px 18px hsl(30 20% 14% / 0.14)" }}
+            >
+              Design Your Invitation <ArrowRight className="w-4 h-4" />
+            </GetStartedLink>
+          </div>
         </div>
 
-        <Link
-          to="/choose-template"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.97]"
-          style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 8px 30px hsl(38 80% 55% / 0.3)" }}
+        <div className="max-w-md mx-auto rounded-2xl p-5"
+          style={{ background: "white", border: "1.5px solid hsl(38 40% 86%)" }}
         >
-          See Full Plan Details <ArrowRight className="w-4 h-4" />
-        </Link>
-        <p className="font-body text-xs mt-4 text-muted-foreground">
-          No subscription · Pay once · Shareable link instantly
+          <p className="font-display font-bold text-base mb-1 text-foreground">Want it done for you?</p>
+          <p className="font-body text-xs mb-3 text-muted-foreground">
+            Our team can design and build the entire invitation on your behalf — pricing is custom per project.
+          </p>
+          <a
+            href="https://wa.me/9779702238084?text=Hi%20Wed4Love!%20I'd%20like%20a%20custom%2C%20done-for-you%20wedding%20invitation.%20Can%20you%20share%20details%3F"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-body text-sm font-bold"
+            style={{ color: GOLD }}
+          >
+            Message us on WhatsApp <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <p className="font-body text-xs mt-6 text-muted-foreground">
+          30-day money-back guarantee · Secure one-time payment
         </p>
       </motion.div>
     </div>
@@ -1251,8 +1379,9 @@ const FAQS = [
   { q: "Do my guests need to download an app?", a: "No. The invitation opens directly in any browser — on iOS, Android, or desktop. Just tap the link or scan the QR code." },
   { q: "Can I change details after publishing?", a: "Yes. You can update your invite details (names, date, venue, photos) at any time before your event date." },
   { q: "How does RSVP tracking work?", a: "Guests fill in a simple form inside the invite — name, attendance, guest count, and a message. All responses appear instantly in your host dashboard." },
-  { q: "What's the difference between Starter and Premium?", a: "Starter covers one template with up to 30 RSVP responses and is valid for 6 months. Premium unlocks all templates, unlimited RSVPs, music, photo gallery, QR sharing, and 1-year validity." },
-  { q: "Can I use my own music?", a: "Premium plan includes a curated music library and the ability to upload your own audio file. Starter uses preset background music." },
+  { q: "What exactly do I get for $20?", a: "Everything. All 5 cinematic templates, unlimited guests and RSVPs, live dashboard, custom music, photo gallery, countdown, venue map, QR code — the full product. It's one plan, one payment, no upsells." },
+  { q: "Can I use my own music?", a: "Yes. Upload any audio file or pick from the curated library. It's included — no extra charge." },
+  { q: "What if I want you to design the whole invitation for me?", a: "We offer a done-for-you custom service — pricing varies by project. Message us on WhatsApp and we'll put together a quote." },
   { q: "Is my data secure?", a: "Yes. All invite data and RSVP responses are stored securely with Supabase (PostgreSQL). We don't sell your data to third parties." },
   { q: "Do you offer a money-back guarantee?", a: "Yes — every purchase is backed by our 30-day money-back guarantee. If you're not happy for any reason, email us within 30 days of your purchase for a full refund, no questions asked." },
 ];
