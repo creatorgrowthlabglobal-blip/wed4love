@@ -17,7 +17,7 @@ const AUTO_FORWARD_MS = 3500;
 type PlanId = PackageDef["id"];
 
 const isPlanId = (v: string | null | undefined): v is PlanId =>
-  v === "starter" || v === "premium" || v === "custom";
+  v === "starter" || v === "custom";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -82,18 +82,35 @@ const PaymentSuccess = () => {
     [hintedPlan]
   );
 
-  // Auto-forward to the builder once entitlement is confirmed. The user
-  // still sees the "you're now a X member" confirmation for a beat, then
-  // we drop them straight into template selection.
+  // Where to hand the user next, once payment is confirmed:
+  //  1. the invite they just paid for (via ?invite=… or last_invite_<uid>)
+  //  2. their invitation list (returning paid user with no in-flight invite)
+  //  3. the template picker (brand-new paid user, no invite yet)
+  const [forwardHref, setForwardHref] = useState<string>("/choose-template");
+  useEffect(() => {
+    const inviteFromQuery = searchParams.get("invite");
+    const inviteFromStorage =
+      typeof window !== "undefined" && user
+        ? localStorage.getItem(`last_invite_${user.id}`)
+        : null;
+    const inviteId = inviteFromQuery || inviteFromStorage;
+    if (inviteId) setForwardHref(`/invite/${inviteId}`);
+    else if (user) setForwardHref("/my-invitations");
+  }, [searchParams, user]);
+
+  // Auto-forward to that destination once entitlement is confirmed.
   const [autoForwardIn, setAutoForwardIn] = useState<number | null>(null);
   useEffect(() => {
     if (!plan) return;
     notify("payment_confirmed", { plan, email: user?.email });
-    if (user) localStorage.removeItem(`selected_package_${user.id}`);
+    if (user) {
+      localStorage.removeItem(`selected_package_${user.id}`);
+      localStorage.removeItem(`order_pending_${user.id}`);
+    }
     // Also clean the legacy un-namespaced key if it's still around.
     localStorage.removeItem("selected_package");
     setAutoForwardIn(Math.ceil(AUTO_FORWARD_MS / 1000));
-    const forward = setTimeout(() => navigate("/choose-template"), AUTO_FORWARD_MS);
+    const forward = setTimeout(() => navigate(forwardHref), AUTO_FORWARD_MS);
     const tick = setInterval(
       () => setAutoForwardIn(n => (n && n > 0 ? n - 1 : n)),
       1000
@@ -102,7 +119,7 @@ const PaymentSuccess = () => {
       clearTimeout(forward);
       clearInterval(tick);
     };
-  }, [plan, user?.email, navigate]);
+  }, [plan, user?.email, user, navigate, forwardHref]);
 
   // If someone deep-links to /payment-success without ever having started
   // a checkout, don't leave them staring at a spinner for 45s.
@@ -231,26 +248,43 @@ const PaymentSuccess = () => {
 
           {confirmed ? (
             <div className="flex flex-col gap-3">
-              <button
-                onClick={() => navigate("/choose-template")}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
-                style={{ background: GOLD_GRAD, boxShadow: "0 8px 26px hsl(38 72% 44% / 0.28)" }}
-              >
-                Create Your Invitation
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {forwardHref.startsWith("/invite/") ? (
+                <>
+                  <button
+                    onClick={() => navigate(forwardHref)}
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
+                    style={{ background: GOLD_GRAD, boxShadow: "0 8px 26px hsl(38 72% 44% / 0.28)" }}
+                  >
+                    View My Invitation
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <Link
+                    to={forwardHref.replace("/invite/", "/dashboard/")}
+                    className="w-full py-3.5 rounded-2xl font-body text-sm font-semibold text-center transition-opacity hover:opacity-80"
+                    style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
+                  >
+                    Open RSVP Dashboard
+                  </Link>
+                </>
+              ) : (
+                <button
+                  onClick={() => navigate(forwardHref)}
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-body text-sm font-bold text-white transition-opacity hover:opacity-90"
+                  style={{ background: GOLD_GRAD, boxShadow: "0 8px 26px hsl(38 72% 44% / 0.28)" }}
+                >
+                  {forwardHref === "/my-invitations" ? "Open My Invitations" : "Create Your Invitation"}
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
               {autoForwardIn !== null && autoForwardIn > 0 && (
                 <p className="font-body text-xs text-muted-foreground">
-                  Taking you to the template picker in {autoForwardIn}s…
+                  {forwardHref.startsWith("/invite/")
+                    ? `Opening your invitation in ${autoForwardIn}s…`
+                    : forwardHref === "/my-invitations"
+                      ? `Taking you to your invitations in ${autoForwardIn}s…`
+                      : `Taking you to the template picker in ${autoForwardIn}s…`}
                 </p>
               )}
-              <Link
-                to="/my-invitations"
-                className="w-full py-3.5 rounded-2xl font-body text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
-              >
-                View my invitations
-              </Link>
             </div>
           ) : timeout ? (
             <div className="flex flex-col gap-3">

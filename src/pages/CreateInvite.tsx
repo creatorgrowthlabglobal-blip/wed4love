@@ -11,6 +11,7 @@ import type { StoredInvite } from "@/lib/inviteStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { useInviteEntitlement } from "@/hooks/useInviteEntitlement";
 import { notify } from "@/lib/notify";
+import { supabase } from "@/integrations/supabase/client";
 
 const CHECKOUT_URL = "https://whop.com/checkout/plan_FsfUSAeOIoKZt";
 
@@ -1128,72 +1129,6 @@ const OrderConfirmedScreen = ({ inviteId }: { inviteId: string }) => (
   </div>
 );
 
-// ── Order placed / delivery pending screen ────────────────────────────────────
-const OrderPendingScreen = ({ email, onDone }: { email?: string; onDone: () => void }) => (
-  <div
-    className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-6 overflow-y-auto py-10"
-    style={{ background: "linear-gradient(155deg, hsl(42 60% 98%), hsl(38 50% 96%) 50%, hsl(350 35% 97%))" }}
-  >
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative w-full max-w-sm text-center"
-    >
-      <div
-        className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8"
-        style={{
-          background: "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))",
-          boxShadow: "0 10px 40px hsl(38 72% 44% / 0.32)",
-        }}
-      >
-        <span style={{ fontSize: 38, lineHeight: 1 }}>💌</span>
-      </div>
-
-      <p className="font-body text-[9px] tracking-[0.32em] uppercase font-semibold mb-3" style={{ color: "hsl(38 50% 54%)" }}>
-        Order Received
-      </p>
-
-      <h1 className="font-display font-bold mb-4" style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", color: "hsl(30 20% 14%)" }}>
-        Thank you — we're preparing your invitation
-      </h1>
-
-      <p className="font-body text-sm mb-4 leading-relaxed" style={{ color: "hsl(30 14% 36%)" }}>
-        Your wedding invitation and your RSVP dashboard will be delivered
-        <strong> within 24 hours</strong>
-        {email ? <> to <strong>{email}</strong></> : null}.
-      </p>
-
-      <p className="font-body text-xs mb-8 leading-relaxed" style={{ color: "hsl(30 12% 50%)" }}>
-        Our team is reviewing your details and finishing the design by hand. If anything is missing, we'll reach out to you directly.
-      </p>
-
-      <div className="flex flex-col gap-3">
-        <a
-          href="https://wa.me/9779702238084"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl font-body text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: "linear-gradient(135deg, hsl(142 60% 38%), hsl(142 60% 46%))", boxShadow: "0 6px 24px hsl(142 60% 38% / 0.28)" }}
-        >
-          Contact us on WhatsApp
-        </a>
-        <button
-          onClick={onDone}
-          className="w-full py-3.5 rounded-2xl font-body text-sm font-bold transition-opacity hover:opacity-80"
-          style={{ background: "white", color: "hsl(38 55% 42%)", border: "1.5px solid hsl(38 45% 78%)" }}
-        >
-          Back to Wed4Love
-        </button>
-      </div>
-
-      <p className="font-body text-[10px] mt-5" style={{ color: "hsl(30 10% 64%)" }}>
-        +977 970 2238084
-      </p>
-    </motion.div>
-  </div>
-);
-
 // ── Step meta ──────────────────────────────────────────────────────────────────
 const STEP_META = [
   { icon: "💍", title: "The Happy Couple",     sub: "Start with the stars of the show" },
@@ -1223,7 +1158,6 @@ const CreateInvite = () => {
   const [isPreparing, setIsPreparing] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
   const [awaitingPayment, setAwaitingPayment] = useState(false);
-  const [orderPending, setOrderPending] = useState(false);
   const { user } = useAuth();
   const { plan: userPlan, loading: entLoading } = useInviteEntitlement(awaitingPayment);
   const hasPaid = !!userPlan;
@@ -1318,11 +1252,18 @@ const CreateInvite = () => {
   const pendingKey = user ? `order_pending_${user.id}` : null;
   const lastInviteKey = user ? `last_invite_${user.id}` : null;
 
-  // Restore the "order placed" state after returning from the checkout tab / reload
+  // Resume polling if the user returns to this tab mid-checkout.
   useEffect(() => {
     if (!user) return;
-    if (localStorage.getItem(`order_pending_${user.id}`)) setOrderPending(true);
+    if (localStorage.getItem(`order_pending_${user.id}`)) setAwaitingPayment(true);
   }, [user]);
+
+  // When entitlement lands while we're waiting, publish the pre-saved invite
+  // and hand the user the OrderConfirmedScreen with view + dashboard links.
+  useEffect(() => {
+    if (awaitingPayment && hasPaid && !createdId) finaliseCreate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [awaitingPayment, hasPaid]);
 
   const buildStored = (id: string): StoredInvite => ({
     id, template: templateId,
@@ -1343,12 +1284,13 @@ const CreateInvite = () => {
     status: 'published',
   });
 
-  const handlePay = () => {
+  const handlePay = async () => {
     saveDraft(STEP_META.length);
 
-    // Build + store the invitation now so the admin gets the real links
+    // Pre-save the invitation so the record exists the moment payment lands.
+    // Status is `draft` until finaliseCreate promotes it after confirmation.
     const id = `invite-${Date.now()}`;
-    const stored = buildStored(id);
+    const stored: StoredInvite = { ...buildStored(id), status: "draft" };
     saveInviteLocal(stored);
     if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
     if (pendingKey) localStorage.setItem(pendingKey, id);
@@ -1368,20 +1310,38 @@ const CreateInvite = () => {
       rsvp_dashboard_link: `${origin}/dashboard/${id}`,
     });
 
-    setOrderPending(true);
+    setAwaitingPayment(true);
 
-    const url = user?.email
-      ? `${CHECKOUT_URL}?d2c=true&email=${encodeURIComponent(user.email)}`
-      : `${CHECKOUT_URL}?d2c=true`;
-    window.open(url, "_blank", "noopener");
+    const email = user?.email ?? form.email;
+    const redirectUrl = `${origin}/payment-success?plan=starter&invite=${id}`;
+
+    // Prefer the tagged checkout: it stamps metadata.order_id onto the Whop
+    // membership so our webhook/verify flow can match this user even when
+    // their Whop account email differs from the one they signed up with.
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { product: "starter", app_email: email, redirect_url: redirectUrl },
+      });
+      if (error || !data?.purchase_url) throw error ?? new Error("no purchase_url");
+      window.location.href = data.purchase_url;
+    } catch (e) {
+      console.error("[CreateInvite] create-checkout failed, falling back", e);
+      const params = new URLSearchParams({ d2c: "true", redirect_url: redirectUrl });
+      if (email) params.set("email", email);
+      window.location.href = `${CHECKOUT_URL}?${params.toString()}`;
+    }
   };
 
   const finaliseCreate = () => {
-    const id = `invite-${Date.now()}`;
-    const stored = buildStored(id);
+    // Reuse the id we pre-saved during handlePay so the Supabase/webhook
+    // trail and the invite record stay in sync. Only mint a fresh id for
+    // the already-paid "Publish My Invitation" path that never calls handlePay.
+    const existingId = lastInviteKey ? localStorage.getItem(lastInviteKey) : null;
+    const id = existingId ?? `invite-${Date.now()}`;
+    const stored: StoredInvite = { ...buildStored(id), status: "published" };
     saveInviteLocal(stored);
     if (lastInviteKey) localStorage.setItem(lastInviteKey, id);
-    if (pendingKey) localStorage.setItem(pendingKey, id);
+    if (pendingKey) localStorage.removeItem(pendingKey);
     const origin = window.location.origin;
     notify("invite_published", {
       id,
@@ -1398,7 +1358,8 @@ const CreateInvite = () => {
     });
     if (user) clearDraftLocal(user.id);
     setIsPreparing(false);
-    setOrderPending(true);
+    setAwaitingPayment(false);
+    setCreatedId(id);
   };
 
 
@@ -1406,19 +1367,6 @@ const CreateInvite = () => {
     const coupleName = [form.partner1, form.partner2].filter(Boolean).join(" & ");
     const tName = TEMPLATE_NAMES[templateId] ?? templateId;
     return <PreparingScreen onDone={finaliseCreate} coupleName={coupleName} templateName={tName} />;
-  }
-
-  if (orderPending) {
-    return (
-      <OrderPendingScreen
-        email={user?.email ?? form.email}
-        onDone={() => {
-          if (user) localStorage.removeItem(`order_pending_${user.id}`);
-          setOrderPending(false);
-          navigate("/");
-        }}
-      />
-    );
   }
 
   if (createdId) {

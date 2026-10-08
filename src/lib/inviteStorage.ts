@@ -73,7 +73,12 @@ export function listPublishedLocal(): StoredInvite[] {
     if (key.startsWith('invite_draft_') || key === 'invite_invite-preview-draft') continue;
     try {
       const item = JSON.parse(localStorage.getItem(key)!) as StoredInvite;
-      if (item?.id && item.id !== 'invite-preview-draft') out.push(item);
+      if (!item?.id || item.id === 'invite-preview-draft') continue;
+      // Skip pre-pay placeholders — they live under invite_<id> so a direct
+      // link works the moment payment confirms, but shouldn't appear in the
+      // "published" list until finaliseCreate promotes them.
+      if (item.status === 'draft') continue;
+      out.push(item);
     } catch { /* skip corrupt entries */ }
   }
   return out.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
