@@ -42,7 +42,7 @@ const Terms = () => {
 
           <div>
             <h2 className="font-display text-2xl font-semibold mb-3">6. Payments</h2>
-            <p>Digital wedding invitations start at $20 (one-time payment) for the Starter package. The Premium package at $50 unlocks all 5 colour themes, the cinematic 3D envelope reveal, live countdown timer, full RSVP tracking dashboard, and a shareable link that stays live for a year. All payments are processed securely through our payment partners. Prices are subject to change with notice. Every purchase is backed by our 30-day money-back guarantee — see the <Link to="/refund" className="underline">Refund Policy</Link> for details.</p>
+            <p>Digital wedding invitations are $20 (one-time payment) for the Everything Plan, which unlocks all 5 cinematic themes, the 3D envelope reveal, live countdown timer, full RSVP tracking dashboard, unlimited guest invites, custom music, photo gallery, and a shareable link that stays live for a year. A custom done-for-you service is available on request — contact us on WhatsApp for a quote. All payments are processed securely through our payment partners. Prices are subject to change with notice. Every purchase is backed by our 30-day money-back guarantee — see the <Link to="/refund" className="underline">Refund Policy</Link> for details.</p>
           </div>
 
           <div>

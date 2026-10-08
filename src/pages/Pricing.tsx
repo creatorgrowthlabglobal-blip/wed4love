@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, X, Crown, Sparkles, Palette, ArrowRight, ArrowLeft, ShieldCheck, Clock, Loader2, BadgeCheck } from "lucide-react";
+import { Check, Crown, Sparkles, Palette, ArrowRight, ArrowLeft, ShieldCheck, Clock, Loader2, BadgeCheck, MessageCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,70 +13,56 @@ import { supabase } from "@/integrations/supabase/client";
 const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
 
+const SUPPORT_WHATSAPP = "9779702238084";
+const WHATSAPP_CUSTOM_LINK = `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
+  "Hi Wed4Love! I'd like a custom, done-for-you wedding invitation. Can you share details?"
+)}`;
+
 export interface PackageDef {
-  id: "starter" | "premium" | "custom";
+  id: "starter" | "custom";
   name: string;
-  price: number;
+  price: number | null;
   oldPrice?: number;
   tagline: string;
-  checkout: string;
+  checkout?: string;
   icon: typeof Crown;
   featured?: boolean;
   badge?: string;
   included: string[];
-  excluded?: string[];
 }
 
 export const PACKAGES: PackageDef[] = [
   {
     id: "starter",
-    name: "Starter",
+    name: "Everything Plan",
     price: 20,
-    oldPrice: 49,
-    tagline: "Perfect for a simple, elegant digital invitation.",
-    checkout: "https://whop.com/checkout/plan_FsfUSAeOIoKZt",
-    icon: Sparkles,
-    included: [
-      "3 classic themes",
-      "Core invitation blocks",
-      "Up to 60 guests tracked",
-      "Live RSVP dashboard",
-      "Shareable link + QR code",
-    ],
-    excluded: ["Cinematic envelope reveal", "Custom music", "Priority support"],
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 50,
     oldPrice: 99,
-    tagline: "Everything you need for a truly unforgettable invitation.",
-    checkout: "https://whop.com/checkout/plan_OizfizAnMNsVO",
+    tagline: "One payment. Every feature unlocked. Unlimited invites forever.",
+    checkout: "https://whop.com/checkout/plan_FsfUSAeOIoKZt",
     icon: Crown,
     featured: true,
     badge: "Most popular — best value",
     included: [
-      "All cinematic themes",
-      "All information blocks",
-      "Unlimited guests",
+      "All 5 cinematic templates unlocked",
+      "Unlimited guests & unlimited RSVPs",
       "Live RSVP dashboard + CSV export",
       "3D envelope reveal animation",
       "Custom music & photo gallery",
       "Venue map, countdown & love story",
+      "Shareable link + downloadable QR code",
       "Save-the-date link included",
       "Priority WhatsApp support",
     ],
   },
   {
     id: "custom",
-    name: "Custom",
-    price: 299,
-    tagline: "We design and build your entire invitation for you.",
-    checkout: "https://whop.com/checkout/plan_tLQmC1O2O9DmN",
+    name: "Custom (Done For You)",
+    price: null,
+    tagline: "Prefer we design and build the whole invitation for you? Let's talk on WhatsApp.",
     icon: Palette,
     badge: "Done for you",
     included: [
-      "Everything in Premium",
+      "Everything in the $20 plan",
       "We build your invitation end-to-end",
       "Bespoke opening animation",
       "Hand-illustrated couple portrait",
@@ -124,49 +110,68 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
           <p className="font-display font-bold text-lg text-foreground">{pkg.name}</p>
         </div>
 
-        <div className="flex items-baseline gap-2 flex-wrap">
-          {pkg.oldPrice != null && (
-            <span className="font-body text-base line-through text-muted-foreground">{format(pkg.oldPrice)}</span>
-          )}
-          <span className="font-display font-bold text-foreground" style={{ fontSize: "2.6rem", lineHeight: 1 }}>
-            {format(pkg.price)}
-          </span>
-          <span className="font-body text-sm text-muted-foreground">One-time payment</span>
-        </div>
-        {showUsdNote && (
-          <p className="font-body text-[11px] -mt-3" style={{ color: "hsl(30 12% 55%)" }}>
-            charged as {usdNote(pkg.price)}
-          </p>
+        {pkg.price != null ? (
+          <>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              {pkg.oldPrice != null && (
+                <span className="font-body text-base line-through text-muted-foreground">{format(pkg.oldPrice)}</span>
+              )}
+              <span className="font-display font-bold text-foreground" style={{ fontSize: "2.6rem", lineHeight: 1 }}>
+                {format(pkg.price)}
+              </span>
+              <span className="font-body text-sm text-muted-foreground">One-time payment</span>
+            </div>
+            {showUsdNote && (
+              <p className="font-body text-[11px] -mt-3" style={{ color: "hsl(30 12% 55%)" }}>
+                charged as {usdNote(pkg.price)}
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="font-display font-bold text-foreground" style={{ fontSize: "2.2rem", lineHeight: 1 }}>
+              Let's talk
+            </span>
+            <span className="font-body text-sm text-muted-foreground">Custom quote</span>
+          </div>
         )}
 
         <p className="font-body text-sm leading-relaxed text-muted-foreground">{pkg.tagline}</p>
 
-        <button
-          onClick={() => onChoose(pkg)}
-          disabled={busy}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
-          style={
-            pkg.featured
-              ? { background: GOLD_GRAD, color: "white", boxShadow: "0 8px 26px hsl(38 80% 55% / 0.3)" }
-              : { background: "transparent", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
-          }
-        >
-          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          {pkg.id === "custom" ? "Go Custom" : `Get ${pkg.name} — ${format(pkg.price)}`}
-          {!busy && <ArrowRight className="w-4 h-4" />}
-        </button>
+        {pkg.id === "custom" ? (
+          <a
+            href={WHATSAPP_CUSTOM_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => notify("custom_whatsapp_clicked", { source: "pricing" })}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{ background: "transparent", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }}
+          >
+            <MessageCircle className="w-4 h-4" />
+            Message us on WhatsApp
+          </a>
+        ) : (
+          <button
+            onClick={() => onChoose(pkg)}
+            disabled={busy}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+            style={
+              pkg.featured
+                ? { background: GOLD_GRAD, color: "white", boxShadow: "0 8px 26px hsl(38 80% 55% / 0.3)" }
+                : { background: "transparent", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
+            }
+          >
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {pkg.price != null ? `Get it now — ${format(pkg.price)}` : "Get it now"}
+            {!busy && <ArrowRight className="w-4 h-4" />}
+          </button>
+        )}
 
         <ul className="flex flex-col gap-2.5 mt-1">
           {pkg.included.map(f => (
             <li key={f} className="flex items-start gap-2.5">
               <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: GOLD }} />
               <span className="font-body text-sm leading-snug text-foreground">{f}</span>
-            </li>
-          ))}
-          {pkg.excluded?.map(f => (
-            <li key={f} className="flex items-start gap-2.5">
-              <X className="w-4 h-4 shrink-0 mt-0.5 text-muted-foreground" />
-              <span className="font-body text-sm leading-snug line-through text-muted-foreground">{f}</span>
             </li>
           ))}
         </ul>
@@ -216,8 +221,8 @@ const Pricing = () => {
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 98%), hsl(38 45% 96%))" }}>
       <Seo
-        title="Pricing — Wed4Love Wedding Invitations from $20"
-        description="Simple, one-time pricing for cinematic digital wedding invitations. Starter $20, Premium $50, Custom $299. No subscriptions."
+        title="Pricing — Wed4Love Wedding Invitations · $20 Everything Plan"
+        description="One simple $20 plan. Every template, unlimited guests, live RSVP dashboard — all included. Or go custom done-for-you via WhatsApp."
         path="/pricing"
       />
       <Header />
@@ -237,10 +242,11 @@ const Pricing = () => {
               Wedding Invitation Pricing
             </p>
             <h1 className="font-display text-3xl sm:text-5xl font-bold text-foreground mb-4">
-              Choose your wedding package
+              One simple plan. Everything included.
             </h1>
             <p className="font-body text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              A cinematic digital invitation with live RSVP tracking. Pay once, no subscriptions, your link stays live for a full year.
+              Pay once — $20 unlocks every template, unlimited guests, and the live RSVP dashboard.
+              Prefer we build it for you? Send us a message on WhatsApp.
             </p>
             <div
               className="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full"
@@ -256,7 +262,7 @@ const Pricing = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start max-w-4xl mx-auto">
             {PACKAGES.map((p, i) => (
               <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={pending === p.id} />
             ))}
