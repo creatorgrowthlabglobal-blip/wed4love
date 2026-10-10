@@ -333,150 +333,136 @@ const Hero = () => {
   const { format } = useCurrency();
   return (
   <section
-    className="relative overflow-hidden pt-24 lg:pt-28 pb-16 lg:pb-24"
-    style={{ background: "linear-gradient(175deg, hsl(42 60% 97%) 0%, hsl(38 50% 95%) 100%)" }}
+    className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-24 lg:pb-28"
+    style={{ background: "linear-gradient(180deg, hsl(42 65% 97.5%) 0%, hsl(38 48% 94%) 100%)" }}
   >
-    {/* ── Decorative layer ── */}
-    <div className="absolute top-24 left-[-6%] w-[32rem] h-[32rem] rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(38 80% 82% / 0.42) 0%, transparent 65%)", filter: "blur(10px)" }} />
-    <div className="absolute top-40 right-[-8%] w-[30rem] h-[30rem] rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(340 65% 86% / 0.32) 0%, transparent 70%)", filter: "blur(10px)" }} />
-    <div className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
-      style={{ background: "linear-gradient(to bottom, transparent, hsl(42 50% 96%))" }} />
+    {/* ── Soft decorative glows ── */}
+    <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(38 85% 82% / 0.42) 0%, transparent 62%)", filter: "blur(20px)" }} />
+    <div className="absolute -bottom-40 -right-32 w-[36rem] h-[36rem] rounded-full pointer-events-none"
+      style={{ background: "radial-gradient(circle, hsl(32 85% 86% / 0.3) 0%, transparent 65%)", filter: "blur(20px)" }} />
 
-    {/* Subtle grain overlay for a printed-paper feel */}
-    <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
+    {/* Hairline paper texture */}
+    <div className="absolute inset-0 pointer-events-none opacity-[0.028]"
       style={{ backgroundImage: "radial-gradient(hsl(30 20% 14%) 1px, transparent 1px)", backgroundSize: "3px 3px" }} />
 
-    <div className="relative max-w-7xl mx-auto px-6">
-      <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
+    {/* Fade into next section */}
+    <div className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
+      style={{ background: "linear-gradient(to bottom, transparent, hsl(42 55% 96%))" }} />
 
-        {/* ── LEFT — copy ── */}
+    <div className="relative max-w-6xl mx-auto px-6">
+      <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-14 lg:gap-20 items-center">
+
+        {/* ── LEFT — editorial copy ── */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           className="text-center lg:text-left"
         >
-          {/* Premium badge */}
+          {/* Rating with couple avatars */}
           <motion.div
-            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-body text-[11px] tracking-[0.18em] uppercase font-semibold mb-7 shadow-sm"
-            style={{ background: "white", color: GOLD, border: "1px solid hsl(38 55% 82%)" }}
+            className="inline-flex items-center gap-3 mb-8 justify-center lg:justify-start w-full lg:w-auto"
           >
-            <Sparkles className="w-3 h-3" />
-            <span>The Luxury Digital Invitation</span>
-            <span className="h-3 w-px" style={{ background: "hsl(38 45% 80%)" }} />
-            <span style={{ color: "hsl(30 20% 20%)" }}>from {format(20)}</span>
+            <div className="flex shrink-0">
+              {HERO_AVATARS.map((a, idx) => (
+                <img
+                  key={a.alt}
+                  src={a.src}
+                  alt={a.alt}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white"
+                  style={{ marginLeft: idx > 0 ? -11 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 10px rgba(70,45,10,0.22)" }}
+                />
+              ))}
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-[2px]" aria-hidden>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} style={{ color: GOLD, fontSize: 14, lineHeight: 1 }}>★</span>
+                ))}
+                <span className="font-body text-[12px] font-bold ml-1.5" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
+              </div>
+              <p className="font-body text-[11px] sm:text-[12px] mt-1 leading-none" style={{ color: "hsl(30 14% 42%)" }}>
+                Loved by <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
+              </p>
+            </div>
           </motion.div>
 
-          {/* Headline */}
+          {/* Headline — editorial serif with italic script accent */}
           <h1
-            className="font-display font-bold leading-[1.02] mb-6 tracking-tight"
-            style={{ fontSize: "clamp(2.75rem, 6.4vw, 5.25rem)", color: "hsl(30 22% 12%)" }}
+            className="font-display leading-[1.03] mb-7 tracking-[-0.01em]"
+            style={{ fontSize: "clamp(2rem, 5.6vw, 5.25rem)", color: "hsl(28 26% 10%)", fontWeight: 500 }}
           >
-            Your love story,{" "}
-            <span className="relative inline-block">
-              <span
-                className="font-handwritten italic font-normal"
-                style={{
-                  background: `linear-gradient(120deg, ${GOLD} 0%, hsl(38 85% 58%) 50%, ${GOLD} 100%)`,
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  fontSize: "1.1em",
-                }}
-              >
-                beautifully
-              </span>
-              <svg className="absolute left-0 right-0 -bottom-2 w-full" height="10" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M2 7 Q 100 1, 198 6" stroke={GOLD} strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.55" />
-              </svg>
+            Invitations as
+            <br />
+            unforgettable as
+            <br />
+            the day,
+            <br className="sm:hidden" />
+            <span className="hidden sm:inline"> </span>
+            <span
+              className="font-handwritten italic font-normal"
+              style={{
+                background: `linear-gradient(120deg, ${GOLD} 0%, hsl(38 85% 58%) 55%, ${GOLD} 100%)`,
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontSize: "1.1em",
+                lineHeight: 1,
+                display: "inline-block",
+              }}
+            >
+              ready in minutes.
             </span>
-            {" "}invited.
           </h1>
 
-          {/* Subhead */}
+          {/* Eyebrow — subtle gold uppercase */}
           <p
-            className="font-display italic leading-relaxed mb-8 mx-auto lg:mx-0"
-            style={{ fontSize: "clamp(1.05rem, 1.55vw, 1.3rem)", color: "hsl(30 14% 36%)", maxWidth: 560 }}
+            className="font-body uppercase text-[10px] sm:text-[11px] tracking-[0.16em] sm:tracking-[0.26em] font-bold mb-5"
+            style={{ color: GOLD }}
           >
-            Cinematic, video-backed wedding invitations your guests will screenshot.
-            One elegant link — live RSVPs, countdowns, gallery and all.
+            RSVP Built-In · Effortless Guest Tracking
           </p>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-10">
-            <GetStartedLink
-              className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-body text-sm font-bold transition-all hover:scale-[1.03] active:scale-[0.97]"
-              style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 14px 36px hsl(38 80% 50% / 0.38)" }}
-            >
-              Design Your Invitation
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </GetStartedLink>
-            <Link
-              to="/demo"
-              className="inline-flex items-center gap-2 px-7 py-4 rounded-2xl font-body text-sm font-semibold transition-all hover:bg-white"
-              style={{ background: "rgba(255,255,255,0.6)", color: "hsl(30 18% 24%)", border: "1.5px solid hsl(38 40% 84%)", backdropFilter: "blur(6px)" }}
-            >
-              <span className="relative flex items-center justify-center w-6 h-6 rounded-full" style={{ background: GOLD_GRAD }}>
-                <Play className="w-3 h-3 text-white fill-white ml-[1px]" />
-              </span>
-              Watch 30-sec demo
-            </Link>
-          </div>
-
-          {/* Micro-reassurance strip */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 mb-8 font-body text-[12px]" style={{ color: "hsl(30 14% 38%)" }}>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: GOLD }} /> One-time payment</span>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: GOLD }} /> Ready in 10 minutes</span>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: GOLD }} /> 30-day money-back</span>
-          </div>
-
-          {/* Social proof trust bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 sm:gap-6 pt-6"
-            style={{ borderTop: "1px solid hsl(38 38% 86%)" }}
+          {/* Short refined paragraph */}
+          <p
+            className="font-body leading-[1.7] mb-10 mx-auto lg:mx-0"
+            style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", color: "hsl(30 16% 36%)", maxWidth: 500 }}
           >
-            <div className="flex items-center gap-3">
-              <div className="flex">
-                {HERO_AVATARS.map((a, idx) => (
-                  <img
-                    key={a.alt}
-                    src={a.src}
-                    alt={a.alt}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-white"
-                    style={{ marginLeft: idx > 0 ? -12 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 8px rgba(0,0,0,0.18)" }}
-                  />
-                ))}
-              </div>
-              <div className="text-left">
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} style={{ color: GOLD, fontSize: 13 }}>★</span>
-                  ))}
-                  <span className="font-body text-xs font-bold ml-1" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
-                </div>
-                <p className="font-body text-xs mt-0.5" style={{ color: "hsl(30 12% 40%)" }}>
-                  Loved by <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
-                </p>
-              </div>
-            </div>
+            The best moments don't start on the day — they start with the invitation.
+            One elegant link, a cinematic video backdrop, and live guest replies in your pocket.
+          </p>
 
-            <div className="hidden sm:block w-px h-10" style={{ background: "hsl(38 28% 82%)" }} />
+          {/* CTA row + inline price */}
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-5 sm:gap-7 mb-9">
+            <GetStartedLink
+              className="group inline-flex items-center justify-center gap-2.5 px-9 py-[18px] rounded-full font-body text-[13px] font-bold uppercase transition-all hover:scale-[1.025] active:scale-[0.98]"
+              style={{
+                background: GOLD_GRAD,
+                color: "white",
+                boxShadow: "0 20px 48px hsl(38 80% 48% / 0.38)",
+                letterSpacing: "0.14em",
+              }}
+            >
+              Create Yours Now
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </GetStartedLink>
 
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "white", border: "1px solid hsl(38 45% 82%)" }}>
-                <Shield className="w-4 h-4" style={{ color: GOLD }} />
-              </div>
-              <div className="text-left">
-                <p className="font-body text-[11px] font-bold uppercase tracking-wider" style={{ color: "hsl(30 20% 16%)" }}>30-Day Guarantee</p>
-                <p className="font-body text-[11px]" style={{ color: "hsl(30 12% 40%)" }}>Full refund, no questions</p>
-              </div>
+            <div className="inline-flex items-baseline gap-2 font-body">
+              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(30 14% 48%)" }}>From</span>
+              <span className="font-display font-semibold leading-none" style={{ color: GOLD, fontSize: "1.75rem" }}>{format(20)}</span>
+              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(30 14% 48%)" }}>· One-time</span>
             </div>
-          </motion.div>
+          </div>
+
+          {/* Guarantee strip — flat */}
+          <div className="inline-flex items-center gap-2 sm:gap-2.5 font-body text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.16em] sm:tracking-[0.26em] font-bold" style={{ color: "hsl(30 16% 40%)" }}>
+            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(38 40% 72%)" }} />
+            <Shield className="w-3.5 h-3.5" style={{ color: GOLD }} />
+            30-Day Money-Back Guarantee
+            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(38 40% 72%)" }} />
+          </div>
         </motion.div>
 
         {/* ── RIGHT — phone mockup ── */}
@@ -485,35 +471,44 @@ const Hero = () => {
           transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           className="relative flex justify-center lg:justify-end"
         >
-          {/* Floating "live" badge */}
+          {/* "Live RSVPs" floating card */}
           <motion.div
             initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="hidden md:flex absolute -left-2 lg:left-4 top-10 z-20 items-center gap-2 px-3.5 py-2 rounded-2xl shadow-xl"
-            style={{ background: "white", border: "1px solid hsl(38 45% 86%)" }}
+            transition={{ duration: 0.6, delay: 0.85 }}
+            className="hidden md:flex absolute -left-4 lg:-left-6 top-14 z-20 items-center gap-2.5 px-3.5 py-2.5 rounded-2xl shadow-[0_18px_40px_rgba(70,50,10,0.14)]"
+            style={{ background: "rgba(255,255,255,0.95)", border: "1px solid hsl(38 45% 86%)", backdropFilter: "blur(12px)" }}
           >
             <span className="relative flex w-2 h-2">
-              <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping" style={{ background: GOLD }} />
+              <span className="absolute inline-flex w-full h-full rounded-full opacity-70 animate-ping" style={{ background: GOLD }} />
               <span className="relative inline-flex w-2 h-2 rounded-full" style={{ background: GOLD }} />
             </span>
-            <span className="font-body text-[11px] font-semibold" style={{ color: "hsl(30 20% 16%)" }}>
-              12 guests just RSVP'd
-            </span>
+            <div className="text-left">
+              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(30 20% 16%)" }}>12 new RSVPs</p>
+              <p className="font-body text-[10px] leading-none mt-1" style={{ color: "hsl(30 12% 46%)" }}>in the last hour</p>
+            </div>
           </motion.div>
 
-          {/* Floating "sent" badge */}
+          {/* Social-proof avatar strip */}
           <motion.div
             initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 1.1 }}
-            className="hidden md:flex absolute -right-2 lg:right-0 bottom-28 z-20 items-center gap-2.5 px-3.5 py-2.5 rounded-2xl shadow-xl"
-            style={{ background: "white", border: "1px solid hsl(38 45% 86%)" }}
+            transition={{ duration: 0.6, delay: 1.05 }}
+            className="hidden md:flex absolute -right-4 lg:-right-6 bottom-24 z-20 items-center gap-3 px-3.5 py-2.5 rounded-2xl shadow-[0_18px_40px_rgba(70,50,10,0.14)]"
+            style={{ background: "rgba(255,255,255,0.95)", border: "1px solid hsl(38 45% 86%)", backdropFilter: "blur(12px)" }}
           >
-            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: GOLD_GRAD }}>
-              <Heart className="w-3.5 h-3.5 text-white fill-white" />
+            <div className="flex">
+              {HERO_AVATARS.slice(0, 3).map((a, idx) => (
+                <img
+                  key={a.alt}
+                  src={a.src}
+                  alt={a.alt}
+                  className="w-7 h-7 rounded-full object-cover border-2 border-white"
+                  style={{ marginLeft: idx > 0 ? -9 : 0, zIndex: 3 - idx }}
+                />
+              ))}
             </div>
-            <div>
-              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(30 20% 16%)" }}>Shared on WhatsApp</p>
-              <p className="font-body text-[10px] leading-none mt-0.5" style={{ color: "hsl(30 12% 44%)" }}>Preview looks stunning ♡</p>
+            <div className="text-left">
+              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(30 20% 16%)" }}>Joined today</p>
+              <p className="font-body text-[10px] leading-none mt-1" style={{ color: "hsl(30 12% 46%)" }}>+128 couples</p>
             </div>
           </motion.div>
 
