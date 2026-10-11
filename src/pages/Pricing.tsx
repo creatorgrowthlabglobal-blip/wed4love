@@ -31,7 +31,7 @@ export const PACKAGES: PackageDef[] = [
   {
     id: "starter",
     name: "Starter",
-    price: 20,
+    price: 9.99,
     oldPrice: 49,
     tagline: "Perfect for a simple, elegant digital invitation.",
     checkout: "https://whop.com/checkout/plan_FsfUSAeOIoKZt",
@@ -48,7 +48,7 @@ export const PACKAGES: PackageDef[] = [
   {
     id: "premium",
     name: "Premium",
-    price: 50,
+    price: 9.99,
     oldPrice: 99,
     tagline: "Everything you need for a truly unforgettable invitation.",
     checkout: "https://whop.com/checkout/plan_OizfizAnMNsVO",
@@ -70,7 +70,8 @@ export const PACKAGES: PackageDef[] = [
   {
     id: "custom",
     name: "Custom",
-    price: 299,
+    price: 9.99,
+    oldPrice: 299,
     tagline: "We design and build your entire invitation for you.",
     checkout: "https://whop.com/checkout/plan_tLQmC1O2O9DmN",
     icon: Palette,
@@ -87,11 +88,16 @@ export const PACKAGES: PackageDef[] = [
   },
 ];
 
+const PH_PRICE = 149;
+
 const PricingCard = ({ pkg, index, onChoose, busy }: {
   pkg: PackageDef; index: number; onChoose: (p: PackageDef) => void; busy: boolean;
 }) => {
   const Icon = pkg.icon;
-  const { format, showUsdNote, usdNote } = useCurrency();
+  const { format: fmt, showUsdNote: usdN, usdNote, currency } = useCurrency();
+  const isPH = currency.code === "PHP";
+  const format = (usd: number) => (isPH && usd === pkg.price ? `₱${PH_PRICE}` : isPH ? `₱${Math.round(usd * 57)}` : fmt(usd));
+  const showUsdNote = usdN && !isPH;
   return (
     <motion.div
       initial={{ opacity: 0, y: 22 }}
@@ -180,6 +186,17 @@ const Pricing = () => {
   const { user } = useAuth();
   const [pending, setPending] = useState<string | null>(null);
 
+  const { currency } = useCurrency();
+  const [gcashPkg, setGcashPkg] = useState<PackageDef | null>(null);
+  const [gcashRef, setGcashRef] = useState("");
+  const [gcashSent, setGcashSent] = useState(false);
+
+  const submitGcash = () => {
+    if (!gcashPkg || gcashRef.trim().length < 4) return;
+    notify("gcash_payment_submitted", { package: gcashPkg.id, amount: `₱${PH_PRICE}`, reference: gcashRef.trim(), email: user?.email });
+    setGcashSent(true);
+  };
+
   const choose = async (pkg: PackageDef) => {
     notify("package_selected", { package: pkg.id, price: pkg.price, email: user?.email });
 
@@ -189,6 +206,12 @@ const Pricing = () => {
     }
     if (!user.email) {
       navigate("/login", { state: { from: "/pricing" } });
+      return;
+    }
+
+    if (currency.code === "PHP") {
+      notify("package_selected", { package: pkg.id, method: "gcash", email: user.email });
+      setGcashRef(""); setGcashSent(false); setGcashPkg(pkg);
       return;
     }
 
@@ -216,8 +239,8 @@ const Pricing = () => {
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 98%), hsl(38 45% 96%))" }}>
       <Seo
-        title="Pricing — Wed4Love Wedding Invitations from $20"
-        description="Simple, one-time pricing for cinematic digital wedding invitations. Starter $20, Premium $50, Custom $299. No subscriptions."
+        title="Pricing — Wed4Love Wedding Invitations from $9.99"
+        description="Simple, one-time pricing for cinematic digital wedding invitations. Every package just $9.99. No subscriptions."
         path="/pricing"
       />
       <Header />
@@ -290,6 +313,33 @@ const Pricing = () => {
           </p>
         </div>
       </main>
+
+      {gcashPkg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/50" onClick={() => setGcashPkg(null)}>
+          <div className="bg-card rounded-3xl p-6 max-w-sm w-full text-center" onClick={e => e.stopPropagation()}>
+            {gcashSent ? (
+              <>
+                <BadgeCheck className="w-10 h-10 mx-auto mb-3" style={{ color: GOLD }} />
+                <p className="font-display font-bold text-lg text-foreground mb-2">Payment submitted</p>
+                <p className="font-body text-sm text-muted-foreground mb-5">We'll verify your GCash payment and unlock your {gcashPkg.name} access shortly — usually within a few hours.</p>
+                <button onClick={() => setGcashPkg(null)} className="w-full py-3 rounded-2xl font-body text-sm font-bold text-primary-foreground" style={{ background: GOLD_GRAD }}>Done</button>
+              </>
+            ) : (
+              <>
+                <p className="font-display font-bold text-lg text-foreground mb-1">Pay ₱{PH_PRICE} via GCash</p>
+                <p className="font-body text-sm text-muted-foreground mb-4">{gcashPkg.name} package · scan the QR, then enter your reference number.</p>
+                <img src="/gcash-qr.png" alt="GCash QR code" className="w-56 h-56 mx-auto rounded-xl object-contain mb-4" />
+                <input value={gcashRef} onChange={e => setGcashRef(e.target.value)} placeholder="GCash reference number"
+                  className="w-full px-4 py-3 rounded-xl border border-border bg-background font-body text-sm mb-3" />
+                <button onClick={submitGcash} disabled={gcashRef.trim().length < 4}
+                  className="w-full py-3 rounded-2xl font-body text-sm font-bold text-primary-foreground disabled:opacity-50" style={{ background: GOLD_GRAD }}>
+                  I've paid ₱{PH_PRICE}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
