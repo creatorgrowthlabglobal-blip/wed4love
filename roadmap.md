@@ -6,5 +6,5 @@
 
 # Wedding link previews
 
-- [ ] Create a wedding-style sharing image and connect the existing social preview image address.
-- [ ] Verify the image and sharing metadata; explain publishing and platform preview limitations.
+- [x] Create a wedding-style sharing image and connect the existing social preview image address.
+- [x] Verify the image and sharing metadata; publishing is required and messaging platforms control preview display and refresh timing.
