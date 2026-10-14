@@ -156,6 +156,7 @@ type OrderState = {
   contactPhone: string;
   eventDate: string;
   delivery: "standard" | "express" | null;
+  designerNote: string;
 };
 
 const INITIAL: OrderState = {
@@ -172,6 +173,7 @@ const INITIAL: OrderState = {
   contactPhone: "",
   eventDate: "",
   delivery: null,
+  designerNote: "",
 };
 
 type Action =
@@ -793,6 +795,36 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
         );
       })}
     </div>
+
+    {/* ── Note for the designer (optional) ── */}
+    <div className="mt-8 md:mt-10">
+      <div className="flex items-center justify-between mb-3">
+        <label htmlFor="designer-note" className="flex items-center gap-1.5 font-body text-sm md:text-base font-bold" style={{ color: "hsl(30 20% 18%)" }}>
+          <MessageSquare className="w-4 h-4" style={{ color: GOLD }} />
+          A note for your designer
+          <span className="font-normal text-xs md:text-sm ml-1.5" style={{ color: "hsl(30 14% 52%)" }}>
+            (optional)
+          </span>
+        </label>
+        <span className="font-body text-xs tabular-nums" style={{ color: "hsl(30 14% 52%)" }}>
+          {state.designerNote.length}/500
+        </span>
+      </div>
+      <textarea
+        id="designer-note"
+        value={state.designerNote}
+        onChange={e => dispatch({ type: "SET", patch: { designerNote: e.target.value.slice(0, 500) } })}
+        placeholder="Anything we should know? Favourite colours, cultural traditions to honour, a photo style you love, a surname spelling that always gets missed…"
+        rows={4}
+        className="w-full px-4 py-3 md:px-5 md:py-4 rounded-2xl font-body text-sm md:text-base outline-none bg-white resize-y transition-all leading-relaxed"
+        style={{ border: "1.5px solid hsl(38 40% 90%)", color: "hsl(30 20% 18%)", minHeight: 110 }}
+        onFocus={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.boxShadow = "0 0 0 4px hsl(38 85% 55% / 0.14)"; }}
+        onBlur={e => { e.currentTarget.style.borderColor = "hsl(38 40% 90%)"; e.currentTarget.style.boxShadow = "none"; }}
+      />
+      <p className="font-body text-xs md:text-sm mt-2 leading-relaxed" style={{ color: "hsl(30 14% 48%)" }}>
+        Your designer reads every note before the first draft. The more context, the fewer revision rounds.
+      </p>
+    </div>
   </div>
 );
 
@@ -916,6 +948,21 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
           ))}
         </div>
       </div>
+
+      {state.designerNote.trim() && (
+        <div
+          className="mb-6 md:mb-8 rounded-2xl p-5 md:p-6"
+          style={{ background: "white", border: "1.5px solid hsl(38 40% 92%)" }}
+        >
+          <p className="flex items-center gap-1.5 font-body text-xs md:text-sm font-bold uppercase tracking-wider mb-3" style={{ color: "hsl(30 16% 42%)" }}>
+            <MessageSquare className="w-3.5 h-3.5" style={{ color: GOLD }} />
+            Note for your designer
+          </p>
+          <p className="font-body text-sm md:text-base leading-relaxed whitespace-pre-wrap" style={{ color: "hsl(30 20% 22%)" }}>
+            {state.designerNote.trim()}
+          </p>
+        </div>
+      )}
 
       {/* No-risk policy card */}
       <div
@@ -1114,6 +1161,7 @@ const OrderWizard = () => {
       contact_phone: `+${state.contactCountry.dial}${state.contactPhone.replace(/\D/g, "")}`,
       event_date: state.eventDate,
       delivery_speed: state.delivery,
+      designer_note: state.designerNote.trim() || null,
       submitted_at: new Date().toISOString(),
     };
 
