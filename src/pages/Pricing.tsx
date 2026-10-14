@@ -14,17 +14,17 @@ const GOLD = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
 
 const SUPPORT_WHATSAPP = "9779702238084";
-const WHATSAPP_CUSTOM_LINK = `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
-  "Hi Wed4Love! I'd like a custom, done-for-you wedding invitation. Can you share details?"
-)}`;
+const whatsappLink = (message: string) =>
+  `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`;
 
 export interface PackageDef {
-  id: "starter" | "custom";
+  id: "starter" | "signature" | "custom";
   name: string;
   price: number | null;
   oldPrice?: number;
   tagline: string;
-  checkout?: string;
+  checkout?: string;        // Whop checkout URL — if absent, falls back to WhatsApp
+  whatsappMessage?: string; // Pre-filled message when falling back to WhatsApp
   icon: typeof Crown;
   featured?: boolean;
   badge?: string;
@@ -34,14 +34,13 @@ export interface PackageDef {
 export const PACKAGES: PackageDef[] = [
   {
     id: "starter",
-    name: "Everything Plan",
+    name: "Essential",
     price: 20,
     oldPrice: 99,
-    tagline: "One payment. Every feature unlocked. Unlimited invites forever.",
+    tagline: "Self-serve. One payment. Every template, every feature.",
     checkout: "https://whop.com/checkout/plan_FsfUSAeOIoKZt",
-    icon: Crown,
-    featured: true,
-    badge: "Most popular — best value",
+    icon: Sparkles,
+    badge: "Great for most couples",
     included: [
       "All 5 cinematic templates unlocked",
       "Unlimited guests & unlimited RSVPs",
@@ -51,24 +50,46 @@ export const PACKAGES: PackageDef[] = [
       "Venue map, countdown & love story",
       "Shareable link + downloadable QR code",
       "Save-the-date link included",
-      "Priority WhatsApp support",
+      "Email support",
+    ],
+  },
+  {
+    id: "signature",
+    name: "Signature",
+    price: 50,
+    tagline: "Everything in Essential — plus a dedicated designer and unlimited revisions.",
+    // TODO: swap in Whop checkout URL for the $50 Signature plan.
+    whatsappMessage: "Hi Wed4Love! I'd like the Signature plan ($50) — can you share the next steps?",
+    icon: Crown,
+    featured: true,
+    badge: "Most loved",
+    included: [
+      "Everything in Essential",
+      "Dedicated designer on WhatsApp",
+      "Unlimited revisions until you love it",
+      "Priority 48-hour delivery",
+      "1:1 design consultation call",
+      "Custom color palette tuning",
+      "Premium WhatsApp support",
     ],
   },
   {
     id: "custom",
-    name: "Custom (Done For You)",
-    price: null,
-    tagline: "Prefer we design and build the whole invitation for you? Let's talk on WhatsApp.",
+    name: "Luxe (Done For You)",
+    price: 299,
+    tagline: "The whole invitation — concept to launch — handled by our team.",
+    // TODO: swap in Whop checkout URL for the $299 Luxe plan.
+    whatsappMessage: "Hi Wed4Love! I'd like the Luxe (Done For You) plan ($299) — can you share the next steps?",
     icon: Palette,
-    badge: "Done for you",
+    badge: "White-glove",
     included: [
-      "Everything in the $20 plan",
+      "Everything in Signature",
       "We build your invitation end-to-end",
       "Bespoke opening animation",
       "Hand-illustrated couple portrait",
-      "1:1 design consultation",
-      "Unlimited revisions until it's perfect",
-      "Just send your details — we do the rest",
+      "Full copywriting + proofreading",
+      "Multilingual version included",
+      "Express 24-hour delivery available",
     ],
   },
 ];
@@ -104,74 +125,101 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
         </div>
       )}
 
-      <div className="p-7 flex flex-col gap-5 flex-1">
-        <div className="flex items-center gap-2">
-          <Icon className="w-4.5 h-4.5" style={{ color: GOLD, width: 18, height: 18 }} />
-          <p className="font-display font-bold text-lg text-foreground">{pkg.name}</p>
+      <div className="p-7 md:p-8 flex flex-col gap-5 md:gap-6 flex-1">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: pkg.featured ? GOLD_GRAD : "hsl(38 60% 96%)",
+              color: pkg.featured ? "white" : GOLD,
+              boxShadow: pkg.featured ? "0 6px 16px hsl(38 80% 55% / 0.3)" : "none",
+            }}
+          >
+            <Icon className="w-5 h-5 md:w-5.5 md:h-5.5" style={{ width: 20, height: 20 }} />
+          </div>
+          <p className="font-display font-bold text-xl md:text-2xl text-foreground">{pkg.name}</p>
         </div>
 
         {pkg.price != null ? (
           <>
             <div className="flex items-baseline gap-2 flex-wrap">
               {pkg.oldPrice != null && (
-                <span className="font-body text-base line-through text-muted-foreground">{format(pkg.oldPrice)}</span>
+                <span className="font-body text-base md:text-lg line-through" style={{ color: "hsl(30 14% 55%)" }}>{format(pkg.oldPrice)}</span>
               )}
-              <span className="font-display font-bold text-foreground" style={{ fontSize: "2.6rem", lineHeight: 1 }}>
+              <span
+                className="font-display font-bold leading-none tabular-nums"
+                style={{
+                  fontSize: "clamp(2.4rem, 4vw, 3rem)",
+                  background: GOLD_GRAD,
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
                 {format(pkg.price)}
               </span>
-              <span className="font-body text-sm text-muted-foreground">One-time payment</span>
+              <span className="font-body text-sm md:text-base font-semibold" style={{ color: "hsl(30 20% 28%)" }}>One-time payment</span>
             </div>
             {showUsdNote && (
-              <p className="font-body text-[11px] -mt-3" style={{ color: "hsl(30 12% 55%)" }}>
+              <p className="font-body text-xs -mt-3" style={{ color: "hsl(30 16% 42%)" }}>
                 charged as {usdNote(pkg.price)}
               </p>
             )}
           </>
         ) : (
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="font-display font-bold text-foreground" style={{ fontSize: "2.2rem", lineHeight: 1 }}>
+            <span className="font-display font-bold text-foreground" style={{ fontSize: "clamp(2rem, 3.5vw, 2.4rem)", lineHeight: 1 }}>
               Let's talk
             </span>
-            <span className="font-body text-sm text-muted-foreground">Custom quote</span>
+            <span className="font-body text-sm md:text-base font-semibold" style={{ color: "hsl(30 20% 28%)" }}>Custom quote</span>
           </div>
         )}
 
-        <p className="font-body text-sm leading-relaxed text-muted-foreground">{pkg.tagline}</p>
+        <p className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(30 20% 32%)" }}>{pkg.tagline}</p>
 
-        {pkg.id === "custom" ? (
+        {!pkg.checkout ? (
           <a
-            href={WHATSAPP_CUSTOM_LINK}
+            href={whatsappLink(pkg.whatsappMessage ?? `Hi Wed4Love! I'd like the ${pkg.name} plan.`)}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => notify("custom_whatsapp_clicked", { source: "pricing" })}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98]"
-            style={{ background: "transparent", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }}
+            onClick={() => notify("package_whatsapp_clicked", { source: "pricing", package: pkg.id })}
+            className="w-full flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-2xl font-body text-sm md:text-base font-bold transition-all hover:opacity-90 active:scale-[0.98]"
+            style={
+              pkg.featured
+                ? { background: GOLD_GRAD, color: "white", boxShadow: "0 8px 26px hsl(38 80% 55% / 0.3)" }
+                : { background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
+            }
           >
-            <MessageCircle className="w-4 h-4" />
-            Message us on WhatsApp
+            <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
+            {pkg.price != null ? `Start on WhatsApp — ${format(pkg.price)}` : "Message us on WhatsApp"}
           </a>
         ) : (
           <button
             onClick={() => onChoose(pkg)}
             disabled={busy}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-2xl font-body text-sm md:text-base font-bold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             style={
               pkg.featured
                 ? { background: GOLD_GRAD, color: "white", boxShadow: "0 8px 26px hsl(38 80% 55% / 0.3)" }
-                : { background: "transparent", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
+                : { background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
             }
           >
-            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {busy ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : null}
             {pkg.price != null ? `Get it now — ${format(pkg.price)}` : "Get it now"}
-            {!busy && <ArrowRight className="w-4 h-4" />}
+            {!busy && <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
         )}
 
-        <ul className="flex flex-col gap-2.5 mt-1">
+        <ul className="flex flex-col gap-3 md:gap-3.5 mt-1 pt-5 md:pt-6" style={{ borderTop: "1px solid hsl(38 30% 92%)" }}>
           {pkg.included.map(f => (
-            <li key={f} className="flex items-start gap-2.5">
-              <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: GOLD }} />
-              <span className="font-body text-sm leading-snug text-foreground">{f}</span>
+            <li key={f} className="flex items-start gap-2.5 md:gap-3">
+              <span
+                className="shrink-0 w-5 h-5 md:w-5 md:h-5 rounded-full flex items-center justify-center mt-0.5"
+                style={{ background: pkg.featured ? "hsl(38 70% 94%)" : "hsl(38 60% 96%)" }}
+              >
+                <Check className="w-3 h-3 md:w-3.5 md:h-3.5" style={{ color: GOLD, strokeWidth: 3 }} />
+              </span>
+              <span className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(30 20% 22%)" }}>{f}</span>
             </li>
           ))}
         </ul>
@@ -221,8 +269,8 @@ const Pricing = () => {
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 98%), hsl(38 45% 96%))" }}>
       <Seo
-        title="Pricing — Wed4Love Wedding Invitations · $20 Everything Plan"
-        description="One simple $20 plan. Every template, unlimited guests, live RSVP dashboard — all included. Or go custom done-for-you via WhatsApp."
+        title="Pricing — Wed4Love Wedding Invitations · From $20"
+        description="Three honest plans — $20 self-serve, $50 with a dedicated designer and unlimited revisions, or $299 fully done-for-you. One-time payment, no hidden fees."
         path="/pricing"
       />
       <Header />
@@ -242,11 +290,11 @@ const Pricing = () => {
               Wedding Invitation Pricing
             </p>
             <h1 className="font-display text-3xl sm:text-5xl font-bold text-foreground mb-4">
-              One simple plan. Everything included.
+              Three honest plans. No hidden fees.
             </h1>
-            <p className="font-body text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              Pay once — $20 unlocks every template, unlimited guests, and the live RSVP dashboard.
-              Prefer we build it for you? Send us a message on WhatsApp.
+            <p className="font-body text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
+              Start self-serve at $20, add a dedicated designer and unlimited revisions for $50,
+              or let us handle the whole invitation for $299. One-time payment either way.
             </p>
             <div
               className="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full"
@@ -262,7 +310,7 @@ const Pricing = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7 items-start max-w-6xl mx-auto">
             {PACKAGES.map((p, i) => (
               <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={pending === p.id} />
             ))}

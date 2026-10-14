@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
 import {
   Sparkles, QrCode, LayoutDashboard, CheckCircle2,
   Play, ArrowRight, ChevronDown, ChevronUp,
   Clock, Heart, Users, Smartphone, Shield, Music2, LogOut, PlusCircle, BookOpen,
-  FileText, Printer, Mail, Truck, X, Bell, Send, Check, Menu,
+  FileText, Printer, Mail, Truck, X, Bell, Send, Check, Menu, Instagram, Facebook,
+  Infinity as InfinityIcon, MessageCircle,
 } from "lucide-react";
 import gardenRoseThumbnail   from "@/assets/garden-rose-thumbnail.png";
 import rusticBloomThumbnail  from "@/assets/rustic-bloom-thumbnail.png";
@@ -23,6 +25,7 @@ import CurrencySwitcher from "@/components/CurrencySwitcher";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Seo } from "@/components/Seo";
 import ScarcityBar from "@/components/ScarcityBar";
+import { SOCIAL_LINKS } from "@/lib/socials";
 
 const LANDING_FAQ_SCHEMA = {
   "@context": "https://schema.org",
@@ -167,19 +170,20 @@ const UserMenu = () => {
   );
 };
 
-// ── Smart CTA — routes straight to the invitation template chooser ─────────
+// ── Smart CTA — routes straight into the no-payment order wizard ─────────────
 const GetStartedLink = ({ className, style, children }: { className: string; style: React.CSSProperties; children: React.ReactNode }) => (
-  <Link to="/choose-template" className={className} style={style}>
+  <Link to="/order" className={className} style={style}>
     {children}
   </Link>
 );
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
-const NAV_LINKS = [
-  { to: "/pricing", label: "Pricing" },
-  { to: "/blog",    label: "Blog" },
-  { to: "/demo",    label: "Demo" },
-  { to: "/contact", label: "Contact" },
+const NAV_LINKS: { to: string; label: string; hash?: string }[] = [
+  { to: "/#templates", label: "Templates", hash: "templates" },
+  { to: "/pricing",    label: "Pricing" },
+  { to: "/team",       label: "Team" },
+  { to: "/#reviews",   label: "Reviews",   hash: "reviews" },
+  { to: "/contact",    label: "Contact" },
 ];
 
 const Nav = () => {
@@ -199,23 +203,23 @@ const Nav = () => {
       className="fixed top-4 inset-x-0 mx-auto z-50 w-[92%] max-w-5xl"
     >
       <div
-        className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center justify-between relative"
+        className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center gap-3 md:gap-5"
         style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
       >
         {/* Logo */}
-        <Link to="/" className="z-10">
+        <Link to="/" className="shrink-0">
           <span className="font-display font-bold text-2xl sm:text-3xl tracking-tight leading-none" style={{ color: GOLD }}>
             Wed4Love
           </span>
         </Link>
 
-        {/* Center Nav — desktop only */}
-        <nav className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+        {/* Center Nav — flows naturally, no absolute positioning */}
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-7 min-w-0">
           {NAV_LINKS.map(l => (
             <Link
               key={l.label}
               to={l.to}
-              className="font-body text-sm font-semibold tracking-wide transition-colors duration-200"
+              className="font-body text-sm font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap"
               style={navLinkSt}
               onMouseEnter={onEnter}
               onMouseLeave={onLeave}
@@ -226,14 +230,14 @@ const Nav = () => {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 z-10">
-          {/* Utility switchers — desktop only */}
-          <div className="hidden md:flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 md:gap-2 lg:gap-3 ml-auto md:ml-0 shrink-0">
+          {/* Utility switchers — md+ (hidden on narrow md if space is tight is handled via container flex) */}
+          <div className="hidden md:flex items-center gap-1.5 lg:gap-2">
             <CurrencySwitcher />
             <LanguageSwitcher />
           </div>
 
-          {/* Desktop-only auth buttons */}
+          {/* Desktop auth buttons */}
           {!loading && (
             user ? (
               <UserMenu />
@@ -241,14 +245,14 @@ const Nav = () => {
               <>
                 <Link
                   to="/login"
-                  className="hidden md:inline-block font-body text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-70"
+                  className="hidden lg:inline-block font-body text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-70 whitespace-nowrap"
                   style={{ color: "hsl(30 18% 38%)" }}
                 >
                   Sign In
                 </Link>
                 <Link
-                  to="/login"
-                  className="font-body text-sm font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
+                  to="/order"
+                  className="hidden md:inline-block font-body text-sm font-semibold px-3.5 lg:px-5 py-2 lg:py-2.5 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
                   style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 18px hsl(38 80% 55% / 0.28)" }}
                 >
                   Get Started
@@ -359,36 +363,6 @@ const Hero = () => {
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           className="text-center lg:text-left"
         >
-          {/* Rating with couple avatars */}
-          <motion.div
-            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-3 mb-8 justify-center lg:justify-start w-full lg:w-auto"
-          >
-            <div className="flex shrink-0">
-              {HERO_AVATARS.map((a, idx) => (
-                <img
-                  key={a.alt}
-                  src={a.src}
-                  alt={a.alt}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white"
-                  style={{ marginLeft: idx > 0 ? -11 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 10px rgba(70,45,10,0.22)" }}
-                />
-              ))}
-            </div>
-            <div className="text-left">
-              <div className="flex items-center gap-[2px]" aria-hidden>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} style={{ color: GOLD, fontSize: 14, lineHeight: 1 }}>★</span>
-                ))}
-                <span className="font-body text-[12px] font-bold ml-1.5" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
-              </div>
-              <p className="font-body text-[11px] sm:text-[12px] mt-1 leading-none" style={{ color: "hsl(30 14% 42%)" }}>
-                Loved by <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
-              </p>
-            </div>
-          </motion.div>
-
           {/* Headline — editorial serif with italic script accent */}
           <h1
             className="font-display leading-[1.03] mb-7 tracking-[-0.01em]"
@@ -435,7 +409,7 @@ const Hero = () => {
           </p>
 
           {/* CTA row + inline price */}
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-5 sm:gap-7 mb-9">
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-5 sm:gap-7 mb-6">
             <GetStartedLink
               className="group inline-flex items-center justify-center gap-2.5 px-9 py-[18px] rounded-full font-body text-[13px] font-bold uppercase transition-all hover:scale-[1.025] active:scale-[0.98]"
               style={{
@@ -455,6 +429,36 @@ const Hero = () => {
               <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(30 14% 48%)" }}>· One-time</span>
             </div>
           </div>
+
+          {/* Rating with couple avatars — social proof under CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="inline-flex items-center gap-3 mb-8 justify-center lg:justify-start w-full lg:w-auto"
+          >
+            <div className="flex shrink-0">
+              {HERO_AVATARS.map((a, idx) => (
+                <img
+                  key={a.alt}
+                  src={a.src}
+                  alt={a.alt}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white"
+                  style={{ marginLeft: idx > 0 ? -11 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 10px rgba(70,45,10,0.22)" }}
+                />
+              ))}
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-[2px]" aria-hidden>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} style={{ color: GOLD, fontSize: 14, lineHeight: 1 }}>★</span>
+                ))}
+                <span className="font-body text-[12px] font-bold ml-1.5" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
+              </div>
+              <p className="font-body text-[11px] sm:text-[12px] mt-1 leading-none" style={{ color: "hsl(30 14% 42%)" }}>
+                Loved by <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
+              </p>
+            </div>
+          </motion.div>
 
           {/* Guarantee strip — flat */}
           <div className="inline-flex items-center gap-2 sm:gap-2.5 font-body text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.16em] sm:tracking-[0.26em] font-bold" style={{ color: "hsl(30 16% 40%)" }}>
@@ -515,6 +519,64 @@ const Hero = () => {
           <PhoneMockup />
         </motion.div>
       </div>
+
+      {/* ── Hero footer: contact prompt + social icons ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="relative mt-20 sm:mt-24 flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-6"
+      >
+        <Link
+          to="/contact"
+          className="inline-flex items-center gap-2 font-body text-sm sm:text-base font-semibold transition-colors"
+          style={{ color: "hsl(30 20% 16%)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = GOLD)}
+          onMouseLeave={e => (e.currentTarget.style.color = "hsl(30 20% 16%)")}
+        >
+          <MessageCircle className="w-5 h-5" style={{ color: GOLD }} />
+          Have any questions? <span style={{ color: GOLD }}>Contact us!</span>
+        </Link>
+
+        <span className="hidden sm:block w-px h-5" style={{ background: "hsl(38 40% 70%)" }} />
+
+        <div className="flex items-center gap-2">
+          {[
+            { href: SOCIAL_LINKS.instagram, label: "Instagram", icon: <Instagram className="w-4 h-4" /> },
+            { href: SOCIAL_LINKS.pinterest, label: "Pinterest", icon: <PinterestIcon className="w-4 h-4" /> },
+            { href: SOCIAL_LINKS.facebook,  label: "Facebook",  icon: <Facebook className="w-4 h-4" /> },
+            { href: SOCIAL_LINKS.tiktok,    label: "TikTok",    icon: <TikTokIcon className="w-4 h-4" /> },
+          ].map(s => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              style={{
+                background: "white",
+                color: "hsl(30 20% 22%)",
+                border: "1.5px solid hsl(38 40% 82%)",
+                boxShadow: "0 2px 8px hsl(38 40% 40% / 0.08)",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = GOLD_GRAD;
+                e.currentTarget.style.color = "white";
+                e.currentTarget.style.borderColor = "transparent";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = "white";
+                e.currentTarget.style.color = "hsl(30 20% 22%)";
+                e.currentTarget.style.borderColor = "hsl(38 40% 82%)";
+              }}
+            >
+              {s.icon}
+            </a>
+          ))}
+        </div>
+      </motion.div>
     </div>
   </section>
   );
@@ -588,6 +650,167 @@ const PhoneMockup = () => (
     <div className="absolute" style={{ left: -2, top: "26%", width: 3, height: 54, background: "#222", borderTopLeftRadius: 2, borderBottomLeftRadius: 2 }} />
     <div className="absolute" style={{ right: -2, top: "22%", width: 3, height: 72, background: "#222", borderTopRightRadius: 2, borderBottomRightRadius: 2 }} />
   </div>
+);
+
+// ── Brand icons for Pinterest & TikTok (not in lucide) ──────────────────────
+const PinterestIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+    <path d="M12 .5C5.65.5.5 5.65.5 12c0 4.87 3.04 9.03 7.33 10.7-.1-.91-.19-2.31.04-3.3.21-.9 1.37-5.74 1.37-5.74s-.35-.7-.35-1.74c0-1.63.95-2.85 2.13-2.85 1.01 0 1.49.76 1.49 1.66 0 1.01-.65 2.53-.98 3.93-.28 1.18.59 2.14 1.75 2.14 2.1 0 3.71-2.21 3.71-5.4 0-2.83-2.03-4.8-4.93-4.8-3.36 0-5.33 2.52-5.33 5.12 0 1.01.39 2.1.88 2.69.1.12.11.22.08.34-.09.37-.29 1.18-.33 1.34-.05.22-.17.26-.4.16-1.5-.7-2.44-2.88-2.44-4.64 0-3.78 2.75-7.25 7.92-7.25 4.16 0 7.39 2.96 7.39 6.92 0 4.13-2.6 7.46-6.21 7.46-1.21 0-2.35-.63-2.74-1.37l-.75 2.85c-.27 1.04-1 2.34-1.49 3.14 1.12.35 2.3.54 3.54.54 6.35 0 11.5-5.15 11.5-11.5S18.35.5 12 .5z"/>
+  </svg>
+);
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/>
+  </svg>
+);
+
+// ── "Our Difference" value prop ──────────────────────────────────────────────
+const OurDifference = () => (
+  <section className="relative py-16 sm:py-20 px-4" style={{ background: "hsl(42 55% 96%)" }}>
+    <div className="max-w-5xl mx-auto">
+      <motion.div {...fade()} className="text-center mb-10">
+        <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
+          What You Won't Find Anywhere Else
+        </p>
+        <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+          Our Difference
+        </h2>
+      </motion.div>
+
+      <motion.div
+        {...fade(0.1)}
+        className="relative rounded-[2rem] overflow-hidden p-8 sm:p-12"
+        style={{
+          background: "linear-gradient(145deg, hsl(38 70% 97%) 0%, hsl(38 55% 93%) 100%)",
+          border: "1.5px solid hsl(38 55% 86%)",
+          boxShadow: "0 20px 60px hsl(38 60% 42% / 0.12)",
+        }}
+      >
+        <div className="absolute -top-20 -right-16 w-72 h-72 rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(38 90% 72% / 0.35) 0%, transparent 65%)", filter: "blur(10px)" }} />
+
+        <div className="relative grid md:grid-cols-2 gap-8 sm:gap-10">
+          {/* Point 1 */}
+          <div className="flex gap-4">
+            <div
+              className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center"
+              style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.35)" }}
+            >
+              <Heart className="w-5 h-5 text-white fill-white" />
+            </div>
+            <div>
+              <p className="font-display font-bold text-lg text-foreground mb-1.5 flex items-center gap-2">
+                <Check className="w-4 h-4" style={{ color: GOLD }} />
+                Your designer, by your side
+              </p>
+              <p className="font-body text-sm leading-relaxed" style={{ color: "hsl(30 16% 36%)" }}>
+                From the first message to the morning of your wedding, your personal designer is available for updates, tweaks, and last-minute changes.
+                <span className="font-semibold text-foreground"> Real people, real care.</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Point 2 */}
+          <div className="flex gap-4">
+            <div
+              className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center"
+              style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.35)" }}
+            >
+              <InfinityIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-display font-bold text-lg text-foreground mb-1.5 flex items-center gap-2">
+                <Check className="w-4 h-4" style={{ color: GOLD }} />
+                Unlimited revisions
+              </p>
+              <p className="font-body text-sm leading-relaxed" style={{ color: "hsl(30 16% 36%)" }}>
+                Not happy with something? We change it. And again. And again. There's no limit.
+                <span className="font-semibold text-foreground"> Your invitation is done when </span>
+                <em className="font-semibold" style={{ color: GOLD }}>you</em>
+                <span className="font-semibold text-foreground"> say it's done.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  </section>
+);
+
+// ── No-Limits transparency banner ────────────────────────────────────────────
+const NoLimitsBanner = () => (
+  <section className="relative py-16 sm:py-20 px-4" style={{ background: "hsl(42 35% 97%)" }}>
+    <div className="max-w-4xl mx-auto">
+      <motion.div
+        {...fade()}
+        className="relative rounded-[2rem] overflow-hidden text-center px-6 sm:px-12 py-12 sm:py-16"
+        style={{
+          background: `linear-gradient(135deg, hsl(28 30% 10%) 0%, hsl(30 24% 16%) 100%)`,
+          boxShadow: "0 24px 70px rgba(0,0,0,0.22)",
+        }}
+      >
+        {/* Gold ambient glow */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[32rem] h-[32rem] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(38 90% 60% / 0.22) 0%, transparent 60%)", filter: "blur(20px)" }} />
+
+        <p
+          className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-5"
+          style={{ color: "hsl(38 85% 72%)" }}
+        >
+          No limits. Ever.
+        </p>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display font-bold leading-none mb-3"
+          style={{
+            fontSize: "clamp(3rem, 10vw, 6.5rem)",
+            background: `linear-gradient(135deg, hsl(38 90% 72%) 0%, hsl(38 95% 58%) 50%, hsl(38 90% 72%) 100%)`,
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          1,693<span style={{ fontSize: "0.5em" }}>+</span>
+        </motion.div>
+
+        <p className="font-body text-sm sm:text-base mb-2" style={{ color: "rgba(255,255,255,0.85)" }}>
+          invitations created and counting
+        </p>
+
+        <p className="font-display italic text-lg sm:text-xl mb-6" style={{ color: "hsl(38 85% 72%)" }}>
+          Send to 10 guests or 10,000. Same price.
+        </p>
+
+        <p className="font-body text-sm leading-relaxed max-w-xl mx-auto mb-8" style={{ color: "rgba(255,255,255,0.7)" }}>
+          One link, any number of guests. No per-guest pricing, no extra fees. One-time payment only.
+        </p>
+
+        {/* Trust pills */}
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          {["Unlimited Guests", "One Link", "One-Time Payment"].map(label => (
+            <span
+              key={label}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-body text-xs sm:text-sm font-semibold"
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,220,160,0.3)",
+                color: "hsl(38 85% 86%)",
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              <Check className="w-3.5 h-3.5" />
+              {label}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  </section>
 );
 
 // ── Paper vs Digital comparison ──────────────────────────────────────────────
@@ -865,7 +1088,7 @@ const TemplateCard = ({ t, i }: { t: typeof TEMPLATES[0]; i: number }) => (
 );
 
 const Templates = () => (
-  <section className="py-24 px-4" style={{ background: "hsl(42 35% 97%)" }}>
+  <section id="templates" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(42 35% 97%)" }}>
     <div className="max-w-5xl mx-auto">
       <motion.div {...fade()} className="text-center mb-14">
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -1222,56 +1445,161 @@ const TESTIMONIALS = [
     quote: "Our guests couldn't believe it wasn't a physical card. The video background of our venue was absolutely stunning — everyone was asking how we did it.",
     name: "Priya & Rahul",
     detail: "December 2025 · Mumbai",
+    flag: "🇮🇳",
+    country: "India",
   },
   {
     quote: "The RSVP dashboard made planning so stress-free. I could see exactly who confirmed in real time, add notes, and export the list for the caterer. Saved us hours.",
     name: "Sarah & James",
     detail: "October 2025 · London",
+    flag: "🇬🇧",
+    country: "United Kingdom",
   },
   {
     quote: "We shared it in our family WhatsApp group and within an hour 40 people had RSVP'd. The QR code on our save-the-date was a genius touch.",
     name: "Aisha & David",
     detail: "March 2026 · Dubai",
+    flag: "🇦🇪",
+    country: "UAE",
+  },
+  {
+    quote: "Our designer stayed with us right up to the morning of the wedding. We changed the colour palette three days before — no drama, no extra fee. Felt like having a friend on the team.",
+    name: "Camila & Mateo",
+    detail: "February 2026 · Buenos Aires",
+    flag: "🇦🇷",
+    country: "Argentina",
+  },
+  {
+    quote: "I'm particular about typography and spacing. They nailed it on the second revision and were patient with my endless tweaks. The final result looked like a luxury studio made it.",
+    name: "Elena & Marco",
+    detail: "May 2026 · Milan",
+    flag: "🇮🇹",
+    country: "Italy",
+  },
+  {
+    quote: "We invited 420 guests across three continents. One link, one price. No per-guest fees. The multilingual version was perfect for our mixed family.",
+    name: "Nia & Daniel",
+    detail: "July 2026 · Lagos",
+    flag: "🇳🇬",
+    country: "Nigeria",
+  },
+  {
+    quote: "We got the express 24-hour turnaround and it still looked incredible. Our save-the-dates went out the next morning. Worth every penny.",
+    name: "Jessica & Ryan",
+    detail: "August 2026 · Austin",
+    flag: "🇺🇸",
+    country: "USA",
+  },
+  {
+    quote: "The unlimited revisions aren't a marketing line — I asked for seven rounds of changes and nobody blinked. Our invitation finally felt like us.",
+    name: "Sophie & Lucas",
+    detail: "September 2026 · Paris",
+    flag: "🇫🇷",
+    country: "France",
   },
 ];
 
-const Testimonials = () => (
-  <section className="py-24 px-4" style={{ background: "hsl(42 35% 97%)" }}>
-    <div className="max-w-5xl mx-auto">
-      <motion.div {...fade()} className="text-center mb-14">
-        <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
-          Couples Love It
-        </p>
-        <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
-          Real stories, real celebrations
-        </h2>
-      </motion.div>
+const Testimonials = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: false });
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {TESTIMONIALS.map((t, i) => (
-          <motion.div key={t.name} {...fade(0.08 + i * 0.1)}
-            className="rounded-3xl p-6 flex flex-col gap-4"
-            style={{ background: "white", border: "1.5px solid hsl(38 28% 91%)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
-          >
-            {/* Stars */}
-            <div className="flex gap-1">
-              {Array.from({ length: 5 }).map((_, si) => (
-                <span key={si} className="text-xs" style={{ color: GOLD }}>★</span>
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelectedIdx(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+    onSelect();
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi]);
+
+  // Auto-advance every 5s, paused on hover/touch
+  useEffect(() => {
+    if (!emblaApi || isPaused) return;
+    const id = window.setInterval(() => emblaApi.scrollNext(), 5000);
+    return () => window.clearInterval(id);
+  }, [emblaApi, isPaused]);
+
+  const slideCount = TESTIMONIALS.length;
+
+  return (
+    <section id="reviews" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(42 35% 97%)" }}>
+      <div className="max-w-6xl mx-auto">
+        <motion.div {...fade()} className="text-center mb-12">
+          <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
+            Couples Love It
+          </p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
+            Real stories, from couples around the world
+          </h2>
+          <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">
+            Drag, swipe, or let it roll — these are their words.
+          </p>
+        </motion.div>
+
+        <div
+          className="relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          <div ref={emblaRef} className="overflow-hidden">
+            <div className="flex -ml-5">
+              {TESTIMONIALS.map((t, i) => (
+                <div key={t.name} className="pl-5 shrink-0 grow-0 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.1 }}
+                    transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
+                    className="h-full rounded-3xl p-6 flex flex-col gap-4"
+                    style={{ background: "white", border: "1.5px solid hsl(38 28% 91%)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
+                  >
+                    {/* Flag + country */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl leading-none" aria-hidden>{t.flag}</span>
+                        <span className="font-body text-[11px] uppercase tracking-widest font-bold" style={{ color: "hsl(30 14% 42%)" }}>{t.country}</span>
+                      </div>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, si) => (
+                          <span key={si} className="text-xs" style={{ color: GOLD }}>★</span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="font-body text-sm leading-relaxed text-foreground flex-1">
+                      "{t.quote}"
+                    </p>
+                    <div>
+                      <p className="font-display font-bold text-sm text-foreground">{t.name}</p>
+                      <p className="font-body text-xs text-muted-foreground mt-0.5">{t.detail}</p>
+                    </div>
+                  </motion.div>
+                </div>
               ))}
             </div>
-            <p className="font-body text-sm leading-relaxed text-foreground flex-1">
-              "{t.quote}"
-            </p>
-            <div>
-              <p className="font-display font-bold text-sm text-foreground">{t.name}</p>
-              <p className="font-body text-xs text-muted-foreground mt-0.5">{t.detail}</p>
-            </div>
-          </motion.div>
-        ))}
+          </div>
+
+          {/* Dots */}
+          <div className="flex items-center justify-center gap-2 mt-8">
+            {Array.from({ length: slideCount }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => emblaApi?.scrollTo(i)}
+                aria-label={`Go to review ${i + 1}`}
+                className="h-2 rounded-full transition-all"
+                style={{
+                  width: selectedIdx === i ? 22 : 8,
+                  background: selectedIdx === i ? GOLD : "hsl(38 30% 82%)",
+                }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // ── Pricing teaser ───────────────────────────────────────────────────────────
 const PRICING_FEATURES = [
@@ -1730,12 +2058,14 @@ const Landing = () => {
     />
     <Nav />
     <Hero />
+    <OurDifference />
+    <Testimonials />
+    <NoLimitsBanner />
     <Comparison />
     <StatsBar />
     <Templates />
     <HowItWorks />
     <FeatureRows />
-    <Testimonials />
     <PricingTeaser />
     <FAQ />
     <FinalCTA />

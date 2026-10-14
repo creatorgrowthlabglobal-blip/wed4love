@@ -17,7 +17,7 @@ const AUTO_FORWARD_MS = 3500;
 type PlanId = PackageDef["id"];
 
 const isPlanId = (v: string | null | undefined): v is PlanId =>
-  v === "starter" || v === "custom";
+  v === "starter" || v === "signature" || v === "custom";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();

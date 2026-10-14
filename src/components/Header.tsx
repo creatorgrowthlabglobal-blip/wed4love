@@ -3,16 +3,17 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 const GOLD      = "hsl(38 72% 44%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
 
 const LINKS = [
-  { to: "/#how-it-works", label: "How it works" },
-  { to: "/pricing",       label: "Pricing" },
-  { to: "/blog",          label: "Blog" },
-  { to: "/demo",          label: "Demo" },
-  { to: "/contact",       label: "Contact" },
+  { to: "/#templates", label: "Templates" },
+  { to: "/pricing",    label: "Pricing" },
+  { to: "/team",       label: "Team" },
+  { to: "/#reviews",   label: "Reviews" },
+  { to: "/contact",    label: "Contact" },
 ];
 
 const Header = () => {
@@ -26,23 +27,23 @@ const Header = () => {
       className="fixed top-4 inset-x-0 mx-auto z-50 w-[92%] max-w-5xl"
     >
       <div
-        className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center justify-between"
+        className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center gap-3 md:gap-5"
         style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
       >
         {/* Logo */}
-        <Link to="/">
+        <Link to="/" className="shrink-0">
           <span className="font-display font-bold text-lg tracking-tight" style={{ color: GOLD }}>
             Wed4Love
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        {/* Desktop nav — flows via flex-1, no overlap with right actions */}
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-7 min-w-0">
           {LINKS.map(l => (
             <Link
               key={l.label}
               to={l.to}
-              className="font-body text-sm transition-colors hover:text-[hsl(38_72%_44%)]"
+              className="font-body text-sm transition-colors hover:text-[hsl(38_72%_44%)] whitespace-nowrap"
               style={{ color: "hsl(30 12% 48%)" }}
             >
               {l.label}
@@ -51,12 +52,14 @@ const Header = () => {
         </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
-          {/* Utility switchers (always visible) */}
-          <LanguageSwitcher />
+        <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 ml-auto md:ml-0 shrink-0">
+          <div className="hidden md:flex items-center gap-1.5 lg:gap-2">
+            <CurrencySwitcher />
+            <LanguageSwitcher />
+          </div>
           <Link
-            to="/pricing"
-            className="hidden md:inline-block font-body text-sm font-semibold px-5 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
+            to="/order"
+            className="hidden md:inline-block font-body text-sm font-semibold px-3.5 lg:px-5 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
             style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(38 80% 55% / 0.26)" }}
           >
             Get Started
@@ -96,8 +99,15 @@ const Header = () => {
               </Link>
             ))}
 
+            <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
+
+            <div className="flex items-center gap-2 px-2 py-1">
+              <CurrencySwitcher />
+              <LanguageSwitcher />
+            </div>
+
             <Link
-              to="/pricing"
+              to="/order"
               onClick={() => setOpen(false)}
               className="mt-2 font-body text-sm font-semibold px-3 py-2.5 rounded-xl text-center"
               style={{ background: GOLD_GRAD, color: "white" }}
