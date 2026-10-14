@@ -7,50 +7,50 @@
 @layer base {
   :root {
     color-scheme: light;
-    /* Wed4Love Cream + Gold Palette */
-    --background: 42 60% 97%;
-    --foreground: 30 20% 14%;
+    /* Wed4Love editorial palette — deep teal + near-white */
+    --background: 0 0% 99%;
+    --foreground: 220 20% 10%;
 
-    --card: 42 60% 96%;
-    --card-foreground: 30 20% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
 
-    --popover: 42 60% 97%;
-    --popover-foreground: 30 20% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
 
-    --primary: 38 72% 44%;
+    --primary: 192 60% 24%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 38 55% 92%;
-    --secondary-foreground: 30 20% 14%;
+    --secondary: 190 25% 95%;
+    --secondary-foreground: 220 20% 14%;
 
-    --muted: 38 30% 90%;
-    --muted-foreground: 30 12% 42%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 42%;
 
-    --accent: 38 80% 52%;
+    --accent: 192 55% 32%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 38 45% 88%;
-    --input: 38 45% 92%;
-    --ring: 38 72% 44%;
+    --border: 220 15% 90%;
+    --input: 220 15% 92%;
+    --ring: 192 60% 24%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens (values re-tuned to gold family; names kept for compat) */
-    --rose-gold: 38 55% 76%;
-    --blush: 42 60% 94%;
-    --cream-warm: 42 60% 97%;
-    --vintage-beige: 38 55% 92%;
-    --elegant-gold: 38 80% 52%;
-    --deep-rose: 38 60% 40%;
-    --lavender: 38 40% 90%;
-    --warm-brown: 30 20% 14%;
-    --charcoal: 0 0% 23%;
-    --soft-pink: 42 60% 94%;
-    --bright-rose: 38 72% 44%;
-    --soft-purple: 38 50% 90%;
+    /* Legacy tokens — kept for compat with letter flow; retuned toward neutral/teal family */
+    --rose-gold: 192 20% 80%;
+    --blush: 0 0% 98%;
+    --cream-warm: 0 0% 99%;
+    --vintage-beige: 190 20% 94%;
+    --elegant-gold: 192 55% 32%;
+    --deep-rose: 192 60% 22%;
+    --lavender: 220 15% 92%;
+    --warm-brown: 220 20% 14%;
+    --charcoal: 0 0% 20%;
+    --soft-pink: 0 0% 98%;
+    --bright-rose: 192 60% 24%;
+    --soft-purple: 220 15% 92%;
 
     /* Vault theme tokens */
     --vault-navy: 225 40% 12%;
@@ -63,31 +63,31 @@
     --vault-text: 36 30% 88%;
     --vault-text-muted: 36 15% 58%;
 
-    /* Gradients (retuned to cream + gold) */
-    --gradient-romantic: linear-gradient(135deg, hsl(42 60% 97%) 0%, hsl(38 55% 92%) 50%, hsl(38 72% 44% / 0.15) 100%);
-    --gradient-paper: linear-gradient(170deg, hsl(42 60% 97%) 0%, hsl(38 55% 94%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(38 72% 44%) 0%, hsl(38 80% 52%) 100%);
-    --gradient-blush: linear-gradient(180deg, hsl(42 60% 97%) 0%, hsl(38 55% 94%) 100%);
+    /* Gradients (retuned to editorial teal + white) */
+    --gradient-romantic: linear-gradient(135deg, hsl(0 0% 99%) 0%, hsl(190 25% 96%) 50%, hsl(192 60% 24% / 0.08) 100%);
+    --gradient-paper: linear-gradient(170deg, hsl(0 0% 99%) 0%, hsl(190 25% 96%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(192 60% 24%) 0%, hsl(192 55% 32%) 100%);
+    --gradient-blush: linear-gradient(180deg, hsl(0 0% 99%) 0%, hsl(190 25% 97%) 100%);
 
-    /* Shadows (gold-tinted) */
-    --shadow-romantic: 0 8px 32px -8px hsl(38 72% 44% / 0.18), 0 4px 16px -4px hsl(38 80% 52% / 0.10);
-    --shadow-glow: 0 0 24px hsl(38 72% 44% / 0.22), 0 0 48px hsl(38 80% 52% / 0.12);
-    --shadow-card: 0 4px 24px -4px hsl(30 20% 14% / 0.06), 0 2px 8px -2px hsl(38 72% 44% / 0.10);
-    --shadow-gold-glow: 0 0 24px hsl(38 80% 52% / 0.30), 0 4px 16px hsl(38 80% 52% / 0.15);
+    /* Shadows (soft, cool-neutral — no coloured glow) */
+    --shadow-romantic: 0 8px 32px -8px hsl(220 25% 15% / 0.10), 0 4px 16px -4px hsl(220 20% 20% / 0.06);
+    --shadow-glow: 0 0 24px hsl(192 60% 24% / 0.12), 0 0 48px hsl(192 55% 32% / 0.06);
+    --shadow-card: 0 4px 24px -4px hsl(220 25% 15% / 0.06), 0 2px 8px -2px hsl(220 20% 20% / 0.04);
+    --shadow-gold-glow: 0 0 24px hsl(192 55% 32% / 0.18), 0 4px 16px hsl(192 55% 32% / 0.10);
 
     /* Site-wide fonts match the invite templates (Azura pairing). */
     --font-display: 'Cormorant Garamond', serif;
     --font-body: 'Montserrat', sans-serif;
     --font-heading: 'Cormorant Garamond', serif;
 
-    --sidebar-background: 42 60% 96%;
-    --sidebar-foreground: 30 20% 14%;
-    --sidebar-primary: 38 72% 44%;
+    --sidebar-background: 0 0% 99%;
+    --sidebar-foreground: 220 20% 10%;
+    --sidebar-primary: 192 60% 24%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 38 55% 94%;
-    --sidebar-accent-foreground: 30 20% 14%;
-    --sidebar-border: 38 45% 88%;
-    --sidebar-ring: 38 72% 44%;
+    --sidebar-accent: 190 25% 95%;
+    --sidebar-accent-foreground: 220 20% 14%;
+    --sidebar-border: 220 15% 90%;
+    --sidebar-ring: 192 60% 24%;
   }
 
   .dark {

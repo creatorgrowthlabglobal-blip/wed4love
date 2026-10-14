@@ -16,8 +16,8 @@ import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import softLoveThumbnail     from "@/assets/soft-love-thumbnail.jpg";
 import { COUNTRIES, type Country } from "@/lib/countries";
 
-const GOLD      = "hsl(38 72% 44%)";
-const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
+const GOLD      = "hsl(192 60% 24%)";
+const GOLD_GRAD = "linear-gradient(135deg, hsl(192 60% 24%), hsl(192 55% 32%))";
 
 const flagOf = (iso: string) =>
   iso.toUpperCase().replace(/./g, c => String.fromCodePoint(0x1F1A5 + c.charCodeAt(0)));
@@ -197,6 +197,26 @@ const reducer = (s: OrderState, a: Action): OrderState => {
 
 const STORAGE_KEY = "wed4love_order_draft_v1";
 
+// ── Shared select indicator ──────────────────────────────────────────────────
+// Empty teal-outlined circle when unselected, filled teal with white check when selected.
+// Signals to users that a card is a toggleable choice they must make.
+const SelectIndicator = ({ selected, size = "md" }: { selected: boolean; size?: "sm" | "md" }) => {
+  const dim = size === "sm" ? "w-5 h-5" : "w-6 h-6";
+  const iconDim = size === "sm" ? "w-3 h-3" : "w-3.5 h-3.5";
+  return (
+    <span
+      className={`${dim} rounded-full flex items-center justify-center shrink-0 transition-all`}
+      style={
+        selected
+          ? { background: GOLD, boxShadow: "0 2px 6px hsl(192 60% 24% / 0.25)", border: `2px solid ${GOLD}` }
+          : { background: "white", border: "2px solid hsl(220 15% 82%)" }
+      }
+    >
+      {selected && <Check className={`${iconDim} text-white`} strokeWidth={3} />}
+    </span>
+  );
+};
+
 // ── Progress bar ──────────────────────────────────────────────────────────────
 const STEP_LABELS = ["Package", "Design", "Sections", "Languages", "Guests", "Details", "Submit"];
 
@@ -206,11 +226,11 @@ const ProgressBar = ({ step }: { step: number }) => (
       <p className="font-body text-[11px] tracking-[0.26em] uppercase font-bold" style={{ color: GOLD }}>
         Step {step + 1} of {STEP_LABELS.length}
       </p>
-      <p className="font-body text-sm font-semibold" style={{ color: "hsl(30 20% 18%)" }}>
+      <p className="font-body text-sm font-semibold" style={{ color: "hsl(220 20% 16%)" }}>
         {STEP_LABELS[step]}
       </p>
     </div>
-    <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "hsl(38 40% 92%)" }}>
+    <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "hsl(220 12% 93%)" }}>
       <motion.div
         animate={{ width: `${((step + 1) / STEP_LABELS.length) * 100}%` }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -241,42 +261,40 @@ const Step1 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
             className="relative text-left rounded-3xl p-6 transition-all hover:-translate-y-0.5"
             style={{
               background: "white",
-              border: `2px solid ${selected ? GOLD : "hsl(38 40% 90%)"}`,
+              border: `2px solid ${selected ? GOLD : "hsl(220 12% 91%)"}`,
               boxShadow: selected
-                ? "0 18px 44px hsl(38 60% 45% / 0.18)"
-                : "0 4px 14px hsl(38 40% 60% / 0.06)",
+                ? "0 18px 44px hsl(192 60% 24% / 0.18)"
+                : "0 4px 14px hsl(220 20% 20% / 0.06)",
             }}
           >
             {pkg.featured && (
               <div
                 className="absolute -top-3 left-6 px-2.5 py-1 rounded-full font-body text-[10px] font-bold uppercase tracking-wider text-white"
-                style={{ background: GOLD_GRAD, boxShadow: "0 4px 12px hsl(38 80% 55% / 0.3)" }}
+                style={{ background: GOLD_GRAD, boxShadow: "0 2px 6px hsl(220 20% 20% / 0.08)" }}
               >
                 Most popular
               </div>
             )}
             <div
               className="w-11 h-11 rounded-2xl flex items-center justify-center mb-4"
-              style={{ background: GOLD_GRAD, boxShadow: "0 6px 16px hsl(38 80% 55% / 0.3)" }}
+              style={{ background: GOLD_GRAD, boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
             >
               <Icon className="w-5 h-5 text-white" />
             </div>
             <p className="font-display font-bold text-lg text-foreground mb-1">{pkg.name}</p>
             <p className="font-display font-bold mb-3" style={{ color: GOLD, fontSize: "1.5rem" }}>{pkg.price}</p>
-            <p className="font-body text-sm mb-4" style={{ color: "hsl(30 16% 42%)" }}>{pkg.tagline}</p>
+            <p className="font-body text-sm mb-4" style={{ color: "hsl(220 12% 44%)" }}>{pkg.tagline}</p>
             <ul className="flex flex-col gap-2">
               {pkg.features.map(f => (
-                <li key={f} className="flex items-start gap-2 font-body text-xs" style={{ color: "hsl(30 20% 22%)" }}>
+                <li key={f} className="flex items-start gap-2 font-body text-xs" style={{ color: "hsl(220 15% 20%)" }}>
                   <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: GOLD }} />
                   {f}
                 </li>
               ))}
             </ul>
-            {selected && (
-              <div className="absolute top-5 right-5 w-7 h-7 rounded-full flex items-center justify-center" style={{ background: GOLD, boxShadow: "0 3px 10px hsl(38 80% 55% / 0.4)" }}>
-                <Check className="w-4 h-4 text-white" />
-              </div>
-            )}
+            <div className="absolute top-5 right-5">
+              <SelectIndicator selected={selected} />
+            </div>
           </button>
         );
       })}
@@ -293,7 +311,7 @@ const Step2 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
       subtitle="You can tweak everything later — this is just a starting point for your designer."
     />
     <div className="mb-10">
-      <p className="font-body text-sm md:text-base font-bold mb-4" style={{ color: "hsl(30 20% 18%)" }}>Template</p>
+      <p className="font-body text-sm md:text-base font-bold mb-4" style={{ color: "hsl(220 20% 16%)" }}>Template</p>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
         {TEMPLATES.map(t => {
           const selected = state.template === t.id;
@@ -306,10 +324,10 @@ const Step2 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
               onClick={choose}
               onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(); } }}
               aria-pressed={selected}
-              className="group relative rounded-2xl overflow-hidden transition-all hover:-translate-y-0.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[hsl(38_72%_44%)] h-[170px] md:h-[240px]"
+              className="group relative rounded-2xl overflow-hidden transition-all hover:-translate-y-0.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[hsl(192_60%_24%)] h-[170px] md:h-[240px]"
               style={{
                 border: `2.5px solid ${selected ? GOLD : "transparent"}`,
-                boxShadow: selected ? "0 14px 32px hsl(38 60% 45% / 0.22)" : "0 4px 14px rgba(0,0,0,0.08)",
+                boxShadow: selected ? "0 6px 14px hsl(192 60% 24% / 0.12)" : "0 4px 14px rgba(0,0,0,0.08)",
               }}
             >
               <img src={t.src} alt={t.name} className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
@@ -326,17 +344,15 @@ const Step2 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
                 rel="noopener noreferrer"
                 onClick={e => e.stopPropagation()}
                 className="absolute top-2 left-2 md:top-2.5 md:left-2.5 inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-1 md:py-1.5 rounded-lg font-body text-[10px] md:text-xs font-semibold transition-all md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100 hover:scale-105 active:scale-95"
-                style={{ background: "rgba(255,255,255,0.92)", color: "hsl(30 20% 18%)", backdropFilter: "blur(6px)" }}
+                style={{ background: "rgba(255,255,255,0.92)", color: "hsl(220 20% 16%)", backdropFilter: "blur(6px)" }}
                 aria-label={`Preview the ${t.name} template in a new tab`}
               >
                 <Play className="w-2.5 h-2.5 md:w-3 md:h-3" fill="currentColor" /> Preview
               </a>
 
-              {selected && (
-                <div className="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center" style={{ background: GOLD }}>
-                  <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-                </div>
-              )}
+              <div className="absolute top-2 right-2 md:top-2.5 md:right-2.5">
+                <SelectIndicator selected={selected} />
+              </div>
             </div>
           );
         })}
@@ -344,7 +360,7 @@ const Step2 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
     </div>
 
     <div>
-      <p className="font-body text-sm md:text-base font-bold mb-4" style={{ color: "hsl(30 20% 18%)" }}>Envelope style</p>
+      <p className="font-body text-sm md:text-base font-bold mb-4" style={{ color: "hsl(220 20% 16%)" }}>Envelope style</p>
       <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
         {ENVELOPES.map(e => {
           const selected = state.envelope === e.id;
@@ -353,18 +369,20 @@ const Step2 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
               key={e.id}
               type="button"
               onClick={() => dispatch({ type: "SET", patch: { envelope: e.id } })}
-              className="rounded-2xl p-4 md:p-5 text-left transition-all hover:-translate-y-0.5"
+              className="relative rounded-2xl p-4 md:p-5 pr-10 md:pr-11 text-left transition-all hover:-translate-y-0.5"
               style={{
-                background: selected ? "hsl(38 70% 97%)" : "white",
-                border: `2px solid ${selected ? GOLD : "hsl(38 40% 90%)"}`,
-                boxShadow: selected ? "0 10px 24px hsl(38 60% 45% / 0.12)" : "0 2px 8px hsl(38 40% 60% / 0.06)",
+                background: selected ? "hsl(190 30% 97%)" : "white",
+                border: `2px solid ${selected ? GOLD : "hsl(220 12% 91%)"}`,
+                boxShadow: selected ? "0 4px 10px hsl(220 20% 20% / 0.07)" : "0 2px 8px hsl(220 20% 20% / 0.06)",
               }}
             >
-              <p className="font-display font-bold text-sm md:text-base text-foreground mb-1 md:mb-1.5 flex items-center justify-between">
+              <p className="font-display font-bold text-sm md:text-base text-foreground mb-1 md:mb-1.5">
                 {e.name}
-                {selected && <Check className="w-4 h-4 md:w-5 md:h-5" style={{ color: GOLD }} />}
               </p>
-              <p className="font-body text-xs md:text-sm leading-snug" style={{ color: "hsl(30 16% 42%)" }}>{e.desc}</p>
+              <p className="font-body text-xs md:text-sm leading-snug" style={{ color: "hsl(220 12% 44%)" }}>{e.desc}</p>
+              <div className="absolute top-3.5 right-3.5 md:top-4 md:right-4">
+                <SelectIndicator selected={selected} size="sm" />
+              </div>
             </button>
           );
         })}
@@ -377,8 +395,8 @@ const Step2 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
 const BadgePill = ({ badge }: { badge: Badge }) => {
   if (!badge) return null;
   const label = badge === "popular" ? "Popular" : "New";
-  const bg = badge === "popular" ? "hsl(38 85% 92%)" : "hsl(140 60% 92%)";
-  const fg = badge === "popular" ? "hsl(38 70% 32%)" : "hsl(140 50% 30%)";
+  const bg = badge === "popular" ? "hsl(190 25% 93%)" : "hsl(140 60% 92%)";
+  const fg = badge === "popular" ? "hsl(192 60% 28%)" : "hsl(140 50% 30%)";
   return (
     <span
       className="inline-flex items-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-full font-body text-[9px] md:text-[10px] font-bold uppercase tracking-wider"
@@ -413,8 +431,8 @@ const Step3 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
                 key={s.id}
                 className="rounded-2xl p-4 md:p-5 flex items-center gap-3 md:gap-4"
                 style={{
-                  background: "linear-gradient(135deg, hsl(38 70% 97%) 0%, hsl(38 55% 93%) 100%)",
-                  border: "1.5px solid hsl(38 55% 86%)",
+                  background: "linear-gradient(135deg, hsl(190 30% 97%) 0%, hsl(190 22% 94%) 100%)",
+                  border: "1.5px solid hsl(190 22% 88%)",
                 }}
               >
                 <div
@@ -425,7 +443,7 @@ const Step3 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-display font-bold text-sm md:text-base text-foreground truncate">{s.label}</p>
-                  <p className="font-body text-xs md:text-sm" style={{ color: "hsl(30 16% 42%)" }}>Pre-selected</p>
+                  <p className="font-body text-xs md:text-sm" style={{ color: "hsl(220 12% 44%)" }}>Pre-selected</p>
                 </div>
                 <Check className="w-4 h-4 md:w-5 md:h-5 shrink-0" style={{ color: GOLD }} />
               </div>
@@ -436,7 +454,7 @@ const Step3 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
 
       {/* Optional add-ons */}
       <div>
-        <p className="font-body text-[11px] md:text-xs tracking-[0.22em] uppercase font-bold mb-4" style={{ color: "hsl(30 16% 42%)" }}>
+        <p className="font-body text-[11px] md:text-xs tracking-[0.22em] uppercase font-bold mb-4" style={{ color: "hsl(220 12% 44%)" }}>
           Optional add-ons · Tap to toggle
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
@@ -450,16 +468,16 @@ const Step3 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
                 onClick={() => dispatch({ type: "TOGGLE_SECTION", id: s.id })}
                 className="relative rounded-2xl p-3.5 md:p-4 flex flex-col items-start gap-2 md:gap-3 text-left transition-all hover:-translate-y-0.5"
                 style={{
-                  background: selected ? "hsl(38 70% 97%)" : "white",
-                  border: `2px solid ${selected ? GOLD : "hsl(38 40% 90%)"}`,
-                  boxShadow: selected ? "0 8px 20px hsl(38 60% 45% / 0.14)" : "0 2px 6px hsl(38 40% 60% / 0.05)",
+                  background: selected ? "hsl(190 30% 97%)" : "white",
+                  border: `2px solid ${selected ? GOLD : "hsl(220 12% 91%)"}`,
+                  boxShadow: selected ? "0 4px 10px hsl(220 20% 20% / 0.07)" : "0 2px 6px hsl(220 20% 20% / 0.05)",
                 }}
               >
                 <div className="flex items-center justify-between w-full">
                   <div
                     className="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl flex items-center justify-center"
                     style={{
-                      background: selected ? GOLD_GRAD : "hsl(38 60% 96%)",
+                      background: selected ? GOLD_GRAD : "hsl(190 25% 96%)",
                       color: selected ? "white" : GOLD,
                     }}
                   >
@@ -468,11 +486,9 @@ const Step3 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
                   {s.badge && <BadgePill badge={s.badge} />}
                 </div>
                 <p className="font-display font-bold text-sm md:text-base text-foreground">{s.label}</p>
-                {selected && (
-                  <div className="absolute top-2.5 right-2.5 md:top-3 md:right-3 w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center" style={{ background: GOLD }}>
-                    <Check className="w-3 h-3 md:w-3.5 md:h-3.5 text-white" />
-                  </div>
-                )}
+                <div className="absolute top-2.5 right-2.5 md:top-3 md:right-3">
+                  <SelectIndicator selected={selected} size="sm" />
+                </div>
               </button>
             );
           })}
@@ -529,7 +545,7 @@ const LanguageSelect = ({ label, value, onChange, allowNone }: {
 
   return (
     <div ref={popRef}>
-      <p className="font-body text-sm font-bold mb-3" style={{ color: "hsl(30 20% 18%)" }}>{label}</p>
+      <p className="font-body text-sm font-bold mb-3" style={{ color: "hsl(220 20% 16%)" }}>{label}</p>
 
       <div className="relative">
         {/* Trigger */}
@@ -540,13 +556,13 @@ const LanguageSelect = ({ label, value, onChange, allowNone }: {
           aria-expanded={open}
           className="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-2xl bg-white font-body text-sm transition-all"
           style={{
-            border: `1.5px solid ${open ? GOLD : "hsl(38 40% 90%)"}`,
-            boxShadow: open ? `0 0 0 4px hsl(38 85% 55% / 0.14)` : "0 1px 2px hsl(38 40% 40% / 0.04)",
-            color: value ? "hsl(30 20% 18%)" : "hsl(30 12% 54%)",
+            border: `1.5px solid ${open ? GOLD : "hsl(220 12% 91%)"}`,
+            boxShadow: open ? `0 0 0 4px hsl(192 55% 32% / 0.14)` : "0 1px 2px hsl(220 20% 20% / 0.04)",
+            color: value ? "hsl(220 20% 16%)" : "hsl(220 10% 56%)",
           }}
         >
           <span className="flex items-center gap-2 min-w-0">
-            <Globe2 className="w-4 h-4 shrink-0" style={{ color: value ? GOLD : "hsl(30 12% 54%)" }} />
+            <Globe2 className="w-4 h-4 shrink-0" style={{ color: value ? GOLD : "hsl(220 10% 56%)" }} />
             <span className="truncate font-semibold">
               {value || (allowNone ? "None selected" : "Select a language…")}
             </span>
@@ -560,12 +576,12 @@ const LanguageSelect = ({ label, value, onChange, allowNone }: {
                 onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onChange(""); } }}
                 aria-label="Clear selection"
                 className="p-0.5 rounded-full transition-colors hover:bg-amber-50"
-                style={{ color: "hsl(30 12% 48%)" }}
+                style={{ color: "hsl(220 10% 50%)" }}
               >
                 <X className="w-3.5 h-3.5" />
               </span>
             )}
-            <ChevronDown className="w-4 h-4 transition-transform" style={{ color: "hsl(30 12% 48%)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }} />
+            <ChevronDown className="w-4 h-4 transition-transform" style={{ color: "hsl(220 10% 50%)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }} />
           </div>
         </button>
 
@@ -577,17 +593,17 @@ const LanguageSelect = ({ label, value, onChange, allowNone }: {
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.16 }}
               className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl z-20 overflow-hidden"
-              style={{ border: "1px solid hsl(38 40% 88%)" }}
+              style={{ border: "1px solid hsl(220 12% 90%)" }}
             >
-              <div className="relative px-3 py-2.5" style={{ borderBottom: "1px solid hsl(38 28% 93%)" }}>
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "hsl(30 12% 48%)" }} />
+              <div className="relative px-3 py-2.5" style={{ borderBottom: "1px solid hsl(220 15% 93%)" }}>
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "hsl(220 10% 50%)" }} />
                 <input
                   type="text"
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Search 120+ languages"
                   className="w-full pl-7 pr-2 py-1.5 text-sm font-body outline-none bg-transparent"
-                  style={{ color: "hsl(30 20% 18%)" }}
+                  style={{ color: "hsl(220 20% 16%)" }}
                   autoFocus
                 />
               </div>
@@ -597,11 +613,11 @@ const LanguageSelect = ({ label, value, onChange, allowNone }: {
                     type="button"
                     onClick={() => { onChange(""); setOpen(false); setQuery(""); }}
                     className="w-full flex items-center justify-between px-4 py-2 text-sm text-left transition-colors"
-                    style={{ color: "hsl(30 20% 22%)" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 97%)")}
+                    style={{ color: "hsl(220 15% 20%)" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "hsl(190 25% 97%)")}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
-                    <span className="font-body italic" style={{ color: "hsl(30 12% 48%)" }}>None</span>
+                    <span className="font-body italic" style={{ color: "hsl(220 10% 50%)" }}>None</span>
                     {value === "" && <Check className="w-4 h-4" style={{ color: GOLD }} />}
                   </button>
                 )}
@@ -614,8 +630,8 @@ const LanguageSelect = ({ label, value, onChange, allowNone }: {
                     type="button"
                     onClick={() => { onChange(lang); setOpen(false); setQuery(""); }}
                     className="w-full flex items-center justify-between px-4 py-2 text-sm text-left transition-colors"
-                    style={{ color: "hsl(30 20% 22%)" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 97%)")}
+                    style={{ color: "hsl(220 15% 20%)" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "hsl(190 25% 97%)")}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
                     <span className="font-body">{lang}</span>
@@ -647,22 +663,25 @@ const Step5 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
             key={range.value}
             type="button"
             onClick={() => dispatch({ type: "SET", patch: { guestCount: range.value } })}
-            className="rounded-2xl py-5 md:py-7 px-3 md:px-4 flex flex-col items-center justify-center gap-1 md:gap-1.5 transition-all hover:-translate-y-0.5"
+            className="relative rounded-2xl py-5 md:py-7 px-3 md:px-4 flex flex-col items-center justify-center gap-1 md:gap-1.5 transition-all hover:-translate-y-0.5"
             style={{
-              background: selected ? "hsl(38 70% 97%)" : "white",
-              border: `2px solid ${selected ? GOLD : "hsl(38 40% 90%)"}`,
-              boxShadow: selected ? "0 10px 24px hsl(38 60% 45% / 0.14)" : "0 2px 6px hsl(38 40% 60% / 0.05)",
+              background: selected ? "hsl(190 30% 97%)" : "white",
+              border: `2px solid ${selected ? GOLD : "hsl(220 12% 91%)"}`,
+              boxShadow: selected ? "0 4px 10px hsl(220 20% 20% / 0.08)" : "0 2px 6px hsl(220 20% 20% / 0.05)",
             }}
           >
+            <div className="absolute top-2.5 right-2.5">
+              <SelectIndicator selected={selected} size="sm" />
+            </div>
             <span
               className="font-display font-bold text-xl md:text-3xl leading-none tabular-nums tracking-tight"
-              style={{ color: selected ? GOLD : "hsl(30 20% 18%)" }}
+              style={{ color: selected ? GOLD : "hsl(220 20% 16%)" }}
             >
               {range.display}
             </span>
             <span
               className="font-body text-[10px] md:text-xs uppercase tracking-widest font-semibold"
-              style={{ color: selected ? GOLD : "hsl(30 14% 48%)" }}
+              style={{ color: selected ? GOLD : "hsl(220 10% 50%)" }}
             >
               {range.sub}
             </span>
@@ -670,9 +689,9 @@ const Step5 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
         );
       })}
     </div>
-    <div className="flex items-start gap-3 rounded-2xl p-4 md:p-5" style={{ background: "hsl(38 60% 97%)", border: "1px solid hsl(38 45% 88%)" }}>
+    <div className="flex items-start gap-3 rounded-2xl p-4 md:p-5" style={{ background: "hsl(190 25% 97%)", border: "1px solid hsl(190 20% 91%)" }}>
       <Users className="w-5 h-5 md:w-6 md:h-6 shrink-0" style={{ color: GOLD }} />
-      <p className="font-body text-sm md:text-base" style={{ color: "hsl(30 20% 22%)" }}>
+      <p className="font-body text-sm md:text-base" style={{ color: "hsl(220 15% 20%)" }}>
         No per-guest pricing. Send to 10 or 10,000 — same price, same link, same experience.
       </p>
     </div>
@@ -682,7 +701,7 @@ const Step5 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
 // ── Step 6: Event + delivery details ─────────────────────────────────────────
 const Field = ({ icon: Icon, children, label }: { icon: typeof User; label: string; children: React.ReactNode }) => (
   <label className="block">
-    <span className="flex items-center gap-1.5 font-body text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "hsl(30 16% 42%)" }}>
+    <span className="flex items-center gap-1.5 font-body text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "hsl(220 12% 44%)" }}>
       <Icon className="w-3.5 h-3.5" />
       {label}
     </span>
@@ -691,9 +710,9 @@ const Field = ({ icon: Icon, children, label }: { icon: typeof User; label: stri
 );
 
 const inputCls = "w-full px-4 py-3 rounded-xl font-body text-sm outline-none bg-white transition-all";
-const inputStyle: React.CSSProperties = { border: "1.5px solid hsl(38 40% 90%)", color: "hsl(30 20% 18%)" };
-const onFocusStyle = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.boxShadow = "0 0 0 4px hsl(38 85% 55% / 0.14)"; };
-const onBlurStyle  = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = "hsl(38 40% 90%)"; e.currentTarget.style.boxShadow = "none"; };
+const inputStyle: React.CSSProperties = { border: "1.5px solid hsl(220 12% 91%)", color: "hsl(220 20% 16%)" };
+const onFocusStyle = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.boxShadow = "0 0 0 4px hsl(192 55% 32% / 0.14)"; };
+const onBlurStyle  = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = "hsl(220 12% 91%)"; e.currentTarget.style.boxShadow = "none"; };
 
 const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatch<Action> }) => (
   <div>
@@ -733,8 +752,8 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
       <Field icon={Phone} label="Phone">
         <div
           className="flex items-stretch rounded-xl bg-white"
-          style={{ border: "1.5px solid hsl(38 40% 90%)" }}
-          onFocus={e => (e.currentTarget.style.boxShadow = `0 0 0 4px hsl(38 85% 55% / 0.14)`)}
+          style={{ border: "1.5px solid hsl(220 12% 91%)" }}
+          onFocus={e => (e.currentTarget.style.boxShadow = `0 0 0 4px hsl(192 55% 32% / 0.14)`)}
           onBlur={e => (e.currentTarget.style.boxShadow = "none")}
         >
           <CountryTrigger
@@ -748,7 +767,7 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
             onChange={e => dispatch({ type: "SET", patch: { contactPhone: e.target.value.replace(/[^\d\s-]/g, "") } })}
             placeholder="Phone number"
             className="flex-1 px-3.5 py-3 rounded-r-xl font-body text-sm outline-none bg-transparent"
-            style={{ color: "hsl(30 20% 18%)" }}
+            style={{ color: "hsl(220 20% 16%)" }}
             autoComplete="tel-national"
           />
         </div>
@@ -766,7 +785,7 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
       </Field>
     </div>
 
-    <p className="font-body text-sm md:text-base font-bold mb-3" style={{ color: "hsl(30 20% 18%)" }}>Delivery speed</p>
+    <p className="font-body text-sm md:text-base font-bold mb-3" style={{ color: "hsl(220 20% 16%)" }}>Delivery speed</p>
     <div className="grid sm:grid-cols-2 gap-3 md:gap-4">
       {DELIVERY_SPEEDS.map(d => {
         const Icon = d.icon;
@@ -778,19 +797,21 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
             onClick={() => dispatch({ type: "SET", patch: { delivery: d.id } })}
             className="rounded-2xl p-5 md:p-6 text-left flex items-start gap-3 md:gap-4 transition-all hover:-translate-y-0.5"
             style={{
-              background: selected ? "hsl(38 70% 97%)" : "white",
-              border: `2px solid ${selected ? GOLD : "hsl(38 40% 90%)"}`,
-              boxShadow: selected ? "0 10px 24px hsl(38 60% 45% / 0.14)" : "0 2px 6px hsl(38 40% 60% / 0.05)",
+              background: selected ? "hsl(190 30% 97%)" : "white",
+              border: `2px solid ${selected ? GOLD : "hsl(220 12% 91%)"}`,
+              boxShadow: selected ? "0 4px 10px hsl(220 20% 20% / 0.08)" : "0 2px 6px hsl(220 20% 20% / 0.05)",
             }}
           >
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0" style={{ background: selected ? GOLD_GRAD : "hsl(38 60% 96%)", color: selected ? "white" : GOLD }}>
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0" style={{ background: selected ? GOLD_GRAD : "hsl(190 25% 96%)", color: selected ? "white" : GOLD }}>
               <Icon className="w-5 h-5 md:w-6 md:h-6" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-display font-bold text-base md:text-lg text-foreground mb-0.5 md:mb-1">{d.label}</p>
-              <p className="font-body text-sm md:text-base leading-snug" style={{ color: "hsl(30 20% 36%)" }}>{d.detail}</p>
+              <p className="font-body text-sm md:text-base leading-snug" style={{ color: "hsl(220 15% 34%)" }}>{d.detail}</p>
             </div>
-            {selected && <Check className="w-5 h-5 md:w-6 md:h-6 shrink-0 mt-1" style={{ color: GOLD }} />}
+            <div className="shrink-0 mt-0.5">
+              <SelectIndicator selected={selected} />
+            </div>
           </button>
         );
       })}
@@ -799,14 +820,14 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
     {/* ── Note for the designer (optional) ── */}
     <div className="mt-8 md:mt-10">
       <div className="flex items-center justify-between mb-3">
-        <label htmlFor="designer-note" className="flex items-center gap-1.5 font-body text-sm md:text-base font-bold" style={{ color: "hsl(30 20% 18%)" }}>
+        <label htmlFor="designer-note" className="flex items-center gap-1.5 font-body text-sm md:text-base font-bold" style={{ color: "hsl(220 20% 16%)" }}>
           <MessageSquare className="w-4 h-4" style={{ color: GOLD }} />
           A note for your designer
-          <span className="font-normal text-xs md:text-sm ml-1.5" style={{ color: "hsl(30 14% 52%)" }}>
+          <span className="font-normal text-xs md:text-sm ml-1.5" style={{ color: "hsl(220 10% 54%)" }}>
             (optional)
           </span>
         </label>
-        <span className="font-body text-xs tabular-nums" style={{ color: "hsl(30 14% 52%)" }}>
+        <span className="font-body text-xs tabular-nums" style={{ color: "hsl(220 10% 54%)" }}>
           {state.designerNote.length}/500
         </span>
       </div>
@@ -817,11 +838,11 @@ const Step6 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
         placeholder="Anything we should know? Favourite colours, cultural traditions to honour, a photo style you love, a surname spelling that always gets missed…"
         rows={4}
         className="w-full px-4 py-3 md:px-5 md:py-4 rounded-2xl font-body text-sm md:text-base outline-none bg-white resize-y transition-all leading-relaxed"
-        style={{ border: "1.5px solid hsl(38 40% 90%)", color: "hsl(30 20% 18%)", minHeight: 110 }}
-        onFocus={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.boxShadow = "0 0 0 4px hsl(38 85% 55% / 0.14)"; }}
-        onBlur={e => { e.currentTarget.style.borderColor = "hsl(38 40% 90%)"; e.currentTarget.style.boxShadow = "none"; }}
+        style={{ border: "1.5px solid hsl(220 12% 91%)", color: "hsl(220 20% 16%)", minHeight: 110 }}
+        onFocus={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.boxShadow = "0 0 0 4px hsl(192 55% 32% / 0.14)"; }}
+        onBlur={e => { e.currentTarget.style.borderColor = "hsl(220 12% 91%)"; e.currentTarget.style.boxShadow = "none"; }}
       />
-      <p className="font-body text-xs md:text-sm mt-2 leading-relaxed" style={{ color: "hsl(30 14% 48%)" }}>
+      <p className="font-body text-xs md:text-sm mt-2 leading-relaxed" style={{ color: "hsl(220 10% 50%)" }}>
         Your designer reads every note before the first draft. The more context, the fewer revision rounds.
       </p>
     </div>
@@ -848,18 +869,18 @@ const CountryTrigger = ({ country, onChange }: { country: Country; onChange: (c:
         aria-label={`Change country code (currently ${country.name}, +${country.dial})`}
         className="flex items-center gap-1.5 pl-3 pr-2.5 py-3 rounded-l-xl font-body text-sm font-semibold transition-colors"
         style={{
-          color: "hsl(30 20% 20%)",
-          borderRight: "1.5px solid hsl(38 40% 90%)",
-          background: open ? "hsl(38 60% 97%)" : "transparent",
+          color: "hsl(220 18% 18%)",
+          borderRight: "1.5px solid hsl(220 12% 91%)",
+          background: open ? "hsl(190 25% 97%)" : "transparent",
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 97%)")}
-        onMouseLeave={e => (e.currentTarget.style.background = open ? "hsl(38 60% 97%)" : "transparent")}
+        onMouseEnter={e => (e.currentTarget.style.background = "hsl(190 25% 97%)")}
+        onMouseLeave={e => (e.currentTarget.style.background = open ? "hsl(190 25% 97%)" : "transparent")}
       >
         <span className="text-base leading-none">{flagOf(country.code)}</span>
         <span className="text-xs tabular-nums">+{country.dial}</span>
         <ChevronDown
           className="w-3.5 h-3.5 transition-transform"
-          style={{ color: "hsl(30 12% 48%)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          style={{ color: "hsl(220 10% 50%)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         />
       </button>
       <AnimatePresence>
@@ -872,9 +893,9 @@ const CountryTrigger = ({ country, onChange }: { country: Country; onChange: (c:
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
               className="absolute left-0 top-full mt-1 w-72 bg-white rounded-2xl shadow-2xl z-20 overflow-hidden"
-              style={{ border: "1px solid hsl(38 40% 88%)" }}
+              style={{ border: "1px solid hsl(220 12% 90%)" }}
             >
-              <div className="px-3 py-2" style={{ borderBottom: "1px solid hsl(38 28% 93%)" }}>
+              <div className="px-3 py-2" style={{ borderBottom: "1px solid hsl(220 15% 93%)" }}>
                 <input
                   type="text"
                   value={query}
@@ -891,12 +912,12 @@ const CountryTrigger = ({ country, onChange }: { country: Country; onChange: (c:
                     type="button"
                     onClick={() => { onChange(c); setOpen(false); setQuery(""); }}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left"
-                    onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 97%)")}
+                    onMouseEnter={e => (e.currentTarget.style.background = "hsl(190 25% 97%)")}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
                     <span className="text-lg">{flagOf(c.code)}</span>
                     <span className="flex-1 font-body truncate">{c.name}</span>
-                    <span className="font-body text-xs font-semibold" style={{ color: "hsl(30 12% 48%)" }}>+{c.dial}</span>
+                    <span className="font-body text-xs font-semibold" style={{ color: "hsl(220 10% 50%)" }}>+{c.dial}</span>
                   </button>
                 ))}
               </div>
@@ -935,13 +956,13 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
       </div>
 
       <div className="mb-6 md:mb-8">
-        <p className="font-body text-xs md:text-sm font-bold uppercase tracking-wider mb-3" style={{ color: "hsl(30 16% 42%)" }}>
+        <p className="font-body text-xs md:text-sm font-bold uppercase tracking-wider mb-3" style={{ color: "hsl(220 12% 44%)" }}>
           Sections included
         </p>
         <div className="flex flex-wrap gap-1.5 md:gap-2">
           {sectionLabels.map(l => (
             <span key={l} className="inline-flex items-center px-3 md:px-4 py-1 md:py-1.5 rounded-full font-body text-xs md:text-sm font-semibold"
-              style={{ background: "white", color: "hsl(30 20% 22%)", border: "1.5px solid hsl(38 40% 86%)" }}
+              style={{ background: "white", color: "hsl(220 15% 20%)", border: "1.5px solid hsl(220 12% 88%)" }}
             >
               {l}
             </span>
@@ -952,13 +973,13 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
       {state.designerNote.trim() && (
         <div
           className="mb-6 md:mb-8 rounded-2xl p-5 md:p-6"
-          style={{ background: "white", border: "1.5px solid hsl(38 40% 92%)" }}
+          style={{ background: "white", border: "1.5px solid hsl(220 12% 93%)" }}
         >
-          <p className="flex items-center gap-1.5 font-body text-xs md:text-sm font-bold uppercase tracking-wider mb-3" style={{ color: "hsl(30 16% 42%)" }}>
+          <p className="flex items-center gap-1.5 font-body text-xs md:text-sm font-bold uppercase tracking-wider mb-3" style={{ color: "hsl(220 12% 44%)" }}>
             <MessageSquare className="w-3.5 h-3.5" style={{ color: GOLD }} />
             Note for your designer
           </p>
-          <p className="font-body text-sm md:text-base leading-relaxed whitespace-pre-wrap" style={{ color: "hsl(30 20% 22%)" }}>
+          <p className="font-body text-sm md:text-base leading-relaxed whitespace-pre-wrap" style={{ color: "hsl(220 15% 20%)" }}>
             {state.designerNote.trim()}
           </p>
         </div>
@@ -968,20 +989,20 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
       <div
         className="relative rounded-3xl p-6 sm:p-7 md:p-8 mb-6 md:mb-8 overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, hsl(38 70% 97%) 0%, hsl(38 55% 93%) 100%)",
-          border: "1.5px solid hsl(38 55% 86%)",
+          background: "linear-gradient(135deg, hsl(190 30% 97%) 0%, hsl(190 22% 94%) 100%)",
+          border: "1.5px solid hsl(190 22% 88%)",
         }}
       >
         <div className="flex items-start gap-4 md:gap-5">
           <div
             className="shrink-0 w-11 h-11 md:w-14 md:h-14 rounded-2xl flex items-center justify-center"
-            style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.35)" }}
+            style={{ background: GOLD_GRAD, boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
           >
             <Heart className="w-5 h-5 md:w-6 md:h-6 text-white fill-white" />
           </div>
           <div>
             <p className="font-display font-bold text-lg md:text-xl text-foreground mb-1 md:mb-1.5">No credit card, no risk</p>
-            <p className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(30 20% 32%)" }}>
+            <p className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(220 15% 30%)" }}>
               Submit your order now — our designer will construct your customized invitation and send a preview + invoice via email.
               <span className="block mt-1.5 font-semibold" style={{ color: GOLD }}>Pay only if you like the final invitation.</span>
             </p>
@@ -993,7 +1014,7 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
         onClick={onSubmit}
         disabled={submitting}
         className="w-full py-4 md:py-5 rounded-2xl font-body text-sm md:text-base font-bold uppercase tracking-wider text-white transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-70"
-        style={{ background: GOLD_GRAD, letterSpacing: "0.14em", boxShadow: "0 12px 30px hsl(38 80% 55% / 0.34)" }}
+        style={{ background: GOLD_GRAD, letterSpacing: "0.14em", boxShadow: "0 5px 14px hsl(192 60% 24% / 0.12)" }}
       >
         {submitting ? (
           <span className="inline-flex items-center gap-2 justify-center">
@@ -1008,9 +1029,9 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
 const SummaryBlock = ({ label, value }: { label: string; value: string }) => (
   <div
     className="rounded-2xl p-4 md:p-5"
-    style={{ background: "white", border: "1.5px solid hsl(38 40% 92%)" }}
+    style={{ background: "white", border: "1.5px solid hsl(220 12% 93%)" }}
   >
-    <p className="font-body text-[11px] md:text-xs font-bold uppercase tracking-wider mb-1 md:mb-1.5" style={{ color: "hsl(30 16% 42%)" }}>{label}</p>
+    <p className="font-body text-[11px] md:text-xs font-bold uppercase tracking-wider mb-1 md:mb-1.5" style={{ color: "hsl(220 12% 44%)" }}>{label}</p>
     <p className="font-display font-bold text-sm md:text-lg text-foreground truncate">{value}</p>
   </div>
 );
@@ -1024,7 +1045,7 @@ const StepHeader = ({ eyebrow, title, subtitle }: { eyebrow: string; title: stri
     <h2 className="font-display font-bold text-foreground mb-2" style={{ fontSize: "clamp(1.6rem, 3vw, 2.1rem)" }}>
       {title}
     </h2>
-    <p className="font-body text-sm max-w-xl" style={{ color: "hsl(30 16% 42%)" }}>{subtitle}</p>
+    <p className="font-body text-sm max-w-xl" style={{ color: "hsl(220 12% 44%)" }}>{subtitle}</p>
   </div>
 );
 
@@ -1036,17 +1057,17 @@ const Confirmation = ({ email }: { email: string }) => (
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
-      style={{ background: GOLD_GRAD, boxShadow: "0 18px 44px hsl(38 80% 55% / 0.35)" }}
+      style={{ background: GOLD_GRAD, boxShadow: "0 6px 16px hsl(192 60% 24% / 0.14)" }}
     >
       <CheckCircle2 className="w-10 h-10 text-white" />
     </motion.div>
-    <h1 className="font-display font-bold mb-4" style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)", color: "hsl(28 26% 10%)" }}>
+    <h1 className="font-display font-bold mb-4" style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)", color: "hsl(220 25% 10%)" }}>
       Thank you!
     </h1>
-    <p className="font-body text-base sm:text-lg leading-relaxed mb-3" style={{ color: "hsl(30 16% 36%)" }}>
+    <p className="font-body text-base sm:text-lg leading-relaxed mb-3" style={{ color: "hsl(220 12% 38%)" }}>
       Your order has been submitted. Our designer will construct your customized invitation.
     </p>
-    <p className="font-body text-base sm:text-lg leading-relaxed mb-6" style={{ color: "hsl(30 16% 36%)" }}>
+    <p className="font-body text-base sm:text-lg leading-relaxed mb-6" style={{ color: "hsl(220 12% 38%)" }}>
       You'll receive the invitation preview and invoice directly via email{email ? <> at <span className="font-semibold text-foreground">{email}</span></> : null}.
     </p>
     <p className="font-display italic text-xl mb-10" style={{ color: GOLD }}>
@@ -1056,14 +1077,14 @@ const Confirmation = ({ email }: { email: string }) => (
       <Link
         to="/"
         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-body text-sm font-semibold text-white transition-all hover:opacity-95 active:scale-[0.98]"
-        style={{ background: GOLD_GRAD, boxShadow: "0 10px 24px hsl(38 80% 55% / 0.28)" }}
+        style={{ background: GOLD_GRAD, boxShadow: "0 4px 12px hsl(192 60% 24% / 0.12)" }}
       >
         Back to home
       </Link>
       <Link
         to="/#reviews"
         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-body text-sm font-semibold transition-colors"
-        style={{ color: GOLD, border: "1.5px solid hsl(38 55% 76%)" }}
+        style={{ color: GOLD, border: "1.5px solid hsl(192 25% 72%)" }}
       >
         Read other reviews
       </Link>
@@ -1185,7 +1206,7 @@ const OrderWizard = () => {
   return (
     <div
       className="min-h-screen pt-24 sm:pt-28 pb-24 px-4"
-      style={{ background: "linear-gradient(180deg, hsl(42 65% 97.5%) 0%, hsl(38 48% 94%) 100%)" }}
+      style={{ background: "linear-gradient(180deg, hsl(0 0% 99.5%) 0%, hsl(190 20% 96%) 100%)" }}
     >
       <Seo title="Build your invitation — Wed4Love" description="Try before you pay — build your custom digital wedding invitation in minutes." path="/order" />
 
@@ -1199,7 +1220,7 @@ const OrderWizard = () => {
             <button
               onClick={goPrev}
               className="flex items-center gap-1.5 font-body text-sm font-semibold transition-opacity hover:opacity-60"
-              style={{ color: "hsl(30 12% 48%)" }}
+              style={{ color: "hsl(220 10% 50%)" }}
             >
               <ArrowLeft className="w-4 h-4" /> {step === 0 ? "Back" : "Previous"}
             </button>
@@ -1246,7 +1267,7 @@ const OrderWizard = () => {
                 <button
                   onClick={goPrev}
                   className="font-body text-sm font-semibold px-5 py-3 rounded-2xl transition-colors"
-                  style={{ color: "hsl(30 20% 20%)", background: "white", border: "1.5px solid hsl(38 40% 88%)" }}
+                  style={{ color: "hsl(220 18% 18%)", background: "white", border: "1.5px solid hsl(220 12% 90%)" }}
                 >
                   <ArrowLeft className="inline w-4 h-4 mr-1.5 -mt-0.5" />
                   {step === 0 ? "Back" : "Previous"}
@@ -1254,7 +1275,7 @@ const OrderWizard = () => {
                 <button
                   onClick={goNext}
                   className="inline-flex items-center gap-2 font-body text-sm font-bold uppercase tracking-wider px-6 py-3 rounded-2xl text-white transition-all hover:opacity-95 active:scale-[0.98]"
-                  style={{ background: GOLD_GRAD, letterSpacing: "0.14em", boxShadow: "0 10px 24px hsl(38 80% 55% / 0.3)" }}
+                  style={{ background: GOLD_GRAD, letterSpacing: "0.14em", boxShadow: "0 4px 12px hsl(192 60% 24% / 0.12)" }}
                 >
                   Continue
                   <ArrowRight className="w-4 h-4" />

@@ -82,8 +82,10 @@ const LANDING_FAQ_SCHEMA = {
   ]
 };
 
-const GOLD       = "hsl(38 72% 44%)";
-const GOLD_LIGHT = "hsl(38 80% 52%)";
+// Deep editorial teal — primary brand color post-2026-10-14 refresh
+const GOLD       = "hsl(192 60% 24%)";
+const GOLD_LIGHT = "hsl(192 55% 32%)";
+// Primary CTA is now a solid flat fill (reference-inspired), kept as a near-flat gradient so hover variations still work.
 const GOLD_GRAD  = `linear-gradient(135deg, ${GOLD}, ${GOLD_LIGHT})`;
 
 const fade = (delay = 0) => ({
@@ -120,7 +122,7 @@ const UserMenu = () => {
       <button
         onClick={() => setOpen(v => !v)}
         className="w-9 h-9 rounded-full flex items-center justify-center font-body font-bold text-sm text-white transition-all hover:opacity-90 active:scale-95"
-        style={{ background: GOLD_GRAD, boxShadow: "0 2px 10px hsl(38 80% 55% / 0.3)" }}
+        style={{ background: GOLD_GRAD, boxShadow: "0 1px 4px hsl(220 20% 20% / 0.08)" }}
       >
         {initials}
       </button>
@@ -128,14 +130,14 @@ const UserMenu = () => {
       {open && (
         <div
           className="absolute right-0 mt-2 w-56 rounded-2xl shadow-xl border bg-white overflow-hidden z-50"
-          style={{ borderColor: "hsl(38 40% 90%)" }}
+          style={{ borderColor: "hsl(220 12% 91%)" }}
         >
-          <div className="px-4 py-3 border-b" style={{ borderColor: "hsl(38 40% 92%)" }}>
-            <p className="font-body text-xs font-semibold truncate" style={{ color: "hsl(30 20% 20%)" }}
+          <div className="px-4 py-3 border-b" style={{ borderColor: "hsl(220 12% 93%)" }}>
+            <p className="font-body text-xs font-semibold truncate" style={{ color: "hsl(220 18% 18%)" }}
               title={user?.user_metadata?.full_name || "My Account"}>
               {user?.user_metadata?.full_name || "My Account"}
             </p>
-            <p className="font-body text-xs truncate" style={{ color: "hsl(30 12% 55%)" }}
+            <p className="font-body text-xs truncate" style={{ color: "hsl(220 10% 57%)" }}
               title={user?.email}>
               {user?.email}
             </p>
@@ -144,18 +146,18 @@ const UserMenu = () => {
             <button
               onClick={() => { setOpen(false); navigate("/choose-template"); }}
               className="w-full flex items-center gap-2.5 px-4 py-2.5 font-body text-sm hover:bg-amber-50 transition-colors text-left"
-              style={{ color: "hsl(30 20% 22%)" }}
+              style={{ color: "hsl(220 15% 20%)" }}
             >
               <PlusCircle className="w-4 h-4" style={{ color: GOLD }} /> New Invitation
             </button>
             <button
               onClick={() => { setOpen(false); navigate("/my-invitations"); }}
               className="w-full flex items-center gap-2.5 px-4 py-2.5 font-body text-sm hover:bg-amber-50 transition-colors text-left"
-              style={{ color: "hsl(30 20% 22%)" }}
+              style={{ color: "hsl(220 15% 20%)" }}
             >
               <BookOpen className="w-4 h-4" style={{ color: GOLD }} /> My Invitations
             </button>
-            <div style={{ height: 1, background: "hsl(38 40% 92%)", margin: "4px 16px" }} />
+            <div style={{ height: 1, background: "hsl(220 12% 93%)", margin: "4px 16px" }} />
             <button
               onClick={async () => { setOpen(false); await signOut(); }}
               className="w-full flex items-center gap-2.5 px-4 py-2.5 font-body text-sm hover:bg-red-50 transition-colors text-left"
@@ -190,7 +192,7 @@ const Nav = () => {
   const { user, loading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const NAV_INK = "hsl(30 20% 18%)";
+  const NAV_INK = "hsl(220 20% 16%)";
   const navLinkSt: React.CSSProperties = { color: NAV_INK };
   const onEnter = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = GOLD);
   const onLeave = (e: React.MouseEvent<HTMLElement>) => (e.currentTarget.style.color = NAV_INK);
@@ -204,7 +206,7 @@ const Nav = () => {
     >
       <div
         className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center gap-3 md:gap-5"
-        style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
+        style={{ border: "1px solid hsl(220 15% 90% / 0.7)" }}
       >
         {/* Logo */}
         <Link to="/" className="shrink-0">
@@ -246,14 +248,14 @@ const Nav = () => {
                 <Link
                   to="/login"
                   className="hidden lg:inline-block font-body text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-70 whitespace-nowrap"
-                  style={{ color: "hsl(30 18% 38%)" }}
+                  style={{ color: "hsl(220 12% 40%)" }}
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/order"
                   className="hidden md:inline-block font-body text-sm font-semibold px-3.5 lg:px-5 py-2 lg:py-2.5 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
-                  style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 18px hsl(38 80% 55% / 0.28)" }}
+                  style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
                 >
                   Get Started
                 </Link>
@@ -267,7 +269,7 @@ const Nav = () => {
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
             className="md:hidden p-2 rounded-xl transition-colors"
-            style={{ color: "hsl(30 12% 40%)" }}
+            style={{ color: "hsl(220 10% 42%)" }}
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -283,7 +285,7 @@ const Nav = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
             className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg p-3 flex flex-col gap-1"
-            style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
+            style={{ border: "1px solid hsl(220 15% 90% / 0.7)" }}
           >
             {NAV_LINKS.map(l => (
               <Link
@@ -291,14 +293,14 @@ const Nav = () => {
                 to={l.to}
                 onClick={() => setMenuOpen(false)}
                 className="font-body text-sm font-semibold tracking-wide px-3 py-2.5 rounded-xl hover:bg-amber-50"
-                style={{ color: "hsl(30 20% 18%)" }}
+                style={{ color: "hsl(220 20% 16%)" }}
               >
                 {l.label}
               </Link>
             ))}
 
             {/* Divider */}
-            <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
+            <div className="my-2 h-px" style={{ background: "hsl(220 12% 91%)" }} />
 
             {/* Utility switchers */}
             <div className="flex items-center gap-2 px-2 py-1">
@@ -312,7 +314,7 @@ const Nav = () => {
                 to="/login"
                 onClick={() => setMenuOpen(false)}
                 className="mt-1 font-body text-sm font-medium px-3 py-2.5 rounded-xl hover:bg-amber-50"
-                style={{ color: "hsl(30 18% 38%)" }}
+                style={{ color: "hsl(220 12% 40%)" }}
               >
                 Sign In
               </Link>
@@ -338,21 +340,21 @@ const Hero = () => {
   return (
   <section
     className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-24 lg:pb-28"
-    style={{ background: "linear-gradient(180deg, hsl(42 65% 97.5%) 0%, hsl(38 48% 94%) 100%)" }}
+    style={{ background: "linear-gradient(180deg, hsl(0 0% 99.5%) 0%, hsl(190 20% 96%) 100%)" }}
   >
     {/* ── Soft decorative glows ── */}
     <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(38 85% 82% / 0.42) 0%, transparent 62%)", filter: "blur(20px)" }} />
+      style={{ background: "radial-gradient(circle, hsl(192 35% 82% / 0.42) 0%, transparent 62%)", filter: "blur(60px)" }} />
     <div className="absolute -bottom-40 -right-32 w-[36rem] h-[36rem] rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, hsl(32 85% 86% / 0.3) 0%, transparent 65%)", filter: "blur(20px)" }} />
+      style={{ background: "radial-gradient(circle, hsl(190 25% 90% / 0.4) 0%, transparent 65%)", filter: "blur(60px)" }} />
 
     {/* Hairline paper texture */}
     <div className="absolute inset-0 pointer-events-none opacity-[0.028]"
-      style={{ backgroundImage: "radial-gradient(hsl(30 20% 14%) 1px, transparent 1px)", backgroundSize: "3px 3px" }} />
+      style={{ backgroundImage: "radial-gradient(hsl(220 20% 12%) 1px, transparent 1px)", backgroundSize: "3px 3px" }} />
 
     {/* Fade into next section */}
     <div className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
-      style={{ background: "linear-gradient(to bottom, transparent, hsl(42 55% 96%))" }} />
+      style={{ background: "linear-gradient(to bottom, transparent, hsl(190 22% 97%))" }} />
 
     <div className="relative max-w-6xl mx-auto px-6">
       <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-14 lg:gap-20 items-center">
@@ -366,7 +368,7 @@ const Hero = () => {
           {/* Headline — editorial serif with italic script accent */}
           <h1
             className="font-display leading-[1.03] mb-7 tracking-[-0.01em]"
-            style={{ fontSize: "clamp(2rem, 5.6vw, 5.25rem)", color: "hsl(28 26% 10%)", fontWeight: 500 }}
+            style={{ fontSize: "clamp(2rem, 5.6vw, 5.25rem)", color: "hsl(220 25% 10%)", fontWeight: 500 }}
           >
             Invitations as
             <br />
@@ -378,7 +380,7 @@ const Hero = () => {
             <span
               className="font-handwritten italic font-normal"
               style={{
-                background: `linear-gradient(120deg, ${GOLD} 0%, hsl(38 85% 58%) 55%, ${GOLD} 100%)`,
+                background: `linear-gradient(120deg, ${GOLD} 0%, hsl(192 55% 36%) 55%, ${GOLD} 100%)`,
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -402,20 +404,20 @@ const Hero = () => {
           {/* Short refined paragraph */}
           <p
             className="font-body leading-[1.7] mb-10 mx-auto lg:mx-0"
-            style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", color: "hsl(30 16% 36%)", maxWidth: 500 }}
+            style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", color: "hsl(220 12% 38%)", maxWidth: 500 }}
           >
             The best moments don't start on the day — they start with the invitation.
             One elegant link, a cinematic video backdrop, and live guest replies in your pocket.
           </p>
 
           {/* CTA row + inline price */}
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-5 sm:gap-7 mb-6">
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 sm:gap-5 mb-6">
             <GetStartedLink
               className="group inline-flex items-center justify-center gap-2.5 px-9 py-[18px] rounded-full font-body text-[13px] font-bold uppercase transition-all hover:scale-[1.025] active:scale-[0.98]"
               style={{
                 background: GOLD_GRAD,
                 color: "white",
-                boxShadow: "0 20px 48px hsl(38 80% 48% / 0.38)",
+                boxShadow: "0 6px 16px hsl(192 60% 24% / 0.14)",
                 letterSpacing: "0.14em",
               }}
             >
@@ -423,10 +425,27 @@ const Hero = () => {
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </GetStartedLink>
 
+            <a
+              href="/invite/demo-wedding?theme=golden-hour"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2.5 px-8 py-[16px] rounded-full font-body text-[13px] font-bold uppercase transition-all hover:scale-[1.025] active:scale-[0.98] bg-white"
+              style={{
+                color: GOLD,
+                border: "2px solid hsl(192 25% 72%)",
+                letterSpacing: "0.14em",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.background = "hsl(190 30% 97%)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "hsl(192 25% 72%)"; e.currentTarget.style.background = "white"; }}
+            >
+              <Play className="w-3.5 h-3.5" fill="currentColor" />
+              View Example
+            </a>
+
             <div className="inline-flex items-baseline gap-2 font-body">
-              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(30 14% 48%)" }}>From</span>
+              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(220 10% 50%)" }}>From</span>
               <span className="font-display font-semibold leading-none" style={{ color: GOLD, fontSize: "1.75rem" }}>{format(20)}</span>
-              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(30 14% 48%)" }}>· One-time</span>
+              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(220 10% 50%)" }}>· One-time</span>
             </div>
           </div>
 
@@ -443,7 +462,7 @@ const Hero = () => {
                   src={a.src}
                   alt={a.alt}
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white"
-                  style={{ marginLeft: idx > 0 ? -11 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 10px rgba(70,45,10,0.22)" }}
+                  style={{ marginLeft: idx > 0 ? -11 : 0, zIndex: HERO_AVATARS.length - idx, boxShadow: "0 2px 10px rgba(14,30,45,0.22)" }}
                 />
               ))}
             </div>
@@ -452,20 +471,20 @@ const Hero = () => {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <span key={i} style={{ color: GOLD, fontSize: 14, lineHeight: 1 }}>★</span>
                 ))}
-                <span className="font-body text-[12px] font-bold ml-1.5" style={{ color: "hsl(30 20% 16%)" }}>4.9</span>
+                <span className="font-body text-[12px] font-bold ml-1.5" style={{ color: "hsl(220 20% 14%)" }}>4.9</span>
               </div>
-              <p className="font-body text-[11px] sm:text-[12px] mt-1 leading-none" style={{ color: "hsl(30 14% 42%)" }}>
-                Loved by <span className="font-bold" style={{ color: "hsl(30 20% 16%)" }}>2,847</span> couples this month
+              <p className="font-body text-[11px] sm:text-[12px] mt-1 leading-none" style={{ color: "hsl(220 10% 44%)" }}>
+                Loved by <span className="font-bold" style={{ color: "hsl(220 20% 14%)" }}>2,847</span> couples this month
               </p>
             </div>
           </motion.div>
 
           {/* Guarantee strip — flat */}
-          <div className="inline-flex items-center gap-2 sm:gap-2.5 font-body text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.16em] sm:tracking-[0.26em] font-bold" style={{ color: "hsl(30 16% 40%)" }}>
-            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(38 40% 72%)" }} />
+          <div className="inline-flex items-center gap-2 sm:gap-2.5 font-body text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.16em] sm:tracking-[0.26em] font-bold" style={{ color: "hsl(220 12% 42%)" }}>
+            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(192 25% 76%)" }} />
             <Shield className="w-3.5 h-3.5" style={{ color: GOLD }} />
             30-Day Money-Back Guarantee
-            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(38 40% 72%)" }} />
+            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(192 25% 76%)" }} />
           </div>
         </motion.div>
 
@@ -479,16 +498,16 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.85 }}
-            className="hidden md:flex absolute -left-4 lg:-left-6 top-14 z-20 items-center gap-2.5 px-3.5 py-2.5 rounded-2xl shadow-[0_18px_40px_rgba(70,50,10,0.14)]"
-            style={{ background: "rgba(255,255,255,0.95)", border: "1px solid hsl(38 45% 86%)", backdropFilter: "blur(12px)" }}
+            className="hidden md:flex absolute -left-4 lg:-left-6 top-14 z-20 items-center gap-2.5 px-3.5 py-2.5 rounded-2xl shadow-[0_18px_40px_rgba(14,30,45,0.14)]"
+            style={{ background: "rgba(255,255,255,0.95)", border: "1px solid hsl(190 20% 90%)", backdropFilter: "blur(12px)" }}
           >
             <span className="relative flex w-2 h-2">
               <span className="absolute inline-flex w-full h-full rounded-full opacity-70 animate-ping" style={{ background: GOLD }} />
               <span className="relative inline-flex w-2 h-2 rounded-full" style={{ background: GOLD }} />
             </span>
             <div className="text-left">
-              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(30 20% 16%)" }}>12 new RSVPs</p>
-              <p className="font-body text-[10px] leading-none mt-1" style={{ color: "hsl(30 12% 46%)" }}>in the last hour</p>
+              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(220 20% 14%)" }}>12 new RSVPs</p>
+              <p className="font-body text-[10px] leading-none mt-1" style={{ color: "hsl(220 10% 48%)" }}>in the last hour</p>
             </div>
           </motion.div>
 
@@ -496,8 +515,8 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 1.05 }}
-            className="hidden md:flex absolute -right-4 lg:-right-6 bottom-24 z-20 items-center gap-3 px-3.5 py-2.5 rounded-2xl shadow-[0_18px_40px_rgba(70,50,10,0.14)]"
-            style={{ background: "rgba(255,255,255,0.95)", border: "1px solid hsl(38 45% 86%)", backdropFilter: "blur(12px)" }}
+            className="hidden md:flex absolute -right-4 lg:-right-6 bottom-24 z-20 items-center gap-3 px-3.5 py-2.5 rounded-2xl shadow-[0_18px_40px_rgba(14,30,45,0.14)]"
+            style={{ background: "rgba(255,255,255,0.95)", border: "1px solid hsl(190 20% 90%)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex">
               {HERO_AVATARS.slice(0, 3).map((a, idx) => (
@@ -511,8 +530,8 @@ const Hero = () => {
               ))}
             </div>
             <div className="text-left">
-              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(30 20% 16%)" }}>Joined today</p>
-              <p className="font-body text-[10px] leading-none mt-1" style={{ color: "hsl(30 12% 46%)" }}>+128 couples</p>
+              <p className="font-body text-[11px] font-bold leading-none" style={{ color: "hsl(220 20% 14%)" }}>Joined today</p>
+              <p className="font-body text-[10px] leading-none mt-1" style={{ color: "hsl(220 10% 48%)" }}>+128 couples</p>
             </div>
           </motion.div>
 
@@ -531,15 +550,15 @@ const Hero = () => {
         <Link
           to="/contact"
           className="inline-flex items-center gap-2 font-body text-sm sm:text-base font-semibold transition-colors"
-          style={{ color: "hsl(30 20% 16%)" }}
+          style={{ color: "hsl(220 20% 14%)" }}
           onMouseEnter={e => (e.currentTarget.style.color = GOLD)}
-          onMouseLeave={e => (e.currentTarget.style.color = "hsl(30 20% 16%)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "hsl(220 20% 14%)")}
         >
           <MessageCircle className="w-5 h-5" style={{ color: GOLD }} />
           Have any questions? <span style={{ color: GOLD }}>Contact us!</span>
         </Link>
 
-        <span className="hidden sm:block w-px h-5" style={{ background: "hsl(38 40% 70%)" }} />
+        <span className="hidden sm:block w-px h-5" style={{ background: "hsl(192 25% 75%)" }} />
 
         <div className="flex items-center gap-2">
           {[
@@ -557,9 +576,9 @@ const Hero = () => {
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
               style={{
                 background: "white",
-                color: "hsl(30 20% 22%)",
-                border: "1.5px solid hsl(38 40% 82%)",
-                boxShadow: "0 2px 8px hsl(38 40% 40% / 0.08)",
+                color: "hsl(220 15% 20%)",
+                border: "1.5px solid hsl(192 20% 82%)",
+                boxShadow: "0 2px 8px hsl(220 20% 15% / 0.08)",
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.background = GOLD_GRAD;
@@ -568,8 +587,8 @@ const Hero = () => {
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = "white";
-                e.currentTarget.style.color = "hsl(30 20% 22%)";
-                e.currentTarget.style.borderColor = "hsl(38 40% 82%)";
+                e.currentTarget.style.color = "hsl(220 15% 20%)";
+                e.currentTarget.style.borderColor = "hsl(192 20% 82%)";
               }}
             >
               {s.icon}
@@ -590,7 +609,7 @@ const PhoneMockup = () => (
       className="absolute pointer-events-none rounded-full"
       style={{
         inset: "-20%",
-        background: "radial-gradient(circle, hsl(38 80% 68% / 0.35) 0%, transparent 60%)",
+        background: "radial-gradient(circle, hsl(192 45% 65% / 0.35) 0%, transparent 60%)",
         filter: "blur(30px)",
       }}
     />
@@ -630,7 +649,7 @@ const PhoneMockup = () => (
             You're invited
           </p>
           <p className="font-handwritten italic leading-none" style={{ color: "white", fontSize: 34, textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}>
-            Ana <span style={{ color: "hsl(38 80% 68%)" }}>&</span> Elias
+            Ana <span style={{ color: "hsl(192 45% 65%)" }}>&</span> Elias
           </p>
           <p className="font-body text-[10px] tracking-[0.18em] uppercase mt-2" style={{ color: "rgba(255,255,255,0.7)" }}>
             15 June 2026 · Tuscany
@@ -667,7 +686,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 // ── "Our Difference" value prop ──────────────────────────────────────────────
 const OurDifference = () => (
-  <section className="relative py-16 sm:py-20 px-4" style={{ background: "hsl(42 55% 96%)" }}>
+  <section className="relative py-16 sm:py-20 px-4" style={{ background: "hsl(190 22% 97%)" }}>
     <div className="max-w-5xl mx-auto">
       <motion.div {...fade()} className="text-center mb-10">
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -682,20 +701,20 @@ const OurDifference = () => (
         {...fade(0.1)}
         className="relative rounded-[2rem] overflow-hidden p-8 sm:p-12"
         style={{
-          background: "linear-gradient(145deg, hsl(38 70% 97%) 0%, hsl(38 55% 93%) 100%)",
-          border: "1.5px solid hsl(38 55% 86%)",
-          boxShadow: "0 20px 60px hsl(38 60% 42% / 0.12)",
+          background: "linear-gradient(145deg, hsl(190 30% 97%) 0%, hsl(190 22% 94%) 100%)",
+          border: "1.5px solid hsl(190 22% 88%)",
+          boxShadow: "0 10px 30px hsl(220 20% 15% / 0.06)",
         }}
       >
         <div className="absolute -top-20 -right-16 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(38 90% 72% / 0.35) 0%, transparent 65%)", filter: "blur(10px)" }} />
+          style={{ background: "radial-gradient(circle, hsl(192 45% 70% / 0.35) 0%, transparent 65%)", filter: "blur(10px)" }} />
 
         <div className="relative grid md:grid-cols-2 gap-8 sm:gap-10">
           {/* Point 1 */}
           <div className="flex gap-4">
             <div
               className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center"
-              style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.35)" }}
+              style={{ background: GOLD_GRAD, boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
             >
               <Heart className="w-5 h-5 text-white fill-white" />
             </div>
@@ -704,7 +723,7 @@ const OurDifference = () => (
                 <Check className="w-4 h-4" style={{ color: GOLD }} />
                 Your designer, by your side
               </p>
-              <p className="font-body text-sm leading-relaxed" style={{ color: "hsl(30 16% 36%)" }}>
+              <p className="font-body text-sm leading-relaxed" style={{ color: "hsl(220 12% 38%)" }}>
                 From the first message to the morning of your wedding, your personal designer is available for updates, tweaks, and last-minute changes.
                 <span className="font-semibold text-foreground"> Real people, real care.</span>
               </p>
@@ -715,7 +734,7 @@ const OurDifference = () => (
           <div className="flex gap-4">
             <div
               className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center"
-              style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.35)" }}
+              style={{ background: GOLD_GRAD, boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
             >
               <InfinityIcon className="w-5 h-5 text-white" />
             </div>
@@ -724,7 +743,7 @@ const OurDifference = () => (
                 <Check className="w-4 h-4" style={{ color: GOLD }} />
                 Unlimited revisions
               </p>
-              <p className="font-body text-sm leading-relaxed" style={{ color: "hsl(30 16% 36%)" }}>
+              <p className="font-body text-sm leading-relaxed" style={{ color: "hsl(220 12% 38%)" }}>
                 Not happy with something? We change it. And again. And again. There's no limit.
                 <span className="font-semibold text-foreground"> Your invitation is done when </span>
                 <em className="font-semibold" style={{ color: GOLD }}>you</em>
@@ -740,23 +759,23 @@ const OurDifference = () => (
 
 // ── No-Limits transparency banner ────────────────────────────────────────────
 const NoLimitsBanner = () => (
-  <section className="relative py-16 sm:py-20 px-4" style={{ background: "hsl(42 35% 97%)" }}>
+  <section className="relative py-16 sm:py-20 px-4" style={{ background: "hsl(0 0% 99%)" }}>
     <div className="max-w-4xl mx-auto">
       <motion.div
         {...fade()}
         className="relative rounded-[2rem] overflow-hidden text-center px-6 sm:px-12 py-12 sm:py-16"
         style={{
-          background: `linear-gradient(135deg, hsl(28 30% 10%) 0%, hsl(30 24% 16%) 100%)`,
+          background: `linear-gradient(135deg, hsl(220 28% 8%) 0%, hsl(220 25% 15%) 100%)`,
           boxShadow: "0 24px 70px rgba(0,0,0,0.22)",
         }}
       >
         {/* Gold ambient glow */}
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[32rem] h-[32rem] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(38 90% 60% / 0.22) 0%, transparent 60%)", filter: "blur(20px)" }} />
+          style={{ background: "radial-gradient(circle, hsl(192 55% 32% / 0.22) 0%, transparent 60%)", filter: "blur(60px)" }} />
 
         <p
           className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-5"
-          style={{ color: "hsl(38 85% 72%)" }}
+          style={{ color: "hsl(192 50% 70%)" }}
         >
           No limits. Ever.
         </p>
@@ -769,7 +788,7 @@ const NoLimitsBanner = () => (
           className="font-display font-bold leading-none mb-3"
           style={{
             fontSize: "clamp(3rem, 10vw, 6.5rem)",
-            background: `linear-gradient(135deg, hsl(38 90% 72%) 0%, hsl(38 95% 58%) 50%, hsl(38 90% 72%) 100%)`,
+            background: `linear-gradient(135deg, hsl(192 45% 70%) 0%, hsl(192 55% 32%) 50%, hsl(192 45% 70%) 100%)`,
             WebkitBackgroundClip: "text",
             backgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -782,7 +801,7 @@ const NoLimitsBanner = () => (
           invitations created and counting
         </p>
 
-        <p className="font-display italic text-lg sm:text-xl mb-6" style={{ color: "hsl(38 85% 72%)" }}>
+        <p className="font-display italic text-lg sm:text-xl mb-6" style={{ color: "hsl(192 50% 70%)" }}>
           Send to 10 guests or 10,000. Same price.
         </p>
 
@@ -799,7 +818,7 @@ const NoLimitsBanner = () => (
               style={{
                 background: "rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,220,160,0.3)",
-                color: "hsl(38 85% 86%)",
+                color: "hsl(192 35% 88%)",
                 backdropFilter: "blur(6px)",
               }}
             >
@@ -821,8 +840,8 @@ const Comparison = () => {
   const digital = 20;
   const savings = paperTotal - digital;
 
-  const PAPER_BG = "hsl(35 22% 96%)";
-  const DIGITAL_BG = "linear-gradient(155deg, hsl(28 32% 15%) 0%, hsl(28 28% 10%) 100%)";
+  const PAPER_BG = "hsl(220 15% 96%)";
+  const DIGITAL_BG = "linear-gradient(155deg, hsl(220 25% 15%) 0%, hsl(220 25% 10%) 100%)";
 
   const nowStamp = new Date().toLocaleString("en-US", {
     month: "2-digit", day: "2-digit", year: "numeric",
@@ -830,12 +849,12 @@ const Comparison = () => {
   });
 
   return (
-    <section className="py-24 px-4" style={{ background: "hsl(42 45% 96%)" }}>
+    <section className="py-24 px-4" style={{ background: "hsl(0 0% 98.5%)" }}>
       <div className="max-w-5xl mx-auto">
         <motion.div {...fade()} className="text-center mb-14">
           <span
             className="inline-block px-4 py-1.5 rounded-full font-body text-xs font-semibold mb-5"
-            style={{ background: "hsl(38 40% 88%)", color: "hsl(30 30% 30%)" }}
+            style={{ background: "hsl(220 12% 90%)", color: "hsl(220 20% 28%)" }}
           >
             Comparison
           </span>
@@ -859,12 +878,12 @@ const Comparison = () => {
             <div
               style={{
                 background: PAPER_BG,
-                boxShadow: "0 12px 40px hsl(30 20% 40% / 0.14)",
+                boxShadow: "0 12px 40px hsl(220 20% 15% / 0.10)",
                 borderTopLeftRadius: "1.5rem",
                 borderTopRightRadius: "1.5rem",
               }}
             >
-              <div className="p-7 sm:p-8 font-mono" style={{ color: "hsl(30 25% 22%)" }}>
+              <div className="p-7 sm:p-8 font-mono" style={{ color: "hsl(220 20% 20%)" }}>
                 {/* Receipt header */}
                 <div className="text-center mb-6">
                   <p className="text-[11px] tracking-widest opacity-60">*** WEDDING COSTS ***</p>
@@ -881,7 +900,7 @@ const Comparison = () => {
                     { icon: Truck,    label: "SHIPPING",       amount: PAPER.shipping },
                   ].map(item => (
                     <li key={item.label} className="flex items-center gap-3 pb-2.5"
-                      style={{ borderBottom: "1px dashed hsl(30 20% 78%)" }}
+                      style={{ borderBottom: "1px dashed hsl(220 12% 78%)" }}
                     >
                       <item.icon className="w-4 h-4 shrink-0 opacity-70" />
                       <span className="flex-1 text-[13px] tracking-wider">{item.label}</span>
@@ -894,7 +913,7 @@ const Comparison = () => {
 
                 {/* Total */}
                 <div className="flex items-center justify-between pb-4"
-                  style={{ borderBottom: "1px solid hsl(30 20% 60% / 0.4)" }}
+                  style={{ borderBottom: "1px solid hsl(220 15% 65% / 0.4)" }}
                 >
                   <span className="text-sm font-bold tracking-wider">TOTAL</span>
                   <span
@@ -935,7 +954,7 @@ const Comparison = () => {
           <motion.div {...fade(0.2)} className="relative rounded-3xl overflow-hidden"
             style={{
               background: DIGITAL_BG,
-              boxShadow: "0 12px 40px hsl(28 30% 18% / 0.32)",
+              boxShadow: "0 12px 40px hsl(220 25% 15% / 0.28)",
             }}
           >
             <div className="p-7 sm:p-8">
@@ -943,7 +962,7 @@ const Comparison = () => {
               <div className="flex items-start justify-between mb-8 gap-3">
                 <span
                   className="inline-block px-4 py-1.5 rounded-full font-body text-xs font-bold"
-                  style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(38 80% 55% / 0.35)" }}
+                  style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
                 >
                   Digital Invitation
                 </span>
@@ -965,13 +984,13 @@ const Comparison = () => {
                   <div key={row.label} className="flex items-center gap-3.5">
                     <div
                       className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-                      style={{ background: "hsl(28 25% 22%)" }}
+                      style={{ background: "hsl(220 18% 20%)" }}
                     >
                       <row.icon className="w-4 h-4" style={{ color: GOLD }} />
                     </div>
                     <span
                       className="flex-1 font-body text-sm font-semibold"
-                      style={{ color: "hsl(38 40% 96%)" }}
+                      style={{ color: "hsl(190 20% 96%)" }}
                     >
                       {row.label}
                     </span>
@@ -988,7 +1007,7 @@ const Comparison = () => {
                   "Multi-language & currency support",
                 ].map(f => (
                   <li key={f} className="flex items-center gap-2 font-body text-sm"
-                    style={{ color: "hsl(38 25% 82%)" }}
+                    style={{ color: "hsl(190 20% 86%)" }}
                   >
                     <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(142 55% 55%)" }} />
                     <span>{f}</span>
@@ -997,11 +1016,11 @@ const Comparison = () => {
               </ul>
 
               {/* Divider */}
-              <div className="my-5" style={{ borderTop: "1px solid hsl(38 25% 25%)" }} />
+              <div className="my-5" style={{ borderTop: "1px solid hsl(220 15% 22%)" }} />
 
               {/* Price */}
               <div className="flex items-end justify-between">
-                <span className="font-body text-sm font-semibold" style={{ color: "hsl(38 30% 80%)" }}>
+                <span className="font-body text-sm font-semibold" style={{ color: "hsl(220 10% 82%)" }}>
                   From only
                 </span>
                 <div className="text-right">
@@ -1009,7 +1028,7 @@ const Comparison = () => {
                     {format(digital)}
                   </span>
                   {showUsdNote && (
-                    <p className="text-[10px] font-body mt-0.5" style={{ color: "hsl(38 20% 62%)" }}>
+                    <p className="text-[10px] font-body mt-0.5" style={{ color: "hsl(220 10% 65%)" }}>
                       charged as {usdNote(digital)}
                     </p>
                   )}
@@ -1088,7 +1107,7 @@ const TemplateCard = ({ t, i }: { t: typeof TEMPLATES[0]; i: number }) => (
 );
 
 const Templates = () => (
-  <section id="templates" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(42 35% 97%)" }}>
+  <section id="templates" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(0 0% 99%)" }}>
     <div className="max-w-5xl mx-auto">
       <motion.div {...fade()} className="text-center mb-14">
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -1128,7 +1147,7 @@ const StepCard = ({
   <motion.div
     {...fade(0.1 + i * 0.08)}
     className="relative rounded-2xl p-5 flex flex-col gap-3"
-    style={{ background: "white", border: "1.5px solid hsl(38 30% 90%)", boxShadow: "0 4px 18px hsl(30 30% 60% / 0.06)" }}
+    style={{ background: "white", border: "1.5px solid hsl(220 12% 91%)", boxShadow: "0 4px 18px hsl(220 15% 60% / 0.06)" }}
   >
     <div className="flex items-center justify-between">
       <span className="font-display font-bold text-3xl" style={{ color: softBg }}>{s.n}</span>
@@ -1176,7 +1195,7 @@ const TrackHeader = ({
 const HowItWorks = () => {
   const { format } = useCurrency();
   return (
-  <section id="how-it-works" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(38 45% 95%)" }}>
+  <section id="how-it-works" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(190 20% 96%)" }}>
     <div className="max-w-4xl mx-auto">
       <motion.div {...fade()} className="text-center mb-14">
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -1197,9 +1216,9 @@ const HowItWorks = () => {
         {...fade(0.05)}
         className="relative rounded-3xl p-6 sm:p-8"
         style={{
-          background: "linear-gradient(160deg, hsl(42 60% 97%) 0%, hsl(38 55% 92%) 100%)",
-          border: "1.5px solid hsl(38 50% 84%)",
-          boxShadow: "0 12px 32px hsl(38 45% 65% / 0.18)",
+          background: "linear-gradient(160deg, hsl(0 0% 99%) 0%, hsl(190 22% 93%) 100%)",
+          border: "1.5px solid hsl(192 20% 84%)",
+          boxShadow: "0 12px 32px hsl(192 25% 70% / 0.18)",
         }}
       >
         <TrackHeader
@@ -1214,7 +1233,7 @@ const HowItWorks = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {INVITE_STEPS.map((s, i) => (
-            <StepCard key={s.n} s={s} i={i} accent={GOLD} softBg="hsl(38 60% 93%)" />
+            <StepCard key={s.n} s={s} i={i} accent={GOLD} softBg="hsl(190 25% 94%)" />
           ))}
         </div>
 
@@ -1222,14 +1241,14 @@ const HowItWorks = () => {
           <Link
             to="/choose-template"
             className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl font-body text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
-            style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px hsl(38 80% 55% / 0.3)" }}
+            style={{ background: GOLD_GRAD, boxShadow: "0 2px 8px hsl(220 20% 20% / 0.08)" }}
           >
             Create an Invitation <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             to="/demo"
             className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-body text-sm font-semibold transition-opacity hover:opacity-70"
-            style={{ background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 82%)" }}
+            style={{ background: "white", color: GOLD, border: "1.5px solid hsl(192 20% 82%)" }}
           >
             <Play className="w-3.5 h-3.5" /> See invitation demo
           </Link>
@@ -1278,7 +1297,7 @@ const FEATURE_ROWS = [
 
 // ── Feature visuals ───────────────────────────────────────────────────────────
 const RsvpVisual = () => (
-  <div className="rounded-2xl overflow-hidden w-full" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.10)", border: "1px solid hsl(38 40% 90%)", background: "white" }}>
+  <div className="rounded-2xl overflow-hidden w-full" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.10)", border: "1px solid hsl(220 12% 91%)", background: "white" }}>
     <div className="px-5 py-3.5 flex items-center justify-between" style={{ background: GOLD_GRAD }}>
       <div className="flex items-center gap-2">
         <LayoutDashboard className="w-3.5 h-3.5 text-white" />
@@ -1286,28 +1305,28 @@ const RsvpVisual = () => (
       </div>
       <span className="font-body text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.22)", color: "white" }}>● Live</span>
     </div>
-    <div className="grid grid-cols-3 divide-x" style={{ borderBottom: "1px solid hsl(38 35% 92%)" }}>
-      {[["47", "Attending", "hsl(140 50% 40%)"], ["12", "Pending", "hsl(38 72% 48%)"], ["5", "Declined", "hsl(0 58% 52%)"]] .map(([n, l, c]) => (
+    <div className="grid grid-cols-3 divide-x" style={{ borderBottom: "1px solid hsl(190 20% 93%)" }}>
+      {[["47", "Attending", "hsl(140 50% 40%)"], ["12", "Pending", "hsl(192 60% 28%)"], ["5", "Declined", "hsl(0 58% 52%)"]] .map(([n, l, c]) => (
         <div key={l} className="flex flex-col items-center py-3">
           <span className="font-display font-bold text-lg leading-none" style={{ color: c }}>{n}</span>
-          <span className="font-body text-xs mt-0.5" style={{ color: "hsl(30 12% 55%)" }}>{l}</span>
+          <span className="font-body text-xs mt-0.5" style={{ color: "hsl(220 10% 57%)" }}>{l}</span>
         </div>
       ))}
     </div>
     {[["Priya & Rahul", "Attending", "2 guests"], ["Sarah Johnson", "Attending", "1 guest"], ["Mohammed Ali", "Pending", "—"], ["Emma & Tom", "Attending", "3 guests"]].map(([name, status, count]) => (
-      <div key={name} className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: "1px solid hsl(38 30% 95%)" }}>
+      <div key={name} className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: "1px solid hsl(190 15% 96%)" }}>
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full flex items-center justify-center font-body text-xs font-bold text-white shrink-0" style={{ background: GOLD_GRAD }}>{name[0]}</div>
-          <span className="font-body text-sm font-medium" style={{ color: "hsl(30 20% 20%)" }}>{name}</span>
+          <span className="font-body text-sm font-medium" style={{ color: "hsl(220 18% 18%)" }}>{name}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-body text-xs" style={{ color: "hsl(30 12% 58%)" }}>{count}</span>
-          <span className="font-body text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: status === "Attending" ? "hsl(140 50% 92%)" : "hsl(38 60% 92%)", color: status === "Attending" ? "hsl(140 50% 30%)" : "hsl(38 60% 38%)" }}>{status}</span>
+          <span className="font-body text-xs" style={{ color: "hsl(220 10% 60%)" }}>{count}</span>
+          <span className="font-body text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: status === "Attending" ? "hsl(140 50% 92%)" : "hsl(190 25% 93%)", color: status === "Attending" ? "hsl(140 50% 30%)" : "hsl(192 60% 22%)" }}>{status}</span>
         </div>
       </div>
     ))}
-    <div className="px-4 py-3 flex items-center justify-between" style={{ background: "hsl(38 50% 97%)" }}>
-      <span className="font-body text-xs" style={{ color: "hsl(30 12% 58%)" }}>64 invites sent</span>
+    <div className="px-4 py-3 flex items-center justify-between" style={{ background: "hsl(0 0% 99%)" }}>
+      <span className="font-body text-xs" style={{ color: "hsl(220 10% 60%)" }}>64 invites sent</span>
       <span className="font-body text-xs font-semibold cursor-pointer" style={{ color: GOLD }}>Export CSV →</span>
     </div>
   </div>
@@ -1315,31 +1334,31 @@ const RsvpVisual = () => (
 
 const QrVisual = () => (
   <div className="flex items-center justify-center">
-    <div className="rounded-3xl p-7 text-center" style={{ background: "white", border: "1.5px solid hsl(38 40% 88%)", boxShadow: "0 12px 40px rgba(0,0,0,0.10)" }}>
+    <div className="rounded-3xl p-7 text-center" style={{ background: "white", border: "1.5px solid hsl(220 12% 90%)", boxShadow: "0 12px 40px rgba(0,0,0,0.10)" }}>
       <p className="font-body text-[10px] tracking-[0.25em] uppercase font-semibold mb-4" style={{ color: GOLD }}>Your Invitation Link</p>
-      <div className="rounded-2xl p-4 mb-4 inline-block" style={{ background: "hsl(38 55% 96%)", border: "1px solid hsl(38 40% 88%)" }}>
-        <QrCode className="w-32 h-32" style={{ color: "hsl(30 20% 16%)" }} />
+      <div className="rounded-2xl p-4 mb-4 inline-block" style={{ background: "hsl(190 22% 96%)", border: "1px solid hsl(220 12% 90%)" }}>
+        <QrCode className="w-32 h-32" style={{ color: "hsl(220 20% 14%)" }} />
       </div>
-      <p className="font-body text-xs font-semibold mb-0.5" style={{ color: "hsl(30 20% 22%)" }}>wed4love.com/emily-james</p>
-      <p className="font-body text-xs mb-5" style={{ color: "hsl(30 12% 58%)" }}>Tap or scan to open</p>
+      <p className="font-body text-xs font-semibold mb-0.5" style={{ color: "hsl(220 15% 20%)" }}>wed4love.com/emily-james</p>
+      <p className="font-body text-xs mb-5" style={{ color: "hsl(220 10% 60%)" }}>Tap or scan to open</p>
       <div className="flex gap-2">
         <div className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-white text-center" style={{ background: GOLD_GRAD }}>Download PNG</div>
-        <div className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-center" style={{ background: "hsl(38 55% 94%)", color: GOLD, border: "1px solid hsl(38 40% 86%)" }}>Copy Link</div>
+        <div className="flex-1 py-2 rounded-xl font-body text-xs font-semibold text-center" style={{ background: "hsl(190 22% 95%)", color: GOLD, border: "1px solid hsl(220 12% 88%)" }}>Copy Link</div>
       </div>
     </div>
   </div>
 );
 
 const MusicVisual = () => (
-  <div className="rounded-2xl overflow-hidden w-full" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.12)", border: "1px solid hsl(38 40% 90%)" }}>
-    <div className="p-5" style={{ background: "linear-gradient(135deg, hsl(32 52% 22%), hsl(32 50% 16%))" }}>
+  <div className="rounded-2xl overflow-hidden w-full" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.12)", border: "1px solid hsl(220 12% 91%)" }}>
+    <div className="p-5" style={{ background: "linear-gradient(135deg, hsl(220 22% 20%), hsl(220 25% 15%))" }}>
       <div className="flex items-center gap-4 mb-5">
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: GOLD_GRAD, boxShadow: "0 6px 18px rgba(0,0,0,0.3)" }}>
           <Music2 className="w-7 h-7 text-white" />
         </div>
         <div>
           <p className="font-handwritten text-white text-xl leading-tight">Birds of a Feather</p>
-          <p className="font-body text-xs mt-0.5" style={{ color: "hsl(42 40% 68%)" }}>Billie Eilish · 3:31</p>
+          <p className="font-body text-xs mt-0.5" style={{ color: "hsl(220 10% 70%)" }}>Billie Eilish · 3:31</p>
         </div>
       </div>
       <div className="flex items-end gap-0.5 h-8 mb-3">
@@ -1359,7 +1378,7 @@ const MusicVisual = () => (
       <p className="font-body text-xs font-semibold mb-2.5" style={{ color: GOLD }}>Photo Gallery</p>
       <div className="grid grid-cols-3 gap-2">
         {[goldenHourThumbnail, rusticBloomThumbnail, softLoveThumbnail].map((src, i) => (
-          <div key={i} className="rounded-xl overflow-hidden" style={{ aspectRatio: "1", border: "1.5px solid hsl(38 40% 90%)" }}>
+          <div key={i} className="rounded-xl overflow-hidden" style={{ aspectRatio: "1", border: "1.5px solid hsl(220 12% 91%)" }}>
             <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         ))}
@@ -1371,12 +1390,12 @@ const MusicVisual = () => (
 const MobileVisual = () => (
   <div className="flex items-center justify-center gap-6">
     <div className="relative" style={{ width: 148 }}>
-      <div className="rounded-[2rem] overflow-hidden" style={{ border: "7px solid hsl(30 20% 16%)", boxShadow: "0 0 0 1.5px hsl(30 20% 26%), 0 20px 50px rgba(0,0,0,0.28)", aspectRatio: "9/18" }}>
-        <div className="w-full h-full relative" style={{ background: "hsl(32 52% 18%)" }}>
+      <div className="rounded-[2rem] overflow-hidden" style={{ border: "7px solid hsl(220 20% 14%)", boxShadow: "0 0 0 1.5px hsl(220 15% 24%), 0 20px 50px rgba(0,0,0,0.28)", aspectRatio: "9/18" }}>
+        <div className="w-full h-full relative" style={{ background: "hsl(220 25% 17%)" }}>
           <img src={goldenHourThumbnail} alt="" style={{ width: "100%", height: "55%", objectFit: "cover", opacity: 0.75 }} />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, hsl(32 52% 18%) 68%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, hsl(220 25% 17%) 68%)" }} />
           <div className="absolute bottom-0 inset-x-0 p-3 text-center">
-            <p className="font-body uppercase tracking-widest mb-1" style={{ fontSize: "0.45rem", color: "hsl(38 68% 65%)" }}>Wedding Invitation</p>
+            <p className="font-body uppercase tracking-widest mb-1" style={{ fontSize: "0.45rem", color: "hsl(192 35% 60%)" }}>Wedding Invitation</p>
             <p className="font-handwritten text-white leading-none mb-1" style={{ fontSize: "1.1rem" }}>Emily & James</p>
             <p className="font-body mb-3" style={{ fontSize: "0.46rem", color: "rgba(255,255,255,0.55)" }}>22 November 2026</p>
             <div className="rounded-full py-1.5 text-white font-body font-bold text-center" style={{ background: GOLD_GRAD, fontSize: "0.48rem" }}>Tap to Open ♡</div>
@@ -1387,9 +1406,9 @@ const MobileVisual = () => (
     <div className="flex flex-col gap-3">
       {[["🎉", "New RSVP", "Sarah is attending!"], ["💌", "47 / 120", "Responses so far"], ["📲", "One link", "Share anywhere"]].map(([e, t, d]) => (
         <motion.div key={t} animate={{ x: [3, -3, 3] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: Math.random() * 2 }}
-          className="rounded-2xl px-3.5 py-2.5" style={{ background: "white", border: "1px solid hsl(38 40% 90%)", boxShadow: "0 4px 16px rgba(0,0,0,0.08)", minWidth: 130 }}>
-          <p className="font-body text-xs font-semibold mb-0.5" style={{ color: "hsl(30 20% 20%)" }}>{e} {t}</p>
-          <p className="font-body text-xs" style={{ color: "hsl(30 12% 55%)" }}>{d}</p>
+          className="rounded-2xl px-3.5 py-2.5" style={{ background: "white", border: "1px solid hsl(220 12% 91%)", boxShadow: "0 4px 16px rgba(0,0,0,0.08)", minWidth: 130 }}>
+          <p className="font-body text-xs font-semibold mb-0.5" style={{ color: "hsl(220 18% 18%)" }}>{e} {t}</p>
+          <p className="font-body text-xs" style={{ color: "hsl(220 10% 57%)" }}>{d}</p>
         </motion.div>
       ))}
     </div>
@@ -1406,7 +1425,7 @@ const FeatureRows = () => (
         <div
           key={f.eyebrow}
           className="py-20 px-4"
-          style={{ background: i % 2 === 0 ? "hsl(42 35% 97%)" : "white" }}
+          style={{ background: i % 2 === 0 ? "hsl(0 0% 99%)" : "white" }}
         >
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-12"
             style={{ flexDirection: i % 2 === 1 ? "row-reverse" : "row" }}>
@@ -1441,63 +1460,31 @@ const FeatureRows = () => (
 
 // ── Testimonials ─────────────────────────────────────────────────────────────
 const TESTIMONIALS = [
-  {
-    quote: "Our guests couldn't believe it wasn't a physical card. The video background of our venue was absolutely stunning — everyone was asking how we did it.",
-    name: "Priya & Rahul",
-    detail: "December 2025 · Mumbai",
-    flag: "🇮🇳",
-    country: "India",
-  },
-  {
-    quote: "The RSVP dashboard made planning so stress-free. I could see exactly who confirmed in real time, add notes, and export the list for the caterer. Saved us hours.",
-    name: "Sarah & James",
-    detail: "October 2025 · London",
-    flag: "🇬🇧",
-    country: "United Kingdom",
-  },
-  {
-    quote: "We shared it in our family WhatsApp group and within an hour 40 people had RSVP'd. The QR code on our save-the-date was a genius touch.",
-    name: "Aisha & David",
-    detail: "March 2026 · Dubai",
-    flag: "🇦🇪",
-    country: "UAE",
-  },
-  {
-    quote: "Our designer stayed with us right up to the morning of the wedding. We changed the colour palette three days before — no drama, no extra fee. Felt like having a friend on the team.",
-    name: "Camila & Mateo",
-    detail: "February 2026 · Buenos Aires",
-    flag: "🇦🇷",
-    country: "Argentina",
-  },
-  {
-    quote: "I'm particular about typography and spacing. They nailed it on the second revision and were patient with my endless tweaks. The final result looked like a luxury studio made it.",
-    name: "Elena & Marco",
-    detail: "May 2026 · Milan",
-    flag: "🇮🇹",
-    country: "Italy",
-  },
-  {
-    quote: "We invited 420 guests across three continents. One link, one price. No per-guest fees. The multilingual version was perfect for our mixed family.",
-    name: "Nia & Daniel",
-    detail: "July 2026 · Lagos",
-    flag: "🇳🇬",
-    country: "Nigeria",
-  },
-  {
-    quote: "We got the express 24-hour turnaround and it still looked incredible. Our save-the-dates went out the next morning. Worth every penny.",
-    name: "Jessica & Ryan",
-    detail: "August 2026 · Austin",
-    flag: "🇺🇸",
-    country: "USA",
-  },
-  {
-    quote: "The unlimited revisions aren't a marketing line — I asked for seven rounds of changes and nobody blinked. Our invitation finally felt like us.",
-    name: "Sophie & Lucas",
-    detail: "September 2026 · Paris",
-    flag: "🇫🇷",
-    country: "France",
-  },
+  { quote: "Our guests couldn't believe it wasn't a physical card. The video background of our venue was absolutely stunning — everyone was asking how we did it.",
+    name: "Priya & Rahul",   detail: "December 2025 · Mumbai",       flag: "🇮🇳", country: "India" },
+  { quote: "The RSVP dashboard made planning so stress-free. I could see exactly who confirmed in real time, add notes, and export the list for the caterer. Saved us hours.",
+    name: "Sarah & James",   detail: "October 2025 · London",        flag: "🇬🇧", country: "United Kingdom" },
+  { quote: "We shared it in our family WhatsApp group and within an hour 40 people had RSVP'd. The QR code on our save-the-date was a genius touch.",
+    name: "Aisha & David",   detail: "March 2026 · Dubai",           flag: "🇦🇪", country: "UAE" },
+  { quote: "Our designer stayed with us right up to the morning of the wedding. We changed the colour palette three days before — no drama, no extra fee. Felt like having a friend on the team.",
+    name: "Camila & Mateo",  detail: "February 2026 · Buenos Aires", flag: "🇦🇷", country: "Argentina" },
+  { quote: "I'm particular about typography and spacing. They nailed it on the second revision and were patient with my endless tweaks. The final result looked like a luxury studio made it.",
+    name: "Elena & Marco",   detail: "May 2026 · Milan",             flag: "🇮🇹", country: "Italy" },
+  { quote: "We invited 420 guests across three continents. One link, one price. No per-guest fees. The multilingual version was perfect for our mixed family.",
+    name: "Nia & Daniel",    detail: "July 2026 · Lagos",            flag: "🇳🇬", country: "Nigeria" },
+  { quote: "We got the express 24-hour turnaround and it still looked incredible. Our save-the-dates went out the next morning. Worth every penny.",
+    name: "Jessica & Ryan",  detail: "August 2026 · Austin",         flag: "🇺🇸", country: "USA" },
+  { quote: "The unlimited revisions aren't a marketing line — I asked for seven rounds of changes and nobody blinked. Our invitation finally felt like us.",
+    name: "Sophie & Lucas",  detail: "September 2026 · Paris",       flag: "🇫🇷", country: "France" },
 ];
+
+// "Priya & Rahul" → "P&R"
+const coupleInitials = (name: string): string => {
+  const parts = name.split(/\s*&\s*/);
+  const first = parts[0]?.[0]?.toUpperCase() ?? "";
+  const second = parts[1]?.[0]?.toUpperCase() ?? "";
+  return second ? `${first}&${second}` : first;
+};
 
 const Testimonials = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: false });
@@ -1522,7 +1509,7 @@ const Testimonials = () => {
   const slideCount = TESTIMONIALS.length;
 
   return (
-    <section id="reviews" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(42 35% 97%)" }}>
+    <section id="reviews" className="py-24 px-4 scroll-mt-24" style={{ background: "hsl(0 0% 99%)" }}>
       <div className="max-w-6xl mx-auto">
         <motion.div {...fade()} className="text-center mb-12">
           <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -1553,15 +1540,30 @@ const Testimonials = () => {
                     viewport={{ once: true, amount: 0.1 }}
                     transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
                     className="h-full rounded-3xl p-6 flex flex-col gap-4"
-                    style={{ background: "white", border: "1.5px solid hsl(38 28% 91%)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
+                    style={{ background: "white", border: "1.5px solid hsl(220 15% 91%)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
                   >
-                    {/* Flag + country */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl leading-none" aria-hidden>{t.flag}</span>
-                        <span className="font-body text-[11px] uppercase tracking-widest font-bold" style={{ color: "hsl(30 14% 42%)" }}>{t.country}</span>
+                    {/* Initials avatar + name + flag */}
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 font-display font-bold text-base tracking-tight"
+                        style={{
+                          background: GOLD_GRAD,
+                          color: "white",
+                          border: "2px solid white",
+                          boxShadow: "0 4px 12px hsl(220 20% 20% / 0.12)",
+                        }}
+                        aria-hidden
+                      >
+                        {coupleInitials(t.name)}
                       </div>
-                      <div className="flex gap-0.5">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-display font-bold text-sm text-foreground truncate">{t.name}</p>
+                        <p className="font-body text-xs mt-0.5 flex items-center gap-1.5" style={{ color: "hsl(220 10% 48%)" }}>
+                          <span className="text-base leading-none" aria-hidden>{t.flag}</span>
+                          <span className="truncate">{t.detail}</span>
+                        </p>
+                      </div>
+                      <div className="flex gap-0.5 shrink-0 mt-1">
                         {Array.from({ length: 5 }).map((_, si) => (
                           <span key={si} className="text-xs" style={{ color: GOLD }}>★</span>
                         ))}
@@ -1570,10 +1572,6 @@ const Testimonials = () => {
                     <p className="font-body text-sm leading-relaxed text-foreground flex-1">
                       "{t.quote}"
                     </p>
-                    <div>
-                      <p className="font-display font-bold text-sm text-foreground">{t.name}</p>
-                      <p className="font-body text-xs text-muted-foreground mt-0.5">{t.detail}</p>
-                    </div>
                   </motion.div>
                 </div>
               ))}
@@ -1590,7 +1588,7 @@ const Testimonials = () => {
                 className="h-2 rounded-full transition-all"
                 style={{
                   width: selectedIdx === i ? 22 : 8,
-                  background: selectedIdx === i ? GOLD : "hsl(38 30% 82%)",
+                  background: selectedIdx === i ? GOLD : "hsl(220 10% 84%)",
                 }}
               />
             ))}
@@ -1614,7 +1612,7 @@ const PRICING_FEATURES = [
 const PricingTeaser = () => {
   const { format, showUsdNote, usdNote } = useCurrency();
   return (
-  <section className="py-24 px-4" style={{ background: "hsl(38 45% 95%)" }}>
+  <section className="py-24 px-4" style={{ background: "hsl(190 20% 96%)" }}>
     <div className="max-w-3xl mx-auto text-center">
       <motion.div {...fade()}>
         <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -1630,7 +1628,7 @@ const PricingTeaser = () => {
         <div className="max-w-md mx-auto mb-8">
           <div
             className="rounded-3xl p-8 text-left relative overflow-hidden"
-            style={{ background: GOLD_GRAD, boxShadow: "0 18px 50px hsl(38 80% 50% / 0.3)" }}
+            style={{ background: GOLD_GRAD, boxShadow: "0 6px 16px hsl(192 60% 24% / 0.14)" }}
           >
             <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full font-body text-[10px] font-bold uppercase tracking-wider"
               style={{ background: "rgba(255,255,255,0.22)", color: "white", backdropFilter: "blur(6px)" }}>
@@ -1663,7 +1661,7 @@ const PricingTeaser = () => {
 
             <GetStartedLink
               className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl font-body text-sm font-bold transition-all hover:opacity-95 active:scale-[0.98]"
-              style={{ background: "white", color: GOLD, boxShadow: "0 6px 18px hsl(30 20% 14% / 0.14)" }}
+              style={{ background: "white", color: GOLD, boxShadow: "0 6px 18px hsl(220 20% 12% / 0.12)" }}
             >
               Design Your Invitation <ArrowRight className="w-4 h-4" />
             </GetStartedLink>
@@ -1671,7 +1669,7 @@ const PricingTeaser = () => {
         </div>
 
         <div className="max-w-md mx-auto rounded-2xl p-5"
-          style={{ background: "white", border: "1.5px solid hsl(38 40% 86%)" }}
+          style={{ background: "white", border: "1.5px solid hsl(220 12% 88%)" }}
         >
           <p className="font-display font-bold text-base mb-1 text-foreground">Want it done for you?</p>
           <p className="font-body text-xs mb-3 text-muted-foreground">
@@ -1713,7 +1711,7 @@ const FAQ = () => {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="py-24 px-4" style={{ background: "hsl(42 35% 97%)" }}>
+    <section className="py-24 px-4" style={{ background: "hsl(0 0% 99%)" }}>
       <div className="max-w-2xl mx-auto">
         <motion.div {...fade()} className="text-center mb-12">
           <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: GOLD }}>
@@ -1728,7 +1726,7 @@ const FAQ = () => {
           {FAQS.map((faq, i) => (
             <motion.div key={i} {...fade(0.05 + i * 0.05)}
               className="rounded-2xl overflow-hidden"
-              style={{ background: "white", border: "1.5px solid hsl(38 28% 91%)" }}
+              style={{ background: "white", border: "1.5px solid hsl(220 15% 91%)" }}
             >
               <button
                 className="w-full flex items-center justify-between px-5 py-4 text-left"
@@ -1813,7 +1811,7 @@ const FinalCTA = () => (
 
 // ── Footer ───────────────────────────────────────────────────────────────────
 const Footer = () => (
-  <footer className="px-6 pt-16 pb-10 border-t" style={{ background: "white", borderColor: "hsl(38 28% 90%)" }}>
+  <footer className="px-6 pt-16 pb-10 border-t" style={{ background: "white", borderColor: "hsl(220 15% 91%)" }}>
     <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-10 mb-12">
 
       {/* Brand */}
@@ -1936,7 +1934,7 @@ const Footer = () => (
       </div>
     </div>
 
-    <div className="max-w-5xl mx-auto pt-6 border-t" style={{ borderColor: "hsl(38 28% 88%)" }}>
+    <div className="max-w-5xl mx-auto pt-6 border-t" style={{ borderColor: "hsl(220 15% 90%)" }}>
       <p className="font-body text-[10px] text-muted-foreground text-center">
         All plans include a shareable link · No subscription · Pay once · Instant delivery
       </p>
@@ -1976,18 +1974,18 @@ const DemoPickerModal = ({ open, onClose }: { open: boolean; onClose: () => void
           exit={{ opacity: 0, scale: 0.96, y: 16 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[61] max-w-2xl mx-auto rounded-3xl overflow-hidden"
-          style={{ background: "hsl(42 60% 97%)", border: "1.5px solid hsl(38 45% 88%)", boxShadow: "0 32px 80px rgba(0,0,0,0.22)" }}
+          style={{ background: "hsl(0 0% 99%)", border: "1.5px solid hsl(190 20% 91%)", boxShadow: "0 32px 80px rgba(0,0,0,0.22)" }}
         >
           {/* Header */}
-          <div className="px-6 pt-6 pb-4 flex items-center justify-between" style={{ borderBottom: "1px solid hsl(38 40% 90%)" }}>
+          <div className="px-6 pt-6 pb-4 flex items-center justify-between" style={{ borderBottom: "1px solid hsl(220 12% 91%)" }}>
             <div>
               <p className="font-body text-[11px] tracking-[0.26em] uppercase font-semibold mb-0.5" style={{ color: GOLD }}>Live Previews</p>
-              <h3 className="font-display font-bold text-xl" style={{ color: "hsl(30 20% 14%)" }}>Choose a template to preview</h3>
+              <h3 className="font-display font-bold text-xl" style={{ color: "hsl(220 20% 12%)" }}>Choose a template to preview</h3>
             </div>
             <button
               onClick={onClose}
               className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-black/8 active:scale-95 font-body text-lg leading-none"
-              style={{ color: "hsl(30 12% 48%)" }}
+              style={{ color: "hsl(220 10% 50%)" }}
             >
               ×
             </button>

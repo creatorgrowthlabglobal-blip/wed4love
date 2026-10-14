@@ -10,8 +10,8 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { Seo } from "@/components/Seo";
 import { supabase } from "@/integrations/supabase/client";
 
-const GOLD = "hsl(38 72% 44%)";
-const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
+const GOLD = "hsl(192 60% 24%)";
+const GOLD_GRAD = "linear-gradient(135deg, hsl(192 60% 24%), hsl(192 55% 32%))";
 
 const SUPPORT_WHATSAPP = "9779702238084";
 const whatsappLink = (message: string) =>
@@ -107,17 +107,17 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
       className="relative rounded-3xl flex flex-col overflow-hidden bg-card"
       style={{
-        border: pkg.featured ? "2px solid hsl(38 60% 68%)" : "1.5px solid hsl(38 40% 88%)",
+        border: pkg.featured ? "2px solid hsl(192 30% 65%)" : "1.5px solid hsl(220 12% 90%)",
         boxShadow: pkg.featured
-          ? "0 22px 60px hsl(38 60% 45% / 0.18)"
-          : "0 6px 22px hsl(38 40% 60% / 0.08)",
+          ? "0 14px 36px hsl(192 60% 24% / 0.10)"
+          : "0 6px 22px hsl(220 20% 20% / 0.08)",
       }}
     >
       {pkg.badge && (
         <div
           className="py-2 text-center font-body text-[11px] font-bold tracking-wide uppercase"
           style={{
-            background: pkg.featured ? GOLD_GRAD : "hsl(38 55% 93%)",
+            background: pkg.featured ? GOLD_GRAD : "hsl(190 22% 94%)",
             color: pkg.featured ? "white" : GOLD,
           }}
         >
@@ -130,9 +130,9 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
           <div
             className="w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center shrink-0"
             style={{
-              background: pkg.featured ? GOLD_GRAD : "hsl(38 60% 96%)",
+              background: pkg.featured ? GOLD_GRAD : "hsl(190 25% 96%)",
               color: pkg.featured ? "white" : GOLD,
-              boxShadow: pkg.featured ? "0 6px 16px hsl(38 80% 55% / 0.3)" : "none",
+              boxShadow: pkg.featured ? "0 2px 8px hsl(220 20% 20% / 0.08)" : "none",
             }}
           >
             <Icon className="w-5 h-5 md:w-5.5 md:h-5.5" style={{ width: 20, height: 20 }} />
@@ -144,7 +144,7 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
           <>
             <div className="flex items-baseline gap-2 flex-wrap">
               {pkg.oldPrice != null && (
-                <span className="font-body text-base md:text-lg line-through" style={{ color: "hsl(30 14% 55%)" }}>{format(pkg.oldPrice)}</span>
+                <span className="font-body text-base md:text-lg line-through" style={{ color: "hsl(220 10% 57%)" }}>{format(pkg.oldPrice)}</span>
               )}
               <span
                 className="font-display font-bold leading-none tabular-nums"
@@ -158,10 +158,10 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
               >
                 {format(pkg.price)}
               </span>
-              <span className="font-body text-sm md:text-base font-semibold" style={{ color: "hsl(30 20% 28%)" }}>One-time payment</span>
+              <span className="font-body text-sm md:text-base font-semibold" style={{ color: "hsl(220 15% 26%)" }}>One-time payment</span>
             </div>
             {showUsdNote && (
-              <p className="font-body text-xs -mt-3" style={{ color: "hsl(30 16% 42%)" }}>
+              <p className="font-body text-xs -mt-3" style={{ color: "hsl(220 12% 44%)" }}>
                 charged as {usdNote(pkg.price)}
               </p>
             )}
@@ -171,11 +171,11 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
             <span className="font-display font-bold text-foreground" style={{ fontSize: "clamp(2rem, 3.5vw, 2.4rem)", lineHeight: 1 }}>
               Let's talk
             </span>
-            <span className="font-body text-sm md:text-base font-semibold" style={{ color: "hsl(30 20% 28%)" }}>Custom quote</span>
+            <span className="font-body text-sm md:text-base font-semibold" style={{ color: "hsl(220 15% 26%)" }}>Custom quote</span>
           </div>
         )}
 
-        <p className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(30 20% 32%)" }}>{pkg.tagline}</p>
+        <p className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(220 15% 30%)" }}>{pkg.tagline}</p>
 
         {!pkg.checkout ? (
           <a
@@ -186,8 +186,8 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
             className="w-full flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-2xl font-body text-sm md:text-base font-bold transition-all hover:opacity-90 active:scale-[0.98]"
             style={
               pkg.featured
-                ? { background: GOLD_GRAD, color: "white", boxShadow: "0 8px 26px hsl(38 80% 55% / 0.3)" }
-                : { background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
+                ? { background: GOLD_GRAD, color: "white", boxShadow: "0 4px 12px hsl(192 60% 24% / 0.12)" }
+                : { background: "white", color: GOLD, border: "1.5px solid hsl(192 25% 70%)" }
             }
           >
             <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
@@ -200,8 +200,8 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
             className="w-full flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-2xl font-body text-sm md:text-base font-bold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             style={
               pkg.featured
-                ? { background: GOLD_GRAD, color: "white", boxShadow: "0 8px 26px hsl(38 80% 55% / 0.3)" }
-                : { background: "white", color: GOLD, border: "1.5px solid hsl(38 50% 78%)" }
+                ? { background: GOLD_GRAD, color: "white", boxShadow: "0 4px 12px hsl(192 60% 24% / 0.12)" }
+                : { background: "white", color: GOLD, border: "1.5px solid hsl(192 25% 70%)" }
             }
           >
             {busy ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : null}
@@ -210,16 +210,16 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
           </button>
         )}
 
-        <ul className="flex flex-col gap-3 md:gap-3.5 mt-1 pt-5 md:pt-6" style={{ borderTop: "1px solid hsl(38 30% 92%)" }}>
+        <ul className="flex flex-col gap-3 md:gap-3.5 mt-1 pt-5 md:pt-6" style={{ borderTop: "1px solid hsl(220 12% 92%)" }}>
           {pkg.included.map(f => (
             <li key={f} className="flex items-start gap-2.5 md:gap-3">
               <span
                 className="shrink-0 w-5 h-5 md:w-5 md:h-5 rounded-full flex items-center justify-center mt-0.5"
-                style={{ background: pkg.featured ? "hsl(38 70% 94%)" : "hsl(38 60% 96%)" }}
+                style={{ background: pkg.featured ? "hsl(190 30% 95%)" : "hsl(190 25% 96%)" }}
               >
                 <Check className="w-3 h-3 md:w-3.5 md:h-3.5" style={{ color: GOLD, strokeWidth: 3 }} />
               </span>
-              <span className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(30 20% 22%)" }}>{f}</span>
+              <span className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(220 15% 20%)" }}>{f}</span>
             </li>
           ))}
         </ul>
@@ -267,7 +267,7 @@ const Pricing = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(42 60% 98%), hsl(38 45% 96%))" }}>
+    <div className="min-h-screen" style={{ background: "linear-gradient(175deg, hsl(0 0% 99.5%), hsl(190 20% 96%))" }}>
       <Seo
         title="Pricing — Wed4Love Wedding Invitations · From $20"
         description="Three honest plans — $20 self-serve, $50 with a dedicated designer and unlimited revisions, or $299 fully done-for-you. One-time payment, no hidden fees."
@@ -299,12 +299,12 @@ const Pricing = () => {
             <div
               className="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full"
               style={{
-                background: "hsl(38 60% 94%)",
-                border: "1.5px solid hsl(38 55% 78%)",
+                background: "hsl(190 25% 95%)",
+                border: "1.5px solid hsl(192 25% 72%)",
               }}
             >
               <BadgeCheck className="w-4 h-4" style={{ color: GOLD }} />
-              <span className="font-body text-xs sm:text-sm font-semibold" style={{ color: "hsl(30 20% 20%)" }}>
+              <span className="font-body text-xs sm:text-sm font-semibold" style={{ color: "hsl(220 18% 18%)" }}>
                 30-day money-back guarantee · no questions asked
               </span>
             </div>
@@ -326,7 +326,7 @@ const Pricing = () => {
               <div
                 key={t.title}
                 className="rounded-2xl p-5 bg-card"
-                style={{ border: "1.5px solid hsl(38 40% 90%)" }}
+                style={{ border: "1.5px solid hsl(220 12% 91%)" }}
               >
                 <t.icon className="w-5 h-5 mb-3" style={{ color: GOLD }} />
                 <p className="font-display font-bold text-sm text-foreground mb-1">{t.title}</p>

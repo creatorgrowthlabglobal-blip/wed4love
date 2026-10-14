@@ -10,8 +10,8 @@ import goldenHourThumbnail   from "@/assets/golden-hour-thumbnail.png";
 import midnightLuxeThumbnail from "@/assets/midnight-luxe-thumbnail.png";
 import softLoveThumbnail     from "@/assets/soft-love-thumbnail.jpg";
 
-const GOLD      = "hsl(38 72% 44%)";
-const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
+const GOLD      = "hsl(192 60% 24%)";
+const GOLD_GRAD = "linear-gradient(135deg, hsl(192 60% 24%), hsl(192 55% 32%))";
 
 // ISO-2 → regional-indicator flag emoji
 const flagOf = (iso: string) =>
@@ -45,9 +45,9 @@ const FloatingField = ({
         autoComplete={autoComplete}
         className="peer w-full pt-6 pb-2 px-4 pr-10 rounded-2xl text-sm font-body outline-none transition-all bg-white/80 backdrop-blur-sm"
         style={{
-          border: `1.5px solid ${focused ? GOLD : "hsl(38 40% 86%)"}`,
-          color: "hsl(30 20% 18%)",
-          boxShadow: focused ? `0 0 0 4px hsl(38 85% 55% / 0.14)` : "0 1px 2px hsl(38 40% 40% / 0.04)",
+          border: `1.5px solid ${focused ? GOLD : "hsl(220 12% 88%)"}`,
+          color: "hsl(220 20% 16%)",
+          boxShadow: focused ? `0 0 0 4px hsl(192 55% 32% / 0.14)` : "0 1px 2px hsl(220 20% 20% / 0.04)",
         }}
       />
       <label
@@ -56,7 +56,7 @@ const FloatingField = ({
         style={{
           top: floated ? 8 : "50%",
           transform: floated ? "translateY(0) scale(0.82)" : "translateY(-50%) scale(1)",
-          color: floated ? GOLD : "hsl(30 12% 54%)",
+          color: floated ? GOLD : "hsl(220 10% 56%)",
           fontSize: 13,
           fontWeight: 500,
           letterSpacing: 0.1,
@@ -108,8 +108,8 @@ const PhoneField = ({
       <div
         className="flex items-stretch rounded-2xl bg-white/80 backdrop-blur-sm transition-all"
         style={{
-          border: `1.5px solid ${focused ? GOLD : "hsl(38 40% 86%)"}`,
-          boxShadow: focused ? `0 0 0 4px hsl(38 85% 55% / 0.14)` : "0 1px 2px hsl(38 40% 40% / 0.04)",
+          border: `1.5px solid ${focused ? GOLD : "hsl(220 12% 88%)"}`,
+          boxShadow: focused ? `0 0 0 4px hsl(192 55% 32% / 0.14)` : "0 1px 2px hsl(220 20% 20% / 0.04)",
         }}
       >
         {/* Country trigger */}
@@ -117,13 +117,13 @@ const PhoneField = ({
           type="button"
           onClick={() => setOpen(v => !v)}
           className="flex items-center gap-1.5 pl-3.5 pr-2 py-3 rounded-l-2xl text-sm font-body font-semibold transition-colors"
-          style={{ color: "hsl(30 20% 20%)", borderRight: "1.5px solid hsl(38 40% 90%)" }}
+          style={{ color: "hsl(220 18% 18%)", borderRight: "1.5px solid hsl(220 12% 91%)" }}
           aria-haspopup="listbox"
           aria-expanded={open}
         >
           <span className="text-base leading-none">{flagOf(country.code)}</span>
           <span className="text-xs">+{country.dial}</span>
-          <ChevronDown className="w-3.5 h-3.5" style={{ color: "hsl(30 12% 48%)" }} />
+          <ChevronDown className="w-3.5 h-3.5" style={{ color: "hsl(220 10% 50%)" }} />
         </button>
 
         {/* Number input + floating label */}
@@ -138,7 +138,7 @@ const PhoneField = ({
             autoComplete="tel-national"
             inputMode="numeric"
             className="w-full pt-6 pb-2 px-4 rounded-r-2xl text-sm font-body outline-none bg-transparent"
-            style={{ color: "hsl(30 20% 18%)" }}
+            style={{ color: "hsl(220 20% 16%)" }}
           />
           <label
             htmlFor="phone-number"
@@ -146,7 +146,7 @@ const PhoneField = ({
             style={{
               top: floated ? 8 : "50%",
               transform: floated ? "translateY(0) scale(0.82)" : "translateY(-50%) scale(1)",
-              color: floated ? GOLD : "hsl(30 12% 54%)",
+              color: floated ? GOLD : "hsl(220 10% 56%)",
               fontSize: 13,
               fontWeight: 500,
             }}
@@ -164,17 +164,17 @@ const PhoneField = ({
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.16 }}
             className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl z-20 overflow-hidden"
-            style={{ border: "1px solid hsl(38 40% 88%)" }}
+            style={{ border: "1px solid hsl(220 12% 90%)" }}
           >
-            <div className="relative px-3 py-2.5" style={{ borderBottom: "1px solid hsl(38 28% 93%)" }}>
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "hsl(30 12% 48%)" }} />
+            <div className="relative px-3 py-2.5" style={{ borderBottom: "1px solid hsl(220 15% 93%)" }}>
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "hsl(220 10% 50%)" }} />
               <input
                 type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Search country"
                 className="w-full pl-7 pr-2 py-1.5 text-sm font-body outline-none bg-transparent"
-                style={{ color: "hsl(30 20% 18%)" }}
+                style={{ color: "hsl(220 20% 16%)" }}
                 autoFocus
               />
             </div>
@@ -188,13 +188,13 @@ const PhoneField = ({
                   type="button"
                   onClick={() => { setCountry(c); setOpen(false); setQuery(""); }}
                   className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors"
-                  style={{ color: "hsl(30 20% 22%)" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "hsl(38 60% 97%)")}
+                  style={{ color: "hsl(220 15% 20%)" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "hsl(190 25% 97%)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
                   <span className="text-lg leading-none">{flagOf(c.code)}</span>
                   <span className="flex-1 font-body truncate">{c.name}</span>
-                  <span className="font-body text-xs font-semibold" style={{ color: "hsl(30 12% 48%)" }}>+{c.dial}</span>
+                  <span className="font-body text-xs font-semibold" style={{ color: "hsl(220 10% 50%)" }}>+{c.dial}</span>
                   {country.code === c.code && <Check className="w-4 h-4" style={{ color: GOLD }} />}
                 </button>
               ))}
@@ -241,7 +241,7 @@ const Showcase = () => {
       {/* gradient overlay */}
       <div
         className="absolute inset-0"
-        style={{ background: "linear-gradient(to bottom right, hsl(28 30% 10% / 0.5) 0%, hsl(28 30% 10% / 0.15) 40%, hsl(28 30% 10% / 0.75) 100%)" }}
+        style={{ background: "linear-gradient(to bottom right, hsl(220 28% 8% / 0.5) 0%, hsl(220 28% 8% / 0.15) 40%, hsl(220 28% 8% / 0.75) 100%)" }}
       />
 
       {/* Top-left logo */}
@@ -261,7 +261,7 @@ const Showcase = () => {
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.45 }}
           >
-            <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: "hsl(38 85% 72%)" }}>
+            <p className="font-body text-[11px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: "hsl(192 45% 70%)" }}>
               {slide.tag}
             </p>
             <p className="font-display font-bold text-4xl text-white leading-tight mb-3">{slide.name}</p>
@@ -346,7 +346,7 @@ export default function AuthPage() {
   return (
     <div
       className="min-h-screen grid lg:grid-cols-[1.1fr_1fr]"
-      style={{ background: "linear-gradient(155deg, hsl(42 80% 97%) 0%, hsl(350 50% 96%) 50%, hsl(38 60% 95%) 100%)" }}
+      style={{ background: "linear-gradient(155deg, hsl(0 0% 99%) 0%, hsl(190 20% 97%) 50%, hsl(190 25% 97%) 100%)" }}
     >
       {/* Left: showcase */}
       <Showcase />
@@ -363,7 +363,7 @@ export default function AuthPage() {
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-1.5 mb-6 font-body text-sm font-semibold transition-opacity hover:opacity-60"
-            style={{ color: "hsl(30 12% 48%)" }}
+            style={{ color: "hsl(220 10% 50%)" }}
           >
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
@@ -380,29 +380,29 @@ export default function AuthPage() {
             style={{
               background: "rgba(255,255,255,0.72)",
               backdropFilter: "blur(20px) saturate(140%)",
-              border: "1px solid hsl(38 40% 92%)",
-              boxShadow: "0 24px 70px hsl(38 50% 30% / 0.08), 0 1px 3px hsl(38 40% 40% / 0.04)",
+              border: "1px solid hsl(220 12% 93%)",
+              boxShadow: "0 24px 70px hsl(220 25% 15% / 0.08), 0 1px 3px hsl(220 20% 20% / 0.04)",
             }}
           >
             <p className="font-display font-bold text-2xl sm:text-3xl text-foreground mb-1 tracking-tight">
               {tab === "signin" ? "Welcome back" : "Create your account"}
             </p>
-            <p className="font-body text-sm mb-7" style={{ color: "hsl(30 12% 52%)" }}>
+            <p className="font-body text-sm mb-7" style={{ color: "hsl(220 10% 54%)" }}>
               {tab === "signin"
                 ? "Pick up where you left off."
                 : "Start your invitation in minutes. No credit card required."}
             </p>
 
             {/* Tabs */}
-            <div className="flex rounded-xl p-1 mb-5" style={{ background: "hsl(38 60% 96%)" }}>
+            <div className="flex rounded-xl p-1 mb-5" style={{ background: "hsl(190 25% 96%)" }}>
               {(["signin", "signup"] as const).map(t => (
                 <button
                   key={t}
                   onClick={() => { setTab(t); reset(); }}
                   className="flex-1 py-2 rounded-lg text-sm font-body font-semibold transition-all"
                   style={tab === t
-                    ? { background: GOLD_GRAD, color: "white", boxShadow: "0 2px 10px hsl(38 80% 55% / 0.25)" }
-                    : { color: "hsl(30 12% 48%)" }}
+                    ? { background: GOLD_GRAD, color: "white", boxShadow: "0 2px 10px hsl(192 55% 32% / 0.25)" }
+                    : { color: "hsl(220 10% 50%)" }}
                 >
                   {t === "signin" ? "Sign In" : "Sign Up"}
                 </button>
@@ -446,7 +446,7 @@ export default function AuthPage() {
                     type="button"
                     onClick={() => setShowPw(v => !v)}
                     className="transition-colors"
-                    style={{ color: "hsl(38 50% 60%)" }}
+                    style={{ color: "hsl(192 30% 60%)" }}
                     aria-label={showPw ? "Hide password" : "Show password"}
                   >
                     {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -466,13 +466,13 @@ export default function AuthPage() {
                 type="submit"
                 disabled={busy}
                 className="mt-2 w-full py-3.5 rounded-2xl font-body text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
-                style={{ background: GOLD_GRAD, boxShadow: "0 10px 24px hsl(38 80% 55% / 0.28)" }}
+                style={{ background: GOLD_GRAD, boxShadow: "0 4px 12px hsl(192 60% 24% / 0.12)" }}
               >
                 {busy ? "Please wait…" : tab === "signin" ? "Sign In" : "Create Account"}
               </button>
             </form>
 
-            <p className="mt-5 text-center font-body text-xs" style={{ color: "hsl(30 12% 55%)" }}>
+            <p className="mt-5 text-center font-body text-xs" style={{ color: "hsl(220 10% 57%)" }}>
               {tab === "signin" ? "Don't have an account? " : "Already have one? "}
               <button
                 onClick={() => { setTab(tab === "signin" ? "signup" : "signin"); reset(); }}
@@ -484,7 +484,7 @@ export default function AuthPage() {
             </p>
           </div>
 
-          <p className="mt-6 text-center font-body text-xs" style={{ color: "hsl(30 12% 58%)" }}>
+          <p className="mt-6 text-center font-body text-xs" style={{ color: "hsl(220 10% 60%)" }}>
             By continuing you agree to our{" "}
             <Link to="/terms" className="hover:underline" style={{ color: GOLD }}>Terms</Link>
             {" & "}

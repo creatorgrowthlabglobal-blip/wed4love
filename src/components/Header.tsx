@@ -5,8 +5,8 @@ import { Menu, X } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
 
-const GOLD      = "hsl(38 72% 44%)";
-const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
+const GOLD      = "hsl(192 60% 24%)";
+const GOLD_GRAD = "linear-gradient(135deg, hsl(192 60% 24%), hsl(192 55% 32%))";
 
 const LINKS = [
   { to: "/#templates", label: "Templates" },
@@ -28,7 +28,7 @@ const Header = () => {
     >
       <div
         className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center gap-3 md:gap-5"
-        style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
+        style={{ border: "1px solid hsl(220 15% 90% / 0.7)" }}
       >
         {/* Logo */}
         <Link to="/" className="shrink-0">
@@ -43,8 +43,8 @@ const Header = () => {
             <Link
               key={l.label}
               to={l.to}
-              className="font-body text-sm transition-colors hover:text-[hsl(38_72%_44%)] whitespace-nowrap"
-              style={{ color: "hsl(30 12% 48%)" }}
+              className="font-body text-sm transition-colors hover:text-[hsl(192_60%_24%)] whitespace-nowrap"
+              style={{ color: "hsl(220 10% 50%)" }}
             >
               {l.label}
             </Link>
@@ -60,7 +60,7 @@ const Header = () => {
           <Link
             to="/order"
             className="hidden md:inline-block font-body text-sm font-semibold px-3.5 lg:px-5 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
-            style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(38 80% 55% / 0.26)" }}
+            style={{ background: GOLD_GRAD, color: "white", boxShadow: "0 4px 14px hsl(192 55% 32% / 0.26)" }}
           >
             Get Started
           </Link>
@@ -69,7 +69,7 @@ const Header = () => {
             aria-label="Toggle menu"
             aria-expanded={open}
             className="md:hidden p-1.5 rounded-xl"
-            style={{ color: "hsl(30 12% 40%)" }}
+            style={{ color: "hsl(220 10% 42%)" }}
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -85,7 +85,7 @@ const Header = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
             className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg p-3 flex flex-col gap-1"
-            style={{ border: "1px solid hsl(38 50% 88% / 0.7)" }}
+            style={{ border: "1px solid hsl(220 15% 90% / 0.7)" }}
           >
             {LINKS.map(l => (
               <Link
@@ -93,13 +93,13 @@ const Header = () => {
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className="font-body text-sm px-3 py-2.5 rounded-xl hover:bg-amber-50"
-                style={{ color: "hsl(30 12% 40%)" }}
+                style={{ color: "hsl(220 10% 42%)" }}
               >
                 {l.label}
               </Link>
             ))}
 
-            <div className="my-2 h-px" style={{ background: "hsl(38 30% 90%)" }} />
+            <div className="my-2 h-px" style={{ background: "hsl(220 12% 91%)" }} />
 
             <div className="flex items-center gap-2 px-2 py-1">
               <CurrencySwitcher />
