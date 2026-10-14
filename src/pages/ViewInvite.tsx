@@ -21,6 +21,7 @@ import type { StoredInvite } from "@/lib/inviteStorage";
 import { THEMES } from "@/lib/themes";
 import type { Theme } from "@/lib/themes";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { getMarketingInvitation } from "@/data/marketingInvitations";
 
 // ── Theme context ──────────────────────────────────────────────────────────────
 const ThemeCtx = createContext<Theme>(THEMES["garden-rose"]);
@@ -656,9 +657,16 @@ const GoldenCurtainTop = () => {
 const ViewInvite = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const stored = id && id !== "demo-wedding" ? getInviteLocal(id) : null;
-  const INVITE = stored ? buildInviteData(stored) : DEMO_INVITE;
-  const isDemo = !stored;
+  const marketingInvite = getMarketingInvitation(id);
+  const stored = marketingInvite ?? (id && id !== "demo-wedding" ? getInviteLocal(id) : null);
+  const INVITE = stored ? {
+    ...buildInviteData(stored),
+    ...(marketingInvite ? {
+      menu: DEMO_INVITE.menu,
+      giftRegistry: { note: "Your presence is the greatest gift of all. We cannot wait to celebrate with you.", options: [] },
+    } : {}),
+  } : DEMO_INVITE;
+  const isDemo = !stored || Boolean(marketingInvite);
 
   const themeId = stored?.template ?? searchParams.get("theme") ?? "garden-rose";
   const C = THEMES[themeId] ?? THEMES["garden-rose"];
