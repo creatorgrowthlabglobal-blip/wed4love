@@ -22,24 +22,26 @@ export interface Theme {
 // the dark primary surfaces; `gold` / `goldLight` are the accent tones. Names kept
 // for compatibility with existing consumers (ViewInvite etc.) — the hues differ per theme.
 
-// Golden Hour — warm cream, copper accents, deep olive greens.
+// Golden Hour — true golden-yellow palette: pale butter cream backgrounds,
+// dark goldenrod primary (readable but reads YELLOW-GOLD, not brown),
+// vibrant marigold gold accents.
 const GOLDEN_HOUR: Theme = {
-  cream:           "hsl(35 56% 94%)",
-  creamCard:       "hsl(0 0% 100%)",
-  creamAlt:        "hsl(30 30% 96%)",
-  blush:           "hsl(30 40% 90%)",
-  green:           "hsl(84 25% 25%)",
-  greenMid:        "hsl(84 28% 20%)",
-  primaryCard:     "hsl(84 24% 22%)",
-  primaryCardDark: "hsl(84 28% 17%)",
-  primaryBorder:   "hsl(30 20% 85%)",
-  primaryLine:     "hsl(30 20% 82%)",
-  primaryMuted:    "hsl(20 14% 55%)",
-  gold:            "hsl(27 58% 59%)",
-  goldLight:       "hsl(43 76% 78%)",
-  dark:            "hsl(20 14% 15%)",
-  mid:             "hsl(20 14% 40%)",
-  light:           "hsl(20 10% 58%)",
+  cream:           "hsl(48 65% 95%)",
+  creamCard:       "hsl(50 60% 98%)",
+  creamAlt:        "hsl(45 55% 93%)",
+  blush:           "hsl(44 70% 88%)",
+  green:           "hsl(42 62% 32%)",
+  greenMid:        "hsl(42 68% 24%)",
+  primaryCard:     "hsl(42 62% 30%)",
+  primaryCardDark: "hsl(42 68% 22%)",
+  primaryBorder:   "hsl(45 50% 86%)",
+  primaryLine:     "hsl(45 45% 82%)",
+  primaryMuted:    "hsl(42 30% 55%)",
+  gold:            "hsl(46 92% 54%)",
+  goldLight:       "hsl(48 95% 80%)",
+  dark:            "hsl(40 30% 15%)",
+  mid:             "hsl(42 22% 40%)",
+  light:           "hsl(42 16% 58%)",
   white:           "white",
 };
 

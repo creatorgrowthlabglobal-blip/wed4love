@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&family=Pinyon+Script&family=Alice&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -169,6 +169,27 @@
 }
 [data-theme="rustic-bloom"] .font-body {
   font-family: 'Montserrat', sans-serif;
+}
+
+/* Golden Hour — matched to goldenhour-theme.thedigitalinvite.com pairing:
+   Playfair Display (headings), Pinyon Script (romantic script),
+   Montserrat (body), Alice (small accent serif). */
+[data-theme="golden-hour"] .font-azura-serif,
+[data-theme="golden-hour"] .font-display,
+[data-theme="golden-hour"] .font-heading {
+  font-family: 'Playfair Display', serif;
+}
+[data-theme="golden-hour"] .font-handwritten,
+[data-theme="golden-hour"] .font-azura-script {
+  font-family: 'Pinyon Script', cursive;
+  font-weight: 400;
+}
+[data-theme="golden-hour"] .font-azura-body,
+[data-theme="golden-hour"] .font-body {
+  font-family: 'Montserrat', sans-serif;
+}
+[data-theme="golden-hour"] .font-alice {
+  font-family: 'Alice', serif;
 }
 
 @layer utilities {

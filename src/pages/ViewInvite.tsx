@@ -265,8 +265,9 @@ const EnvelopeReveal = ({ onOpen, groom, bride, date, themeId }: { onOpen: () =>
       className="fixed inset-0 z-[100] flex items-center justify-center cursor-pointer select-none overflow-hidden"
       onClick={tap}
       style={{
-        background:
-          "radial-gradient(circle at 50% 45%, hsl(28 35% 18%) 0%, hsl(28 30% 10%) 60%, hsl(28 25% 6%) 100%)",
+        background: themeId === "golden-hour"
+          ? "radial-gradient(circle at 50% 45%, hsl(42 60% 96%) 0%, hsl(38 55% 93%) 60%, hsl(35 45% 90%) 100%)"
+          : "radial-gradient(circle at 50% 45%, hsl(28 35% 18%) 0%, hsl(28 30% 10%) 60%, hsl(28 25% 6%) 100%)",
       }}
     >
       {/* Elegant placeholder shown until the envelope video can paint a frame */}
@@ -301,8 +302,16 @@ const EnvelopeReveal = ({ onOpen, groom, bride, date, themeId }: { onOpen: () =>
         onLoadedData={() => setReady(true)}
         onError={() => { setReady(true); onOpen(); }}
         onEnded={() => setTimeout(onOpen, 500)}
-        className="w-full h-full object-cover transition-opacity duration-500"
-        style={{ pointerEvents: "none", opacity: ready ? 1 : 0 }}
+        className="transition-opacity duration-500"
+        style={{
+          pointerEvents: "none",
+          opacity: ready ? 1 : 0,
+          maxWidth: "min(78vw, 420px)",
+          maxHeight: "72vh",
+          width: "auto",
+          height: "auto",
+          objectFit: "contain",
+        }}
       />
 
       <AnimatePresence>
@@ -313,7 +322,7 @@ const EnvelopeReveal = ({ onOpen, groom, bride, date, themeId }: { onOpen: () =>
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
             className="absolute bottom-16 left-0 right-0 text-center font-body tracking-[0.28em] uppercase"
-            style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.75)" }}
+            style={{ fontSize: "0.65rem", color: themeId === "golden-hour" ? "hsl(30 20% 25%)" : "rgba(255,255,255,0.75)" }}
           >
             Tap to open
           </motion.p>
@@ -389,6 +398,42 @@ const MusicBtn = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => {
           : <VolumeX className="w-4 h-4" style={{ color: "hsl(44 25% 65%)" }} />}
     </motion.button>
   );
+};
+
+// ── Ornament divider (dashed line with centered asterism) ─────────────────────
+const OrnamentDivider = ({ color, className = "" }: { color: string; className?: string }) => (
+  <div className={`flex items-center justify-center gap-3 my-6 ${className}`} aria-hidden>
+    <span className="h-px w-16 sm:w-24" style={{ background: color, opacity: 0.55 }} />
+    <span style={{ color, fontSize: "0.8rem", letterSpacing: "0.3em" }}>✦</span>
+    <span className="h-px w-16 sm:w-24" style={{ background: color, opacity: 0.55 }} />
+  </div>
+);
+
+// Dress-code color-name → swatch hex (pastel palette). Unknown names fall back to pale grey.
+const COLOR_NAME_SWATCH: Record<string, string> = {
+  ivory:          "hsl(45 55% 94%)",
+  champagne:      "hsl(38 50% 85%)",
+  blush:          "hsl(10 60% 88%)",
+  peach:          "hsl(22 75% 85%)",
+  "soft yellow":  "hsl(50 85% 85%)",
+  pink:           "hsl(340 70% 88%)",
+  lavender:       "hsl(260 50% 85%)",
+  lilac:          "hsl(275 45% 85%)",
+  "pale blue":    "hsl(205 55% 85%)",
+  "sky blue":     "hsl(205 70% 82%)",
+  "soft blue":    "hsl(210 50% 85%)",
+  mint:           "hsl(140 40% 85%)",
+  sage:           "hsl(110 20% 78%)",
+  grey:           "hsl(0 0% 85%)",
+  gray:           "hsl(0 0% 85%)",
+  "forest green": "hsl(130 30% 32%)",
+  "deep navy":    "hsl(220 50% 25%)",
+  navy:           "hsl(220 50% 25%)",
+  burgundy:       "hsl(345 55% 32%)",
+  "dusty rose":   "hsl(355 35% 78%)",
+  gold:           "hsl(43 60% 60%)",
+  copper:         "hsl(22 55% 55%)",
+  cream:          "hsl(42 50% 94%)",
 };
 
 // ── Section heading ───────────────────────────────────────────────────────────
@@ -676,6 +721,17 @@ const ViewInvite = () => {
   const themeId = stored?.template ?? searchParams.get("theme") ?? "garden-rose";
   const C = THEMES[themeId] ?? THEMES["garden-rose"];
 
+  // Golden-hour drops the dark-bronze section backgrounds in favour of cream throughout.
+  // These helpers flip the matching light-on-dark text colors back to dark variants.
+  const isGolden = themeId === "golden-hour";
+  const sectionDarkBg   = isGolden ? C.creamAlt    : C.green;
+  const onDarkHead      = isGolden ? C.green       : C.creamCard;
+  const onDarkEyebrow   = isGolden ? C.gold        : C.goldLight;
+  const onDarkBody      = isGolden ? C.mid         : "hsl(44 20% 78%)";
+  const onDarkMuted     = isGolden ? C.mid         : "hsl(42 22% 78%)";
+  const onDarkFooterSub = isGolden ? C.mid         : "hsl(42 25% 65%)";
+  const onDarkScript    = isGolden ? C.green       : C.goldLight;
+
   const [opened, setOpened] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const [rsvpDone, setRsvpDone] = useState(false);
@@ -802,24 +858,24 @@ const ViewInvite = () => {
       </section>
 
       {/* ── Countdown ── */}
-      <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: C.green }}>
+      <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: sectionDarkBg }}>
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
             className="text-center mb-10 sm:mb-14">
             <h2 className="font-handwritten leading-none mb-4"
-              style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: "hsl(38 55% 80%)" }}>
+              style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: isGolden ? C.green : "hsl(38 55% 80%)" }}>
               Counting Down
             </h2>
-            <p className="font-body text-sm sm:text-base" style={{ color: "hsl(42 22% 78%)" }}>
+            <p className="font-body text-sm sm:text-base" style={{ color: onDarkMuted }}>
               Time until we say I do
             </p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}>
             {countdown === null ? (
-              <div className="text-center py-8 px-5 rounded-2xl" style={{ background: "rgba(255,255,255,0.06)", border: `1px solid ${C.gold}55`, backdropFilter: "blur(6px)" }}>
-                <p className="font-handwritten text-3xl mb-1" style={{ color: "hsl(38 55% 80%)" }}>The celebration has begun!</p>
-                <p className="font-body text-sm" style={{ color: "hsl(42 22% 78%)" }}>Thank you for being part of our special day ♡</p>
+              <div className="text-center py-8 px-5 rounded-2xl" style={{ background: isGolden ? C.creamCard : "rgba(255,255,255,0.06)", border: `1px solid ${C.gold}55`, backdropFilter: "blur(6px)" }}>
+                <p className="font-handwritten text-3xl mb-1" style={{ color: isGolden ? C.green : "hsl(38 55% 80%)" }}>The celebration has begun!</p>
+                <p className="font-body text-sm" style={{ color: onDarkMuted }}>Thank you for being part of our special day ♡</p>
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-3 sm:gap-5">
@@ -924,15 +980,15 @@ const ViewInvite = () => {
       </section>}
 
       {/* ── Day Program / Timeline ── */}
-      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.green }}>
+      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: sectionDarkBg }}>
         <div className="max-w-5xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
             className="text-center mb-14 sm:mb-20">
             <h2 className="font-handwritten leading-none mb-4"
-              style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: "hsl(38 55% 80%)" }}>
+              style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: isGolden ? C.green : "hsl(38 55% 80%)" }}>
               Day Program
             </h2>
-            <p className="font-body text-sm sm:text-base" style={{ color: "hsl(42 22% 78%)" }}>
+            <p className="font-body text-sm sm:text-base" style={{ color: onDarkMuted }}>
               What we have prepared for you
             </p>
           </motion.div>
@@ -951,11 +1007,11 @@ const ViewInvite = () => {
                     {item.time}
                   </div>
                   <div className="w-11 h-11 rounded-full flex items-center justify-center relative z-10 mb-3"
-                    style={{ border: `1.5px solid ${C.primaryBorder}`, background: C.green }}>
-                    <item.Icon className="w-4 h-4" style={{ color: "hsl(42 40% 78%)" }} />
+                    style={{ border: `1.5px solid ${C.primaryBorder}`, background: isGolden ? C.creamCard : C.green }}>
+                    <item.Icon className="w-4 h-4" style={{ color: isGolden ? C.gold : "hsl(42 40% 78%)" }} />
                   </div>
-                  <p className="font-body text-sm font-semibold mb-1" style={{ color: "hsl(42 35% 88%)" }}>{item.event}</p>
-                  <p className="font-body text-xs" style={{ color: C.primaryMuted, maxWidth: 90 }}>{item.desc}</p>
+                  <p className="font-body text-sm font-semibold mb-1" style={{ color: isGolden ? C.dark : "hsl(42 35% 88%)" }}>{item.event}</p>
+                  <p className="font-body text-xs" style={{ color: isGolden ? C.mid : C.primaryMuted, maxWidth: 90 }}>{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -1034,33 +1090,92 @@ const ViewInvite = () => {
       </section>
 
       {/* ── Dress Code ── */}
-      <section className="pb-20 sm:pb-28 pt-8 sm:pt-12 px-5 sm:px-8" style={{ background: C.cream }}>
-        <div className="max-w-3xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
-            className="rounded-3xl px-8 py-10 sm:py-14 text-center"
-            style={{ background: C.green }}>
-            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.goldLight }}>
-              What to Wear
-            </p>
-            <h3 className="font-azura-serif italic mb-5"
-              style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)", color: "hsl(42 45% 92%)", lineHeight: 1.1, fontWeight: 500, letterSpacing: "0.005em" }}>
-              Dress Code
-            </h3>
-            <p className="font-azura-serif italic text-lg sm:text-xl mb-4" style={{ color: "hsl(42 40% 88%)", fontWeight: 400 }}>
-              {INVITE.dresscode}
-            </p>
-            <p className="font-azura-body text-sm sm:text-base max-w-md mx-auto leading-relaxed" style={{ color: "hsl(42 22% 78%)" }}>
-              {INVITE.dresscodeNote}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {themeId === "golden-hour" ? (
+        <section className="pb-20 sm:pb-28 pt-16 sm:pt-20 px-5 sm:px-8" style={{ background: C.cream }}>
+          <div className="max-w-xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <h2 className="font-handwritten leading-none"
+                style={{ fontSize: "clamp(3.5rem, 9vw, 5rem)", color: C.green, fontWeight: 400 }}>
+                Dress Code
+              </h2>
+              <OrnamentDivider color={C.gold} />
+              <img
+                src="/golden-hour-pre-dress-code.jpg"
+                alt=""
+                className="w-full max-w-xs sm:max-w-sm h-auto mx-auto mt-2 mb-6"
+                style={{ aspectRatio: "1286 / 832", objectFit: "contain" }}
+              />
+              <p className="font-azura-body text-base sm:text-lg" style={{ color: C.dark }}>
+                We kindly invite our guests to dress in
+              </p>
+              <p className="font-azura-serif italic my-2 leading-tight"
+                style={{ fontSize: "clamp(1.9rem, 5vw, 2.75rem)", color: C.green, fontWeight: 500 }}>
+                {INVITE.dresscode}
+              </p>
+              <p className="font-azura-body text-base sm:text-lg" style={{ color: C.dark }}>
+                {INVITE.dresscodeNote}
+              </p>
+
+              {INVITE.dresscodeColors.length > 0 && (
+                <>
+                  <OrnamentDivider color={C.gold} />
+                  <p className="font-azura-body text-base sm:text-lg mt-2 mb-6" style={{ color: C.dark }}>
+                    Recommended shades
+                  </p>
+                  <div className="flex items-center justify-center gap-4 sm:gap-5 flex-wrap">
+                    {INVITE.dresscodeColors.map((name) => (
+                      <div
+                        key={name}
+                        title={name}
+                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full"
+                        style={{
+                          background: COLOR_NAME_SWATCH[name.toLowerCase()] ?? "hsl(0 0% 92%)",
+                          border: `1px solid ${C.primaryBorder}`,
+                          boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <OrnamentDivider color={C.gold} className="mt-8" />
+                </>
+              )}
+            </motion.div>
+          </div>
+        </section>
+      ) : (
+        <section className="pb-20 sm:pb-28 pt-8 sm:pt-12 px-5 sm:px-8" style={{ background: C.cream }}>
+          <div className="max-w-3xl mx-auto">
+            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }}
+              className="rounded-3xl px-8 py-10 sm:py-14 text-center"
+              style={{ background: C.green }}>
+              <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.goldLight }}>
+                What to Wear
+              </p>
+              <h3 className="font-azura-serif italic mb-5"
+                style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)", color: "hsl(42 45% 92%)", lineHeight: 1.1, fontWeight: 500, letterSpacing: "0.005em" }}>
+                Dress Code
+              </h3>
+              <p className="font-azura-serif italic text-lg sm:text-xl mb-4" style={{ color: "hsl(42 40% 88%)", fontWeight: 400 }}>
+                {INVITE.dresscode}
+              </p>
+              <p className="font-azura-body text-sm sm:text-base max-w-md mx-auto leading-relaxed" style={{ color: "hsl(42 22% 78%)" }}>
+                {INVITE.dresscodeNote}
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* ── Transport ── */}
-      {INVITE.transport.length > 0 && <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.green }}>
+      {INVITE.transport.length > 0 && <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: sectionDarkBg }}>
         <div className="max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="Getting Here" title="Transport" subtitle="We want your journey to be as smooth as possible." light />
+            <SectionHead eyebrow="Getting Here" title="Transport" subtitle="We want your journey to be as smooth as possible." light={!isGolden} />
           </motion.div>
 
           <div className="flex flex-col gap-4">
@@ -1082,6 +1197,27 @@ const ViewInvite = () => {
           </div>
         </div>
       </section>}
+
+      {/* ── Pre-accommodation vignette (golden-hour only) ── */}
+      {themeId === "golden-hour" && INVITE.hotels.length > 0 && (
+        <section className="pt-44 sm:pt-56 px-5 flex justify-center" style={{ background: C.cream }}>
+          <motion.img
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            src="/golden-hour-pre-accommodation.jpg"
+            alt=""
+            className="w-full max-w-sm sm:max-w-md h-auto rounded-md"
+            style={{
+              aspectRatio: "1344 / 796",
+              objectFit: "cover",
+              boxShadow: `0 10px 30px -12px ${C.greenMid}55`,
+              border: `1px solid ${C.primaryBorder}`,
+            }}
+          />
+        </section>
+      )}
 
       {/* ── Travel & Accommodation ── */}
       {INVITE.hotels.length > 0 && <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.cream }}>
@@ -1150,15 +1286,15 @@ const ViewInvite = () => {
       </section>
 
       {/* ── Gift Registry ── */}
-      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.green }}>
+      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: sectionDarkBg }}>
         <div className="max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SectionHead eyebrow="With Gratitude" title="Gift Registry" light />
+            <SectionHead eyebrow="With Gratitude" title="Gift Registry" light={!isGolden} />
           </motion.div>
 
           <motion.p initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }}
             className="font-azura-body text-sm text-center leading-relaxed mb-10"
-            style={{ color: "hsl(44 20% 68%)" }}>
+            style={{ color: isGolden ? C.mid : "hsl(44 20% 68%)" }}>
             {INVITE.giftRegistry.note}
           </motion.p>
 
@@ -1236,23 +1372,23 @@ const ViewInvite = () => {
       </section>
 
       {/* ── Custom Text ── */}
-      <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: C.green }}>
+      <section className="py-20 sm:py-28 px-5 sm:px-8" style={{ background: sectionDarkBg }}>
         <div className="max-w-xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: C.goldLight }}>
+            <p className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-4" style={{ fontSize: "0.72rem", color: onDarkEyebrow }}>
               From the Couple
             </p>
-            <h2 className="font-azura-serif italic leading-tight mb-8" style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", color: C.creamCard, fontWeight: 500, letterSpacing: "0.005em" }}>
+            <h2 className="font-azura-serif italic leading-tight mb-8" style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", color: onDarkHead, fontWeight: 500, letterSpacing: "0.005em" }}>
               {INVITE.customText.title}
             </h2>
 
             <div style={{ height: 1, background: C.primaryLine, maxWidth: 60, margin: "0 auto 28px" }} />
 
-            <p className="font-azura-body text-sm sm:text-base leading-loose mb-8" style={{ color: "hsl(44 20% 78%)" }}>
+            <p className="font-azura-body text-sm sm:text-base leading-loose mb-8" style={{ color: onDarkBody }}>
               {INVITE.customText.body}
             </p>
 
-            <p className="font-handwritten" style={{ fontSize: "2rem", color: C.goldLight, lineHeight: 1.2 }}>
+            <p className="font-handwritten" style={{ fontSize: "2rem", color: onDarkScript, lineHeight: 1.2 }}>
               {INVITE.groom} &amp; {INVITE.bride}
             </p>
           </motion.div>
@@ -1263,22 +1399,26 @@ const ViewInvite = () => {
 
       {/* ── RSVP ── */}
       <section className="relative py-24 sm:py-32 px-5 sm:px-8 overflow-hidden" style={{ background: C.cream }}>
-        {/* Background fountain image */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none select-none"
-          style={{
-            backgroundImage: `url(${rsvpFountain})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        {/* Cream tint overlay for readability */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: `${C.cream}d9` }}
-        />
+        {!isGolden && (
+          <>
+            {/* Background fountain image */}
+            <div
+              aria-hidden
+              className="absolute inset-0 pointer-events-none select-none"
+              style={{
+                backgroundImage: `url(${rsvpFountain})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            {/* Cream tint overlay for readability */}
+            <div
+              aria-hidden
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: `${C.cream}d9` }}
+            />
+          </>
+        )}
         <div className="relative max-w-lg mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
             className="rounded-2xl p-7 sm:p-10"
@@ -1391,11 +1531,11 @@ const ViewInvite = () => {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="py-14 px-6 text-center" style={{ background: C.green }}>
-        <p className="font-handwritten mb-3" style={{ fontSize: "2.4rem", color: C.goldLight }}>
+      <footer className="py-14 px-6 text-center" style={{ background: sectionDarkBg }}>
+        <p className="font-handwritten mb-3" style={{ fontSize: "2.4rem", color: onDarkScript }}>
           {INVITE.groom} &amp; {INVITE.bride}
         </p>
-        <p className="font-body text-sm mb-6" style={{ color: "hsl(42 25% 65%)" }}>{INVITE.date}</p>
+        <p className="font-body text-sm mb-6" style={{ color: onDarkFooterSub }}>{INVITE.date}</p>
         <div style={{ height: 1, background: C.primaryLine, maxWidth: 240, margin: "0 auto 20px" }} />
         <p className="font-body text-xs" style={{ color: C.primaryMuted }}>{INVITE.hashtag}</p>
         <a
