@@ -213,7 +213,12 @@ function useCountdown(dateISO: string) {
 }
 
 // ── Envelope Reveal ───────────────────────────────────────────────────────────
-const EnvelopeReveal = ({ onOpen, groom, bride, date }: { onOpen: () => void; groom: string; bride: string; date: string }) => {
+const ENVELOPE_VIDEOS: Record<string, string> = {
+  "golden-hour": "/envelope-golden-hour.mp4",
+};
+
+const EnvelopeReveal = ({ onOpen, groom, bride, date, themeId }: { onOpen: () => void; groom: string; bride: string; date: string; themeId: string }) => {
+  const envelopeSrc = ENVELOPE_VIDEOS[themeId] ?? "/envelope.mp4";
   const videoRef = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
   const [ready, setReady] = useState(false); // video has a paintable frame
@@ -290,7 +295,7 @@ const EnvelopeReveal = ({ onOpen, groom, bride, date }: { onOpen: () => void; gr
 
       <video
         ref={videoRef}
-        src="/envelope.mp4"
+        src={envelopeSrc}
         playsInline
         preload="auto"
         onLoadedData={() => setReady(true)}
@@ -744,7 +749,7 @@ const ViewInvite = () => {
     <div className="min-h-screen" data-theme={themeId} style={{ background: C.cream }}>
       <audio ref={audioRef} src="/music/birds-of-a-feather.mp3" loop preload="auto" />
       <AnimatePresence>
-        {!opened && <EnvelopeReveal onOpen={handleEnvelopeOpen} groom={INVITE.groom} bride={INVITE.bride} date={INVITE.date} />}
+        {!opened && <EnvelopeReveal onOpen={handleEnvelopeOpen} groom={INVITE.groom} bride={INVITE.bride} date={INVITE.date} themeId={themeId} />}
       </AnimatePresence>
       <AnimatePresence>
         {celebrating && <CelebrationOverlay onDone={() => { setCelebrating(false); setRsvpDone(true); }} />}
