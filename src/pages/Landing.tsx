@@ -337,6 +337,31 @@ const HERO_AVATARS = [
 
 const Hero = () => {
   const { format } = useCurrency();
+  const typedFull = "ready within\n24 hours.";
+  const [typed, setTyped] = useState("");
+  useEffect(() => {
+    let i = 0;
+    let phase: "typing" | "holding" | "erasing" = "typing";
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      if (phase === "typing") {
+        i += 1;
+        setTyped(typedFull.slice(0, i));
+        if (i >= typedFull.length) { phase = "holding"; timeoutId = setTimeout(tick, 1400); return; }
+        timeoutId = setTimeout(tick, 110);
+      } else if (phase === "holding") {
+        phase = "erasing";
+        timeoutId = setTimeout(tick, 60);
+      } else {
+        i -= 1;
+        setTyped(typedFull.slice(0, Math.max(0, i)));
+        if (i <= 0) { phase = "typing"; timeoutId = setTimeout(tick, 400); return; }
+        timeoutId = setTimeout(tick, 55);
+      }
+    };
+    timeoutId = setTimeout(tick, 110);
+    return () => clearTimeout(timeoutId);
+  }, []);
   return (
   <section
     className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-24 lg:pb-28"
@@ -374,22 +399,20 @@ const Hero = () => {
             <br />
             unforgettable as
             <br />
-            the day,
-            <br className="sm:hidden" />
-            <span className="hidden sm:inline"> </span>
+            the day,{" "}
             <span
-              className="font-handwritten italic font-normal"
+              className="font-handwritten font-normal"
               style={{
-                background: `linear-gradient(120deg, ${GOLD} 0%, hsl(192 55% 36%) 55%, ${GOLD} 100%)`,
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                color: "hsl(192 55% 32%)",
                 fontSize: "1.1em",
-                lineHeight: 1,
-                display: "inline-block",
+                lineHeight: 1.25,
+                whiteSpace: "pre-line",
               }}
             >
-              ready in minutes.
+              {typed}
+              <span style={{ opacity: 0 }} aria-hidden="true">
+                {typedFull.slice(typed.length)}
+              </span>
             </span>
           </h1>
 
@@ -442,11 +465,6 @@ const Hero = () => {
               View Example
             </a>
 
-            <div className="inline-flex items-baseline gap-2 font-body">
-              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(220 10% 50%)" }}>From</span>
-              <span className="font-display font-semibold leading-none" style={{ color: GOLD, fontSize: "1.75rem" }}>{format(20)}</span>
-              <span className="text-[10px] uppercase tracking-[0.24em] font-bold" style={{ color: "hsl(220 10% 50%)" }}>· One-time</span>
-            </div>
           </div>
 
           {/* Rating with couple avatars — social proof under CTA */}
@@ -479,13 +497,32 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          {/* Guarantee strip — flat */}
-          <div className="inline-flex items-center gap-2 sm:gap-2.5 font-body text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.16em] sm:tracking-[0.26em] font-bold" style={{ color: "hsl(220 12% 42%)" }}>
-            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(192 25% 76%)" }} />
-            <Shield className="w-3.5 h-3.5" style={{ color: GOLD }} />
-            30-Day Money-Back Guarantee
-            <span className="w-4 sm:w-6 h-px" style={{ background: "hsl(192 25% 76%)" }} />
-          </div>
+          {/* Guarantee strip — highlighted badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="inline-flex items-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-body"
+            style={{
+              background: "linear-gradient(135deg, hsl(45 85% 96%) 0%, hsl(45 70% 92%) 100%)",
+              border: `1.5px solid ${GOLD}`,
+              boxShadow: `0 8px 24px hsl(45 60% 50% / 0.18), inset 0 0 0 1px hsl(45 90% 98%)`,
+            }}
+          >
+            <span
+              className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full shrink-0"
+              style={{ background: GOLD_GRAD, boxShadow: "0 4px 10px hsl(45 60% 40% / 0.3)" }}
+            >
+              <Shield className="w-4 h-4 sm:w-4.5 sm:h-4.5" style={{ color: "white" }} fill="currentColor" />
+            </span>
+            <span className="flex flex-col leading-tight text-left">
+              <span className="text-[13px] sm:text-[14px] font-bold" style={{ color: "hsl(28 60% 22%)" }}>
+                30-Day Money-Back Guarantee
+              </span>
+              <span className="text-[10.5px] sm:text-[11px] font-medium" style={{ color: "hsl(28 25% 38%)" }}>
+                Not happy? Full refund, no questions asked.
+              </span>
+            </span>
+          </motion.div>
         </motion.div>
 
         {/* ── RIGHT — phone mockup ── */}

@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Sparkles, Palette, ArrowRight, ArrowLeft, ShieldCheck, Clock, Loader2, BadgeCheck, MessageCircle } from "lucide-react";
+import { Check, Crown, Sparkles, Palette, ArrowRight, ArrowLeft, ShieldCheck, Clock, BadgeCheck, MessageCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 import { notify } from "@/lib/notify";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Seo } from "@/components/Seo";
-import { supabase } from "@/integrations/supabase/client";
 
 const GOLD = "hsl(192 60% 24%)";
 const GOLD_GRAD = "linear-gradient(135deg, hsl(192 60% 24%), hsl(192 55% 32%))";
@@ -147,13 +145,12 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
                 <span className="font-body text-base md:text-lg line-through" style={{ color: "hsl(220 10% 57%)" }}>{format(pkg.oldPrice)}</span>
               )}
               <span
-                className="font-display font-bold leading-none tabular-nums"
+                className="font-display leading-none tabular-nums"
                 style={{
-                  fontSize: "clamp(2.4rem, 4vw, 3rem)",
-                  background: GOLD_GRAD,
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
+                  fontSize: "clamp(3.5rem, 6vw, 4.75rem)",
+                  color: GOLD,
+                  letterSpacing: "-0.025em",
+                  fontWeight: 900,
                 }}
               >
                 {format(pkg.price)}
@@ -177,7 +174,7 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
 
         <p className="font-body text-sm md:text-base leading-relaxed" style={{ color: "hsl(220 15% 30%)" }}>{pkg.tagline}</p>
 
-        {!pkg.checkout ? (
+        {pkg.id === "custom" ? (
           <a
             href={whatsappLink(pkg.whatsappMessage ?? `Hi Wed4Love! I'd like the ${pkg.name} plan.`)}
             target="_blank"
@@ -191,7 +188,7 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
             }
           >
             <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
-            {pkg.price != null ? `Start on WhatsApp — ${format(pkg.price)}` : "Message us on WhatsApp"}
+            {pkg.price != null ? `Talk to us — ${format(pkg.price)}` : "Message us on WhatsApp"}
           </a>
         ) : (
           <button
@@ -204,9 +201,8 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
                 : { background: "white", color: GOLD, border: "1.5px solid hsl(192 25% 70%)" }
             }
           >
-            {busy ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : null}
-            {pkg.price != null ? `Get it now — ${format(pkg.price)}` : "Get it now"}
-            {!busy && <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />}
+            {pkg.price != null ? `Select & build — ${format(pkg.price)}` : "Select & build"}
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </button>
         )}
 
@@ -231,39 +227,24 @@ const PricingCard = ({ pkg, index, onChoose, busy }: {
 const Pricing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [pending, setPending] = useState<string | null>(null);
 
-  const choose = async (pkg: PackageDef) => {
+  const choose = (pkg: PackageDef) => {
     notify("package_selected", { package: pkg.id, price: pkg.price, email: user?.email });
 
+    const orderPkg =
+      pkg.id === "starter" ? "essential"
+      : pkg.id === "custom" ? "luxe"
+      : pkg.id; // "signature"
+
+    localStorage.setItem("selected_package", orderPkg);
+    if (user) localStorage.setItem(`selected_package_${user.id}`, orderPkg);
+
+    const dest = `/order?pkg=${orderPkg}`;
     if (!user) {
-      navigate("/login", { state: { from: "/pricing" } });
+      navigate("/login", { state: { from: dest } });
       return;
     }
-    if (!user.email) {
-      navigate("/login", { state: { from: "/pricing" } });
-      return;
-    }
-
-    setPending(pkg.id);
-    localStorage.setItem(`selected_package_${user.id}`, pkg.id);
-    localStorage.removeItem("selected_package");
-
-    const redirectUrl = `${window.location.origin}/payment-success?plan=${pkg.id}`;
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { product: pkg.id, app_email: user.email, redirect_url: redirectUrl },
-      });
-      if (error || !data?.purchase_url) throw error ?? new Error("no purchase_url");
-      window.location.href = data.purchase_url;
-    } catch (e) {
-      console.error("[Pricing] create-checkout failed, falling back to raw Whop URL", e);
-      const params = new URLSearchParams({ d2c: "true", redirect_url: redirectUrl });
-      if (user.email) params.set("email", user.email);
-      window.location.href = `${pkg.checkout}?${params.toString()}`;
-    } finally {
-      setPending(null);
-    }
+    navigate(dest);
   };
 
   return (
@@ -312,7 +293,7 @@ const Pricing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7 items-start max-w-6xl mx-auto">
             {PACKAGES.map((p, i) => (
-              <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={pending === p.id} />
+              <PricingCard key={p.id} pkg={p} index={i} onChoose={choose} busy={false} />
             ))}
           </div>
 

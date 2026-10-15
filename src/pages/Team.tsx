@@ -266,15 +266,13 @@ const Team = () => (
           The humans behind
           <br />
           <span
-            className="font-handwritten italic font-normal"
+            className="font-handwritten font-normal"
             style={{
-              background: `linear-gradient(120deg, ${GOLD} 0%, hsl(192 55% 36%) 55%, ${GOLD} 100%)`,
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              color: "hsl(192 55% 32%)",
               fontSize: "1.1em",
-              lineHeight: 1,
+              lineHeight: 1.25,
               display: "inline-block",
+              paddingBottom: "0.2em",
             }}
           >
             your invitation.

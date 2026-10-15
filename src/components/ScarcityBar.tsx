@@ -7,8 +7,8 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 const DISMISS_KEY = "wed4love_scarcity_dismissed";
 const REVEAL_SCROLL_PX = 480;
 
-const GOLD = "hsl(38 72% 44%)";
-const GOLD_GRAD = "linear-gradient(135deg, hsl(38 72% 44%), hsl(38 80% 52%))";
+const TEAL = "hsl(192 60% 24%)";
+const TEAL_GRAD = "linear-gradient(135deg, hsl(192 60% 24%), hsl(192 55% 32%))";
 
 const ScarcityBar = () => {
   const { format } = useCurrency();
@@ -47,26 +47,26 @@ const ScarcityBar = () => {
           <div
             className="pointer-events-auto mx-auto max-w-5xl flex items-center gap-3 sm:gap-5 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl backdrop-blur-md"
             style={{
-              background: "hsla(42, 65%, 97%, 0.96)",
-              border: "1.5px solid hsl(38 50% 82%)",
-              boxShadow: "0 14px 44px hsl(30 30% 20% / 0.18)",
+              background: "hsla(0, 0%, 100%, 0.96)",
+              border: "1px solid hsl(192 25% 86%)",
+              boxShadow: "0 14px 44px hsl(192 40% 10% / 0.22)",
             }}
           >
             <Flame
               className="shrink-0"
-              style={{ color: "hsl(14 85% 56%)", width: 20, height: 20 }}
+              style={{ color: "hsl(192 60% 32%)", width: 20, height: 20 }}
             />
 
             <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
               <p
                 className="hidden sm:block font-body text-sm font-semibold whitespace-nowrap"
-                style={{ color: "hsl(30 20% 18%)" }}
+                style={{ color: "hsl(192 40% 15%)" }}
               >
                 Last invitations at this price
               </p>
               <p
                 className="sm:hidden font-body text-xs font-semibold whitespace-nowrap"
-                style={{ color: "hsl(30 20% 18%)" }}
+                style={{ color: "hsl(192 40% 15%)" }}
               >
                 Last at this price
               </p>
@@ -77,7 +77,7 @@ const ScarcityBar = () => {
                 </span>
                 <span
                   className="font-display font-bold text-base sm:text-lg"
-                  style={{ color: "hsl(30 20% 14%)" }}
+                  style={{ color: "hsl(192 60% 20%)" }}
                 >
                   {format(20)}
                 </span>
@@ -86,14 +86,14 @@ const ScarcityBar = () => {
               <span
                 className="hidden xs:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-body text-[11px] font-semibold whitespace-nowrap"
                 style={{
-                  background: "hsl(350 85% 96%)",
-                  color: "hsl(350 72% 48%)",
-                  border: "1px solid hsl(350 70% 88%)",
+                  background: "hsl(192 40% 95%)",
+                  color: "hsl(192 60% 24%)",
+                  border: "1px solid hsl(192 30% 82%)",
                 }}
               >
                 <span
                   className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: "hsl(350 72% 55%)" }}
+                  style={{ background: "hsl(192 55% 40%)" }}
                 />
                 Few left
               </span>
@@ -104,7 +104,7 @@ const ScarcityBar = () => {
               aria-label="Dismiss offer"
               onClick={dismiss}
               className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-black/5"
-              style={{ color: "hsl(30 15% 45%)" }}
+              style={{ color: "hsl(192 20% 40%)" }}
             >
               <X className="w-4 h-4" />
             </button>
@@ -113,8 +113,8 @@ const ScarcityBar = () => {
               to="/choose-template"
               className="shrink-0 inline-flex items-center gap-1.5 sm:gap-2 pl-3 pr-3.5 sm:pl-4 sm:pr-5 py-2 sm:py-2.5 rounded-xl font-body text-xs sm:text-sm font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
               style={{
-                background: GOLD_GRAD,
-                boxShadow: "0 8px 22px hsl(38 80% 55% / 0.35)",
+                background: TEAL_GRAD,
+                boxShadow: "0 8px 22px hsl(192 60% 24% / 0.35)",
               }}
             >
               <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

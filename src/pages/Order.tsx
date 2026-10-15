@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, Check, Crown, Palette, Sparkles, Zap, Calendar as CalendarIcon,
@@ -149,6 +149,7 @@ type OrderState = {
   sections: string[]; // includes "always" IDs by default
   primaryLang: string;
   secondaryLang: string;
+  customLang: string;
   guestCount: string;
   contactName: string;
   contactEmail: string;
@@ -166,6 +167,7 @@ const INITIAL: OrderState = {
   sections: SECTIONS.filter(s => s.always).map(s => s.id),
   primaryLang: "English",
   secondaryLang: "",
+  customLang: "",
   guestCount: "",
   contactName: "",
   contactEmail: "",
@@ -518,6 +520,48 @@ const Step4 = ({ state, dispatch }: { state: OrderState; dispatch: React.Dispatc
         onChange={v => dispatch({ type: "SET", patch: { secondaryLang: v } })}
         allowNone
       />
+    </div>
+
+    <div
+      className="mt-6 rounded-2xl p-5"
+      style={{ background: "hsl(190 25% 97%)", border: "1px dashed hsl(192 25% 72%)" }}
+    >
+      <label htmlFor="customLang" className="block">
+        <div className="flex items-center justify-between mb-2">
+          <p className="font-body text-sm font-bold" style={{ color: "hsl(220 20% 16%)" }}>
+            Don't see your language?
+          </p>
+          <span
+            className="font-body text-[10px] uppercase tracking-[0.18em] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: "white", color: "hsl(220 10% 50%)", border: "1px solid hsl(220 12% 88%)" }}
+          >
+            Optional
+          </span>
+        </div>
+        <p className="font-body text-xs mb-3" style={{ color: "hsl(220 12% 42%)" }}>
+          Type it here and we'll make sure it's included.
+        </p>
+        <input
+          id="customLang"
+          type="text"
+          value={state.customLang}
+          onChange={e => dispatch({ type: "SET", patch: { customLang: e.target.value } })}
+          placeholder="e.g. Newari, Maithili, Yoruba…"
+          className="w-full px-4 py-3 rounded-xl bg-white font-body text-sm outline-none transition-all"
+          style={{
+            border: "1.5px solid hsl(220 12% 88%)",
+            color: "hsl(220 20% 16%)",
+          }}
+          onFocus={e => {
+            e.currentTarget.style.borderColor = GOLD;
+            e.currentTarget.style.boxShadow = "0 0 0 4px hsl(192 55% 32% / 0.14)";
+          }}
+          onBlur={e => {
+            e.currentTarget.style.borderColor = "hsl(220 12% 88%)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+        />
+      </label>
     </div>
   </div>
 );
@@ -949,7 +993,7 @@ const Step7 = ({ state, onSubmit, submitting }: { state: OrderState; onSubmit: (
       <div className="grid md:grid-cols-2 gap-4 md:gap-5 mb-6 md:mb-8">
         <SummaryBlock label="Package" value={pkg?.name ?? "—"} />
         <SummaryBlock label="Template & Envelope" value={`${tpl?.name ?? "—"} · ${env?.name ?? "—"}`} />
-        <SummaryBlock label="Languages" value={state.secondaryLang ? `${state.primaryLang} + ${state.secondaryLang}` : state.primaryLang} />
+        <SummaryBlock label="Languages" value={[state.primaryLang, state.secondaryLang, state.customLang.trim()].filter(Boolean).join(" + ")} />
         <SummaryBlock label="Guests" value={state.guestCount || "—"} />
         <SummaryBlock label="Event date" value={state.eventDate || "—"} />
         <SummaryBlock label="Delivery" value={state.delivery ? (state.delivery === "express" ? "Express 24h" : "Standard 3–5 days") : "—"} />
@@ -1131,6 +1175,18 @@ const OrderWizard = () => {
   const [submitted, setSubmitted] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Preselect package from ?pkg= query param (or localStorage fallback)
+  useEffect(() => {
+    const raw = searchParams.get("pkg") ?? (typeof window !== "undefined" ? localStorage.getItem("selected_package") : null);
+    if (!raw) return;
+    const valid: PackageId[] = ["essential", "signature", "luxe"];
+    if ((valid as string[]).includes(raw) && state.package !== raw) {
+      dispatch({ type: "SET", patch: { package: raw as PackageId } });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // Prefill from auth
   useEffect(() => {
@@ -1176,6 +1232,7 @@ const OrderWizard = () => {
       sections: state.sections,
       primary_language: state.primaryLang,
       secondary_language: state.secondaryLang || null,
+      custom_language: state.customLang.trim() || null,
       guest_count: state.guestCount,
       contact_name: state.contactName,
       contact_email: state.contactEmail,
