@@ -555,7 +555,6 @@ const HERO_OVERLAY: React.CSSProperties = {
 const TEMPLATE_VIDEOS: Record<string, string> = {
   "garden-rose":   "/wedding-bg.mp4",
   "rustic-bloom":  "/wedding-bg-rustic-bloom.mp4",
-  "golden-hour":   "/wedding-bg-golden-hour.mp4",
   "midnight-luxe": "/wedding-bg-midnight-luxe.mp4",
   "soft-love":     "/wedding-bg-soft-love.mp4",
 };
@@ -564,10 +563,30 @@ const TEMPLATE_VIDEO_FIT: Record<string, "cover" | "contain-width"> = {
   "rustic-bloom": "contain-width",
 };
 
+const TEMPLATE_HERO_IMAGES: Record<string, string> = {
+  "golden-hour": "/wedding-bg-golden-hour.png",
+};
+
 const HeroBackground = ({ themeId, videoRef }: { themeId: string; videoRef?: React.RefObject<HTMLVideoElement> }) => {
   const [videoFailed, setVideoFailed] = useState(false);
   const src = TEMPLATE_VIDEOS[themeId];
+  const imageSrc = TEMPLATE_HERO_IMAGES[themeId];
   const fit = TEMPLATE_VIDEO_FIT[themeId] ?? "cover";
+
+  if (imageSrc) {
+    return (
+      <div className="absolute inset-0 overflow-hidden" style={{ background: "#000" }}>
+        <img
+          src={imageSrc}
+          alt=""
+          className="absolute inset-0 w-full h-full"
+          style={{ objectFit: "cover" }}
+        />
+        <div className="absolute inset-0 z-10" style={HERO_OVERLAY} />
+        <div className="absolute inset-0 z-10 pointer-events-none" style={{ boxShadow: "inset 0 0 120px rgba(0,0,0,0.45)" }} />
+      </div>
+    );
+  }
 
   if (!src || videoFailed) return <HeroSlideshow />;
 
@@ -802,7 +821,8 @@ const ViewInvite = () => {
 
   return (
     <ThemeCtx.Provider value={C}>
-    <div className="min-h-screen" data-theme={themeId} style={{ background: C.cream }}>
+    <div className={isGolden ? "golden-hour-page-wrap" : "contents"}>
+    <div className={`min-h-screen ${isGolden ? "golden-hour-mobile-frame" : ""}`} data-theme={themeId} style={{ background: C.cream }}>
       <audio ref={audioRef} src="/music/birds-of-a-feather.mp3" loop preload="auto" />
       <AnimatePresence>
         {!opened && <EnvelopeReveal onOpen={handleEnvelopeOpen} groom={INVITE.groom} bride={INVITE.bride} date={INVITE.date} themeId={themeId} />}
@@ -819,12 +839,12 @@ const ViewInvite = () => {
 
         <div className="relative z-20">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-azura-body font-semibold tracking-[0.32em] uppercase mb-6" style={{ fontSize: "0.7rem", color: C.goldLight }}>
+            className={`font-azura-body font-semibold uppercase mb-6 ${isGolden ? "tracking-[0.18em]" : "tracking-[0.32em]"}`} style={{ fontSize: isGolden ? "0.62rem" : "0.7rem", color: C.goldLight }}>
             You are cordially invited to the wedding of
           </motion.p>
 
           <motion.h1 initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="font-handwritten leading-none" style={{ fontSize: "clamp(3.5rem, 12vw, 7rem)", color: "white", textShadow: "0 2px 24px rgba(0,0,0,0.4)" }}>
+            className="font-handwritten leading-none" style={{ fontSize: isGolden ? "clamp(2.5rem, 9vw, 4.5rem)" : "clamp(3.5rem, 12vw, 7rem)", color: "white", textShadow: "0 2px 24px rgba(0,0,0,0.4)" }}>
             {INVITE.groom} &amp; {INVITE.bride}
           </motion.h1>
 
@@ -843,18 +863,20 @@ const ViewInvite = () => {
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1 }}
             className="flex flex-col items-center gap-1.5">
-            <p className="font-azura-serif italic text-2xl sm:text-3xl text-white" style={{ fontWeight: 500, letterSpacing: "0.01em" }}>{INVITE.date}</p>
-            <p className="font-azura-body text-sm tracking-widest" style={{ color: "hsl(42 40% 82%)" }}>{INVITE.time} · {INVITE.venue.name}</p>
+            <p className={`font-azura-serif italic text-white ${isGolden ? "text-lg" : "text-2xl sm:text-3xl"}`} style={{ fontWeight: 500, letterSpacing: "0.01em" }}>{INVITE.date}</p>
+            <p className={`font-azura-body tracking-widest ${isGolden ? "text-xs" : "text-sm"}`} style={{ color: "hsl(42 40% 82%)" }}>{INVITE.time} · {INVITE.venue.name}</p>
           </motion.div>
         </div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/60 z-20">
-          <p className="font-azura-body font-semibold tracking-[0.28em] uppercase" style={{ fontSize: "0.6rem" }}>Scroll</p>
-          <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-            <ChevronDown className="w-4 h-4" />
+        {!isGolden && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/60 z-20">
+            <p className="font-azura-body font-semibold tracking-[0.28em] uppercase" style={{ fontSize: "0.6rem" }}>Scroll</p>
+            <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+              <ChevronDown className="w-4 h-4" />
+            </motion.div>
           </motion.div>
-        </motion.div>
+        )}
       </section>
 
       {/* ── Countdown ── */}
@@ -898,7 +920,7 @@ const ViewInvite = () => {
                     <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b border-r" style={{ borderColor: C.gold }} />
 
                     <span className="font-display italic leading-none mb-2 sm:mb-3"
-                      style={{ fontSize: "clamp(2.25rem, 8vw, 4rem)", color: C.green, fontWeight: 500 }}>
+                      style={{ fontSize: isGolden ? "clamp(1.5rem, 5.5vw, 2.5rem)" : "clamp(2.25rem, 8vw, 4rem)", color: C.green, fontWeight: 500 }}>
                       {String(value).padStart(2, "0")}
                     </span>
                     <span className="font-body tracking-[0.28em] uppercase"
@@ -912,8 +934,15 @@ const ViewInvite = () => {
           </motion.div>
 
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center font-body text-sm mt-8" style={{ color: C.primaryMuted }}>
-            {INVITE.date} at {INVITE.time} · {INVITE.venue.name}, {INVITE.venue.city}
+            className={`text-center font-body mt-8 ${isGolden ? "text-xs leading-relaxed" : "text-sm"}`} style={{ color: C.primaryMuted }}>
+            {isGolden ? (
+              <>
+                {INVITE.date} · {INVITE.time}<br/>
+                {INVITE.venue.name}, {INVITE.venue.city}
+              </>
+            ) : (
+              <>{INVITE.date} at {INVITE.time} · {INVITE.venue.name}, {INVITE.venue.city}</>
+            )}
           </motion.p>
         </div>
       </section>
@@ -939,20 +968,27 @@ const ViewInvite = () => {
           </motion.div>
 
           <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-px hidden sm:block"
-              style={{ background: "hsl(28 28% 78%)" }} />
+            {isGolden ? (
+              <div className="absolute left-1.5 top-2 bottom-2 w-px"
+                style={{ background: `${C.gold}66` }} />
+            ) : (
+              <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-px hidden sm:block"
+                style={{ background: "hsl(28 28% 78%)" }} />
+            )}
 
             {INVITE.story.map((entry, i) => {
               const isLeft = i % 2 === 0;
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className={`relative flex mb-12 sm:mb-16 ${isLeft ? "sm:flex-row" : "sm:flex-row-reverse"}`}>
-                  <div className="absolute left-1/2 -translate-x-1/2 top-2 w-3 h-3 rounded-full z-10 hidden sm:block"
-                    style={{ background: C.gold, border: `3px solid ${C.creamAlt}`, boxShadow: `0 0 0 1px ${C.gold}` }} />
-                  <div className={`w-full sm:w-[calc(50%-2rem)] ${isLeft ? "sm:pr-10 sm:text-right" : "sm:pl-10"} pl-6 sm:pl-0`}>
-                    <div className="absolute left-0 top-2 w-3 h-3 rounded-full sm:hidden"
-                      style={{ background: C.gold }} />
+                  className={`relative flex mb-10 ${isGolden ? "" : `sm:mb-16 ${isLeft ? "sm:flex-row" : "sm:flex-row-reverse"}`}`}>
+                  {!isGolden && (
+                    <div className="absolute left-1/2 -translate-x-1/2 top-2 w-3 h-3 rounded-full z-10 hidden sm:block"
+                      style={{ background: C.gold, border: `3px solid ${C.creamAlt}`, boxShadow: `0 0 0 1px ${C.gold}` }} />
+                  )}
+                  <div className={`w-full ${isGolden ? "pl-8" : `sm:w-[calc(50%-2rem)] ${isLeft ? "sm:pr-10 sm:text-right" : "sm:pl-10"} pl-6 sm:pl-0`}`}>
+                    <div className={`absolute left-0 top-2 w-3 h-3 rounded-full z-10 ${isGolden ? "" : "sm:hidden"}`}
+                      style={{ background: C.gold, border: isGolden ? `2px solid ${C.creamAlt}` : undefined, boxShadow: isGolden ? `0 0 0 1px ${C.gold}` : undefined }} />
                     {entry.year ? <p className="font-display text-sm font-bold italic mb-1" style={{ color: C.gold }}>{entry.year}</p> : null}
                     <h3 className="font-handwritten mb-2" style={{ fontSize: "1.5rem", color: C.dark, lineHeight: 1.2 }}>{entry.title || entry.desc}</h3>
                     {entry.title && entry.desc ? <p className="font-body text-sm italic leading-relaxed" style={{ color: C.mid }}>{entry.desc}</p> : null}
@@ -993,15 +1029,15 @@ const ViewInvite = () => {
             </p>
           </motion.div>
 
-          <div className="overflow-x-auto pb-4 -mx-5 px-5 sm:mx-0 sm:px-0">
-            <div className="flex gap-0 min-w-max sm:min-w-0 sm:justify-center relative">
-              <div className="absolute top-[calc(2.75rem+1.5rem)] left-[2.5rem] right-[2.5rem] h-px hidden sm:block"
+          <div className={`overflow-x-auto pb-4 -mx-5 px-5 sm:mx-0 sm:px-0 ${isGolden ? "snap-x snap-mandatory scroll-smooth" : ""}`}>
+            <div className={`flex gap-0 relative ${isGolden ? "min-w-max justify-start" : "min-w-max sm:min-w-0 sm:justify-center"}`}>
+              <div className={`absolute top-[calc(2.75rem+1.5rem)] left-[2.5rem] right-[2.5rem] h-px ${isGolden ? "hidden" : "hidden sm:block"}`}
                 style={{ background: C.primaryLine }} />
               {INVITE.schedule.map((item, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
-                  className="flex flex-col items-center text-center relative"
-                  style={{ minWidth: 120, padding: "0 12px" }}>
+                  className={`flex flex-col items-center text-center relative ${isGolden ? "snap-center" : ""}`}
+                  style={{ minWidth: isGolden ? 160 : 120, padding: "0 12px" }}>
                   <div className="rounded-full px-3 py-1.5 mb-3 font-body text-xs font-semibold"
                     style={{ background: "hsl(42 40% 84%)", color: C.dark, whiteSpace: "nowrap" }}>
                     {item.time}
@@ -1011,7 +1047,7 @@ const ViewInvite = () => {
                     <item.Icon className="w-4 h-4" style={{ color: isGolden ? C.gold : "hsl(42 40% 78%)" }} />
                   </div>
                   <p className="font-body text-sm font-semibold mb-1" style={{ color: isGolden ? C.dark : "hsl(42 35% 88%)" }}>{item.event}</p>
-                  <p className="font-body text-xs" style={{ color: isGolden ? C.mid : C.primaryMuted, maxWidth: 90 }}>{item.desc}</p>
+                  <p className="font-body text-xs" style={{ color: isGolden ? C.mid : C.primaryMuted, maxWidth: isGolden ? 140 : 90 }}>{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -1107,7 +1143,7 @@ const ViewInvite = () => {
               <img
                 src="/golden-hour-pre-dress-code.jpg"
                 alt=""
-                className="w-full max-w-xs sm:max-w-sm h-auto mx-auto mt-2 mb-6"
+                className="w-full max-w-md sm:max-w-md h-auto mx-auto mt-2 mb-6"
                 style={{ aspectRatio: "1286 / 832", objectFit: "contain" }}
               />
               <p className="font-azura-body text-base sm:text-lg" style={{ color: C.dark }}>
@@ -1183,7 +1219,7 @@ const ViewInvite = () => {
               <motion.div key={t.label} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="rounded-2xl p-6 flex gap-5 items-start"
-                style={{ background: "white", border: `1px solid ${C.primaryBorder}44`, boxShadow: "0 4px 18px rgba(0,0,0,0.12)" }}>
+                style={{ background: isGolden ? C.creamCard : "white", border: `1px solid ${isGolden ? C.primaryBorder : `${C.primaryBorder}44`}`, boxShadow: isGolden ? "0 2px 12px hsl(28 20% 50% / 0.08)" : "0 4px 18px rgba(0,0,0,0.12)" }}>
                 <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                   style={{ background: `${C.gold}18`, border: `1px solid ${C.gold}55` }}>
                   <t.Icon className="w-5 h-5" style={{ color: C.gold }} />
@@ -1200,7 +1236,7 @@ const ViewInvite = () => {
 
       {/* ── Pre-accommodation vignette (golden-hour only) ── */}
       {themeId === "golden-hour" && INVITE.hotels.length > 0 && (
-        <section className="pt-44 sm:pt-56 px-5 flex justify-center" style={{ background: C.cream }}>
+        <section className="pt-10 pb-6 px-5 flex justify-center" style={{ background: C.cream }}>
           <motion.img
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1237,17 +1273,17 @@ const ViewInvite = () => {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="flex items-center gap-2.5 mb-5 px-1">
+            className={`flex items-center gap-2.5 mb-5 px-1 ${isGolden ? "justify-center" : ""}`}>
             <Hotel className="w-4 h-4" style={{ color: C.gold }} />
             <h3 className="font-azura-serif italic" style={{ fontSize: "1.4rem", color: C.dark, fontWeight: 500 }}>Where to Stay</h3>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className={`grid gap-4 ${isGolden ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
             {INVITE.hotels.map((hotel, i) => (
               <motion.div key={hotel.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}
                 className="rounded-2xl p-6"
-                style={{ background: C.white, border: `1px solid ${C.primaryBorder}22`, boxShadow: "0 2px 12px hsl(28 20% 50% / 0.06)" }}>
+                style={{ background: isGolden ? C.creamCard : C.white, border: `1px solid ${isGolden ? C.primaryBorder : `${C.primaryBorder}22`}`, boxShadow: "0 2px 12px hsl(28 20% 50% / 0.06)" }}>
                 <p className="font-azura-serif italic mb-1" style={{ fontSize: "1.35rem", color: C.dark, fontWeight: 500 }}>{hotel.name}</p>
                 <p className="font-azura-body text-sm mb-2" style={{ color: C.gold, fontWeight: 500 }}>{hotel.stars} Star</p>
                 <div className="flex items-center gap-1.5 mb-3">
@@ -1302,18 +1338,18 @@ const ViewInvite = () => {
             {INVITE.giftRegistry.options.map((opt, i) => (
               <motion.div key={opt.label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="rounded-2xl p-6 flex gap-4 items-center"
-                style={{ background: "white", border: `1px solid ${C.primaryBorder}44`, boxShadow: "0 4px 18px rgba(0,0,0,0.12)" }}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: `${C.gold}18`, border: `1px solid ${C.gold}55` }}>
-                  <Gift className="w-5 h-5" style={{ color: C.gold }} />
+                className={`rounded-2xl ${isGolden ? "p-5 flex gap-3 items-center" : "p-6 flex gap-4 items-center"}`}
+                style={{ background: isGolden ? C.creamCard : "white", border: `1px solid ${isGolden ? C.primaryBorder : `${C.primaryBorder}44`}`, boxShadow: isGolden ? "0 2px 12px hsl(28 20% 50% / 0.08)" : "0 4px 18px rgba(0,0,0,0.12)" }}>
+                <div className={`${isGolden ? "w-9 h-9" : "w-10 h-10"} rounded-xl flex items-center justify-center shrink-0`}
+                  style={{ background: isGolden ? `${C.gold}26` : `${C.gold}18`, border: `1px solid ${C.gold}55` }}>
+                  <Gift className={isGolden ? "w-4 h-4" : "w-5 h-5"} style={{ color: C.gold }} />
                 </div>
-                <div className="flex-1">
-                  <p className="font-azura-serif italic mb-0.5" style={{ fontSize: "1.15rem", color: C.dark, fontWeight: 500 }}>{opt.label}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-azura-serif italic mb-0.5" style={{ fontSize: isGolden ? "1rem" : "1.15rem", color: C.dark, fontWeight: 500 }}>{opt.label}</p>
                   <p className="font-azura-body text-xs leading-relaxed" style={{ color: C.mid }}>{opt.detail}</p>
                 </div>
                 {opt.link && (
-                  <a href={opt.link} className="font-azura-body text-xs font-bold rounded-full px-4 py-2 shrink-0 transition-opacity hover:opacity-80"
+                  <a href={opt.link} className={`font-azura-body font-bold rounded-full shrink-0 transition-opacity hover:opacity-80 ${isGolden ? "text-[11px] px-3 py-1.5" : "text-xs px-4 py-2"}`}
                     style={{ background: C.green, color: "white" }}>
                     View
                   </a>
@@ -1333,14 +1369,14 @@ const ViewInvite = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {[
-              { src: gallery1, alt: "A winter wedding moment", span: "col-span-2 sm:col-span-1 row-span-2" },
-              { src: gallery2, alt: "A tender moment",           span: "" },
-              { src: gallery3, alt: "Romantic mini wedding",     span: "" },
+              { src: gallery1, alt: "A winter wedding moment", span: isGolden ? "col-span-2" : "col-span-2 sm:col-span-1 row-span-2", height: isGolden ? 240 : 200 },
+              { src: gallery2, alt: "A tender moment",           span: "", height: 200 },
+              { src: gallery3, alt: "Romantic mini wedding",     span: "", height: 200 },
             ].map((img, i) => (
               <motion.div key={i} initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }} transition={{ duration: 0.55, delay: i * 0.1 }}
                 className={`rounded-2xl overflow-hidden ${img.span}`}
-                style={{ minHeight: 200, border: "1px solid hsl(38 26% 82%)" }}>
+                style={{ minHeight: img.height, border: "1px solid hsl(38 26% 82%)" }}>
                 <img src={img.src} alt={img.alt} className="w-full h-full object-cover" style={{ minHeight: "inherit" }} />
               </motion.div>
             ))}
@@ -1355,7 +1391,7 @@ const ViewInvite = () => {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: C.cream }}>
+      <section className="py-24 sm:py-32 px-5 sm:px-8" style={{ background: isGolden ? C.creamAlt : C.cream }}>
         <div className="max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <SectionHead eyebrow="Common Questions" title="FAQ" subtitle="Everything you need to know before the big day." />
@@ -1363,7 +1399,7 @@ const ViewInvite = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
             className="rounded-2xl px-6 sm:px-8 py-2"
-            style={{ background: C.creamCard, border: "1px solid hsl(38 28% 84%)" }}>
+            style={{ background: C.creamCard, border: `1px solid ${isGolden ? C.primaryBorder : "hsl(38 28% 84%)"}`, boxShadow: isGolden ? "0 2px 12px hsl(28 20% 50% / 0.08)" : undefined }}>
             {INVITE.faq.map((item) => (
               <FaqItem key={item.q} q={item.q} a={item.a} />
             ))}
@@ -1382,7 +1418,7 @@ const ViewInvite = () => {
               {INVITE.customText.title}
             </h2>
 
-            <div style={{ height: 1, background: C.primaryLine, maxWidth: 60, margin: "0 auto 28px" }} />
+            <div style={{ height: 1, background: isGolden ? `${C.gold}88` : C.primaryLine, maxWidth: 60, margin: "0 auto 28px" }} />
 
             <p className="font-azura-body text-sm sm:text-base leading-loose mb-8" style={{ color: onDarkBody }}>
               {INVITE.customText.body}
@@ -1435,7 +1471,7 @@ const ViewInvite = () => {
                   style={{ background: `${C.green}22` }}>
                   <Check className="w-7 h-7" style={{ color: C.green }} />
                 </div>
-                <h3 className="font-display text-2xl font-semibold mb-2" style={{ color: C.dark }}>Can't wait to see you!</h3>
+                <h3 className={`mb-2 ${isGolden ? "font-azura-serif italic text-2xl" : "font-display text-2xl font-semibold"}`} style={{ color: C.dark }}>Can't wait to see you!</h3>
                 <p className="font-body text-sm" style={{ color: C.mid }}>Your RSVP has been received. See you on {INVITE.date}.</p>
               </motion.div>
             ) : (
@@ -1463,7 +1499,7 @@ const ViewInvite = () => {
                   <label className="font-azura-body text-[15px] font-semibold mb-3 block" style={{ color: C.dark }}>
                     Will you be attending? <span style={{ color: "#c94a3a" }}>*</span>
                   </label>
-                  <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+                  <div className={`flex flex-wrap items-center gap-y-3 ${isGolden ? "gap-x-5" : "gap-x-8"}`}>
                     {[
                       { value: "Joyfully accepts",   text: "Joyfully Accept" },
                       { value: "Regretfully declines", text: "Regretfully Decline" },
@@ -1532,11 +1568,11 @@ const ViewInvite = () => {
 
       {/* ── Footer ── */}
       <footer className="py-14 px-6 text-center" style={{ background: sectionDarkBg }}>
-        <p className="font-handwritten mb-3" style={{ fontSize: "2.4rem", color: onDarkScript }}>
+        <p className="font-handwritten mb-3" style={{ fontSize: isGolden ? "1.9rem" : "2.4rem", color: onDarkScript }}>
           {INVITE.groom} &amp; {INVITE.bride}
         </p>
         <p className="font-body text-sm mb-6" style={{ color: onDarkFooterSub }}>{INVITE.date}</p>
-        <div style={{ height: 1, background: C.primaryLine, maxWidth: 240, margin: "0 auto 20px" }} />
+        <div style={{ height: 1, background: isGolden ? `${C.gold}66` : C.primaryLine, maxWidth: 240, margin: "0 auto 20px" }} />
         <p className="font-body text-xs" style={{ color: C.primaryMuted }}>{INVITE.hashtag}</p>
         <a
           href={`/dashboard/${id ?? "demo-wedding"}`}
@@ -1547,6 +1583,7 @@ const ViewInvite = () => {
           RSVP Dashboard
         </a>
       </footer>
+    </div>
     </div>
     </ThemeCtx.Provider>
   );

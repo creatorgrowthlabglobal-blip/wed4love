@@ -365,3 +365,26 @@
   background: radial-gradient(circle, hsl(18 80% 82% / 0.45) 0%, transparent 70%);
   animation: blob-4 22s ease-in-out infinite;
 }
+
+/* ── Golden Hour: lock template to mobile width on desktop ─────────────── */
+.golden-hour-page-wrap {
+  min-height: 100vh;
+  background: hsl(48 65% 95%);
+}
+
+@media (min-width: 540px) {
+  .golden-hour-mobile-frame {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* Scale down section headings on golden-hour (handwritten + serif) */
+[data-theme="golden-hour"] h2.font-handwritten {
+  font-size: clamp(2rem, 6vw, 3.25rem) !important;
+}
+[data-theme="golden-hour"] h2.font-azura-serif.italic {
+  font-size: clamp(1.6rem, 4.5vw, 2.5rem) !important;
+}
